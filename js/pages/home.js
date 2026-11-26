@@ -8,6 +8,7 @@ import { episodeAverages } from '../insights.js';
 import { weeklyPick } from '../club.js';
 import { isChaos } from '../fx.js';
 import { streakInfo, streakHTML } from '../streak.js';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -136,13 +137,26 @@ async function renderHome() {
       <span style="font-weight:700;text-decoration:underline">${mine.has(weekly.id) ? 'See the reviews' : 'Join in'}</span>
     </a>` : '';
 
+  // Cartman's Cage Match ad, with your current champion if you have one.
+  const [cageVotes, cageRatings] = await Promise.all([loadVotes(user.id), loadRatings(user.id)]);
+  const champ = champion(scoreVotes(cageVotes, cageRatings));
+  const champEp = champ && byId.get(champ.top.id);
+  const cageAd = `
+    <a class="cage-ad" href="cage.html">
+      <span class="cage-ad-title cut">🥊 Cartman's Cage Match</span>
+      <span class="cage-ad-text">${champEp
+        ? `Your champion: <strong>${esc(champEp.title)}</strong>${champ.undefeated ? ' (undefeated!)' : ''}. Think anything can take it down? Step into the cage.`
+        : "Two episodes enter. One leaves. Pick winners until your true favourite episode is crowned. Hosted by Eric Cartman, who is very humble about it."}</span>
+      <span class="cage-ad-cta cut">${champEp ? 'Defend the title' : 'Enter the cage'} →</span>
+    </a>`;
+
   // Tegridy streak (only once you've logged something).
   const { data: dayLogs } = await supabase.from('logs').select('watched_on, created_at').eq('user_id', user.id).limit(5000);
   const streakBox = dayLogs?.length ? `<a href="stats.html" class="streak-link">${streakHTML(streakInfo(dayLogs))}</a>` : '';
 
   root.innerHTML = `
     ${anniversaryHTML}
-    ${weeklyHTML}
+    <div class="home-promos">${weeklyHTML}${cageAd}</div>
     ${streakBox}
     <section>
       <div class="section-head"><h2>${popTitle}</h2><a href="episodes.html">More</a></div>

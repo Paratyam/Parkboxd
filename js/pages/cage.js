@@ -1,5 +1,6 @@
-// cage.html?u=name: Cartman's Cage Match. On your own page: the game (pick the better of two
-// episodes you've watched, Cartman hosting) plus your ranking. On someone else's: just their ranking.
+// cage.html: Cartman's Cage Match, the game (pick the better of two episodes you've watched) plus your ranking.
+// cage.html?u=name&view=ranking: a profile's Rankings tab, just the ranking list.
+
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
@@ -34,7 +35,9 @@ if (!person) {
 async function start() {
   const isMe = person.id === me.id;
   const name = person.display_name || person.username;
-  document.title = `${isMe ? "Cartman's Cage Match" : `${name}'s Cage Match`} · ${SITE_NAME}`;
+  // The game is the nav's Cage Match page; profiles get a Rankings tab (?view=ranking) with just the list.
+  const showGame = isMe && params.get('view') !== 'ranking';
+  document.title = `${showGame ? "Cartman's Cage Match" : isMe ? 'Your rankings' : `${name}'s rankings`} · ${SITE_NAME}`;
 
   const [all, votes, ratings, mine] = await Promise.all([
     loadAllEpisodes(), loadVotes(person.id), loadRatings(person.id), isMe ? myLogMap(me.id) : Promise.resolve(new Map()),
@@ -73,11 +76,12 @@ async function start() {
   };
 
   root.innerHTML = `
-    <div>
-      <h1 class="cut" style="margin:0 0 14px;color:var(--white);font-size:clamp(30px,4vw,44px)">${isMe ? 'Cage Match' : `${esc(name)}'s Cage Match`}</h1>
+    ${showGame ? '' : `<div>
+      <h1 class="cut" style="margin:0 0 14px;color:var(--white);font-size:clamp(30px,4vw,44px)">${isMe ? 'Your rankings' : `${esc(name)}'s rankings`}</h1>
       ${profileTabsHTML(person.username, 'cage')}
-    </div>
-    ${isMe ? `<section class="cage-ring" id="cage-game" aria-label="Cartman's Cage Match: pick the better episode">
+      <p class="result-count" style="margin:12px 0 0">Every episode ranked head to head in <a href="cage.html">Cartman's Cage Match</a>.</p>
+    </div>`}
+    ${showGame ? `<section class="cage-ring" id="cage-game" aria-label="Cartman's Cage Match: pick the better episode">
       <div class="cage-banner">
         <span class="cage-title cut">Cartman's Cage Match</span>
         <span class="cage-round cut" id="round"></span>
@@ -109,7 +113,7 @@ async function start() {
       <div id="champ"></div>
       <ol class="rank-table" id="ranking"></ol>
       <div id="rank-more"></div>
-      ${isMe ? '<p style="margin:14px 0 0"><button type="button" class="link-button" id="reset" style="color:var(--muted)">Reset my Cage Match</button></p>' : ''}
+      ${showGame ? '<p style="margin:14px 0 0"><button type="button" class="link-button" id="reset" style="color:var(--muted)">Reset my Cage Match</button></p>' : ''}
     </section>`;
   root.removeAttribute('aria-busy');
 
@@ -138,7 +142,7 @@ async function start() {
         <div class="info"><a href="episode.html?id=${e.id}">${i === 0 ? '👑 ' : ''}${esc(e.title)}</a><span>${esc(epCode(e))}${x.losses === 0 && x.wins >= UNDEFEATED_MIN ? ' · 🔥 unbeaten' : ''} ${isMe && sessionPicks ? move : ''}</span></div>
         <div class="score"><b style="font-size:16px">${x.wins}–${x.losses}</b><span title="Cage score">${Math.round(x.score)}</span></div>
       </li>`;
-    }).join('') : `<p class="empty">${isMe ? 'No matches yet. Pick a winner above to start your ranking.' : `${esc(name)} hasn't stepped into the cage yet.`}</p>`;
+    }).join('') : `<p class="empty">${showGame ? 'No matches yet. Pick a winner above to start your ranking.' : isMe ? "No rankings yet. Step into <a href=\"cage.html\">Cartman's Cage Match</a> and start picking winners." : `${esc(name)} hasn't stepped into the cage yet.`}</p>`;
     $('#rank-more').innerHTML = list.length > RANK_SHOWN
       ? `<p style="margin:10px 0 0"><button type="button" class="link-button" id="rank-toggle">${showAll ? 'Show top 50 only' : `Show all ${list.length}`}</button></p>` : '';
     $('#rank-toggle')?.addEventListener('click', () => { showAll = !showAll; renderRanking(); });
@@ -146,7 +150,7 @@ async function start() {
 
   // How settled the ranking is: share of the current pool with enough fights.
   function renderMeter(pool) {
-    if (!isMe) return;
+    if (!showGame) return;
     const settled = pool.filter((id) => fights(id) >= SETTLED_FIGHTS).length;
     const pct = pool.length ? Math.round((settled / pool.length) * 100) : 0;
     const label = pct >= 100 ? 'Locked in. This is your true ranking.' : pct >= 75 ? 'Almost settled.' : pct >= 40 ? 'Taking shape.' : pct > 0 ? 'Just getting started.' : 'No fights yet.';
@@ -177,7 +181,7 @@ async function start() {
   }
 
   function renderPair(forced = null) {
-    if (!isMe) return;
+    if (!showGame) return;
     const arena = $('#arena');
     const pool = poolFor(filter);
     renderMeter(pool);
@@ -281,7 +285,7 @@ async function start() {
     renderRanking();
   }
 
-  if (isMe) {
+  if (showGame) {
     $('#cage-filter').onchange = (e) => {
       filter = e.target.value;
       localStorage.setItem(FILTER_KEY, filter);

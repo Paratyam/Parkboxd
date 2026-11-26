@@ -70,7 +70,7 @@ async function render(p) {
   const champEp = champ && all.find((e) => e.id === champ.top.id);
   const champHtml = champEp ? `
     <section>
-      <div class="section-head"><h2>Cage Match champion</h2><a href="cage.html?u=${u}">Full ranking</a></div>
+      <div class="section-head"><h2>Cage Match champion</h2><a href="cage.html?u=${u}&view=ranking">Full ranking</a></div>
       <a class="cage-champ paper" href="episode.html?id=${champEp.id}">
         ${thumbHTML(champEp, { showTitle: false, size: 'w780' })}
         <div><span class="cut">${champ.undefeated ? '🏆 Undefeated champion' : '👑 Reigning champion'}</span>
