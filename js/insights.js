@@ -61,8 +61,8 @@ export function tasteMatch(a, b) {
 }
 
 export function tasteLabel(score) {
-  if (score >= 90) return 'Super Best Friends';
-  if (score >= 75) return 'Basically Tweek and Craig';
+  if (score >= 90) return 'Basically Tweek and Craig';
+  if (score >= 75) return 'Super Best Friends';
   if (score >= 60) return 'Mostly on the same page';
   if (score >= 45) return 'Butters and Professor Chaos';
   return 'Basically Kyle and Cartman';
