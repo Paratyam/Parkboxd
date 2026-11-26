@@ -103,6 +103,14 @@ h1, h2, h3 { font-weight: 400; }
 }
 .avatar-link { display: inline-flex; border-radius: 50%; }
 
+/* Badge flair */
+.avatar.gold-ring { border-color: #f5c518; box-shadow: 0 0 0 2px #14181c, 0 0 0 4px #f5c518, 0 0 12px rgba(245,197,24,.55); }
+.flair-critic {
+  display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 3px; vertical-align: 1px;
+  background: rgba(106,168,240,.18); color: #b9d6fa; font: 700 10px var(--font-body); text-transform: uppercase; letter-spacing: .06em;
+}
+.flair-spicy { margin-left: 4px; font-size: .9em; }
+
 /* ---- Footer ---- */
 
 .site-footer { border-top: 1px solid var(--surface); background: var(--bg-deep); }

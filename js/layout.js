@@ -64,6 +64,8 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
     showCoonTakeover((text) => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(22, text); });
   }
   renderFooter(session);
+  // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
+  if (session) import('./flair.js').then((m) => m.startFlair()).catch(() => {});
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
