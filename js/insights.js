@@ -113,10 +113,10 @@ export function personality({ username, logs, ratings, avgs }) {
   // Each character scores 0–1 when its rule fits; the strongest fit wins.
   const fits = [];
   if (rs.length >= 5 && high >= 0.7) fits.push(['Butters', high + 0.1, `${pct(high)}% of your ratings are 4★ or more.`]);
-  if (rs.length >= 5 && low >= 0.3) fits.push(['Cartman', Math.min(1, low * 2), `${pct(low)}% of your ratings are 2★ or less.`]);
+  if (rs.length >= 5 && low >= 0.3) fits.push(['Cartman', Math.min(1, low + 0.5), `${pct(low)}% of your ratings are 2★ or less.`]);
   if (rs.length >= 8 && sd >= 1.4 && high >= 0.2 && low >= 0.2) fits.push(['Randy', 1.2, `Your ratings swing wildly between 4★+ and 2★ or less.`]);
   if (rs.length >= 5 && mid >= 0.6) fits.push(['Mr. Mackey', mid + 0.2, `${pct(mid)}% of your ratings are 3 or 3½★.`]);
-  if (reviews.length >= 5 && avgLen >= 250) fits.push(['Kyle', Math.min(1, avgLen / 500), `Your reviews average ${Math.round(avgLen)} characters.`]);
+  if (reviews.length >= 5 && avgLen >= 250) fits.push(['Kyle', Math.min(1.3, avgLen / 500), `Your reviews average ${Math.round(avgLen)} characters.`]);
   // Kenny: lots of logs, almost no reviews. Capped below the louder habits so backfilled diaries don't all turn into Kenny.
   if (logs.length >= 40 && reviewRatio < 0.03) fits.push(['Kenny', 0.75 - reviewRatio * 10, `${logs.length} logs and ${reviews.length} review${reviews.length === 1 ? '' : 's'}.`]);
   if (rewatches >= 5 && rewatches / logs.length >= 0.3) fits.push(['Towelie', Math.min(1, rewatches / logs.length + 0.5), `${rewatches} of your ${logs.length} logs are rewatches.`]);
