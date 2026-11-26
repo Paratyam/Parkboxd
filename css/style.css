@@ -921,8 +921,9 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .cage-card::after { position: absolute; top: 38%; left: 50%; font-family: 'Luckiest Guy', cursive; font-size: clamp(28px, 4vw, 44px); padding: 4px 14px; border: 4px solid currentColor; border-radius: 8px; transform: translate(-50%, -50%) rotate(-12deg) scale(2.5); opacity: 0; pointer-events: none; background: rgba(0,0,0,.55); }
 .cage-card.win { border-color: #f5c518; transform: scale(1.04); box-shadow: 0 0 0 3px #f5c518, 0 0 36px rgba(245,197,24,.6); }
 .cage-card.win::after { content: "WINNER!"; color: #f5c518; animation: cage-stamp .3s ease-out forwards; }
-.cage-card.ko { filter: grayscale(1) brightness(.6); transform: rotate(4deg) translateY(10px); transition: transform .35s, filter .35s; }
-.cage-card.ko::after { content: "K.O."; color: #ff5a5a; animation: cage-stamp .3s .1s ease-out forwards; }
+.cage-card.ko { animation: cage-ko .35s ease-out forwards; }
+@keyframes cage-ko { to { filter: grayscale(1) brightness(.55); transform: rotate(4deg) translateY(10px); } }
+.cage-card.ko::after { content: "K.O."; color: #ff5a5a; animation: cage-stamp .3s ease-out forwards; }
 @keyframes cage-stamp { to { opacity: 1; transform: translate(-50%, -50%) rotate(-12deg) scale(1); } }
 .cage-arena.fought .cage-vs { animation: cage-shake .4s; }
 @keyframes cage-shake { 0%, 100% { transform: rotate(-8deg); } 25% { transform: rotate(-20deg) scale(1.3); } 75% { transform: rotate(6deg) scale(1.2); } }
@@ -936,5 +937,6 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
   .cage-ring .cage-vs, .cage-bubble.pop, .cage-crowd.show { animation: none; }
   .cage-crowd.show { opacity: 1; }
   .cage-card.win::after, .cage-card.ko::after { animation: none; opacity: 1; transform: translate(-50%, -50%) rotate(-12deg); }
+  .cage-card.ko { animation: none; filter: grayscale(1) brightness(.55); }
 }
 @media (max-width: 640px) { .cage-ring { padding: 18px 12px 14px; } .cage-mic { flex-basis: 44px; height: 44px; font-size: 22px; } }

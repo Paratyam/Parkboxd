@@ -251,7 +251,7 @@ async function start() {
     else if (gap >= 120) kind = 'upset';
     else if (streaks.get(w) >= 3) kind = 'streak';
     else if (rw != null && rl != null && rw - rl >= 2) kind = 'stomp';
-    else if (rw != null && rl != null && Math.abs(rw - rl) <= 0.5) kind = 'close';
+    else if (rw != null && rl != null && Math.abs(rw - rl) <= 0.5 && Math.random() < 0.35) kind = 'close'; // pairs are usually close, so only call it sometimes
     else if (debut) kind = 'debut';
     call = resultLine({ w: titleOf(w), l: titleOf(l), kind, n: streaks.get(w), o: titleOf(before) });
     if (kind === 'newChamp') burgerRain(24);
