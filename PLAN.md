@@ -130,3 +130,5 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Professor Chaos mode (`js/fx.js`): type "chaos" anywhere (not in a text box) to toggle; green + tinfoil theme via `html.chaos`, logo spells CHAOS, remembered in localStorage
   - 🍔 Hamburger rain on a 5★ rating of a Butters episode (skipped with reduced motion)
   - Favourite character (`profiles.favourite_character`, applied to the live DB): picker in Edit profile, "Team …" flair on profiles, reactions take their side
+- Notifications (live): `notifications` table filled by triggers on follows, review likes and comments (never for your own actions; re-likes/re-follows don't duplicate). 🔔 bell in the header with an unread count; `notifications.html` lists them, marks them read on view, "Clear all"
+- Team flair colours: `CHARACTER_COLOURS` in js/data/character-tags.js (Kenny orange, Butters yellow, Kyle green, Cartman red, Stan blue, …), preview in Edit profile

@@ -225,3 +225,45 @@ export const FAVOURITE_CHARACTERS = [
   'Wendy', 'Tolkien', 'Jimmy', 'Timmy', 'Craig', 'Tweek', 'Clyde', 'Bebe', 'Heidi', 'Scott Malkinson',
   'Officer Barbrady', 'Mayor McDaniels', 'Terrance and Phillip',
 ];
+
+// "Team …" flair colours: [background, text]. Picked from each character's look; text colour keeps 4.5:1 contrast.
+const DARK = '#14181c';
+const LIGHT = '#ffffff';
+export const CHARACTER_COLOURS = {
+  Cartman: ['#c0392b', LIGHT],        // red jacket
+  Stan: ['#4a90e2', DARK],            // blue hat
+  Kyle: ['#3fb950', DARK],            // green ushanka
+  Kenny: ['#f2711c', DARK],           // orange parka
+  Butters: ['#f5c518', DARK],         // blond hair
+  Randy: ['#b3261e', LIGHT],          // red shirt
+  Sharon: ['#e88fb0', DARK],          // pink
+  Shelly: ['#c98bd9', DARK],          // purple
+  Gerald: ['#7a8b99', DARK],
+  Sheila: ['#3f8f6b', LIGHT],         // green dress
+  Ike: ['#9bd3f5', DARK],
+  'Mr. Garrison': ['#6b8e23', LIGHT],
+  'Mr. Mackey': ['#8e7cc3', DARK],    // purple tie
+  'PC Principal': ['#c49a6c', DARK],
+  Chef: ['#e9eef2', DARK],            // white chef's hat
+  Jesus: ['#f4f1e8', DARK],
+  Satan: ['#8b1a1a', LIGHT],
+  Towelie: ['#5aa9e6', DARK],         // blue towel
+  'Mr. Hankey': ['#8b5a2b', LIGHT],
+  Wendy: ['#a371f7', DARK],           // purple beret
+  Tolkien: ['#7a3fa0', LIGHT],
+  Jimmy: ['#f7d774', DARK],
+  Timmy: ['#e0453a', DARK],           // red wheelchair
+  Craig: ['#2f6db0', LIGHT],          // blue chullo
+  Tweek: ['#7fb069', DARK],
+  Clyde: ['#d9534f', DARK],
+  Bebe: ['#f7b6d2', DARK],
+  Heidi: ['#ff8fab', DARK],
+  'Scott Malkinson': ['#9fb8d0', DARK],
+  'Officer Barbrady': ['#3b5998', LIGHT],
+  'Mayor McDaniels': ['#d96aa7', DARK],
+  'Terrance and Phillip': ['#e2231a', LIGHT],
+};
+
+export function characterColours(name) {
+  return CHARACTER_COLOURS[name] || ['#f5c518', DARK];
+}

@@ -2,7 +2,7 @@ import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { $, esc, epCode, notify, setBusy } from '../ui.js';
 import { loadAllEpisodes, thumbHTML } from '../episodes.js';
-import { FAVOURITE_CHARACTERS } from '../data/character-tags.js';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -40,6 +40,13 @@ const charNames = [...new Set([...FAVOURITE_CHARACTERS, profile.favourite_charac
   .sort((a, b) => a.localeCompare(b));
 $('#fav-char').insertAdjacentHTML('beforeend', charNames.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join(''));
 $('#fav-char').value = profile.favourite_character || '';
+const showFlair = () => {
+  const name = $('#fav-char').value;
+  const [bg, fg] = characterColours(name);
+  $('#fav-preview').innerHTML = name ? `<span class="team-flair paper" style="background-color:${bg};color:${fg}">Team ${esc(name)}</span>` : '';
+};
+$('#fav-char').addEventListener('change', showFlair);
+showFlair();
 
 // ---- Top 4 ----
 function renderSlots() {

@@ -343,6 +343,23 @@ main > .notice.wrap { margin-top: 16px; }
 .chip:focus-within { outline: 3px solid var(--yellow); outline-offset: 2px; }
 .icon-btn { background: var(--surface); color: var(--text); border: 0; border-radius: 6px; padding: 8px 10px; font-size: 18px; line-height: 1; cursor: pointer; }
 .icon-btn:hover { background: var(--line-2); }
+.bell { position: relative; display: inline-flex; align-items: center; color: var(--text); }
+.bell:hover { color: var(--white); }
+.bell-count {
+  position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px;
+  background: var(--orange); color: var(--bg); font: 700 11px/18px var(--font-body); text-align: center;
+}
+.bell-count[hidden] { display: none; }
+
+/* ---- Notifications page ---- */
+
+.notif-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.notif-list li { display: flex; gap: 12px; align-items: flex-start; padding: 14px 10px; border-bottom: 1px solid var(--surface); border-radius: 4px; }
+.notif-list li.unread { background: rgba(242,113,28,.08); box-shadow: inset 3px 0 0 var(--orange); }
+.notif-list .body { flex: 1; min-width: 0; color: var(--text-soft); font-size: 14px; }
+.notif-list .body strong { color: var(--white); }
+.notif-list .quote { display: block; color: var(--muted); font-size: 13px; margin-top: 4px; overflow-wrap: anywhere; }
+.notif-list time { color: var(--muted); font-size: 12px; white-space: nowrap; }
 select { width: auto; }
 .result-count { color: var(--muted); font-size: 13px; }
 

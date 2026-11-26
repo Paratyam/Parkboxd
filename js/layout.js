@@ -81,6 +81,7 @@ function renderHeader(profile, session) {
         <label class="visually-hidden" for="header-q">Search episodes</label>
         <input type="search" id="header-q" name="q" placeholder="Search episodes">
       </form>
+      <a class="icon-btn bell" id="header-bell" href="notifications.html" aria-label="Notifications" title="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="bell-count" hidden></span></a>
       <button type="button" class="icon-btn" id="header-random" aria-label="Random episode" title="Random episode">🎲</button>
       <button type="button" class="btn btn-green" id="header-log">+ Log</button>
       ${profile.is_admin ? `<a class="header-link" href="admin.html">Admin</a>` : ''}
@@ -100,6 +101,7 @@ function renderHeader(profile, session) {
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
   el.querySelector('#header-random')?.addEventListener('click', async () => (await import('./random.js')).openRandomPicker());
+  if (session) refreshBell();
 }
 
 /**
@@ -137,4 +139,15 @@ function showConfigWarning() {
   div.className = 'notice notice-error wrap';
   div.textContent = 'Supabase isn\'t set up yet: fill in SUPABASE_URL and SUPABASE_ANON_KEY in js/config.js.';
   main.prepend(div);
+}
+
+// Unread notifications count on the header bell. Exported so the notifications page can reset it.
+export async function refreshBell() {
+  const bell = document.getElementById('header-bell');
+  if (!bell) return;
+  const { count } = await supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('read', false);
+  const badge = bell.querySelector('.bell-count');
+  badge.hidden = !count;
+  badge.textContent = count > 9 ? '9+' : String(count || '');
+  bell.setAttribute('aria-label', count ? `Notifications, ${count} unread` : 'Notifications');
 }

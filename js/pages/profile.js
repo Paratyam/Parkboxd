@@ -7,6 +7,7 @@ import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML 
 import { countRatings, histogramHTML } from '../histogram.js';
 import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js';
 import { line } from '../jokes.js';
+import { characterColours } from '../data/character-tags.js';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -67,7 +68,8 @@ async function render(p) {
       <span>for giving <a href="episode.html?id=${crimeEp.id}">${esc(crimeEp.title)}</a> ${stars(crime.rating)}.
         Free at ${esc(new Date(new Date(crime.created_at).getTime() + 24 * 60 * 60 * 1000).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' }))}.</span>
     </div>` : '';
-  const flairHtml = p.favourite_character ? `<span class="team-flair paper">Team ${esc(p.favourite_character)}</span>` : '';
+  const [flairBg, flairFg] = characterColours(p.favourite_character);
+  const flairHtml = p.favourite_character ? `<span class="team-flair paper" style="background-color:${flairBg};color:${flairFg}">Team ${esc(p.favourite_character)}</span>` : '';
 
   // Badges
   const badges = computeBadges({
