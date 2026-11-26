@@ -84,7 +84,7 @@ function baseReaction(rating, tagNames) {
 
   if (has('Kenny') && low) return `Oh my God, you rated Kenny's episode ${s}! You bastard!`;
   if (has('Kenny') && high) return "Kenny says thanks. Well, he says \"mmph mmph mmph\". Same thing.";
-  if (has('Butters') && rating <= 2) return `${s} for Butters? That's it, young man, you're GROUNDED. Check your profile.`;
+  if (has('Butters') && rating <= 2) return `${s} for Butters? That's it, you're GROUNDED. Check your profile.`;
   if (has('Butters') && low) return `${s}? Aw, hamburgers. Now Butters is grounded and it's your fault.`;
   if (has('Butters') && high) return 'Butters is so happy he might do the little fist-rubbing thing.';
   if (has('Cartman') && high) return 'Sweet! Kewl! Cartman respects your authoritah.';
