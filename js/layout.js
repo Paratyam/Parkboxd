@@ -12,7 +12,7 @@ const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
 const NAV = [
   { label: 'Episodes', href: 'episodes.html', ready: true },
   { label: 'Seasons', href: 'seasons.html', ready: true },
-  { label: 'Club', href: 'club.html', ready: true },
+  { label: 'Book Club', href: 'club.html', ready: true },
   { label: 'Rankings', href: 'rankings.html', ready: true },
   { label: 'Lists', href: 'lists.html', ready: true },
   { label: 'Friends', href: 'friends.html', ready: true },

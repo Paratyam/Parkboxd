@@ -130,8 +130,8 @@ async function renderHome() {
   const weekly = weeklyPick(all);
   const weeklyHTML = weekly ? `
     <a class="paper callout tilt-right" href="club.html" style="background-color:var(--blue-2);color:var(--white)">
-      <div class="cut" style="color:var(--white)">Episode of the week</div>
-      <p style="color:var(--white)"><strong>${esc(weekly.title)}</strong> · ${esc(epCode(weekly))}. Everybody watches it, everybody argues about it.</p>
+      <div class="cut" style="color:var(--white)">Butters' Book Club</div>
+      <p style="color:var(--white)"><strong>${esc(weekly.title)}</strong> · ${esc(epCode(weekly))}. This week's pick. Butters already wrote a review, and it's real nice.</p>
       <span style="font-weight:700;text-decoration:underline">${mine.has(weekly.id) ? 'See the reviews' : 'Join in'}</span>
     </a>` : '';
 

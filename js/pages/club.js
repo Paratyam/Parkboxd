@@ -1,13 +1,14 @@
-// club.html: Episode of the week. Everyone gets the same episode; logs from this week show here.
+// club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
 import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
-import { $, esc, epCode, avatarHTML, formatDate } from '../ui.js';
+import { $, esc, epCode, avatarHTML, formatDate, stars } from '../ui.js';
+import { buttersReview } from '../butters.js';
 import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js';
 import { weeklyPick, weekStart } from '../club.js';
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
 import { episodeAverages } from '../insights.js';
 
-const { user } = await initPage({ title: 'Episode of the week', auth: 'required' });
+const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');
 
 async function render() {
@@ -22,10 +23,25 @@ async function render() {
   const next = weekStart(1);
   const daysLeft = Math.max(1, Math.ceil((next - Date.now()) / 86400000));
 
-  const [{ data: logs }, avgs] = await Promise.all([
+  const [{ data: logs }, avgs, { data: tagRows }] = await Promise.all([
     supabase.from('logs').select(REVIEW_SELECT).eq('episode_id', ep.id).gte('created_at', start.toISOString()).order('created_at', { ascending: false }),
     episodeAverages(),
+    supabase.from('episode_tags').select('tags(name)').eq('episode_id', ep.id),
   ]);
+  const butters = buttersReview(ep, (tagRows || []).map((t) => t.tags?.name).filter(Boolean), start);
+  const buttersHTML = `
+    <article class="review butters-review">
+      ${avatarHTML({ display_name: 'Butters', avatar_color: '#f5c518' }, 36)}
+      <div class="review-body">
+        <div class="review-meta">
+          <span>Review by <strong>Butters Stotch</strong></span>
+          <span class="host-tag">📚 Book Club host</span>
+          <span class="rating">${stars(butters.rating)}</span>
+          <span class="heart" aria-label="Liked">♥</span>
+        </div>
+        <p>${esc(butters.text)}</p>
+      </div>
+    </article>`;
   const watchers = [...new Map((logs || []).map((l) => [l.user_id, l.profiles])).values()];
   const reviews = (logs || []).filter((l) => l.review && l.review.trim());
   const extras = await reviewExtras(reviews.map((r) => r.id), user.id);
@@ -35,7 +51,7 @@ async function render() {
   root.innerHTML = `
     <div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Week of ${esc(formatDate(start.toISOString().slice(0, 10)))} · new pick in ${daysLeft} day${daysLeft === 1 ? '' : 's'}</div>
-      <h1 class="cut" style="margin:0;color:var(--white);font-size:clamp(30px,4vw,44px)">Episode of the week</h1>
+      <h1 class="cut" style="margin:0;color:var(--white);font-size:clamp(30px,4vw,44px)">Butters' Book Club</h1>
     </div>
     <section class="two-col" style="align-items:center">
       <a href="episode.html?id=${ep.id}" style="display:block">${thumbHTML(ep, { size: 'w780' })}</a>
@@ -56,9 +72,9 @@ async function render() {
     </section>
     <section>
       <div class="section-head"><h2>This week's reviews</h2></div>
-      <div class="reviews" id="club-reviews">${reviews.length
+      <div class="reviews" id="club-reviews">${buttersHTML}${reviews.length
         ? reviews.map((r) => reviewHTML(r, { me: user.id, extras, friends, avgs })).join('')
-        : '<p class="empty">No reviews yet this week. Log it and say something!</p>'}</div>
+        : '<p class="empty">Nobody else has reviewed it yet. Don\'t leave Butters hanging!</p>'}</div>
     </section>
     <section>
       <div class="section-head"><h2>Previous weeks</h2></div>
