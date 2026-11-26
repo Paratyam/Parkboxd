@@ -3,7 +3,7 @@ import { supabase, isConfigured } from './supabase.js';
 import { SITE_NAME } from './config.js';
 import { esc, avatarHTML, currentPage } from './ui.js';
 import { line } from './jokes.js';
-import { initChaos, isChaos } from './fx.js';
+import { initModes, modeLogo } from './fx.js';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -48,7 +48,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   }
 
   renderHeader(profile, session);
-  initChaos(() => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(); });
+  initModes(() => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(); });
   renderFooter(session);
   if (!isConfigured) showConfigWarning();
 
@@ -56,8 +56,8 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
 }
 
 export function logoHTML(size = 22) {
-  // In Professor Chaos mode the logo spells CHAOS.
-  return (isChaos() ? 'CHAOS' : SITE_NAME.toUpperCase()).split('').map((ch, i) =>
+  // In a secret mode the logo spells CHAOS or MYSTERION.
+  return (modeLogo() || SITE_NAME.toUpperCase()).split('').map((ch, i) =>
     `<span class="logo-letter cut paper" style="background-color:${LOGO_COLOURS[i % 5]};transform:rotate(${LOGO_TILT[i % 10]}deg);font-size:${size}px">${esc(ch)}</span>`
   ).join('');
 }

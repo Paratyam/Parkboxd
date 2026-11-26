@@ -696,6 +696,25 @@ html.chaos .hero-mountains path:first-child { fill: #23401c; }
 html.chaos .btn-green { background: #7dff4f; }
 html.chaos .toast { background-color: #7dff4f; }
 
+/* ---- Mysterion mode ---- */
+
+html.mysterion {
+  --bg: #120d1a; --bg-deep: #0b0812; --surface: #221a2e; --surface-2: #2b2139; --line: #2e2540; --line-2: #43365a;
+  --green: #79e06a; --blue: #c3a6ff; --blue-hover: #e0d2ff; --muted: #a99bbf; --text-soft: #d8cfe6; --yellow: #79e06a;
+}
+html.mysterion .site-header { background: linear-gradient(90deg, #1b1326, #2a1c3d 50%, #1b1326); border-bottom-color: #43365a; }
+html.mysterion .logo-letter { background-color: #2b1f3d !important; color: #79e06a; box-shadow: inset 0 0 0 2px #43365a; }
+html.mysterion .hero { background: #160f22; }
+html.mysterion .hero-mountains path:first-child { fill: #2a1d3b; }
+html.mysterion .hero-mountains path:not(:first-child) { fill: #3a2d50; }
+html.mysterion .btn-green { background: #79e06a; }
+html.mysterion .toast { background-color: #2b1f3d; color: #e8ffe2; box-shadow: 0 8px 24px rgba(0,0,0,.6), inset 0 0 0 2px #79e06a; }
+html.mysterion body::before {
+  content: '?'; position: fixed; right: -2vw; bottom: -12vh; z-index: 0; pointer-events: none;
+  font-family: var(--font-cut); font-size: 70vh; line-height: 1; color: #79e06a; opacity: .05;
+}
+html.mysterion main, html.mysterion .site-header, html.mysterion .site-footer { position: relative; z-index: 1; }
+
 /* ---- Phones ---- */
 
 @media (max-width: 640px) {
