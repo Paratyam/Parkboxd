@@ -8,6 +8,7 @@ const LINES = {
     'Butters is fetching it. He might get grounded.',
     'Loading… mmkay.',
     'Kenny went to get it. Kenny might not come back.',
+    'Jimmy is w-w-warming up the crowd…',
   ],
   notFound: [
     'Oh my God, they deleted it! You bastards!',
@@ -35,7 +36,7 @@ const LINES = {
     'Nobody has reviewed this yet. Somebody has to say something, and it might as well be you.',
     'No reviews. The silence is… suspicious.',
   ],
-  commentsEmpty: ['No comments yet. Start the argument.', 'No comments. Go on, tell them they\'re wrong.'],
+  commentsEmpty: ['No comments yet. Start the argument.', 'No comments. Go on, tell them they\'re wrong.', 'No comments yet. T-t-tough crowd.'],
   activityEmpty: ['Your friends have been quiet. Suspiciously quiet.', 'No activity. Your friends are probably all at Casa Bonita.'],
   followNobody: ["You're not following anyone yet. Make some friends! Or at least follow some.", "Following nobody. Even Cartman has friends (sort of)."],
   listsEmptyMine: ["You haven't made any lists yet. \"Top 10 Butters moments\" isn't going to write itself."],

@@ -26,7 +26,7 @@ async function render() {
     const who = `<a href="profile.html?u=${encodeURIComponent(n.actor?.username || '')}"><strong>${esc(n.actor?.display_name || n.actor?.username || 'Someone')}</strong></a>`;
     const ep = n.logs?.episodes?.title ? `<a href="review.html?id=${n.log_id}">${esc(n.logs.episodes.title)}</a>` : 'an episode';
     if (n.type === 'follow') return `${who} followed you. New friend, or new stalker?`;
-    if (n.type === 'review_like') return `${who} liked your review of ${ep}. ♥`;
+    if (n.type === 'review_like') return `${who} liked your review of ${ep}. ♥ What a t-t-terrific audience!`;
     if (n.type === 'comment') {
       const body = n.comments?.body || '';
       return `${who} commented on your review of ${ep}.<span class="quote">“${esc(body.length > 160 ? `${body.slice(0, 160)}…` : body)}”</span>`;
