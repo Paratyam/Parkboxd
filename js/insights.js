@@ -106,11 +106,8 @@ export function personality({ username, logs, ratings, avgs }) {
   const avgLen = reviews.length ? reviews.reduce((a, l) => a + l.review.trim().length, 0) / reviews.length : 0;
   const reviewRatio = logs.length ? reviews.length / logs.length : 0;
   const rewatches = logs.filter((l) => l.is_rewatch).length;
-  const gaps = [...ratings].map(([epId, r]) => avgs.get(epId)).filter((a) => a && a.count >= 3);
-  const gapAvg = gaps.length ? [...ratings].filter(([epId]) => avgs.get(epId)?.count >= 3)
-    .reduce((s, [epId, r]) => s + Math.abs(r - avgs.get(epId).avg), 0) / gaps.length : null;
 
-  // Each character scores 0–1 when its rule fits; the strongest fit wins.
+  // Each character gets a score when its rule fits (roughly 0.5–1.3); the strongest fit wins.
   const fits = [];
   if (rs.length >= 5 && high >= 0.7) fits.push(['Butters', high + 0.1, `${pct(high)}% of your ratings are 4★ or more.`]);
   if (rs.length >= 5 && low >= 0.3) fits.push(['Cartman', Math.min(1, low + 0.5), `${pct(low)}% of your ratings are 2★ or less.`]);
@@ -120,10 +117,10 @@ export function personality({ username, logs, ratings, avgs }) {
   // Kenny: lots of logs, almost no reviews. Capped below the louder habits so backfilled diaries don't all turn into Kenny.
   if (logs.length >= 40 && reviewRatio < 0.03) fits.push(['Kenny', 0.75 - reviewRatio * 10, `${logs.length} logs and ${reviews.length} review${reviews.length === 1 ? '' : 's'}.`]);
   if (rewatches >= 5 && rewatches / logs.length >= 0.3) fits.push(['Towelie', Math.min(1, rewatches / logs.length + 0.5), `${rewatches} of your ${logs.length} logs are rewatches.`]);
-  if (gapAvg != null && gaps.length >= 5 && gapAvg <= 0.6) fits.push(['Stan', 0.5 - gapAvg / 2, `You're usually within ${gapAvg.toFixed(1)}★ of everyone else.`]);
 
   fits.sort((a, b) => b[1] - a[1]);
-  const [name, , why] = fits[0] || ['Stan', 0, 'Nothing extreme about your ratings. Very Stan.'];
+  // Stan is who you are when none of the habits above stand out.
+  const [name, , why] = fits[0] || ['Stan', 0, 'None of your habits stand out: no extreme ratings, no essay reviews, no rewatch binges. Very Stan.'];
   return { name, ...PERSONALITIES[name], why };
 }
 
