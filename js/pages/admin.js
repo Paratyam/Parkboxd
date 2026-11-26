@@ -4,6 +4,7 @@ import { supabase } from '../supabase.js';
 import { $, esc, epCode, notify } from '../ui.js';
 import { loadAllEpisodes } from '../episodes.js';
 import { loadArcs } from '../arcs.js';
+import { CHARACTER_TAGS } from '../data/character-tags.js';
 
 const { profile } = await initPage({ title: 'Admin', auth: 'required' });
 const root = $('#admin');
@@ -33,7 +34,7 @@ const STARTER_ARCS = [
   ['The Streaming Wars', ['South Park the Streaming Wars', 'South Park the Streaming Wars Part 2']],
 ];
 
-const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
+const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 
 if (!profile.is_admin) {
   root.innerHTML = `<div class="big-message"><h1 class="cut">Respect my authoritah!</h1><p>This page is for admins only.</p>
@@ -46,12 +47,14 @@ if (!profile.is_admin) {
 async function render() {
   const [{ data: tags }, { data: links }, arcs, all] = await Promise.all([
     supabase.from('tags').select('id, name, kind').order('name'),
-    supabase.from('episode_tags').select('tag_id').limit(10000),
+    supabase.from('episode_tags').select('tag_id, episode_id').limit(10000),
     loadArcs(),
     loadAllEpisodes(),
   ]);
   const byId = new Map(all.map((e) => [e.id, e]));
-  const byTitle = new Map(all.map((e) => [norm(e.title), e]));
+  // First match wins, so a regular episode beats a special or movie with the same title.
+  const byTitle = new Map();
+  for (const e of all) if (!byTitle.has(norm(e.title))) byTitle.set(norm(e.title), e);
   const uses = new Map();
   for (const l of links || []) uses.set(l.tag_id, (uses.get(l.tag_id) || 0) + 1);
   const existingTag = new Set((tags || []).map((t) => `${t.kind}:${t.name.toLowerCase()}`));
@@ -61,6 +64,28 @@ async function render() {
   const suggestions = STARTER_ARCS.filter(([name]) => !arcNames.has(name.toLowerCase())).map(([name, titles]) => ({
     name, parts: titles.map((t) => ({ title: t, ep: byTitle.get(norm(t)) })),
   }));
+
+  // Character focus tags from js/data/character-tags.js
+  const focus = CHARACTER_TAGS.map(([title, names]) => ({ title, names, ep: byTitle.get(norm(title)) }));
+  const focusHit = focus.filter((f) => f.ep);
+  const focusMiss = focus.filter((f) => !f.ep);
+  const tagKey = (name) => (tags || []).find((t) => t.kind === 'character' && t.name.toLowerCase() === name.toLowerCase());
+  const linkSet = new Set((links || []).map((l) => `${l.episode_id}:${l.tag_id}`));
+  const focusNew = focusHit.reduce((n, f) => n + f.names.filter((name) => {
+    const t = tagKey(name);
+    return !t || !linkSet.has(`${f.ep.id}:${t.id}`);
+  }).length, 0);
+  const focusHTML = `
+    <section class="import-card paper" style="max-width:none">
+      <h2 class="cut" style="margin:0 0 6px;color:var(--white);font-size:24px">Character focus tags</h2>
+      <p style="margin:0 0 12px">${focus.length} episodes that mainly centre on one character (Cartman, Stan, Kyle, Kenny, Butters, Randy and others).
+        <strong>${focusHit.length}</strong> matched your episodes${focusMiss.length ? `, ${focusMiss.length} didn't` : ''}.
+        ${focusNew ? `<strong>${focusNew}</strong> tags to add.` : 'All of them are already applied.'}</p>
+      ${focusMiss.length ? `<details style="margin-bottom:12px;font-size:13px;color:var(--muted)"><summary>Titles not found</summary>
+        <p style="margin:6px 0 0">${focusMiss.map((f) => esc(f.title)).join(' · ')}</p></details>` : ''}
+      <div class="toolbar"><button type="button" class="btn btn-green" id="apply-focus" ${focusNew ? '' : 'disabled'}>Apply character tags</button>
+        <span class="result-count">Adds tags only; never removes any. Safe to run again.</span></div>
+    </section>`;
 
   const tagList = (kind) => (tags || []).filter((t) => t.kind === kind).map((t) => `
     <li>
@@ -75,6 +100,7 @@ async function render() {
       <p style="margin:0;color:var(--text-soft)">Episode data: <a href="import.html">Import from TMDB</a>. Tag episodes from each episode page (the "+ Add tag" box under the synopsis).</p>
     </div>
     <p class="notice" id="msg" hidden></p>
+    ${focusHTML}
 
     <div class="admin-grid">
       <section>
@@ -119,6 +145,26 @@ async function render() {
   root.removeAttribute('aria-busy');
 
   const msg = (t, type = 'ok') => notify($('#msg'), t, type);
+
+  $('#apply-focus')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    btn.textContent = 'Applying…';
+    // Create any character tags that don't exist yet.
+    const needed = [...new Set(focusHit.flatMap((f) => f.names))].filter((n) => !tagKey(n));
+    let allTags = tags || [];
+    if (needed.length) {
+      const { data, error } = await supabase.from('tags').insert(needed.map((name) => ({ name, kind: 'character' }))).select('id, name, kind');
+      if (error) return msg(error.message, 'error');
+      allTags = [...allTags, ...data];
+    }
+    const idOf = (name) => allTags.find((t) => t.kind === 'character' && t.name.toLowerCase() === name.toLowerCase())?.id;
+    const rows = focusHit.flatMap((f) => f.names.map((name) => ({ episode_id: f.ep.id, tag_id: idOf(name) }))).filter((r) => r.tag_id);
+    const { error } = await supabase.from('episode_tags').upsert(rows, { onConflict: 'episode_id,tag_id', ignoreDuplicates: true });
+    if (error) return msg(error.message, 'error');
+    await render();
+    msg(`Done: ${rows.length} character tags across ${focusHit.length} episodes.`);
+  });
 
   $('#starter-tags')?.addEventListener('click', async () => {
     const { error } = await supabase.from('tags').insert(missingTags);

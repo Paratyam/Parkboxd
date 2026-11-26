@@ -2,6 +2,7 @@ import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { $, esc, params } from '../ui.js';
 import { loadAllEpisodes, myLogMap, cardHTML } from '../episodes.js';
+import { FOCUS_CHARACTERS } from '../data/character-tags.js';
 
 const { user } = await initPage({ title: 'Episodes', auth: 'required' });
 
@@ -20,6 +21,7 @@ tagSelect.addEventListener('change', () => {
   const url = new URL(location.href);
   if (tagSelect.value) url.searchParams.set('tag', tagSelect.value); else url.searchParams.delete('tag');
   history.replaceState(null, '', url);
+  document.querySelectorAll('[data-focus]').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.focus === tagSelect.value)));
   render();
 });
 
@@ -47,6 +49,19 @@ async function load() {
   };
   tagSelect.innerHTML = `<option value="">Any tag</option>${group('character', 'Characters')}${group('theme', 'Themes')}`;
   tagSelect.value = current;
+
+  // Quick "episodes about…" buttons for the main characters that have tags.
+  const focus = FOCUS_CHARACTERS
+    .map((name) => (tags || []).find((t) => t.kind === 'character' && t.name.toLowerCase() === name.toLowerCase()))
+    .filter((t) => t && tagged.get(t.id)?.size);
+  $('#focus-chips').innerHTML = focus.length
+    ? `<span class="result-count" style="align-self:center;margin-right:4px">Episodes about</span>${focus.map((t) =>
+        `<button type="button" class="chip" data-focus="${t.id}" aria-pressed="${tagSelect.value === String(t.id)}">${esc(t.name)}</button>`).join('')}`
+    : '';
+  $('#focus-chips').querySelectorAll('[data-focus]').forEach((b) => b.addEventListener('click', () => {
+    tagSelect.value = tagSelect.value === b.dataset.focus ? '' : b.dataset.focus;
+    tagSelect.dispatchEvent(new Event('change'));
+  }));
   render();
   grid.removeAttribute('aria-busy');
 }
