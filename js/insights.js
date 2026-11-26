@@ -116,11 +116,8 @@ export function computeBadges(ctx) {
     if (seen.has(e.id)) s.have++;
     seasons.set(e.season, s);
   }
-  const bestSeason = [...seasons.values()].sort((a, b) => b.have / b.need - a.have / a.need)[0] || { have: 0, need: 1 };
+  const finishedSeasons = [...seasons.values()].filter((s) => s.have >= s.need).length;
   const movies = all.filter((e) => e.kind === 'movie');
-  const perDay = new Map();
-  for (const l of logs) if (l.watched_on) perDay.set(l.watched_on, (perDay.get(l.watched_on) || 0) + 1);
-  const busiest = Math.max(0, ...perDay.values());
   const dayOne = logs.some((l) => l.watched_on && byId.get(l.episode_id)?.air_date === l.watched_on);
   const hot = [...ratings].filter(([epId, r]) => isHotTake(r, avgs.get(epId))).length;
 
@@ -134,14 +131,13 @@ export function computeBadges(ctx) {
     b('tegridy', '🌱', 'Tegridy', 'Watch every Randy episode', randyHave, randyNeed),
     b('kenny', '🧡', 'They Killed Kenny', 'Watch every Kenny episode', kennyHave, kennyNeed),
     b('chaos', '😈', 'Professor Chaos', 'Watch every Butters episode', buttersHave, buttersNeed),
-    b('completionist', '🏔️', 'Completionist', 'Finish a whole season', bestSeason.have, bestSeason.need),
+    b('completionist', '🏔️', 'Completionist', 'Finish every season', finishedSeasons, seasons.size),
     b('movies', '🎬', 'Bigger, Longer & Logged', 'Watch every movie', movies.filter((m) => seen.has(m.id)).length, movies.length),
     b('screwyou', '🚪', 'Screw You Guys', 'Give 10 episodes 1★ or less', [...ratings.values()].filter((r) => r <= 1).length, 10),
     b('hottake', '🌶️', 'Hot Take Artist', 'Make 5 hot takes (2★+ off the average)', hot, 5),
     b('critic', '✍️', 'Critic', 'Write 25 reviews', logs.filter((l) => l.review && l.review.trim()).length, 25),
     b('mmkay', '📓', 'Mmkay', 'Log 50 times', logs.length, 50),
     b('rewatch', '🔁', 'Same Old Story', 'Log 10 rewatches', logs.filter((l) => l.is_rewatch).length, 10),
-    b('marathon', '📺', 'Marathon', 'Log 10 episodes on one day', busiest, 10),
     b('dayone', '📅', 'Day One', 'Watch an episode the day it aired', dayOne ? 1 : 0, 1),
     b('friends', '🤝', 'Super Best Friends', 'Follow 5 people', following, 5),
   ];
