@@ -113,7 +113,8 @@ export function personality({ username, logs, ratings, avgs }) {
   // Each character gets a score when its rule fits (roughly 0.5–1.3); the strongest fit wins.
   const fits = [];
   if (rs.length >= 5 && high >= 0.75) fits.push(['Butters', high + 0.1, `${pct(high)}% of your ratings are 4★ or more.`]);
-  else if (rs.length >= 5 && high >= 0.65) fits.push(['Jimmy', high + 0.15, `${pct(high)}% of your ratings are 4★ or more. Generous, but not Butters-generous.`]);
+  // Jimmy, like Stan, loses to every other habit: he only wins when generosity is all there is.
+  else if (rs.length >= 5 && high >= 0.65) fits.push(['Jimmy', 0.3, `${pct(high)}% of your ratings are 4★ or more. Generous, but not Butters-generous.`]);
   if (rs.length >= 5 && harsh >= 0.18) fits.push(['Cartman', Math.min(1.19, harsh + 0.95), `${rs.filter((r) => r <= 2).length} of your ${rs.length} ratings are 2★ or less${rs.some((r) => r === 2.5) ? `, and ${rs.filter((r) => r === 2.5).length} more are 2½★` : ''}.`]);
   // Randy loves more than he hates; swingers who lean negative are Cartman.
   if (rs.length >= 8 && sd >= 1.2 && high >= 0.15 && low >= 0.15 && high >= harsh) fits.push(['Randy', 1.2, `Your ratings swing wildly between 4★+ and 2★ or less.`]);
