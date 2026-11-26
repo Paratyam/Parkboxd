@@ -42,20 +42,42 @@ export function applyChaos() {
 
 export function initChaos(onToggle) {
   applyChaos();
-  let typed = '';
-  document.addEventListener('keydown', (e) => {
-    const t = e.target;
-    if (t.closest?.('input, textarea, select, [contenteditable="true"]') || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.key.length !== 1) return;
-    typed = (typed + e.key.toLowerCase()).slice(-5);
-    if (typed !== 'chaos') return;
-    typed = '';
+
+  const toggle = () => {
     const on = !isChaos();
     localStorage.setItem(CHAOS_KEY, on ? '1' : '0');
     applyChaos();
     onToggle?.(on);
     toast(on
-      ? 'I am Professor Chaos! Bringer of destruction and doom! (Type "chaos" again to go back to being Butters.)'
+      ? 'I am Professor Chaos! Bringer of destruction and doom! (Type "chaos" or tap the logo 5 times to go back to being Butters.)'
       : 'Professor Chaos has been grounded. Back to normal, fellas.');
+  };
+
+  // Type "chaos" anywhere (not in a text box). Uses the physical key (e.code), so it works
+  // with any keyboard language: on a Hebrew layout the same keys still count as c-h-a-o-s.
+  let typed = '';
+  document.addEventListener('keydown', (e) => {
+    const t = e.target;
+    if (t.closest?.('input, textarea, select, [contenteditable="true"]') || e.ctrlKey || e.metaKey || e.altKey) return;
+    const ch = e.code?.startsWith('Key') ? e.code.slice(3).toLowerCase() : (e.key?.length === 1 ? e.key.toLowerCase() : '');
+    if (!ch) return;
+    typed = (typed + ch).slice(-5);
+    if (typed !== 'chaos') return;
+    typed = '';
+    toggle();
+  });
+
+  // Phones: tap the logo 5 times within 2 seconds (the taps don't navigate home).
+  let taps = [];
+  document.addEventListener('click', (e) => {
+    const logo = e.target.closest?.('.logo');
+    if (!logo) return;
+    const now = Date.now();
+    taps = [...taps.filter((t) => now - t < 2000), now];
+    if (taps.length > 1) e.preventDefault(); // second tap onwards: stay on this page
+    if (taps.length >= 5) {
+      taps = [];
+      toggle();
+    }
   });
 }
