@@ -65,7 +65,7 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - [ ] Get a TMDB API key (themoviedb.org → Settings → API). Keep it private and paste it into the import page
 - [x] Create a public GitHub repo and enable Pages: repo `Paratyam/Parkboxd`, live at https://paratyam.github.io/Parkboxd/ (capital P matters)
 - [x] Add the GitHub Pages URL to the Supabase Auth URL settings (Site URL and redirect URLs)
-- [ ] Sign up on the site, then make the account admin (`update profiles set is_admin = true where username = '...'`)
+- [x] Sign up on the site, then make the account admin (`paratyam` is admin) (`update profiles set is_admin = true where username = '...'`)
 - [ ] Run the episode import
 
 ## Status
