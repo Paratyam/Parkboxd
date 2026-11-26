@@ -110,4 +110,4 @@ export function wireReviewLikes(root, onChange) {
   }));
 }
 
-export const REVIEW_SELECT = 'id, user_id, episode_id, rating, liked, review, is_rewatch, watched_on, created_at, profiles(username, display_name, avatar_color)';
+export const REVIEW_SELECT = 'id, user_id, episode_id, rating, liked, review, is_rewatch, watched_on, created_at, profiles!logs_user_id_fkey(username, display_name, avatar_color)';

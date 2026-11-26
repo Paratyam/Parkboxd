@@ -47,7 +47,7 @@ async function renderHome() {
     supabase.rpc('popular_episodes', { p_days: 7, p_limit: 12 }),
     reviewsQ,
     hasFriends
-      ? supabase.from('logs').select(`id, user_id, rating, liked, review, is_rewatch, created_at, profiles(username, display_name, avatar_color), ${EP}`)
+      ? supabase.from('logs').select(`id, user_id, rating, liked, review, is_rewatch, created_at, profiles!logs_user_id_fkey(username, display_name, avatar_color), ${EP}`)
         .in('user_id', friendIds).order('created_at', { ascending: false }).limit(12)
       : Promise.resolve({ data: [] }),
   ]);
