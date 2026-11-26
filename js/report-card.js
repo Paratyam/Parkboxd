@@ -68,6 +68,16 @@ const INCOMPLETE = [
   'Did you lose your homework? {s} needs {n} more ratings before I grade it.',
 ];
 
+const ABSENT = [
+  'Absent. Never showed up to class. Not once.',
+  '{s}? Never heard of it. Has anyone seen {s}? Anyone?',
+  'Absent. I\'m marking this down in my little book.',
+  'No homework, no attendance, no excuses. Absent.',
+  'Absent. If {s} doesn\'t show up soon, I\'m calling its parents.',
+  'I\'ve been saving a seat for {s} all year. It\'s still empty.',
+  'Absent. Probably skipping class to go to Casa Bonita.',
+];
+
 // Comments rotate by season and never repeat on one card (until a list runs out).
 const picker = () => {
   const used = new Map();
@@ -113,6 +123,13 @@ export function reportCardHTML({ seasonAvgs, all, seen, isMe, name }) {
         comment: pick(COMMENTS[g[0]], r.season).replaceAll('{s}', s) };
     });
   const rows = all_rows.filter((r) => !r.incomplete);
+  // Every aired season appears on the card: ones with no ratings at all are marked ABSENT.
+  const ratedSeasons = new Set(all_rows.map((r) => r.season));
+  const absent = [...totals.entries()].filter(([season]) => !ratedSeasons.has(season)).map(([season, att]) => ({
+    season, avg: 0, g: 'ABS', rated: 0, need: neededFor(att.total), att, incomplete: true, absent: true,
+    comment: pick(ABSENT, season).replaceAll('{s}', `Season ${season}`),
+  }));
+  const tableRows = [...all_rows, ...absent].sort((a, b) => a.season - b.season);
   if (!all_rows.length) {
     return `<p class="empty">${isMe ? `No grades yet. Rate enough of a season (about ${Math.round(SHARE * 100)}% of it) and Mr. Garrison will grade it. He's been waiting.` : `${esc(name)} hasn't rated enough for a report card.`}</p>`;
   }
@@ -121,7 +138,7 @@ export function reportCardHTML({ seasonAvgs, all, seen, isMe, name }) {
   const avg = all_rows.reduce((a, r) => a + r.avg * r.rated, 0) / rated;
   const best = [...rows].sort((a, b) => b.avg - a.avg)[0];
   const worst = [...rows].sort((a, b) => a.avg - b.avg)[0];
-  const gradeClass = (g) => (g === 'INC' ? 'grade-inc' : `grade-${g[0].toLowerCase()}`);
+  const gradeClass = (g) => (g === 'INC' || g === 'ABS' ? 'grade-inc' : `grade-${g[0].toLowerCase()}`);
 
   return `
     <div class="report-card paper">
@@ -131,11 +148,11 @@ export function reportCardHTML({ seasonAvgs, all, seen, isMe, name }) {
       </div>
       <table class="rc-table">
         <thead><tr><th scope="col">Subject</th><th scope="col">Grade</th><th scope="col">Rated</th><th scope="col">Teacher's comments</th></tr></thead>
-        <tbody>${all_rows.map((r) => `
+        <tbody>${tableRows.map((r) => `
           <tr${r.incomplete ? ' class="rc-inc"' : ''}>
             <th scope="row"><a href="seasons.html?s=${r.season}">Season ${r.season}</a></th>
             <td><span class="rc-grade ${gradeClass(r.g)}" title="${r.incomplete
-              ? `Incomplete: ${r.rated} of ${r.att.total} rated, needs ${r.need} for a grade`
+              ? `${r.absent ? "Absent: nothing rated" : `Incomplete: ${r.rated} of ${r.att.total} rated`}, needs ${r.need} for a grade`
               : `${r.avg.toFixed(2)}★ average from ${r.rated} rated`}">${r.g}</span></td>
             <td>${r.rated}/${r.att.total}${r.incomplete ? `<span class="rc-need">needs ${r.need}</span>` : ''}</td>
             <td>${esc(r.comment)}</td>
@@ -144,7 +161,7 @@ export function reportCardHTML({ seasonAvgs, all, seen, isMe, name }) {
       <div class="rc-foot">
         ${best ? `<p><b>Valedictorian:</b> Season ${best.season} (${best.g}).${rows.length > 1 ? ` <b>Most likely to repeat a grade:</b> Season ${worst.season} (${worst.g}).` : ''}</p>`
           : '<p><b>No grades yet.</b> Every season is incomplete. Rate more of a season to get it graded.</p>'}
-        <p style="font-size:12px;color:#666">A season gets a grade once ${Math.round(SHARE * 100)}% of its episodes are rated (at least ${MIN_RATED}). INC = incomplete.</p>
+        <p style="font-size:12px;color:#666">A season gets a grade once ${Math.round(SHARE * 100)}% of its episodes are rated (at least ${MIN_RATED}). INC = incomplete, ABS = absent (nothing rated yet).</p>
         <p><b>Note about the student:</b> ${esc(studentNote({ avg, rated, seasons: rows.length }))}</p>
         <p class="rc-sign">— Mr. Garrison</p>
       </div>
