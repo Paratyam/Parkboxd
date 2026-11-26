@@ -4,6 +4,7 @@ import { SITE_NAME } from '../config.js';
 import { thumbHTML } from '../episodes.js';
 import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML } from '../ui.js';
 import { countRatings, histogramHTML } from '../histogram.js';
+import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -54,9 +55,10 @@ async function render(p) {
     ['Hours', Math.round((s.minutes_watched ?? 0) / 60)],
     ['This year', s.logs_this_year ?? 0],
     ['Reviews', s.review_count ?? 0],
-    ['Followers', s.followers ?? 0],
-    ['Following', s.following ?? 0],
+    ['Followers', s.followers ?? 0, `friends.html?u=${u}&tab=followers`],
+    ['Following', s.following ?? 0, `friends.html?u=${u}&tab=following`],
   ];
+  const iFollow = isMe ? false : (await followingIds(me.id)).has(p.id);
 
   const top4Html = [0, 1, 2, 3].map((i) => {
     const ep = (top4Eps || []).find((e) => e.id === p.top4[i]);
@@ -96,10 +98,12 @@ async function render(p) {
         <span class="handle">@${esc(p.username)} · joined ${esc(formatDate(p.created_at, { month: 'long', year: 'numeric' }))}</span>
         ${p.bio ? `<p class="bio">${esc(p.bio)}</p>` : ''}
       </div>
-      <div class="stats">${statItems.map(([label, n]) => `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join('')}</div>
-      ${isMe ? `<div class="profile-actions" style="width:100%">
-        <a class="btn btn-ghost" href="settings.html">Edit profile</a>
-      </div>` : ''}
+      <div class="stats">${statItems.map(([label, n, href]) => href
+        ? `<a class="stat" href="${href}" style="color:inherit"><b>${n}</b><span>${label}</span></a>`
+        : `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join('')}</div>
+      <div class="profile-actions" style="width:100%">
+        ${isMe ? '<a class="btn btn-ghost" href="settings.html">Edit profile</a>' : followButtonHTML(p.id, iFollow)}
+      </div>
     </section>
 
     ${profileTabsHTML(p.username, 'profile')}
@@ -128,4 +132,5 @@ async function render(p) {
       </aside>
     </div>`;
   root.removeAttribute('aria-busy');
+  wireFollowButtons(root, () => render(p));
 }

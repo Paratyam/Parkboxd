@@ -4,6 +4,7 @@ import { SITE_NAME } from '../config.js';
 import { $, esc, params, epCode, stars, formatDate, avatarHTML } from '../ui.js';
 import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref } from '../episodes.js';
 import { starInput } from '../stars.js';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -174,22 +175,29 @@ async function setRating(value) {
 // ---- Everyone's numbers and reviews ----
 
 async function refreshCommunity() {
-  const [{ data: stats }, { data: hist }, { data: reviews }] = await Promise.all([
+  const [{ data: stats }, { data: hist }, { data: reviews }, { data: friendRating }, friends] = await Promise.all([
     supabase.from('episode_ratings').select('*').eq('episode_id', ep.id).maybeSingle(),
     supabase.from('episode_rating_histogram').select('rating, count').eq('episode_id', ep.id),
     supabase.from('logs')
-      .select('id, rating, liked, review, is_rewatch, watched_on, created_at, profiles(username, display_name, avatar_color)')
+      .select(REVIEW_SELECT)
       .eq('episode_id', ep.id).not('review', 'is', null).neq('review', '')
-      .order('created_at', { ascending: false }).limit(30),
+      .order('created_at', { ascending: false }).limit(50),
+    supabase.rpc('friends_episode_rating', { p_episode: ep.id }),
+    followingIds(user.id),
   ]);
+  const fr = friendRating?.[0];
 
   const s = stats || {};
   $('#ep-counts').innerHTML = `
     <span title="People who watched">${EYE.replace(/28/g, '16').replace('currentColor', 'var(--green)')}${s.watcher_count ?? 0} watched</span>
     <span title="People who liked it">${HEART.replace(/28/g, '16').replace('currentColor', 'var(--orange)')}${s.like_count ?? 0} likes</span>`;
 
+  const avgPart = (label, avg, n) => `<span title="${n} rating${n === 1 ? '' : 's'}">${label} <strong class="avg-big">${Number(avg).toFixed(1)}</strong></span>`;
   $('#avg').innerHTML = s.avg_rating
-    ? `Average <strong class="avg-big">${Number(s.avg_rating).toFixed(1)}</strong> from ${s.rating_count} rating${s.rating_count === 1 ? '' : 's'}`
+    ? `<span style="display:inline-flex;gap:16px;align-items:baseline">
+        ${fr?.rating_count ? avgPart('Friends', fr.avg_rating, fr.rating_count) : ''}
+        ${avgPart(fr?.rating_count ? 'Everyone' : 'Average', s.avg_rating, s.rating_count)}
+        <span>${s.rating_count} rating${s.rating_count === 1 ? '' : 's'}</span></span>`
     : 'No ratings yet';
 
   const buckets = Array.from({ length: 10 }, (_, i) => (i + 1) / 2);
@@ -202,22 +210,14 @@ async function refreshCommunity() {
       <span class="end">★★★★★</span>
     </div>`;
 
-  $('#reviews').innerHTML = reviews?.length
-    ? reviews.map((r) => `
-      <article class="review">
-        ${avatarHTML(r.profiles, 36)}
-        <div class="review-body">
-          <div class="review-meta">
-            <span>Review by <a href="profile.html?u=${encodeURIComponent(r.profiles?.username || '')}"><strong>${esc(r.profiles?.display_name || r.profiles?.username)}</strong></a></span>
-            <span class="rating">${stars(r.rating)}</span>
-            ${r.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}
-            ${r.is_rewatch ? '<span>Rewatch</span>' : ''}
-            ${r.watched_on ? `<span>${esc(formatDate(r.watched_on, { month: 'short', day: 'numeric', year: 'numeric' }))}</span>` : ''}
-          </div>
-          <p>${esc(r.review)}</p>
-        </div>
-      </article>`).join('')
+  // Friends' (and your own) reviews first, then everyone else, newest first within each.
+  const rank = (r) => (r.user_id === user.id || friends.has(r.user_id) ? 0 : 1);
+  const sorted = (reviews || []).sort((a, b) => rank(a) - rank(b));
+  const extras = await reviewExtras(sorted.map((r) => r.id), user.id);
+  $('#reviews').innerHTML = sorted.length
+    ? sorted.map((r) => reviewHTML(r, { me: user.id, extras, friends })).join('')
     : '<p class="empty">No reviews yet. Be the first to have an opinion.</p>';
+  wireReviewLikes($('#reviews'), refreshCommunity);
 }
 
 async function renderNeighbours() {

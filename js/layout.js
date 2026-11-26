@@ -11,7 +11,7 @@ const NAV = [
   { label: 'Episodes', href: 'episodes.html', ready: true },
   { label: 'Seasons', href: 'seasons.html', ready: true },
   { label: 'Lists', href: 'lists.html', ready: false },
-  { label: 'Friends', href: 'friends.html', ready: false },
+  { label: 'Friends', href: 'friends.html', ready: true },
 ];
 
 const never = () => new Promise(() => {});

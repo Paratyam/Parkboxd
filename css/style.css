@@ -514,6 +514,36 @@ a.top4-slot { color: inherit; }
 .rank-list .val { text-align: right; color: var(--text); font-weight: 700; }
 .rank-list .sub { color: var(--muted); font-weight: 400; }
 
+/* ---- Social ---- */
+
+.review-foot { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); }
+.review-foot a { color: var(--muted); }
+.review-foot a:hover { color: var(--text); }
+.review-like { font-size: 12px; }
+.review-like[aria-pressed="true"] { color: var(--orange); }
+.friend-tag { background: rgba(74,144,226,.18); color: #b9d6fa; border-radius: 3px; padding: 1px 6px; font-size: 11px; font-weight: 700; }
+
+.people { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.people li { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--surface); }
+.people .who { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.people .who a { color: var(--white); font-weight: 700; }
+.people .who span { color: var(--muted); font-size: 13px; }
+
+.comments { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.comments li { display: flex; gap: 12px; }
+.comments .body { flex: 1; min-width: 0; }
+.comments .meta { font-size: 13px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+.comments .meta strong { color: var(--text-soft); }
+.comments p { margin: 4px 0 0; color: var(--text-soft); font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; }
+
+.activity { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.activity li { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--surface); font-size: 14px; color: var(--text-soft); }
+.activity li > span:nth-child(2) { flex: 1; min-width: 0; }
+.activity a.ep { color: var(--white); font-weight: 600; }
+.activity .rating { color: var(--green); letter-spacing: 1px; }
+.activity .heart { color: var(--orange); }
+.activity time { color: var(--muted); font-size: 12px; white-space: nowrap; }
+
 /* ---- Phones ---- */
 
 @media (max-width: 640px) {

@@ -1,11 +1,11 @@
 import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { $, esc, epCode, stars, avatarHTML } from '../ui.js';
-import { loadAllEpisodes, myLogMap, cardHTML, thumbHTML, isAired } from '../episodes.js';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js';
 
 const { user, profile } = await initPage();
 const root = $('#home');
-const COLOURS = ['#3fb950', '#4a90e2', '#f5c518', '#f2711c', '#d63a3a'];
 
 if (profile?.username) {
   const name = profile.display_name || profile.username;
@@ -21,17 +21,29 @@ if (profile?.username) {
 
 async function renderHome() {
   const now = new Date();
-  const [all, mine, { data: today }, { data: popular }, { data: reviews }] = await Promise.all([
+  const friends = await followingIds(user.id);
+  const friendIds = [...friends];
+  const hasFriends = friendIds.length > 0;
+  const EP = 'episodes(id, kind, season, number, title, air_date, still_path)';
+
+  let reviewsQ = supabase.from('logs').select(`${REVIEW_SELECT}, ${EP}`).not('review', 'is', null).neq('review', '')
+    .order('created_at', { ascending: false }).limit(5);
+  if (hasFriends) reviewsQ = reviewsQ.in('user_id', friendIds);
+
+  const [all, mine, { data: today }, { data: friendPopular }, { data: everyonePopular }, { data: reviews }, { data: activity }] = await Promise.all([
     loadAllEpisodes(),
     myLogMap(user.id),
     supabase.rpc('aired_on_this_day', { p_month: now.getMonth() + 1, p_day: now.getDate() }),
+    hasFriends ? supabase.rpc('popular_with_friends', { p_days: 7, p_limit: 12 }) : Promise.resolve({ data: [] }),
     supabase.rpc('popular_episodes', { p_days: 7, p_limit: 12 }),
-    supabase.from('logs')
-      .select('id, rating, liked, review, episodes(id, kind, season, number, title, air_date, still_path), profiles(username, display_name, avatar_color)')
-      .not('review', 'is', null).neq('review', '')
-      .order('created_at', { ascending: false }).limit(5),
+    reviewsQ,
+    hasFriends
+      ? supabase.from('logs').select(`id, user_id, rating, liked, review, is_rewatch, created_at, profiles(username, display_name, avatar_color), ${EP}`)
+        .in('user_id', friendIds).order('created_at', { ascending: false }).limit(12)
+      : Promise.resolve({ data: [] }),
   ]);
   const byId = new Map(all.map((e) => [e.id, e]));
+  const popular = friendPopular?.length ? friendPopular : everyonePopular;
 
   // Aired on this day: pick the oldest so it feels like a classic.
   const anniversary = (today || []).filter((e) => e.air_date < `${now.getFullYear()}`)[0];
@@ -43,7 +55,7 @@ async function renderHome() {
     </div>` : '';
 
   // Popular this week, or the newest aired episodes if nobody has logged anything yet.
-  let popTitle = 'Popular this week';
+  let popTitle = friendPopular?.length ? 'Popular with friends this week' : 'Popular this week';
   let popCards;
   if (popular?.length) {
     popCards = popular.map((p) => byId.get(p.episode_id)).filter(Boolean).map((e) => {
@@ -57,19 +69,32 @@ async function renderHome() {
       .map((e) => cardHTML(e, { mine: mine.get(e.id), meta: e.air_date.slice(0, 4) }));
   }
 
+  const extras = await reviewExtras((reviews || []).map((r) => r.id), user.id);
+  const reviewsTitle = hasFriends ? 'Recent reviews from friends' : 'Recent reviews';
   const reviewsHTML = reviews?.length
-    ? reviews.map((r) => `
-      <article class="review">
-        <a href="episode.html?id=${r.episodes.id}" style="flex:0 0 110px" aria-hidden="true" tabindex="-1">${thumbHTML(r.episodes, { showTitle: false })}</a>
-        <div class="review-body">
-          <div style="font-size:14px"><a class="ep-link" href="episode.html?id=${r.episodes.id}">${esc(r.episodes.title)}</a> <span style="color:var(--muted)">${esc(epCode(r.episodes))}</span></div>
-          <div class="review-meta">${avatarHTML(r.profiles, 22)}
-            <a href="profile.html?u=${encodeURIComponent(r.profiles.username)}"><strong>${esc(r.profiles.display_name || r.profiles.username)}</strong></a>
-            <span class="rating">${stars(r.rating)}</span>${r.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}</div>
-          <p>${esc(r.review.length > 280 ? `${r.review.slice(0, 280)}…` : r.review)}</p>
-        </div>
-      </article>`).join('')
-    : '<p class="empty">No reviews yet. Log an episode and write one!</p>';
+    ? reviews.map((r) => reviewHTML(r, { me: user.id, extras, showEpisode: true })).join('')
+    : `<p class="empty">${hasFriends ? 'Your friends haven\'t reviewed anything lately.' : 'No reviews yet. Log an episode and write one!'}</p>`;
+
+  // Friends' latest logs (anything, not just reviews).
+  const ago = (iso) => {
+    const mins = Math.round((Date.now() - new Date(iso)) / 60000);
+    if (mins < 60) return `${Math.max(1, mins)}m`;
+    if (mins < 1440) return `${Math.round(mins / 60)}h`;
+    return `${Math.round(mins / 1440)}d`;
+  };
+  const activityHTML = hasFriends
+    ? (activity?.length
+      ? `<ul class="activity">${activity.map((a) => `
+          <li>
+            ${avatarHTML(a.profiles, 26)}
+            <span><a href="profile.html?u=${encodeURIComponent(a.profiles.username)}">${esc(a.profiles.display_name || a.profiles.username)}</a>
+              ${a.review ? 'reviewed' : a.is_rewatch ? 'rewatched' : 'watched'}
+              <a class="ep" href="${a.review ? `review.html?id=${a.id}` : `episode.html?id=${a.episodes.id}`}">${esc(a.episodes.title)}</a>
+              <span class="rating">${stars(a.rating)}</span>${a.liked ? ' <span class="heart" aria-label="Liked">♥</span>' : ''}</span>
+            <time datetime="${esc(a.created_at)}">${ago(a.created_at)}</time>
+          </li>`).join('')}</ul>`
+      : '<p class="empty">Your friends have been quiet. Suspiciously quiet.</p>')
+    : `<p class="empty">Follow your friends to see what they're watching. <a href="friends.html?tab=everyone">Find people</a></p>`;
 
   // Season progress: seasons you've started (most recent activity first isn't tracked, so most complete first).
   const seasons = new Map();
@@ -85,7 +110,7 @@ async function renderHome() {
   const bar = (name, href, w, t, i) => `
     <div class="progress-row">
       <div class="label"><a href="${href}" style="color:var(--text);font-weight:600">${name}</a><span>${w} / ${t}</span></div>
-      <div class="bar"><div style="width:${t ? Math.round((w / t) * 100) : 0}%;background:${COLOURS[i % 5]}"></div></div>
+      <div class="bar"><div style="width:${t ? Math.round((w / t) * 100) : 0}%;background:var(--green)"></div></div>
     </div>`;
   const progressHTML = `<div class="progress-list">
     ${started.map((s, i) => bar(`Season ${s.season}`, `seasons.html?s=${s.season}`, s.watched, s.total, i)).join('')}
@@ -101,10 +126,14 @@ async function renderHome() {
     </section>
     <div class="two-col">
       <section>
-        <div class="section-head"><h2>Recent reviews</h2></div>
-        <div class="reviews">${reviewsHTML}</div>
+        <div class="section-head"><h2>${reviewsTitle}</h2></div>
+        <div class="reviews" id="home-reviews">${reviewsHTML}</div>
       </section>
       <aside style="display:flex;flex-direction:column;gap:32px">
+        <section>
+          <div class="section-head"><h2>Friends' activity</h2><a href="friends.html">Friends</a></div>
+          ${activityHTML}
+        </section>
         <section>
           <div class="section-head"><h2>Your progress</h2></div>
           ${progressHTML}
@@ -120,6 +149,8 @@ async function renderHome() {
         </section>
       </aside>
     </div>`;
+
+  wireReviewLikes($('#home-reviews'), renderHome);
 
   const pick = (list) => list[Math.floor(Math.random() * list.length)];
   $('#rand-new').onclick = () => {

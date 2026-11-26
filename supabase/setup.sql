@@ -455,7 +455,22 @@ as $$
   limit p_limit;
 $$;
 
-grant execute on function public.aired_on_this_day(int, int), public.popular_episodes(int, int) to authenticated;
+-- Same, but only counting people the caller follows
+create or replace function public.popular_with_friends(p_days int default 7, p_limit int default 12)
+returns table (episode_id bigint, log_count int, watcher_count int, avg_rating numeric)
+language sql stable security invoker set search_path = public
+as $$
+  select l.episode_id, count(*)::int, count(distinct l.user_id)::int, round(avg(l.rating), 2)
+  from public.logs l
+  join public.follows f on f.followee_id = l.user_id and f.follower_id = auth.uid()
+  where l.created_at > now() - make_interval(days => p_days)
+  group by l.episode_id
+  order by 3 desc, 2 desc
+  limit p_limit;
+$$;
+
+grant execute on function public.aired_on_this_day(int, int), public.popular_episodes(int, int),
+  public.popular_with_friends(int, int) to authenticated;
 
 grant select on public.latest_ratings, public.episode_ratings, public.episode_rating_histogram,
   public.user_stats, public.user_season_averages, public.highest_rated, public.most_divisive
