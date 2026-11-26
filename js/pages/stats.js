@@ -4,6 +4,8 @@ import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, profileTabsHTML } from '../ui.js';
 import { loadAllEpisodes, cardHTML } from '../episodes.js';
+import { reportCardHTML } from '../report-card.js';
+import { streakInfo, streakHTML } from '../streak.js';
 
 const { profile: me } = await initPage({ title: 'Stats', auth: 'required' });
 const root = $('#stats');
@@ -26,7 +28,7 @@ async function render() {
 
   const [all, { data: logs }, { data: seasonAvgs }, { data: s }] = await Promise.all([
     loadAllEpisodes(),
-    supabase.from('logs').select('episode_id, watched_on, rating, liked, review, is_rewatch').eq('user_id', person.id).limit(5000),
+    supabase.from('logs').select('episode_id, watched_on, rating, liked, review, is_rewatch, created_at').eq('user_id', person.id).limit(5000),
     supabase.from('user_season_averages').select('season, avg_rating, rated_count').eq('user_id', person.id),
     supabase.from('user_stats').select('*').eq('user_id', person.id).maybeSingle(),
   ]);
@@ -112,6 +114,14 @@ async function render() {
       ${profileTabsHTML(person.username, 'stats')}
     </div>
     <div class="stat-tiles">${tiles.map(([n, label]) => `<div class="stat-tile paper"><b>${esc(String(n))}</b><span>${esc(label)}</span></div>`).join('')}</div>
+    <section>
+      <div class="section-head"><h2>Tegridy streak</h2></div>
+      ${streakHTML(streakInfo(L), { isMe, name })}
+    </section>
+    <section>
+      <div class="section-head"><h2>Mr. Garrison's Report Card</h2></div>
+      ${reportCardHTML({ seasonAvgs, all, seen, isMe, name })}
+    </section>
     <div class="two-col">
       <section>
         <div class="section-head"><h2>Season rankings</h2></div>

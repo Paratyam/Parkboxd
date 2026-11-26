@@ -7,6 +7,7 @@ import { line } from '../jokes.js';
 import { episodeAverages } from '../insights.js';
 import { weeklyPick } from '../club.js';
 import { isChaos } from '../fx.js';
+import { streakInfo, streakHTML } from '../streak.js';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -135,9 +136,14 @@ async function renderHome() {
       <span style="font-weight:700;text-decoration:underline">${mine.has(weekly.id) ? 'See the reviews' : 'Join in'}</span>
     </a>` : '';
 
+  // Tegridy streak (only once you've logged something).
+  const { data: dayLogs } = await supabase.from('logs').select('watched_on, created_at').eq('user_id', user.id).limit(5000);
+  const streakBox = dayLogs?.length ? `<a href="stats.html" class="streak-link">${streakHTML(streakInfo(dayLogs))}</a>` : '';
+
   root.innerHTML = `
     ${anniversaryHTML}
     ${weeklyHTML}
+    ${streakBox}
     <section>
       <div class="section-head"><h2>${popTitle}</h2><a href="episodes.html">More</a></div>
       <div class="ep-grid">${popCards.join('')}</div>

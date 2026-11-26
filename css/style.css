@@ -820,3 +820,34 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
   .cage-vs { text-align: center; }
   .cage-champ { grid-template-columns: 1fr; }
 }
+
+/* Tegridy streak */
+.streak-link { display: block; color: inherit; }
+.streak-card { display: flex; gap: 18px; align-items: center; padding: 16px 20px; background-color: #2f5d34; color: #eaf6e4; }
+.streak-card.hot { background-color: #3f7d2c; }
+.streak-num { display: flex; flex-direction: column; align-items: center; min-width: 70px; line-height: 1; }
+.streak-num b { font-family: 'Luckiest Guy', cursive; font-size: 44px; color: #fff; }
+.streak-num span { font-size: 12px; }
+.streak-num span[aria-hidden] { font-size: 26px; }
+.streak-text { display: flex; flex-direction: column; gap: 4px; }
+.streak-text strong { color: #fff; font-size: 16px; }
+.streak-text p { margin: 0; font-size: 14px; }
+.streak-text .who, .streak-best { font-size: 12px; color: #b7d8ad; }
+
+/* Mr. Garrison's Report Card */
+.report-card { background-color: #f6f1e1; color: #2b2b2b; padding: 22px 24px; background-image: repeating-linear-gradient(transparent 0 27px, rgba(74,144,226,.18) 27px 28px); }
+.rc-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 2px solid #c0392b; padding-bottom: 10px; margin-bottom: 12px; }
+.rc-head .cut { color: #c0392b; font-size: 14px; display: block; }
+.rc-head strong { font-family: 'Luckiest Guy', cursive; font-size: 32px; color: #1d3557; }
+.rc-meta { font-size: 13px; line-height: 1.6; text-align: right; }
+.rc-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.rc-table th, .rc-table td { text-align: left; padding: 7px 8px; border-bottom: 1px solid rgba(0,0,0,.12); vertical-align: top; }
+.rc-table thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: #555; }
+.rc-table a { color: #1d3557; font-weight: 700; }
+.rc-table td:nth-child(3) { color: #555; white-space: nowrap; }
+.rc-grade { font-family: 'Luckiest Guy', cursive; font-size: 24px; display: inline-block; transform: rotate(-6deg); }
+.grade-a { color: #2e8b3a; } .grade-b { color: #1f6fb2; } .grade-c { color: #b9770e; } .grade-d { color: #d35400; } .grade-f { color: #c0392b; }
+.rc-foot { margin-top: 14px; font-size: 14px; }
+.rc-foot p { margin: 4px 0; }
+.rc-sign { text-align: right; font-style: italic; font-family: 'Luckiest Guy', cursive; font-size: 18px; color: #c0392b; }
+@media (max-width: 640px) { .rc-table td:nth-child(3), .rc-table th:nth-child(3) { display: none; } .rc-meta { text-align: left; } }

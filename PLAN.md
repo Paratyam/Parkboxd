@@ -145,3 +145,7 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Votes are stored in `cage_votes`; scores are Elo worked out in the browser (`js/cage.js`), starting from your star rating so the ranking begins sensibly. Pairs favour episodes with few fights and similar scores, and avoid recent repeats
 - Ranking list with W–L record per episode (🔥 unbeaten after 3+ wins); other people's pages show their ranking only
 - Profile: "Cage Match champion" spot under Favourite episodes (🏆 Undefeated champion if #1 never lost and has 3+ wins); a prompt to play if you have none yet
+
+### Report card and streak
+- Mr. Garrison's Report Card (Stats tab, `js/report-card.js`): each season with 2+ ratings gets a letter grade (A+ to F) from the average rating, attendance (watched / total), and a Garrison comment; class GPA, valedictorian, most likely to repeat a grade, and a note about the student (generous, harsh, perfect attendance…)
+- Tegridy streak (`js/streak.js`): days in a row with a log (watch date, or log date if undated). Current + longest, Randy reacts (day one, a week, at risk "log today", broke a 3+ day streak in the last week). Shown on Stats, as a profile stat tile, and on the home page

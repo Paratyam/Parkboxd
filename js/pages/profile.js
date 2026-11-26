@@ -9,6 +9,7 @@ import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewEx
 import { line } from '../jokes.js';
 import { characterColours } from '../data/character-tags.js';
 import { loadVotes, scoreVotes, champion } from '../cage.js';
+import { streakInfo } from '../streak.js';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -56,6 +57,7 @@ async function render(p) {
     supabase.from('logs').select('episode_id, rating, review, is_rewatch, watched_on, created_at').eq('user_id', p.id).limit(5000),
   ]);
   const theirRatings = everyone.get(p.id) || new Map();
+  const streak = streakInfo(allLogs || []);
   const { data: recentReviews } = await supabase.from('logs')
     .select(`${REVIEW_SELECT}, episodes(id, kind, season, number, title, air_date, still_path)`)
     .eq('user_id', p.id).not('review', 'is', null).neq('review', '')
@@ -179,6 +181,7 @@ async function render(p) {
     ['Reviews', s.review_count ?? 0, `reviews.html?u=${u}`],
     ['Followers', s.followers ?? 0, `friends.html?u=${u}&tab=followers`],
     ['Following', s.following ?? 0, `friends.html?u=${u}&tab=following`],
+    ['🌱 Streak', streak.current, `stats.html?u=${u}`],
   ];
   const iFollow = isMe ? false : (await followingIds(me.id)).has(p.id);
 
