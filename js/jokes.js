@@ -87,6 +87,6 @@ export function ratingReaction(rating, tagNames = []) {
   if (has('Timmy')) return 'TIMMY!';
   if (has('Jimmy') && high) return 'What a terrific audience! Jimmy thanks you.';
   if (rating === 0.5) return "Half a star? That's pretty harsh, dude.";
-  if (high && Math.random() < 0.5) return `${s[0].toUpperCase()}${s.slice(1)}. That episode just went down in history, mkay.`;
+  if (rating === 5 && Math.random() < 0.5) return 'Five stars. That episode just went down in history, mkay.';
   return null;
 }
