@@ -39,6 +39,12 @@ const INTRO = {
     '{a}. {b}. Only one walks out. The other one goes in the trash. Fight!',
     'Hey! Everybody shut up! {a} versus {b} is starting!',
     'It is TIME! {a} and {b} enter the cage! Nobody leave, the snacks are paid for!',
+    'Ladies and gentlemen, boys and girls, and Kyle! {a} versus {b}!',
+    "{a} and {b} have been talking trash all week. Tonight, we settle it. In MY cage!",
+    'Lights! Camera! Cheesy Poofs! {a} takes on {b}!',
+    "Coming at you live from my basement: {a} versus {b}! Mem, we're filming!",
+    "{a} says {b} is overrated. {b} says {a} is a joke. I say: FIGHT!",
+    "Tickets cost twenty bucks and NO refunds! {a} versus {b}, let's GO!",
   ],
 };
 
@@ -72,6 +78,9 @@ const RESULT = {
     'Split decision! {w} edges out {l}! That was closer than Kyle and his homework!',
     'By a HAIR! {w} takes it! {l} goes home with nothing but a participation trophy!',
     "Close one! {w} wins! {l} put up a fight, I'll give it that. That's all I'll give it.",
+    "Photo finish! The judges say {w}! {l}, you were THIS close. Still a loser, though.",
+    'Oh, that was tight! {w} squeaks it out! My heart is pounding! Is this a heart attack?',
+    "{w} wins by a nose! {l} wants a rematch. {l} is not getting a rematch.",
   ],
   stomp: [
     'K.O.!! {w} absolutely DESTROYED {l}! That was brutal! I loved every second!',
@@ -85,6 +94,12 @@ const RESULT = {
     "{w}! Exactly who I would have picked. I'm basically a genius.",
     "{w} with the win! {l}, that was pathetic. I'm embarrassed FOR you.",
     'DING DING DING! {w} wins! {l} is out of here!',
+    '{w} is victorious! {l}, go cry to your little friends!',
+    "Winner: {w}! Loser: {l}! That's how it works, people. That's how ALL of it works.",
+    "{l} hits the mat! {w} stands tall! Sweet, sweet victory!",
+    "{w} wins, and I'm taking all the credit. I made this happen. Me.",
+    "Get {l} out of my cage! {w} is the winner! Somebody mop up the mess!",
+    "{w} takes it! Honestly, {l} should be grateful it even got invited.",
   ],
 };
 
