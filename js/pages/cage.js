@@ -3,7 +3,7 @@
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
-import { $, esc, params, epCode, profileTabsHTML, toast } from '../ui.js';
+import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js';
 import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js';
 import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, CARTMAN, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js';
 import { burgerRain } from '../fx.js';
@@ -163,7 +163,8 @@ async function start() {
       return `<button type="button" class="cage-card" data-pick="${side}" aria-label="${esc(e.title)} wins">
         ${thumbHTML(e, { showTitle: false, size: 'w780' })}
         <strong>${esc(e.title)}</strong>
-        <span>${esc(epCode(e))}${s ? ` · ${s.wins}–${s.losses} · #${pos + 1}` : ' · first fight'}</span>
+        <span>${esc(epCode(e))}${s ? ` · #${pos + 1}` : " · first fight"}</span>
+        <span class="cage-rating">${ratings.has(id) ? `<b>${stars(ratings.get(id))}</b> your rating` : "Not rated"}</span>
       </button>`;
     };
     arena.innerHTML = `${card(pair[0], 0)}<span class="cage-vs cut">VS</span>${card(pair[1], 1)}`;

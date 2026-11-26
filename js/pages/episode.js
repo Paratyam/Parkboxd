@@ -151,7 +151,7 @@ function renderPanel() {
     ? `<div class="note-card paper tilt-right"><strong>You've logged this ${myLogs.length === 1 ? 'once' : `${myLogs.length} times`}.</strong>
         ${dated.length ? `Last watched ${esc(formatDate(dated[0].watched_on))}.` : ''}
         <a href="diary.html" style="color:var(--bg);text-decoration:underline">See your diary</a>
-        ${cageInfo ? `<span class="cage-note">🥊 Cage Match: <b>#${cageInfo.pos}</b> of ${cageInfo.of} · ${cageInfo.wins}–${cageInfo.losses}${cageInfo.pos === 1 ? " · 👑 your champion" : ""} · <a href="cage.html" style="color:var(--bg);text-decoration:underline">Fight</a></span>` : ""}</div>`
+        ${cageInfo ? `<span class="cage-note">🥊 Cage Match: <b>#${cageInfo.pos}</b> of ${cageInfo.of}${cageInfo.pos === 1 ? " · 👑 your champion" : ""} · <a href="cage.html" style="color:var(--bg);text-decoration:underline">Fight</a></span>` : ""}</div>`
     : '';
 }
 
