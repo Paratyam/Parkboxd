@@ -14,13 +14,7 @@ const root = $('#cage');
 const wanted = (params.get('u') || me.username).toLowerCase();
 const { data: person } = await supabase.from('profiles').select('id, username, display_name').eq('username', wanted).maybeSingle();
 
-if (!person) {
-  root.innerHTML = '<div class="big-message"><h1 class="cut">Nobody by that name</h1><a class="btn btn-green" href="cage.html">Your Cage Match</a></div>';
-  root.removeAttribute('aria-busy');
-} else {
-  await start();
-}
-
+// (Constants live above the start() call: it runs at load, before anything declared below it.)
 const SKIP_LINES = [
   "Can't decide? Wow. Indecisive much?",
   'Skipping? Fine. Coward.',
@@ -29,6 +23,13 @@ const SKIP_LINES = [
 ];
 const RANK_SHOWN = 50;
 const FILTER_KEY = 'parkboxd-cage-filter';
+
+if (!person) {
+  root.innerHTML = '<div class="big-message"><h1 class="cut">Nobody by that name</h1><a class="btn btn-green" href="cage.html">Your Cage Match</a></div>';
+  root.removeAttribute('aria-busy');
+} else {
+  await start();
+}
 
 async function start() {
   const isMe = person.id === me.id;
