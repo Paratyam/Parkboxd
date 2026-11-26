@@ -99,6 +99,8 @@ export function personality({ username, logs, ratings, avgs }) {
   const share = (f) => (rs.length ? rs.filter(f).length / rs.length : 0);
   const high = share((r) => r >= 4);
   const low = share((r) => r <= 2);
+  // Cartman's harshness: 2★ or less counts fully, 2½★ counts half.
+  const harsh = rs.length ? rs.reduce((s, r) => s + (r <= 2 ? 1 : r === 2.5 ? 0.5 : 0), 0) / rs.length : 0;
   const mid = share((r) => r >= 3 && r <= 3.5);
   const mean = rs.reduce((a, b) => a + b, 0) / (rs.length || 1);
   const sd = Math.sqrt(rs.reduce((a, r) => a + (r - mean) ** 2, 0) / (rs.length || 1));
@@ -110,7 +112,7 @@ export function personality({ username, logs, ratings, avgs }) {
   // Each character gets a score when its rule fits (roughly 0.5–1.3); the strongest fit wins.
   const fits = [];
   if (rs.length >= 5 && high >= 0.7) fits.push(['Butters', high + 0.1, `${pct(high)}% of your ratings are 4★ or more.`]);
-  if (rs.length >= 5 && low >= 0.2) fits.push(['Cartman', Math.min(1, low + 0.6), `${pct(low)}% of your ratings are 2★ or less.`]);
+  if (rs.length >= 5 && harsh >= 0.2) fits.push(['Cartman', Math.min(1, harsh + 0.6), `${rs.filter((r) => r <= 2).length} of your ${rs.length} ratings are 2★ or less${rs.some((r) => r === 2.5) ? `, and ${rs.filter((r) => r === 2.5).length} more are 2½★` : ''}.`]);
   if (rs.length >= 8 && sd >= 1.4 && high >= 0.2 && low >= 0.2) fits.push(['Randy', 1.2, `Your ratings swing wildly between 4★+ and 2★ or less.`]);
   if (rs.length >= 5 && mid >= 0.6) fits.push(['Mr. Mackey', mid + 0.2, `${pct(mid)}% of your ratings are 3 or 3½★.`]);
   if (reviews.length >= 5 && avgLen >= 250) fits.push(['Kyle', Math.min(1.3, avgLen / 500), `Your reviews average ${Math.round(avgLen)} characters.`]);
