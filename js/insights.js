@@ -114,8 +114,9 @@ export function personality({ username, logs, ratings, avgs }) {
   const fits = [];
   if (rs.length >= 5 && high >= 0.75) fits.push(['Butters', high + 0.1, `${pct(high)}% of your ratings are 4★ or more.`]);
   else if (rs.length >= 5 && high >= 0.65) fits.push(['Jimmy', high + 0.15, `${pct(high)}% of your ratings are 4★ or more. Generous, but not Butters-generous.`]);
-  if (rs.length >= 5 && harsh >= 0.2) fits.push(['Cartman', Math.min(1, harsh + 0.6), `${rs.filter((r) => r <= 2).length} of your ${rs.length} ratings are 2★ or less${rs.some((r) => r === 2.5) ? `, and ${rs.filter((r) => r === 2.5).length} more are 2½★` : ''}.`]);
-  if (rs.length >= 8 && sd >= 1.2 && high >= 0.15 && low >= 0.15) fits.push(['Randy', 1.2, `Your ratings swing wildly between 4★+ and 2★ or less.`]);
+  if (rs.length >= 5 && harsh >= 0.17) fits.push(['Cartman', Math.min(1.19, harsh + 0.95), `${rs.filter((r) => r <= 2).length} of your ${rs.length} ratings are 2★ or less${rs.some((r) => r === 2.5) ? `, and ${rs.filter((r) => r === 2.5).length} more are 2½★` : ''}.`]);
+  // Randy loves more than he hates; swingers who lean negative are Cartman.
+  if (rs.length >= 8 && sd >= 1.2 && high >= 0.15 && low >= 0.15 && high >= harsh) fits.push(['Randy', 1.2, `Your ratings swing wildly between 4★+ and 2★ or less.`]);
   if (rs.length >= 5 && mid >= 0.6) fits.push(['Mr. Mackey', mid + 0.2, `${pct(mid)}% of your ratings are 3 or 3½★.`]);
   if (reviews.length >= 5 && avgLen >= 200) fits.push(['Kyle', Math.min(1.3, 0.8 + (avgLen - 200) / 600), `Your reviews average ${Math.round(avgLen)} characters.`]);
   // Kenny: lots of logs, almost no reviews. Capped below the louder habits so backfilled diaries don't all turn into Kenny.
