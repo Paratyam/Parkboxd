@@ -105,7 +105,7 @@ function baseReaction(rating, tagNames) {
     return pick([
       `${s}. Wow, way to take a stand. Very Stan's dad of you.`,
       "Not bad, not great. You're basically a Canadian about this.",
-      `${s}? That's the most Butters rating possible.`,
+      `${s}? That is the most Stan rating possible. Nothing stands out, dude.`,
       'Mmm, middle of the road, mmkay. Mr. Mackey approves.',
       "You're on the fence. Careful, Kyle's mom will build a wall on it.",
     ]);
