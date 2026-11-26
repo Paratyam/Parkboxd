@@ -93,4 +93,13 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Profile: Edit profile button, Hours stat, Top 4 shows real cards (empty slots link to the picker), season progress links to stats. Tabs: Profile / Diary / Watchlist / Ratings / Stats
   - Episode page: "Add to your Top 4" / remove link in the action panel
   - Charts stay single-colour green (no rainbow bars), with hover labels
-- Next step: owner tests Part 3, then Part 4 (social: follows, friends' feed, friends' averages, review likes and comments)
+- **Part 4 (Social): code written and live, waiting for the owner to test**
+  - New SQL function `popular_with_friends(days, limit)` (applied to the live DB)
+  - `friends.html?u=&tab=following|followers|everyone`: follow/unfollow buttons; "Find people" lists every user (it's a small friend group). Nav "Friends" now live
+  - Profiles: Follow/Following button; Followers/Following stats link to the lists
+  - `review.html?id=`: full review, who liked it, comments (post; delete your own, or any on your own review)
+  - Reviews everywhere (`js/social.js` `reviewHTML`): "Friend" tag, ♡ Like review (not on your own), likes · comments link
+  - Episode page: Friends' average next to everyone's; friends' and your reviews listed first
+  - Home: "Popular with friends this week" (falls back to everyone, then latest episodes), "Recent reviews from friends", Friends' activity feed (latest 12 logs from people you follow)
+  - Progress bars are all green now
+- Next step: owner tests Part 4, then Part 5 (extras: tags, arcs, lists, "Most divisive"/"Highest rated" pages)
