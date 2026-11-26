@@ -85,7 +85,7 @@ async function render(p) {
     if (!SECRETS[b.id]) return '';
     return b.earned && isMe
       ? `<span class="secret-hint">🔓 ${esc(SECRETS[b.id])}</span>`
-      : '<span class="secret-hint locked">🔒 Unlocks a secret</span>';
+      : ''; // no teaser: nobody should know there's a secret until they've earned it
   };
   const badgesHtml = `<div class="badges">${badges.map((b) => `
     <div class="badge paper${b.earned ? ' earned' : ''}" title="${esc(b.desc)}${b.earned ? '' : ` (${b.have} / ${b.need})`}">
