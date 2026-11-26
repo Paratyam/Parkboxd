@@ -1,9 +1,11 @@
 // Mr. Garrison's Report Card: every season gets a letter grade from your ratings.
 import { esc } from './ui.js';
 
+// Season averages bunch up between 3 and 4, so the scale is set around that: 4.2+ is
+// already exceptional across a whole season, and 3.0 is a perfectly fine season.
 const GRADES = [
-  [4.5, 'A+'], [4.2, 'A'], [3.9, 'A-'], [3.6, 'B+'], [3.3, 'B'], [3.0, 'B-'],
-  [2.7, 'C+'], [2.4, 'C'], [2.1, 'C-'], [1.7, 'D'], [0, 'F'],
+  [4.2, 'A+'], [4.0, 'A'], [3.8, 'A-'], [3.6, 'B+'], [3.4, 'B'], [3.2, 'B-'],
+  [3.0, 'C+'], [2.8, 'C'], [2.6, 'C-'], [2.2, 'D'], [0, 'F'],
 ];
 export const gradeFor = (avg) => GRADES.find(([min]) => avg >= min)[1];
 const GPA = { 'A+': 4.3, A: 4, 'A-': 3.7, 'B+': 3.3, B: 3, 'B-': 2.7, 'C+': 2.3, C: 2, 'C-': 1.7, D: 1, F: 0 };
@@ -58,7 +60,8 @@ function studentNote({ avg, rated, seasons }) {
 // A season needs this share of its episodes rated (and at least MIN_RATED) to be graded.
 const SHARE = 0.4;
 const MIN_RATED = 3;
-const neededFor = (total) => Math.max(MIN_RATED, Math.ceil(total * SHARE));
+// ...but never more than the season has (a 2-episode season needs both).
+const neededFor = (total) => Math.min(total, Math.max(MIN_RATED, Math.ceil(total * SHARE)));
 
 const INCOMPLETE = [
   'Incomplete. I can\'t grade {s} on a handful of homework. Rate {n} more.',
@@ -161,7 +164,7 @@ export function reportCardHTML({ seasonAvgs, all, seen, isMe, name }) {
       <div class="rc-foot">
         ${best ? `<p><b>Valedictorian:</b> Season ${best.season} (${best.g}).${rows.length > 1 ? ` <b>Most likely to repeat a grade:</b> Season ${worst.season} (${worst.g}).` : ''}</p>`
           : '<p><b>No grades yet.</b> Every season is incomplete. Rate more of a season to get it graded.</p>'}
-        <p style="font-size:12px;color:#666">A season gets a grade once ${Math.round(SHARE * 100)}% of its episodes are rated (at least ${MIN_RATED}). INC = incomplete, ABS = absent (nothing rated yet).</p>
+        <p style="font-size:12px;color:#666">A season gets a grade once ${Math.round(SHARE * 100)}% of its episodes are rated (at least ${MIN_RATED}, or the whole season if it has fewer). INC = incomplete, ABS = absent (nothing rated yet).</p>
         <p><b>Note about the student:</b> ${esc(studentNote({ avg, rated, seasons: rows.length }))}</p>
         <p class="rc-sign">— Mr. Garrison</p>
       </div>
