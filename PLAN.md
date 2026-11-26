@@ -61,10 +61,10 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 ## Owner setup checklist
 
 - [x] Create a Supabase project and give Claude the Project URL and anon public key (in `js/config.js`)
-- [ ] Run `supabase/setup.sql` in the Supabase SQL editor
+- [x] Run `supabase/setup.sql` in the Supabase SQL editor
 - [ ] Get a TMDB API key (themoviedb.org → Settings → API). Keep it private and paste it into the import page
-- [ ] Create a public GitHub repo `parkboxd` and enable Pages (Settings → Pages → deploy from `main`)
-- [ ] Add the GitHub Pages URL to the Supabase Auth URL settings (Site URL and redirect URLs)
+- [x] Create a public GitHub repo and enable Pages: repo `Paratyam/Parkboxd`, live at https://paratyam.github.io/Parkboxd/ (capital P matters)
+- [x] Add the GitHub Pages URL to the Supabase Auth URL settings (Site URL and redirect URLs)
 - [ ] Sign up on the site, then make the account admin (`update profiles set is_admin = true where username = '...'`)
 - [ ] Run the episode import
 
