@@ -286,6 +286,10 @@ main > .notice.wrap { margin-top: 16px; }
 .import-log .ok { color: var(--green); }
 .import-log .err { color: #ff8a8a; }
 .import-progress { margin: 4px 0 0; }
+.movie-list { display: flex; flex-direction: column; gap: 10px; }
+.movie-list .checkbox { align-items: flex-start; }
+.movie-list .checkbox input { margin-top: 2px; flex: 0 0 18px; }
+.movie-list .meta { color: var(--muted); font-size: 13px; }
 .import-progress > div { background: var(--green); width: 0; transition: width .2s; }
 
 /* ---- Phones ---- */

@@ -23,15 +23,24 @@
   <template id="import-ui">
     <section class="import-card paper">
       <h1 class="cut">Import episodes</h1>
-      <p>Pulls every season and episode of South Park from TMDB and saves them to the database. Existing episodes get updated, so re-run this whenever new episodes air. <span id="db-count"></span></p>
+      <p>Pulls every season, episode and special of South Park from TMDB, then finds the South Park movies so you can pick which to add. Existing entries get updated, so re-run this whenever something new comes out. <span id="db-count"></span></p>
       <form class="form" id="import-form" autocomplete="off">
         <div class="field">
           <label for="tmdb-key">TMDB API key or read access token</label>
           <input type="password" id="tmdb-key" required spellcheck="false" aria-describedby="tmdb-key-hint">
           <span class="hint" id="tmdb-key-hint">From themoviedb.org → Settings → API. It stays in this tab and is never saved.</span>
         </div>
-        <label class="checkbox"><input type="checkbox" id="specials"> Include specials (season 0)</label>
+        <label class="checkbox"><input type="checkbox" id="specials" checked> Include specials (season 0)</label>
         <button class="btn btn-green" type="submit">Run import</button>
+      </form>
+    </section>
+
+    <section class="import-card paper" id="movies-card" hidden>
+      <h2 class="cut" style="margin:0 0 8px;color:var(--white);font-size:26px">Movies</h2>
+      <p>These TMDB movies have "South Park" in the title. Untick anything that isn't the real deal, then save.</p>
+      <form class="form" id="movies-form">
+        <div id="movie-list" class="movie-list"></div>
+        <button class="btn btn-green" type="submit">Save selected movies</button>
       </form>
     </section>
 

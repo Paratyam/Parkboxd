@@ -1,10 +1,12 @@
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { TMDB_SHOW_ID } from '../config.js';
-import { $, setBusy } from '../ui.js';
+import { $, esc, setBusy } from '../ui.js';
 
 const { profile } = await initPage({ title: 'Import episodes', auth: 'required' });
 const root = $('#import-root');
+let tmdbKey = '';
+let foundMovies = [];
 
 if (!profile.is_admin) {
   root.innerHTML = `
@@ -17,11 +19,14 @@ if (!profile.is_admin) {
   root.replaceChildren($('#import-ui').content.cloneNode(true));
   showCount();
   $('#import-form').addEventListener('submit', runImport);
+  $('#movies-form').addEventListener('submit', saveMovies);
 }
 
 async function showCount() {
-  const { count } = await supabase.from('episodes').select('id', { count: 'exact', head: true });
-  $('#db-count').textContent = `The database has ${count ?? 0} episodes right now.`;
+  const counts = await Promise.all(['episode', 'special', 'movie'].map((kind) =>
+    supabase.from('episodes').select('id', { count: 'exact', head: true }).eq('kind', kind)));
+  const [eps, specials, movies] = counts.map((r) => r.count ?? 0);
+  $('#db-count').textContent = `The database has ${eps} episodes, ${specials} specials and ${movies} movies right now.`;
 }
 
 function log(text, kind = '') {
@@ -33,11 +38,12 @@ function log(text, kind = '') {
 }
 
 // v4 read access tokens are JWTs ("eyJ…") and go in a header; v3 keys go in the query string.
-async function tmdb(path, key) {
+async function tmdb(path, query = {}) {
   const url = new URL(`https://api.themoviedb.org/3${path}`);
+  for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
   const headers = { accept: 'application/json' };
-  if (key.startsWith('eyJ')) headers.Authorization = `Bearer ${key}`;
-  else url.searchParams.set('api_key', key);
+  if (tmdbKey.startsWith('eyJ')) headers.Authorization = `Bearer ${tmdbKey}`;
+  else url.searchParams.set('api_key', tmdbKey);
 
   for (let attempt = 0; attempt < 3; attempt++) {
     const res = await fetch(url, { headers });
@@ -49,10 +55,15 @@ async function tmdb(path, key) {
   throw new Error('TMDB kept rate-limiting us. Wait a minute and try again.');
 }
 
+async function upsert(rows) {
+  const { error } = await supabase.from('episodes').upsert(rows, { onConflict: 'tmdb_id,kind' });
+  if (error) throw new Error(error.message);
+}
+
 async function runImport(e) {
   e.preventDefault();
-  const key = $('#tmdb-key').value.trim();
-  if (!key) return;
+  tmdbKey = $('#tmdb-key').value.trim();
+  if (!tmdbKey) return;
   const btn = e.submitter || $('#import-form button');
   setBusy(btn, true, 'Importing…');
   $('#import-output').hidden = false;
@@ -63,7 +74,7 @@ async function runImport(e) {
   let saved = 0;
   let failed = 0;
   try {
-    const show = await tmdb(`/tv/${TMDB_SHOW_ID}`, key);
+    const show = await tmdb(`/tv/${TMDB_SHOW_ID}`);
     const seasons = show.seasons
       .filter((s) => $('#specials').checked || s.season_number > 0)
       .sort((a, b) => a.season_number - b.season_number);
@@ -72,8 +83,9 @@ async function runImport(e) {
     for (const [i, s] of seasons.entries()) {
       const label = s.season_number === 0 ? 'Specials' : `Season ${s.season_number}`;
       try {
-        const data = await tmdb(`/tv/${TMDB_SHOW_ID}/season/${s.season_number}`, key);
+        const data = await tmdb(`/tv/${TMDB_SHOW_ID}/season/${s.season_number}`);
         const rows = (data.episodes || []).map((ep) => ({
+          kind: ep.season_number === 0 ? 'special' : 'episode',
           tmdb_id: ep.id,
           season: ep.season_number,
           number: ep.episode_number,
@@ -83,24 +95,80 @@ async function runImport(e) {
           still_path: ep.still_path || null,
           runtime: ep.runtime ?? null,
         }));
-        if (rows.length) {
-          const { error } = await supabase.from('episodes').upsert(rows, { onConflict: 'tmdb_id' });
-          if (error) throw new Error(error.message);
-        }
+        if (rows.length) await upsert(rows);
         saved += rows.length;
-        log(`✓ ${label}: ${rows.length} episodes`, 'ok');
+        log(`✓ ${label}: ${rows.length}`, 'ok');
       } catch (err) {
         failed++;
         log(`✗ ${label}: ${err.message}`, 'err');
       }
       bar.style.width = `${Math.round(((i + 1) / seasons.length) * 100)}%`;
     }
-    log(failed ? `Done with ${failed} failed season(s). Run it again to retry.` : 'Done! Every episode is in.', failed ? 'err' : 'ok');
+    log(failed ? `Episodes done with ${failed} failed season(s). Run it again to retry.` : 'Episodes done!', failed ? 'err' : 'ok');
+    $('#import-summary').textContent = `${saved} episodes saved${failed ? `, ${failed} seasons failed` : ''}`;
+    await findMovies();
   } catch (err) {
     log(`✗ ${err.message}`, 'err');
   }
 
-  $('#import-summary').textContent = `${saved} episodes saved${failed ? `, ${failed} seasons failed` : ''}`;
+  setBusy(btn, false);
+  showCount();
+}
+
+async function findMovies() {
+  log('Looking for South Park movies…');
+  const results = [];
+  for (let page = 1; page <= 3; page++) {
+    const data = await tmdb('/search/movie', { query: 'South Park', include_adult: 'false', page });
+    results.push(...data.results);
+    if (page >= data.total_pages) break;
+  }
+  const { data: existing } = await supabase.from('episodes').select('tmdb_id').eq('kind', 'movie');
+  const have = new Set((existing || []).map((r) => r.tmdb_id));
+
+  foundMovies = results
+    .filter((m) => /south park/i.test(m.title) && m.release_date)
+    .sort((a, b) => a.release_date.localeCompare(b.release_date));
+
+  $('#movie-list').innerHTML = foundMovies.length
+    ? foundMovies.map((m, i) => `
+        <label class="checkbox">
+          <input type="checkbox" value="${i}" checked>
+          <span>${esc(m.title)} <span class="meta">· ${esc(m.release_date.slice(0, 4))}${have.has(m.id) ? ' · already added' : ''}</span></span>
+        </label>`).join('')
+    : '<p class="empty">No movies found.</p>';
+  $('#movies-card').hidden = false;
+  log(`Found ${foundMovies.length} movies. Pick them in the Movies box.`, 'ok');
+  $('#movies-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function saveMovies(e) {
+  e.preventDefault();
+  const picked = [...$('#movie-list').querySelectorAll('input:checked')].map((el) => foundMovies[+el.value]);
+  if (!picked.length) return;
+  const btn = e.submitter || $('#movies-form button');
+  setBusy(btn, true, 'Saving…');
+  try {
+    const rows = [];
+    for (const m of picked) {
+      const d = await tmdb(`/movie/${m.id}`);
+      rows.push({
+        kind: 'movie',
+        tmdb_id: d.id,
+        season: null,
+        number: null,
+        title: d.title,
+        overview: d.overview || null,
+        air_date: d.release_date || null,
+        still_path: d.backdrop_path || null,
+        runtime: d.runtime || null,
+      });
+    }
+    await upsert(rows);
+    log(`✓ Movies: ${rows.length} saved`, 'ok');
+  } catch (err) {
+    log(`✗ Movies: ${err.message}`, 'err');
+  }
   setBusy(btn, false);
   showCount();
 }

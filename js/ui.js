@@ -53,6 +53,14 @@ export function formatDate(value, opts = { year: 'numeric', month: 'long', day: 
   return d.toLocaleDateString(undefined, opts);
 }
 
+// Short label for an episode row: "S5 E4", "Special 3" or "Movie · 1999".
+export function epCode(ep) {
+  if (!ep) return '';
+  if (ep.kind === 'movie') return `Movie${ep.air_date ? ` · ${ep.air_date.slice(0, 4)}` : ''}`;
+  if (ep.kind === 'special' || ep.season === 0) return `Special ${ep.number}`;
+  return `S${ep.season} E${ep.number}`;
+}
+
 export function stars(rating) {
   if (rating == null) return '';
   const full = Math.floor(rating);

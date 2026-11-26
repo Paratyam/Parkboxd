@@ -21,17 +21,30 @@ create table if not exists public.profiles (
   created_at    timestamptz not null default now()
 );
 
+-- Episodes, specials (season 0) and movies all live here, told apart by kind.
+-- Movies have no season or number. TMDB movie and episode ids are separate
+-- number spaces, so uniqueness is (tmdb_id, kind).
 create table if not exists public.episodes (
   id          bigint generated always as identity primary key,
-  tmdb_id     bigint not null unique,
-  season      int not null,
-  number      int not null,
+  kind        text not null default 'episode',
+  tmdb_id     bigint not null,
+  season      int,
+  number      int,
   title       text not null,
   overview    text,
   air_date    date,
   still_path  text,
   runtime     int
 );
+-- Upgrades for databases created before specials/movies existed.
+alter table public.episodes add column if not exists kind text not null default 'episode';
+alter table public.episodes alter column season drop not null, alter column number drop not null;
+alter table public.episodes drop constraint if exists episodes_kind_check;
+alter table public.episodes add constraint episodes_kind_check check (kind in ('episode', 'special', 'movie'));
+alter table public.episodes drop constraint if exists episodes_tmdb_id_key;
+alter table public.episodes drop constraint if exists episodes_tmdb_kind_key;
+alter table public.episodes add constraint episodes_tmdb_kind_key unique (tmdb_id, kind);
+update public.episodes set kind = 'special' where season = 0 and kind = 'episode';
 create index if not exists episodes_season_number_idx on public.episodes (season, number);
 
 create table if not exists public.logs (
@@ -382,13 +395,13 @@ group by lr.user_id, e.season;
 
 -- Rankings (need at least 3 ratings to qualify)
 create view public.highest_rated with (security_invoker = on) as
-select r.*, e.season, e.number, e.title, e.still_path
+select r.*, e.kind, e.season, e.number, e.title, e.still_path
 from public.episode_ratings r join public.episodes e on e.id = r.episode_id
 where r.rating_count >= 3
 order by r.avg_rating desc, r.rating_count desc;
 
 create view public.most_divisive with (security_invoker = on) as
-select r.*, e.season, e.number, e.title, e.still_path
+select r.*, e.kind, e.season, e.number, e.title, e.still_path
 from public.episode_ratings r join public.episodes e on e.id = r.episode_id
 where r.rating_count >= 3
 order by r.rating_stddev desc, r.rating_count desc;

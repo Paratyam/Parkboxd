@@ -1,7 +1,7 @@
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME, TMDB_IMAGE_BASE } from '../config.js';
-import { $, esc, params, avatarHTML, formatDate, stars } from '../ui.js';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode } from '../ui.js';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -30,13 +30,13 @@ async function render(p) {
   const [{ data: stats }, { data: recent }, { data: top4Eps }, { data: progress }] = await Promise.all([
     supabase.from('user_stats').select('*').eq('user_id', p.id).maybeSingle(),
     supabase.from('logs')
-      .select('id, watched_on, rating, liked, is_rewatch, review, episodes(id, season, number, title)')
+      .select('id, watched_on, rating, liked, is_rewatch, review, episodes(id, kind, season, number, title, air_date)')
       .eq('user_id', p.id)
       .order('watched_on', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false })
       .limit(8),
     p.top4.length
-      ? supabase.from('episodes').select('id, season, number, title, still_path').in('id', p.top4)
+      ? supabase.from('episodes').select('id, kind, season, number, title, air_date, still_path').in('id', p.top4)
       : Promise.resolve({ data: [] }),
     supabase.rpc('season_progress', { p_user: p.id }),
   ]);
@@ -55,7 +55,7 @@ async function render(p) {
     if (!ep) return `<div class="top4-slot paper empty">${isMe ? 'Pick a favourite<br>(coming soon)' : 'Empty slot'}</div>`;
     const bg = ep.still_path ? `background-image:linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.55)),url('${TMDB_IMAGE_BASE}w300${esc(ep.still_path)}');background-size:cover;background-position:center` : '';
     return `<div class="top4-slot paper" style="${bg}">
-      <span class="ep-card-code">S${ep.season} E${ep.number}</span>
+      <span class="ep-card-code">${esc(epCode(ep))}</span>
       <span class="ep-card-title">${esc(ep.title)}</span>
     </div>`;
   }).join('');
@@ -64,7 +64,7 @@ async function render(p) {
     ? `<ol class="diary">${recent.map((l) => `
         <li>
           <span class="date">${esc(formatDate(l.watched_on, { month: 'short', day: 'numeric', year: 'numeric' }))}</span>
-          <span class="title">${esc(l.episodes?.title ?? 'Unknown episode')}<span class="code">S${l.episodes?.season} E${l.episodes?.number}</span></span>
+          <span class="title">${esc(l.episodes?.title ?? 'Unknown episode')}<span class="code">${esc(epCode(l.episodes))}</span></span>
           <span class="rating" aria-label="${l.rating ? `${l.rating} stars` : 'No rating'}">${stars(l.rating)}</span>
           ${l.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}
         </li>`).join('')}</ol>`
