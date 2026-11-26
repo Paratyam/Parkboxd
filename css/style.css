@@ -715,6 +715,22 @@ html.mysterion body::before {
 }
 html.mysterion main, html.mysterion .site-header, html.mysterion .site-footer { position: relative; z-index: 1; }
 
+/* ---- Coon takeover ---- */
+
+.coon-takeover {
+  background: repeating-linear-gradient(90deg, #3a3330 0 28px, #4a423d 28px 56px);
+  border-bottom: 6px solid #1c1917; color: #f3ede6; animation: coon-in .4s ease-out;
+}
+.coon-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding-top: 14px; padding-bottom: 14px; }
+.coon-emoji { font-size: 40px; line-height: 1; }
+.coon-inner > div { flex: 1; min-width: 220px; }
+.coon-title { font-size: 22px; line-height: 1.15; color: #fff; }
+.coon-sub { font-size: 13px; color: #d9cfc5; }
+.coon-btn { background: #1c1917; color: #f3ede6; border: 2px solid #f3ede6; }
+.coon-btn:hover { background: #f3ede6; color: #1c1917; }
+@keyframes coon-in { from { transform: translateY(-100%); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .coon-takeover { animation: none; } }
+
 /* ---- Phones ---- */
 
 @media (max-width: 640px) {

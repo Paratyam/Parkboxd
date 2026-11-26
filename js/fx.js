@@ -128,3 +128,35 @@ export function initModes(onChange) {
     }, 350);
   });
 }
+
+// ---- Coon takeover: about 1 page load in 150, The Coon "hijacks" the site ----
+// Add ?coon=1 to any page URL to force it (for showing friends).
+
+export function coonTakeoverDue() {
+  return new URLSearchParams(location.search).get('coon') === '1' || Math.random() < 1 / 150;
+}
+
+/** Show the banner. setLogo(text) swaps the logo text while it's up (null puts it back). */
+export function showCoonTakeover(setLogo) {
+  const main = document.querySelector('main');
+  if (!main) return;
+  const banner = document.createElement('div');
+  banner.className = 'coon-takeover';
+  banner.setAttribute('role', 'alert');
+  banner.innerHTML = `
+    <div class="wrap coon-inner">
+      <span class="coon-emoji" aria-hidden="true">🦝</span>
+      <div>
+        <div class="cut coon-title">This website is now property of The Coon.</div>
+        <div class="coon-sub">Respect his authoritah. Mysterion is not invited.</div>
+      </div>
+      <button type="button" class="btn coon-btn">Fine, whatever</button>
+    </div>`;
+  main.prepend(banner);
+  setLogo?.('THE COON');
+  banner.querySelector('.coon-btn').addEventListener('click', () => {
+    banner.remove();
+    setLogo?.(null);
+    toast('The Coon will return. When you least expect it.');
+  });
+}

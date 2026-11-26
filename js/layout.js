@@ -3,7 +3,7 @@ import { supabase, isConfigured } from './supabase.js';
 import { SITE_NAME } from './config.js';
 import { esc, avatarHTML, currentPage } from './ui.js';
 import { line } from './jokes.js';
-import { initModes, modeLogo } from './fx.js';
+import { initModes, modeLogo, coonTakeoverDue, showCoonTakeover } from './fx.js';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -49,15 +49,18 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
 
   renderHeader(profile, session);
   initModes(() => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(); });
+  if (coonTakeoverDue()) {
+    showCoonTakeover((text) => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(22, text); });
+  }
   renderFooter(session);
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
 }
 
-export function logoHTML(size = 22) {
-  // In a secret mode the logo spells CHAOS or MYSTERION.
-  return (modeLogo() || SITE_NAME.toUpperCase()).split('').map((ch, i) =>
+export function logoHTML(size = 22, text = null) {
+  // A takeover or secret mode can rename the logo (THE COON, CHAOS, MYSTERION).
+  return (text || modeLogo() || SITE_NAME.toUpperCase()).split('').map((ch, i) =>
     `<span class="logo-letter cut paper" style="background-color:${LOGO_COLOURS[i % 5]};transform:rotate(${LOGO_TILT[i % 10]}deg);font-size:${size}px">${esc(ch)}</span>`
   ).join('');
 }

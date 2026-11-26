@@ -162,6 +162,10 @@ export function computeBadges(ctx) {
   const [randyHave, randyNeed] = allOf('Randy');
   const [kennyHave, kennyNeed] = allOf('Kenny');
   const [buttersHave, buttersNeed] = allOf('Butters');
+  // The Coon saga, matched by title (case and punctuation ignored).
+  const normTitle = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
+  const coonTitles = ['The Coon', 'Coon 2: Hindsight', 'Mysterion Rises', 'Coon vs. Coon & Friends'].map(normTitle);
+  const coonEps = all.filter((e) => e.kind === 'episode' && coonTitles.includes(normTitle(e.title)));
 
   const b = (id, emoji, name, desc, have, need) => ({ id, emoji, name, desc, have: Math.min(have, need), need, earned: need > 0 && have >= need });
   return [
@@ -169,6 +173,7 @@ export function computeBadges(ctx) {
     b('tegridy', '🌱', 'Tegridy', 'Watch every Randy episode', randyHave, randyNeed),
     b('kenny', '🧡', 'They Killed Kenny', 'Watch every Kenny episode', kennyHave, kennyNeed),
     b('chaos', '😈', 'Professor Chaos', 'Watch every Butters episode', buttersHave, buttersNeed),
+    b('coon', '🦝', 'Coon & Friends', 'Watch the whole Coon saga', coonEps.filter((e) => seen.has(e.id)).length, coonEps.length),
     b('completionist', '🏔️', 'Completionist', 'Finish every season', finishedSeasons, seasons.size),
     b('movies', '🎬', 'Bigger, Longer & Logged', 'Watch every movie', movies.filter((m) => seen.has(m.id)).length, movies.length),
     b('screwyou', '🚪', 'Screw You Guys', 'Give 10 episodes 1★ or less', [...ratings.values()].filter((r) => r <= 1).length, 10),
