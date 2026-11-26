@@ -55,7 +55,8 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
     style.textContent = `
       html.mysterion .avatar[data-u="${me}"] { color: var(--c); }
       html.mysterion .avatar[data-u="${me}"]::after { content: none; }
-      html.mysterion a[href="profile.html?u=${me}"] { filter: none; }`;
+      html.mysterion a[href="profile.html?u=${me}"]:not(.is-me) { filter: none; }
+      html.mysterion .people li:not(:has(a[href="profile.html?u=${me}"])) .who > span { filter: blur(5px); }`;
     document.head.append(style);
   }
   initModes(() => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(); syncDice(); });
