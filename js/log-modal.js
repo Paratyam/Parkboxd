@@ -1,7 +1,8 @@
 // The "log an episode" dialog, used by the header "+ Log" button, episode pages and the diary.
 import { supabase } from './supabase.js';
-import { esc, epCode, toast } from './ui.js';
-import { line, ratingReaction } from './jokes.js';
+import { esc, epCode } from './ui.js';
+import { line } from './jokes.js';
+import { celebrate } from './fx.js';
 import { starInput } from './stars.js';
 import { loadAllEpisodes, thumbHTML, todayISO } from './episodes.js';
 
@@ -156,8 +157,11 @@ export function openLogModal({ episode = null, log = null, rewatch = false } = {
         if (error) return showMsg(error.message);
         if (!editing) await supabase.from('watchlist').delete().eq('episode_id', ep.id);
         if (row.rating != null && row.rating !== log?.rating) {
-          const { data: t } = await supabase.from('episode_tags').select('tags(name)').eq('episode_id', ep.id);
-          toast(ratingReaction(row.rating, (t || []).map((x) => x.tags?.name).filter(Boolean)));
+          const [{ data: t }, { data: me }] = await Promise.all([
+            supabase.from('episode_tags').select('tags(name)').eq('episode_id', ep.id),
+            supabase.from('profiles').select('favourite_character').eq('id', (await supabase.auth.getUser()).data.user.id).maybeSingle(),
+          ]);
+          celebrate(row.rating, (t || []).map((x) => x.tags?.name).filter(Boolean), me?.favourite_character);
         }
         changed = true;
         d.close();

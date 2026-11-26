@@ -50,9 +50,24 @@ async function render(p) {
     characterTags(),
     episodeAverages(),
     loadAllEpisodes(),
-    supabase.from('logs').select('episode_id, rating, review, is_rewatch, watched_on').eq('user_id', p.id).limit(5000),
+    supabase.from('logs').select('episode_id, rating, review, is_rewatch, watched_on, created_at').eq('user_id', p.id).limit(5000),
   ]);
   const theirRatings = everyone.get(p.id) || new Map();
+
+  // GROUNDED: rated a Butters episode 2★ or less in the last 24 hours.
+  const butters = chars.byName.get('Butters') || new Set();
+  const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const crime = (allLogs || [])
+    .filter((l) => l.rating != null && l.rating <= 2 && butters.has(l.episode_id) && new Date(l.created_at).getTime() > dayAgo)
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+  const crimeEp = crime && all.find((e) => e.id === crime.episode_id);
+  const groundedHtml = crimeEp ? `
+    <div class="grounded paper" role="note">
+      <span class="cut">GROUNDED</span>
+      <span>for giving <a href="episode.html?id=${crimeEp.id}">${esc(crimeEp.title)}</a> ${stars(crime.rating)}.
+        Free at ${esc(new Date(new Date(crime.created_at).getTime() + 24 * 60 * 60 * 1000).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' }))}.</span>
+    </div>` : '';
+  const flairHtml = p.favourite_character ? `<span class="team-flair paper">Team ${esc(p.favourite_character)}</span>` : '';
 
   // Badges
   const badges = computeBadges({
@@ -152,7 +167,9 @@ async function render(p) {
         <h1 class="cut">${esc(name)}</h1>
         <span class="handle">@${esc(p.username)} · joined ${esc(formatDate(p.created_at, { month: 'long', year: 'numeric' }))}</span>
         ${p.bio ? `<p class="bio">${esc(p.bio)}</p>` : ''}
+        ${flairHtml ? `<div style="margin-top:6px">${flairHtml}</div>` : ''}
       </div>
+      ${groundedHtml}
       <div class="stats">${statItems.map(([label, n, href]) => href
         ? `<a class="stat" href="${href}" style="color:inherit"><b>${n}</b><span>${label}</span></a>`
         : `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join('')}</div>

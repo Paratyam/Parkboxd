@@ -62,8 +62,19 @@ export function line(key, vars = {}) {
  * A reaction to a new rating, based on the episode's character tags.
  * Returns a string, or null when there's nothing funny to say.
  */
-export function ratingReaction(rating, tagNames = []) {
+export function ratingReaction(rating, tagNames = [], favourite = null) {
   if (rating == null) return null;
+  const base = baseReaction(rating, tagNames);
+  // Your favourite character's episode: the site takes their side.
+  if (favourite && tagNames.some((t) => t.toLowerCase() === favourite.toLowerCase())) {
+    const s = rating === 1 ? '1 star' : `${rating} stars`;
+    if (rating <= 2.5) return base ? `${base} And you call yourself Team ${favourite}?` : `You gave a ${favourite} episode ${s}? And you call yourself Team ${favourite}?`;
+    if (rating >= 4.5) return base ? `${base} Team ${favourite} forever!` : `Team ${favourite} forever!`;
+  }
+  return base;
+}
+
+function baseReaction(rating, tagNames) {
   const has = (n) => tagNames.some((t) => t.toLowerCase() === n.toLowerCase());
   const s = rating === 1 ? '1 star' : `${rating} stars`;
   // Negative reactions at 2.5★ and below, positive ones at 4.5★ and above. 3–4★ stays quiet
@@ -73,6 +84,7 @@ export function ratingReaction(rating, tagNames = []) {
 
   if (has('Kenny') && low) return `Oh my God, you rated Kenny's episode ${s}! You bastard!`;
   if (has('Kenny') && high) return "Kenny says thanks. Well, he says \"mmph mmph mmph\". Same thing.";
+  if (has('Butters') && rating <= 2) return `${s} for Butters? That's it, young man, you're GROUNDED. Check your profile.`;
   if (has('Butters') && low) return `${s}? Aw, hamburgers. Now Butters is grounded and it's your fault.`;
   if (has('Butters') && high) return 'Butters is so happy he might do the little fist-rubbing thing.';
   if (has('Cartman') && high) return 'Sweet! Kewl! Cartman respects your authoritah.';

@@ -2,6 +2,7 @@ import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { $, esc, epCode, notify, setBusy } from '../ui.js';
 import { loadAllEpisodes, thumbHTML } from '../episodes.js';
+import { FOCUS_CHARACTERS } from '../data/character-tags.js';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -32,6 +33,13 @@ $('#swatches').innerHTML = COLOURS.map(([hex, name]) => `
     <span class="visually-hidden">${name}</span>
   </label>`).join('');
 $('#swatches').addEventListener('change', (e) => { colour = e.target.value; });
+
+// ---- Favourite character ----
+const { data: charTags } = await supabase.from('tags').select('name').eq('kind', 'character').order('name');
+const charNames = [...new Set([...(charTags || []).map((t) => t.name), ...FOCUS_CHARACTERS, profile.favourite_character].filter(Boolean))]
+  .sort((a, b) => a.localeCompare(b));
+$('#fav-char').insertAdjacentHTML('beforeend', charNames.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join(''));
+$('#fav-char').value = profile.favourite_character || '';
 
 // ---- Top 4 ----
 function renderSlots() {
@@ -93,6 +101,7 @@ $('#profile-form').addEventListener('submit', async (e) => {
     display_name: $('#display-name').value.trim() || null,
     bio: $('#bio').value.trim() || null,
     avatar_color: colour,
+    favourite_character: $('#fav-char').value || null,
     top4,
   }).eq('id', user.id);
   setBusy(btn, false);

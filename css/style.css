@@ -642,6 +642,43 @@ a.top4-slot { color: inherit; }
 @keyframes toast-in { from { transform: translateY(20px) rotate(-.6deg); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .toast { animation: none; } }
 
+/* ---- Hamburger rain ---- */
+
+.burger-rain { position: fixed; inset: 0; pointer-events: none; z-index: 999; overflow: hidden; }
+.burger-rain span { position: absolute; top: -60px; animation-name: burger-fall; animation-timing-function: ease-in; animation-fill-mode: forwards; }
+@keyframes burger-fall { to { transform: translateY(calc(100vh + 120px)) rotate(var(--spin)); } }
+
+/* ---- GROUNDED stamp ---- */
+
+.grounded {
+  display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  background-color: var(--red); color: var(--white); padding: 10px 16px; transform: rotate(-3deg);
+  box-shadow: 0 6px 16px rgba(0,0,0,.4);
+}
+.grounded .cut { font-size: 26px; line-height: 1; letter-spacing: .06em; }
+.grounded span { font-size: 12px; font-weight: 600; }
+.grounded a { color: var(--white); text-decoration: underline; }
+
+.team-flair { display: inline-block; background-color: var(--yellow); color: var(--bg); padding: 4px 10px; font-weight: 700; font-size: 12px; transform: rotate(-1.5deg); }
+
+/* ---- Professor Chaos mode ---- */
+
+html.chaos {
+  --bg: #10180f; --bg-deep: #0a1009; --surface: #1d2a1b; --surface-2: #243422; --line: #2b3b28; --line-2: #3c5238;
+  --green: #7dff4f; --blue: #b9f27a; --blue-hover: #d8ffb0; --muted: #9db596;
+}
+html.chaos .site-header {
+  background: repeating-linear-gradient(115deg, #8f9aa3 0 10px, #c9d2d9 10px 22px, #7c868e 22px 30px);
+  border-bottom-color: #5e6870;
+}
+html.chaos .site-header .main-nav a, html.chaos .site-header .header-link { color: #10180f; }
+html.chaos .site-header .nav-soon { color: #2b3b28; }
+html.chaos .logo-letter { background-color: #7dff4f !important; }
+html.chaos .hero { background: #12220f; }
+html.chaos .hero-mountains path:first-child { fill: #23401c; }
+html.chaos .btn-green { background: #7dff4f; }
+html.chaos .toast { background-color: #7dff4f; }
+
 /* ---- Phones ---- */
 
 @media (max-width: 640px) {

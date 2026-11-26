@@ -2,7 +2,8 @@ import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, epCode, formatDate, toast } from '../ui.js';
-import { line, ratingReaction } from '../jokes.js';
+import { line } from '../jokes.js';
+import { celebrate } from '../fx.js';
 import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js';
 import { starInput } from '../stars.js';
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
@@ -183,7 +184,7 @@ async function toggleTop4() {
 async function setRating(value) {
   const target = myLogs[0];
   await run(target ? supabase.from('logs').update({ rating: value }).eq('id', target.id) : quickLog({ rating: value }));
-  toast(ratingReaction(value, tagNames));
+  celebrate(value, tagNames, profile.favourite_character);
 }
 
 // ---- Everyone's numbers and reviews ----
