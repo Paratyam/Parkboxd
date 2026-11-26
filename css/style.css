@@ -1070,3 +1070,4 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .lc-slot.now { border: 2px dashed var(--club-blue); }
 .lc-now { font-size: 10px; color: var(--club-blue); font-weight: 800; text-transform: uppercase; }
 @media (max-width: 560px) { .lc-body { grid-template-columns: 1fr; } }
+.club-vote-card .btn { border: 2px solid #000; box-shadow: 2px 2px 0 #000; } .club-vote-card .btn-ghost { background: #fff; color: var(--club-ink); } .club-vote-card .btn-ghost:hover { background: #fff3a6; }
