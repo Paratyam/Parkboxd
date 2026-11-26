@@ -60,8 +60,9 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
 
 export function logoHTML(size = 22, text = null) {
   // A takeover or secret mode can rename the logo (THE COON, CHAOS, MYSTERION).
-  return (text || modeLogo() || SITE_NAME.toUpperCase()).split('').map((ch, i) =>
-    `<span class="logo-letter cut paper" style="background-color:${LOGO_COLOURS[i % 5]};transform:rotate(${LOGO_TILT[i % 10]}deg);font-size:${size}px">${esc(ch)}</span>`
+  return (text || modeLogo() || SITE_NAME.toUpperCase()).split('').map((ch, i) => ch === ' '
+    ? '<span style="display:inline-block;width:8px" aria-hidden="true"></span>'
+    : `<span class="logo-letter cut paper" style="background-color:${LOGO_COLOURS[i % 5]};transform:rotate(${LOGO_TILT[i % 10]}deg);font-size:${size}px">${esc(ch)}</span>`
   ).join('');
 }
 
