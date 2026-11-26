@@ -41,8 +41,14 @@ const TAG_LINES = [
 
 // Small deterministic PRNG so every visitor sees the same review.
 function rng(seed) {
-  let s = seed >>> 0 || 1;
-  return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 2 ** 32; };
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 2 ** 32;
+  };
 }
 
 /**
@@ -51,7 +57,7 @@ function rng(seed) {
  */
 export function buttersReview(ep, tags = [], start = new Date()) {
   const week = Math.floor(start.getTime() / 604800000);
-  const r = rng(week * 31 + ep.id);
+  const r = rng(week * 7919 + ep.id);
   const pick = (a) => a[Math.floor(r() * a.length)];
   const lower = tags.map((t) => t.toLowerCase());
   const tagLine = TAG_LINES.find(([name]) => lower.includes(name.toLowerCase()))?.[1];
