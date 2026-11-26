@@ -10,15 +10,12 @@ const shift = (key, days) => {
 
 /**
  * streakInfo(logs) -> { current, longest, loggedToday, atRisk, broke, lastDay }
- *   logs: rows with watched_on (YYYY-MM-DD or null) and created_at. A log counts on the day
- *   you watched it, or the day you logged it if there's no date.
+ *   logs: rows with created_at. A log counts on the day you actually logged it, never the
+ *   "watched on" date, so back-dating or importing old diaries can't fake a streak.
  */
 export function streakInfo(logs, now = new Date()) {
   const days = new Set();
-  for (const l of logs || []) {
-    if (l.watched_on) days.add(l.watched_on);
-    else if (l.created_at) days.add(dayKey(new Date(l.created_at)));
-  }
+  for (const l of logs || []) if (l.created_at) days.add(dayKey(new Date(l.created_at)));
   const today = dayKey(now);
   const yesterday = shift(today, -1);
   const loggedToday = days.has(today);
