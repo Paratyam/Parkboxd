@@ -106,3 +106,15 @@ export async function openRandomPicker() {
 
   d.showModal();
 }
+
+// Professor Chaos mode: the dice pick one of the episodes you rated lowest.
+export async function rollWorst(onMessage) {
+  const { data: { user } } = await supabase.auth.getUser();
+  const [all, mine] = await Promise.all([loadAllEpisodes(), myLogMap(user.id)]);
+  const rated = all.filter((e) => mine.get(e.id)?.rating != null);
+  if (!rated.length) return onMessage?.('Rate some episodes first. Professor Chaos needs victims.');
+  const worst = Math.min(...rated.map((e) => mine.get(e.id).rating));
+  const pool = rated.filter((e) => mine.get(e.id).rating <= worst + 0.5);
+  const ep = pool[Math.floor(Math.random() * pool.length)];
+  location.href = `episode.html?id=${ep.id}&rolled=chaos`;
+}

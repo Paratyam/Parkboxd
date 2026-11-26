@@ -62,7 +62,8 @@ export function setBusy(button, busy, busyText = 'Working…') {
 export function avatarHTML(profile, size = 40) {
   const name = profile?.display_name || profile?.username || '?';
   const colour = profile?.avatar_color || '#f2711c';
-  return `<span class="avatar" style="--c:${esc(colour)};--size:${size}px" aria-hidden="true">${esc(name[0].toUpperCase())}</span>`;
+  const who = profile?.username ? ` data-u="${esc(profile.username)}"` : '';
+  return `<span class="avatar"${who} style="--c:${esc(colour)};--size:${size}px" aria-hidden="true">${esc(name[0].toUpperCase())}</span>`;
 }
 
 export function formatDate(value, opts = { year: 'numeric', month: 'long', day: 'numeric' }) {

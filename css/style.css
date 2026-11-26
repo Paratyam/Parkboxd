@@ -714,6 +714,16 @@ html.mysterion body::before {
   font-family: var(--font-cut); font-size: 70vh; line-height: 1; color: #79e06a; opacity: .05;
 }
 html.mysterion main, html.mysterion .site-header, html.mysterion .site-footer { position: relative; z-index: 1; }
+/* Secret identities: everyone else's avatar is a "?" and their name is blurred until you hover or focus it. */
+html.mysterion .avatar:not(.is-me) { color: transparent; position: relative; }
+html.mysterion .avatar:not(.is-me)::after {
+  content: '?'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: #79e06a; font-family: var(--font-cut); font-size: calc(var(--size) * .55);
+}
+html.mysterion a[href*="profile.html?u="]:not(.is-me) { filter: blur(5px); transition: filter .2s; }
+html.mysterion a[href*="profile.html?u="]:not(.is-me):hover,
+html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: none; }
+@media (prefers-reduced-motion: reduce) { html.mysterion a[href*="profile.html?u="] { transition: none; } }
 
 /* ---- Coon takeover ---- */
 

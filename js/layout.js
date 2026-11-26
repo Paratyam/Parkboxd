@@ -1,9 +1,9 @@
 // Shared header + footer, and the session/profile check every page runs first.
 import { supabase, isConfigured } from './supabase.js';
 import { SITE_NAME } from './config.js';
-import { esc, avatarHTML, currentPage } from './ui.js';
+import { esc, avatarHTML, currentPage, toast } from './ui.js';
 import { line } from './jokes.js';
-import { initModes, modeLogo, coonTakeoverDue, showCoonTakeover } from './fx.js';
+import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -48,7 +48,17 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   }
 
   renderHeader(profile, session);
-  initModes(() => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(); });
+  // Mysterion mode masks everyone's identity except yours.
+  if (profile?.username && /^[a-z0-9_]+$/.test(profile.username)) {
+    const me = profile.username;
+    const style = document.createElement('style');
+    style.textContent = `
+      html.mysterion .avatar[data-u="${me}"] { color: var(--c); }
+      html.mysterion .avatar[data-u="${me}"]::after { content: none; }
+      html.mysterion a[href="profile.html?u=${me}"] { filter: none; }`;
+    document.head.append(style);
+  }
+  initModes(() => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(); syncDice(); });
   if (coonTakeoverDue()) {
     showCoonTakeover((text) => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(22, text); });
   }
@@ -104,7 +114,11 @@ function renderHeader(profile, session) {
     </div>`;
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
-  el.querySelector('#header-random')?.addEventListener('click', async () => (await import('./random.js')).openRandomPicker());
+  el.querySelector('#header-random')?.addEventListener('click', async () => {
+    const r = await import('./random.js');
+    if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
+  });
+  syncDice();
   if (session) refreshBell();
 }
 
@@ -154,4 +168,14 @@ export async function refreshBell() {
   badge.hidden = !count;
   badge.textContent = count > 9 ? '9+' : String(count || '');
   bell.setAttribute('aria-label', count ? `Notifications, ${count} unread` : 'Notifications');
+}
+
+// In Professor Chaos mode the dice turn evil: they make you rewatch your worst-rated episodes.
+function syncDice() {
+  const b = document.getElementById('header-random');
+  if (!b) return;
+  const evil = isChaos();
+  b.textContent = evil ? '😈' : '🎲';
+  b.title = evil ? 'Unleash chaos: rewatch one of your worst-rated episodes' : 'Random episode';
+  b.setAttribute('aria-label', evil ? 'Unleash chaos' : 'Random episode');
 }

@@ -32,7 +32,8 @@ if (!ep) {
   renderShell();
   $('#roll-again')?.addEventListener('click', async () => {
     const r = await import('../random.js');
-    r.rollAndGo(r.savedSettings(), (m) => toast(m));
+    if (params.get('rolled') === 'chaos') r.rollWorst((m) => toast(m));
+    else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
   await Promise.all([refreshMine(), refreshCommunity(), renderNeighbours(), renderTags(), renderArc()]);
   root.removeAttribute('aria-busy');
@@ -57,7 +58,7 @@ function renderShell() {
 
       <div class="ep-main">
         <div>
-          ${params.get('rolled') ? `<div class="toolbar" style="margin-bottom:10px"><span class="tag-chip">🎲 The dice have spoken</span>
+          ${params.get('rolled') ? `<div class="toolbar" style="margin-bottom:10px"><span class="tag-chip">${params.get('rolled') === 'chaos' ? '😈 Professor Chaos chose this. Suffer.' : '🎲 The dice have spoken'}</span>
             <button type="button" class="btn btn-ghost" id="roll-again" style="padding:6px 12px">Roll again</button></div>` : ''}
           <div class="crumbs">${crumbs}</div>
           <h1 class="cut">${esc(ep.title)}</h1>

@@ -4,6 +4,7 @@ import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, epCode, stars } from '../ui.js';
 import { loadAllEpisodes, myLogMap, thumbHTML } from '../episodes.js';
+import { rigRankings } from '../fx.js';
 
 const { user } = await initPage({ title: 'Rankings', auth: 'required' });
 const root = $('#rankings');
@@ -58,5 +59,6 @@ root.innerHTML = `
     </li>`).join('')}</ol>`
     : `<p class="empty">Nothing has ${min} or more ratings yet. Get your friends rating, or lower the minimum. Democracy takes time, mkay.</p>`}`;
 root.removeAttribute('aria-busy');
+rigRankings(root);
 
 $('#min').addEventListener('change', (e) => { location.href = link(type, e.target.value); });

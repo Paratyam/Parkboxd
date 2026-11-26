@@ -6,8 +6,18 @@ const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)'
 
 /** Show the reaction for a new rating, plus hamburger rain for 5★ Butters episodes. */
 export function celebrate(rating, tagNames = [], favourite = null) {
-  toast(ratingReaction(rating, tagNames, favourite));
+  toast(isChaos() ? chaosReaction(rating) : ratingReaction(rating, tagNames, favourite));
   if (rating === 5 && tagNames.some((t) => t.toLowerCase() === 'butters')) burgerRain();
+}
+
+// In Professor Chaos mode every rating gets a villainous reaction.
+function chaosReaction(rating) {
+  if (rating == null) return null;
+  if (rating === 0.5) return 'Half a star! Even General Disarray thinks that\'s harsh. I LOVE it.';
+  if (rating <= 2.5) return 'Yes! Destroy it! Destroy everything!';
+  if (rating <= 3.5) return 'Mediocrity… the perfect breeding ground for chaos.';
+  if (rating < 5) return 'Good. GOOD. Feed the chaos.';
+  return 'Excellent… everything is going according to plan.';
 }
 
 // ---- 🍔 Hamburger rain ----
@@ -148,15 +158,43 @@ export function showCoonTakeover(setLogo) {
       <span class="coon-emoji" aria-hidden="true">🦝</span>
       <div>
         <div class="cut coon-title">This website is now property of The Coon.</div>
-        <div class="coon-sub">Respect his authoritah. Mysterion is not invited.</div>
+        <div class="coon-sub">Respect his authoritah. Mysterion is not invited. <a href="franchise.html" style="color:#fff;text-decoration:underline">See the franchise plan</a></div>
       </div>
       <button type="button" class="btn coon-btn">Fine, whatever</button>
     </div>`;
   main.prepend(banner);
   setLogo?.('THE COON');
+  document.documentElement.classList.add('coon-takeover-on');
+
+  // The Coon renames "Friends" after himself…
+  const friendsLink = [...document.querySelectorAll('.main-nav a')].find((a) => a.textContent.trim() === 'Friends');
+  if (friendsLink) friendsLink.textContent = 'Coon & Friends';
+
   banner.querySelector('.coon-btn').addEventListener('click', () => {
     banner.remove();
     setLogo?.(null);
+    document.documentElement.classList.remove('coon-takeover-on');
+    if (friendsLink) friendsLink.textContent = 'Friends';
+    document.querySelectorAll('.coon-fake').forEach((el) => el.remove());
     toast('The Coon will return. When you least expect it.');
   });
+}
+
+// …and rigs the Rankings: pages with a ranked list call this after rendering.
+export function rigRankings(root) {
+  if (!document.documentElement.classList.contains('coon-takeover-on') || !root) return;
+  let list = root.querySelector('.rank-table');
+  if (!list) {
+    list = document.createElement('ol');
+    list.className = 'rank-table coon-fake';
+    (root.querySelector('section') || root).append(list);
+  }
+  const li = document.createElement('li');
+  li.className = 'coon-fake';
+  li.innerHTML = `
+    <span class="pos">1</span>
+    <a href="franchise.html" class="thumb" aria-hidden="true" tabindex="-1"><div class="ep-thumb paper" style="background:repeating-linear-gradient(90deg,#3a3330 0 14px,#4a423d 14px 28px);display:flex;align-items:center;justify-content:center;font-size:30px">🦝</div></a>
+    <div class="info"><a href="franchise.html">The Coon (2009)</a><span>Ranked #1 by The Coon. Totally legit. See the franchise plan.</span></div>
+    <div class="score"><b>∞</b><span>1 rating (his own)</span></div>`;
+  list.prepend(li);
 }
