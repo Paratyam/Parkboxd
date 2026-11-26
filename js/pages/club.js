@@ -47,6 +47,8 @@ async function render() {
   const bLiked = (bLikes || []).some((l) => l.user_id === user.id);
   const buttersHTML = `
     <article class="review butters-review">
+      <span class="club-tape small" aria-hidden="true"></span>
+      <span class="butters-star" aria-hidden="true">⭐</span>
       ${avatarHTML({ display_name: 'Butters', avatar_color: '#f5c518' }, 36)}
       <div class="review-body">
         <div class="review-meta">
@@ -68,37 +70,52 @@ async function render() {
   const iWatched = (logs || []).some((l) => l.user_id === user.id);
   const past = [-1, -2, -3, -4].map((o) => ({ ep: weeklyPick(all, o), start: weekStart(o) })).filter((x) => x.ep);
 
+  const newPickDay = new Date(next).toLocaleDateString(undefined, { weekday: 'long' });
   root.innerHTML = `
-    <div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Week of ${esc(formatDate(start.toISOString().slice(0, 10)))} · new pick in ${daysLeft} day${daysLeft === 1 ? '' : 's'}</div>
-      <h1 class="cut" style="margin:0;color:var(--white);font-size:clamp(30px,4vw,44px)">Butters' Book Club</h1>
-    </div>
-    <section class="two-col" style="align-items:center">
-      <a href="episode.html?id=${ep.id}" style="display:block">${thumbHTML(ep, { size: 'w780' })}</a>
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div style="color:var(--muted);font-size:13px">${esc(epCode(ep))}${ep.air_date ? ` · ${esc(ep.air_date.slice(0, 4))}` : ''}</div>
-        <h2 class="cut" style="margin:0;color:var(--white);font-size:32px;line-height:1.1"><a href="episode.html?id=${ep.id}" style="color:inherit">${esc(ep.title)}</a></h2>
-        ${ep.overview ? `<p style="margin:0;color:var(--text-soft)">${esc(ep.overview)}</p>` : ''}
+    <section class="club-hero">
+      <span class="club-tape" aria-hidden="true"></span>
+      <div class="club-head">
+        <span class="club-kicker">South Park Elementary Library presents</span>
+        <h1 class="club-title cut">Butters' Book Club</h1>
+        <p class="club-sub">It's episodes, not books. Nobody has the heart to tell him. Week of ${esc(formatDate(start.toISOString().slice(0, 10), { month: 'long', day: 'numeric' }))}.</p>
+      </div>
+      <div class="club-due" title="New pick on ${esc(newPickDay)}">
+        <span>Due back in</span>
+        <b>${daysLeft}</b>
+        <span>day${daysLeft === 1 ? '' : 's'}</span>
+      </div>
+    </section>
+    <section class="club-book">
+      <a href="episode.html?id=${ep.id}" class="club-cover">
+        ${thumbHTML(ep, { size: 'w780', showTitle: false })}
+        <span class="club-ribbon cut">This week's book</span>
+        <span class="club-sticker" aria-hidden="true">⭐<small>Butters' pick</small></span>
+      </a>
+      <div class="club-card">
+        <div class="club-code">${esc(epCode(ep))}${ep.air_date ? ` · ${esc(ep.air_date.slice(0, 4))}` : ''}</div>
+        <h2 class="cut"><a href="episode.html?id=${ep.id}">${esc(ep.title)}</a></h2>
+        ${ep.overview ? `<p class="club-blurb">${esc(ep.overview)}</p>` : ''}
         <div class="toolbar">
-          <button type="button" class="btn btn-green" id="club-log">${iWatched ? 'Log it again' : "I watched it, let's talk"}</button>
-          ${mine.has(ep.id) && !iWatched ? '<span class="result-count">You\'ve seen it before, but not this week.</span>' : ''}
+          <button type="button" class="btn btn-green" id="club-log">${iWatched ? 'Log it again' : "I read it! Let's talk"}</button>
+          ${mine.has(ep.id) && !iWatched ? '<span class="result-count">You\'ve read it before, but not this week.</span>' : ''}
         </div>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          ${watchers.length ? `${watchers.map((p) => `<a href="profile.html?u=${encodeURIComponent(p?.username || '')}" title="${esc(p?.display_name || p?.username)}">${avatarHTML(p, 30)}</a>`).join('')}
-            <span class="result-count">${watchers.length} watched this week</span>`
-            : '<span class="result-count">Nobody has watched it this week yet. Be the first, dude.</span>'}
+        <div class="club-members">
+          <span class="club-members-label">Checked out this week</span>
+          <div>${watchers.length ? `${watchers.map((p) => `<a href="profile.html?u=${encodeURIComponent(p?.username || '')}" title="${esc(p?.display_name || p?.username)}">${avatarHTML(p, 30)}</a>`).join('')}
+            <span class="result-count">${watchers.length} member${watchers.length === 1 ? '' : 's'}</span>`
+            : '<span class="result-count">Nobody yet. Be the first, Butters is waiting!</span>'}</div>
         </div>
       </div>
     </section>
     <section>
-      <div class="section-head"><h2>This week's reviews</h2></div>
+      <div class="section-head"><h2>📝 This week's discussion</h2></div>
       <div class="reviews" id="club-reviews">${buttersHTML}${reviews.length
         ? reviews.map((r) => withButters(reviewHTML(r, { me: user.id, extras, friends, avgs }), r)).join('')
         : '<p class="empty">Nobody else has reviewed it yet. Don\'t leave Butters hanging!</p>'}</div>
     </section>
     <section>
-      <div class="section-head"><h2>Previous weeks</h2></div>
-      <div class="ep-grid">${past.map((x) => cardHTML(x.ep, { mine: mine.get(x.ep.id), meta: `Week of ${formatDate(x.start.toISOString().slice(0, 10), { month: 'short', day: 'numeric' })}` })).join('')}</div>
+      <div class="section-head"><h2>📚 Past reads</h2></div>
+      <div class="club-shelf"><div class="ep-grid">${past.map((x) => cardHTML(x.ep, { mine: mine.get(x.ep.id), meta: `Week of ${formatDate(x.start.toISOString().slice(0, 10), { month: 'short', day: 'numeric' })}` })).join('')}</div></div>
     </section>`;
   root.removeAttribute('aria-busy');
 
