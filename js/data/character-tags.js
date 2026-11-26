@@ -45,7 +45,7 @@ export const CHARACTER_TAGS = [
   ['Cartmanland', ['Cartman']],
   ['Towelie', ['Towelie']],
   ['The Entity', ['Kyle']],
-  ['Here Comes the Neighborhood', ['Token']],
+  ['Here Comes the Neighborhood', ['Tolkien']],
   ['Kenny Dies', ['Kenny']],
   ["Butters' Very Own Episode", ['Butters']],
   // Season 6
@@ -80,7 +80,7 @@ export const CHARACTER_TAGS = [
   // Season 9
   ["Mr. Garrison's Fancy New Vagina", ['Mr. Garrison']],
   ['Die Hippie, Die', ['Cartman']],
-  ['Wing', ['Token']],
+  ['Wing', ['Tolkien']],
   ['Best Friends Forever', ['Kenny']],
   ['The Losing Edge', ['Randy']],
   ['The Death of Eric Cartman', ['Cartman']],
@@ -217,3 +217,11 @@ export const CHARACTER_TAGS = [
 
 // Shown as quick filter buttons on the Episodes page, in this order.
 export const FOCUS_CHARACTERS = ['Cartman', 'Stan', 'Kyle', 'Kenny', 'Butters', 'Randy'];
+
+// Choices for "Favourite character" in Edit profile (character tags from the database are added too).
+export const FAVOURITE_CHARACTERS = [
+  'Cartman', 'Stan', 'Kyle', 'Kenny', 'Butters', 'Randy', 'Sharon', 'Shelly', 'Gerald', 'Sheila', 'Ike',
+  'Mr. Garrison', 'Mr. Mackey', 'PC Principal', 'Chef', 'Jesus', 'Satan', 'Towelie', 'Mr. Hankey',
+  'Wendy', 'Tolkien', 'Jimmy', 'Timmy', 'Craig', 'Tweek', 'Clyde', 'Bebe', 'Heidi', 'Scott Malkinson',
+  'Officer Barbrady', 'Mayor McDaniels', 'Big Gay Al', 'Terrance and Phillip', 'Mysterion', 'Professor Chaos',
+];

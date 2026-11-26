@@ -12,7 +12,7 @@ const root = $('#admin');
 // Names only; you attach them to episodes from each episode page.
 const STARTER_TAGS = {
   character: ['Cartman', 'Stan', 'Kyle', 'Kenny', 'Butters', 'Randy', 'Mr. Garrison', 'Mr. Mackey', 'Chef', 'Wendy',
-    'Token', 'Jimmy', 'Timmy', 'Craig', 'Tweek', 'Towelie', 'Mr. Hankey', 'Satan', 'Terrance and Phillip', 'PC Principal',
+    'Tolkien', 'Jimmy', 'Timmy', 'Craig', 'Tweek', 'Towelie', 'Mr. Hankey', 'Satan', 'Terrance and Phillip', 'PC Principal',
     'Ike', 'Sharon', 'Gerald', 'Sheila', 'Big Gay Al', 'Jesus', 'Officer Barbrady', 'Mayor McDaniels', 'Scott Tenorman', 'Professor Chaos'],
   theme: ['Celebrity parody', 'Politics', 'Religion', 'Holiday special', 'Video games', 'Movie parody', 'Kenny dies',
     'Revenge', 'Meta / TV industry', 'Technology', 'Social media', 'Sports', 'Science', 'Musical numbers', 'Superheroes',
