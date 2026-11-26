@@ -22,8 +22,8 @@ const STARTER_TAGS = {
 // Suggested arcs, matched against episode titles. Nothing is saved until you click Add.
 const STARTER_ARCS = [
   ["Cartman's Mom", ["Cartman's Mom Is a Dirty Slut", "Cartman's Mom Is Still a Dirty Slut"]],
-  ['Cartoon Wars', ['Cartoon Wars Part I', 'Cartoon Wars Part II']],
-  ['Go God Go', ['Go God Go', 'Go God Go XII']],
+  ['Cartoon Wars', ['Cartoon Wars (1)', 'Cartoon Wars (2)']],
+  ['Go God Go', ['Go God Go (1)', 'Go God Go XII (2)']],
   ['Imaginationland', ['Imaginationland', 'Imaginationland Episode II', 'Imaginationland Episode III']],
   ['Pandemic', ['Pandemic', 'Pandemic 2: The Startling']],
   ['200 / 201', ['200', '201']],
