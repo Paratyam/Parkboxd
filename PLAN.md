@@ -114,4 +114,14 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Character focus tags: `js/data/character-tags.js` (185 hand-picked episodes → main character), applied from the Admin page; "Episodes about" quick filter on Episodes. TMDB titles differ for a few (e.g. "Cartoon Wars (1)", "Go God Go XII (2)", "The Simpsons Already Did It")
   - Random episode picker (`js/random.js`): 🎲 in the header, home hero and sidebar. Pick from unwatched / rated (with a minimum) / anything, episodes/specials/movies, one season; "Roll again" on the episode it lands on. Settings remembered in localStorage
   - Jokes (`js/jokes.js`): rating reactions as toasts based on character tags (e.g. Kenny episode rated 1★), show-style empty states, loading lines, confirms and errors. All copy lives in that one file
-- Ideas not built yet: forgot-password flow, upcoming (unaired) episodes section, notifications, year in review, head-to-head ratings with a friend
+- Fun batch (live, waiting for the owner to test):
+  - Forgot password: link on the log-in form → `resetPasswordForEmail` → `reset.html` sets the new password. Uses Supabase's built-in email (rate-limited on the free tier)
+  - Shared maths in `js/insights.js`: everyone's latest ratings, episode averages, character tags
+  - Taste match on other people's profiles (agreement % from shared ratings, "Biggest fight"), full list at `compare.html?u=`
+  - Hot takes: a rating 2★+ from the episode average (episodes with 3+ ratings). 🌶️ tag on reviews; `hottakes.html` (tab on Rankings) lists the hottest takes and spiciest people
+  - Badges (14, computed in the browser, no DB): shown on profiles with progress bars
+  - "Which character are you?" on profiles: share of how much you like each character's episodes (needs character tags)
+  - Season tier list `tiers.html?u=` (Tiers tab): drag, or tap a season then a tier; saved in new column `profiles.season_tiers` (jsonb, applied to the live DB)
+  - Episode of the week `club.html` (nav "Club" + home card): the same pick for everyone, worked out from the week number (Monday UTC), with this week's watchers and reviews and the previous 4 picks
+  - Episode page banners now load w1280 stills instead of the 4K original
+- Ideas not built yet: upcoming (unaired) episodes section, notifications, year in review
