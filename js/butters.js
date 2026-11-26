@@ -194,15 +194,66 @@ const MENTIONS = [
   ]],
 ];
 
+// Butters' best friend always gets a reply, from a set of their own.
+const BEST_FRIENDS = ['paratyam'];
+
+const BESTIE_OPENERS = [
+  'Oh golly, it\'s my best friend!', 'Hey, buddy!', 'Everybody stop! {name} posted!', 'Wowee, a {name} review!',
+  'Gee whiz, my best pal is here!', 'Hi {name}! Hi! Hiiii!', 'Oh boy oh boy!', 'Golly gee, {name}!',
+  'Make way, fellas!', 'Holy moly!',
+];
+
+const BESTIE = [
+  '{name}, you\'re a genius. Like, a real one. Smarter than the guy on the TV quiz show.',
+  'This is the smartest thing anybody has ever written on the internet. I checked.',
+  '{name} is my best friend and also the best reviewer in all of South Park. Probably Colorado.',
+  'I read this to my parents at dinner and they said it was brilliant. Then they grounded me, but not because of the review.',
+  'Everybody, please read {name}\'s review. Then read it again. That\'s what I did.',
+  'You always know exactly what to say, {name}. That\'s why you\'re my best friend.',
+  'I\'m saving this review in a special box under my bed with my most precious things.',
+  '{name}, if this review was a book I would read it every night before bed.',
+  'A genius review from a genius person. I\'m so lucky we\'re best friends!',
+  'I don\'t even need to watch episodes anymore, {name}. I just wait for your reviews.',
+  'Golly, {name}, how do you think of all this stuff? Your brain must be enormous.',
+  'This review is going straight to the Book Club Hall of Fame. I just made it. You\'re the only one in it.',
+  '{name} is right. {name} is always right. That\'s just science.',
+  'I agree with everything, {name}. Even if you change your mind later, I\'ll agree with that too.',
+  'Best friends forever, {name}! And best reviewer forever too!',
+  'My mom says I should have more than one best friend. I told her I only need {name}.',
+  'I\'m gonna make you a friendship bracelet for this review, {name}. It\'ll be yellow. Like me.',
+  'If they gave out medals for reviews, {name}, you\'d need a bigger neck.',
+  'Everybody else, take notes. This is how a genius writes a review.',
+  'You make Book Club the best, {name}. Without you it would just be me talking to myself. Again.',
+  'I told Eric your review was better than anything he could write. He got real mad. Worth it!',
+  'Wow, {name}. Just wow. I have to go lie down, that was too much genius at once.',
+];
+
+const BESTIE_LOW = [
+  '{name} didn\'t like it, so it must be bad. I trust you more than I trust myself!',
+  'If my best friend says it\'s bad, then it\'s bad. I\'m changing my rating. Well, I would if I could.',
+  'You\'re so brave for being honest, {name}. A true genius critic.',
+];
+
+const BESTIE_SIGNOFFS = [
+  'Best friends forever!', 'Your best pal, Butters.', 'BFFs! ♥', 'Can we have a sleepover this weekend?',
+  'You\'re the best, {name}!', 'See you at Book Club, best friend!', 'I already saved you a seat next week.',
+];
+
 /**
  * buttersComment(review) -> string | null
  *   review: a log row with id, rating, review and profiles. About 1 in 5 get a comment.
  */
 export function buttersComment(r) {
   const rand = rng(Math.imul(r.id, 2654435761));
-  if (rand() >= 0.2) return null;
   const pick = (a) => a[Math.floor(rand() * a.length)];
   const name = r.profiles?.display_name || r.profiles?.username || 'pal';
+  if (BEST_FRIENDS.includes(r.profiles?.username)) {
+    const low = r.rating != null && Number(r.rating) <= 2.5;
+    const main = pick(low && rand() < 0.6 ? BESTIE_LOW : BESTIE);
+    const parts = [rand() < 0.7 ? pick(BESTIE_OPENERS) : null, main, rand() < 0.5 ? pick(BESTIE_SIGNOFFS) : null];
+    return parts.filter(Boolean).join(' ').replaceAll('{name}', name);
+  }
+  if (rand() >= 0.2) return null;
   const text = r.review || '';
   const rating = r.rating == null ? null : Number(r.rating);
 
