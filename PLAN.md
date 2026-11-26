@@ -110,4 +110,8 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - `admin.html` (header "Admin" link): tag list (rename, delete, "Add starter tags" = ~50 common character/theme names, no episodes attached), arcs (create, edit parts, delete), "Suggested arcs" matched by title with a preview before adding. Import stays at `import.html`
   - `rankings.html`: Highest rated and Most divisive (std-dev), adjustable minimum ratings (default 3), computed from `episode_ratings`
   - Random episode and "Aired on this day" were already done in Part 2
-- Next step: owner tests Part 5. All planned parts are built
+- After Part 5:
+  - Character focus tags: `js/data/character-tags.js` (185 hand-picked episodes → main character), applied from the Admin page; "Episodes about" quick filter on Episodes. TMDB titles differ for a few (e.g. "Cartoon Wars (1)", "Go God Go XII (2)", "The Simpsons Already Did It")
+  - Random episode picker (`js/random.js`): 🎲 in the header, home hero and sidebar. Pick from unwatched / rated (with a minimum) / anything, episodes/specials/movies, one season; "Roll again" on the episode it lands on. Settings remembered in localStorage
+  - Jokes (`js/jokes.js`): rating reactions as toasts based on character tags (e.g. Kenny episode rated 1★), show-style empty states, loading lines, confirms and errors. All copy lives in that one file
+- Ideas not built yet: forgot-password flow, upcoming (unaired) episodes section, notifications, year in review, head-to-head ratings with a friend
