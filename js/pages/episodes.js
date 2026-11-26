@@ -1,6 +1,6 @@
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
-import { $, params } from '../ui.js';
+import { $, esc, params } from '../ui.js';
 import { loadAllEpisodes, myLogMap, cardHTML } from '../episodes.js';
 
 const { user } = await initPage({ title: 'Episodes', auth: 'required' });
@@ -12,18 +12,41 @@ let filter = 'all';
 let all = [];
 let mine = new Map();
 let community = new Map();
+let tagged = new Map();
+const tagSelect = $('#tag');
 
 q.value = params.get('q') || '';
+tagSelect.addEventListener('change', () => {
+  const url = new URL(location.href);
+  if (tagSelect.value) url.searchParams.set('tag', tagSelect.value); else url.searchParams.delete('tag');
+  history.replaceState(null, '', url);
+  render();
+});
 
 async function load() {
-  const [eps, logs, { data: ratings }] = await Promise.all([
+  const [eps, logs, { data: ratings }, { data: tags }, { data: links }] = await Promise.all([
     loadAllEpisodes(),
     myLogMap(user.id),
     supabase.from('episode_ratings').select('episode_id, avg_rating, rating_count, watcher_count').limit(2000),
+    supabase.from('tags').select('id, name, kind').order('name'),
+    supabase.from('episode_tags').select('episode_id, tag_id').limit(10000),
   ]);
   all = eps;
   mine = logs;
   community = new Map((ratings || []).map((r) => [r.episode_id, r]));
+  tagged = new Map();
+  for (const l of links || []) {
+    if (!tagged.has(l.tag_id)) tagged.set(l.tag_id, new Set());
+    tagged.get(l.tag_id).add(l.episode_id);
+  }
+  const current = tagSelect.value || params.get('tag') || '';
+  const group = (kind, label) => {
+    const opts = (tags || []).filter((t) => t.kind === kind)
+      .map((t) => `<option value="${t.id}">${esc(t.name)} (${tagged.get(t.id)?.size ?? 0})</option>`).join('');
+    return opts ? `<optgroup label="${label}">${opts}</optgroup>` : '';
+  };
+  tagSelect.innerHTML = `<option value="">Any tag</option>${group('character', 'Characters')}${group('theme', 'Themes')}`;
+  tagSelect.value = current;
   render();
   grid.removeAttribute('aria-busy');
 }
@@ -31,7 +54,9 @@ async function load() {
 function render() {
   const text = q.value.trim().toLowerCase();
   const code = text.match(/^s(\d+)\s*e(\d+)$/);
+  const tagSet = tagSelect.value ? tagged.get(Number(tagSelect.value)) || new Set() : null;
   let list = all.filter((e) => {
+    if (tagSet && !tagSet.has(e.id)) return false;
     if (filter === 'unwatched' && mine.has(e.id)) return false;
     if (['episode', 'special', 'movie'].includes(filter) && e.kind !== filter) return false;
     if (code) return e.season === +code[1] && e.number === +code[2];

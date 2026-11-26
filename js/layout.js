@@ -10,7 +10,8 @@ const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
 const NAV = [
   { label: 'Episodes', href: 'episodes.html', ready: true },
   { label: 'Seasons', href: 'seasons.html', ready: true },
-  { label: 'Lists', href: 'lists.html', ready: false },
+  { label: 'Rankings', href: 'rankings.html', ready: true },
+  { label: 'Lists', href: 'lists.html', ready: true },
   { label: 'Friends', href: 'friends.html', ready: true },
 ];
 
@@ -74,7 +75,7 @@ function renderHeader(profile, session) {
         <input type="search" id="header-q" name="q" placeholder="Search episodes">
       </form>
       <button type="button" class="btn btn-green" id="header-log">+ Log</button>
-      ${profile.is_admin ? `<a class="header-link" href="import.html">Admin</a>` : ''}
+      ${profile.is_admin ? `<a class="header-link" href="admin.html">Admin</a>` : ''}
       <a class="avatar-link" href="${me}" aria-label="Your profile">${avatarHTML(profile, 40)}</a>`;
   } else {
     right = `

@@ -2,9 +2,10 @@ import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, epCode, stars, formatDate, avatarHTML } from '../ui.js';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref } from '../episodes.js';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js';
 import { starInput } from '../stars.js';
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
+import { loadArcs, openLogArc } from '../arcs.js';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -26,9 +27,9 @@ if (!ep) {
   root.removeAttribute('aria-busy');
 } else {
   renderShell();
-  await Promise.all([refreshMine(), refreshCommunity(), renderNeighbours()]);
+  await Promise.all([refreshMine(), refreshCommunity(), renderNeighbours(), renderTags(), renderArc()]);
   root.removeAttribute('aria-busy');
-  window.addEventListener('parkboxd:logged', () => { refreshMine(); refreshCommunity(); });
+  window.addEventListener('parkboxd:logged', () => { refreshMine(); refreshCommunity(); renderArc(); });
 }
 
 function renderShell() {
@@ -53,6 +54,7 @@ function renderShell() {
           <h1 class="cut">${esc(ep.title)}</h1>
         </div>
         ${ep.overview ? `<p class="overview">${esc(ep.overview)}</p>` : ''}
+        <div class="tag-chips" id="tags"></div>
 
         <section>
           <div class="section-head"><h2>Ratings</h2><span id="avg" style="font-size:13px;color:var(--muted)"></span></div>
@@ -70,6 +72,7 @@ function renderShell() {
       <aside class="ep-aside">
         <div class="action-panel paper" id="panel"></div>
         <div id="note"></div>
+        <div id="arc-box"></div>
       </aside>
     </div>`;
 }
@@ -109,7 +112,9 @@ function renderPanel() {
         : top4.length < 4
           ? '<button type="button" class="link-button" id="btn-top4" style="color:var(--text-soft)">Add to your Top 4</button>'
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
+      <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>
     </div>`;
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js')).openAddToList(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 
   starInput($('#rate-stars'), { value: rating, size: 34, label: 'Your rating', onChange: setRating });
@@ -218,6 +223,73 @@ async function refreshCommunity() {
     ? sorted.map((r) => reviewHTML(r, { me: user.id, extras, friends })).join('')
     : '<p class="empty">No reviews yet. Be the first to have an opinion.</p>';
   wireReviewLikes($('#reviews'), refreshCommunity);
+}
+
+// ---- Tags (everyone sees them; admins can add and remove) ----
+
+async function renderTags() {
+  const [{ data: mineTags }, { data: allTags }] = await Promise.all([
+    supabase.from('episode_tags').select('tags(id, name, kind)').eq('episode_id', ep.id),
+    profile.is_admin ? supabase.from('tags').select('id, name, kind').order('name') : Promise.resolve({ data: [] }),
+  ]);
+  const tags = (mineTags || []).map((t) => t.tags).filter(Boolean)
+    .sort((a, b) => a.kind.localeCompare(b.kind) || a.name.localeCompare(b.name));
+
+  $('#tags').innerHTML = `
+    ${tags.map((t) => `<span class="tag-chip ${t.kind}"><a href="episodes.html?tag=${t.id}" style="color:inherit">${esc(t.name)}</a>
+      ${profile.is_admin ? `<button type="button" data-untag="${t.id}" aria-label="Remove tag ${esc(t.name)}">×</button>` : ''}</span>`).join('')}
+    ${profile.is_admin ? `
+      <form class="tag-add" id="tag-add">
+        <label class="visually-hidden" for="tag-name">Add a tag</label>
+        <input type="text" id="tag-name" list="tag-options" placeholder="+ Add tag" maxlength="60" autocomplete="off">
+        <datalist id="tag-options">${(allTags || []).map((t) => `<option value="${esc(t.name)}">${t.kind}</option>`).join('')}</datalist>
+        <label class="visually-hidden" for="tag-kind">Tag type (for new tags)</label>
+        <select id="tag-kind"><option value="character">Character</option><option value="theme">Theme</option></select>
+        <button type="submit" class="btn btn-ghost" style="padding:6px 10px">Add</button>
+      </form>` : ''}`;
+
+  if (!profile.is_admin) return;
+  $('#tags').querySelectorAll('[data-untag]').forEach((b) => b.onclick = async () => {
+    await supabase.from('episode_tags').delete().eq('episode_id', ep.id).eq('tag_id', Number(b.dataset.untag));
+    renderTags();
+  });
+  $('#tag-add').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = $('#tag-name').value.trim();
+    if (!name) return;
+    let tag = (allTags || []).find((t) => t.name.toLowerCase() === name.toLowerCase());
+    if (!tag) {
+      const { data, error } = await supabase.from('tags').insert({ name, kind: $('#tag-kind').value }).select('id, name, kind').single();
+      if (error) return alert(error.message);
+      tag = data;
+    }
+    const { error } = await supabase.from('episode_tags').upsert({ episode_id: ep.id, tag_id: tag.id });
+    if (error) return alert(error.message);
+    await renderTags();
+    $('#tag-name')?.focus();
+  });
+}
+
+// ---- Arc this episode belongs to ----
+
+async function renderArc() {
+  const arcs = await loadArcs();
+  const arc = arcs.find((a) => a.episodeIds.includes(ep.id));
+  if (!arc) { $('#arc-box').innerHTML = ''; return; }
+  const [all, mine] = await Promise.all([loadAllEpisodes(), myLogMap(user.id)]);
+  const byId = new Map(all.map((e) => [e.id, e]));
+  const eps = arc.episodeIds.map((x) => byId.get(x)).filter(Boolean);
+  const part = eps.findIndex((e) => e.id === ep.id) + 1;
+  $('#arc-box').innerHTML = `
+    <div class="arc-box paper">
+      <div><span style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em">Part ${part} of ${eps.length}</span><br>
+        <a href="arc.html?id=${arc.id}" style="font-weight:700">${esc(arc.name)}</a></div>
+      <ol>${eps.map((e) => `<li${e.id === ep.id ? ' aria-current="true"' : ''}>${e.id === ep.id ? esc(e.title) : `<a href="episode.html?id=${e.id}">${esc(e.title)}</a>`}${mine.has(e.id) ? ' <span style="color:var(--green)" aria-label="watched">✓</span>' : ''}</li>`).join('')}</ol>
+      <button type="button" class="btn btn-ghost" id="log-arc">Log the whole arc</button>
+    </div>`;
+  $('#log-arc').onclick = async () => {
+    if (await openLogArc(arc, eps, mine)) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
+  };
 }
 
 async function renderNeighbours() {
