@@ -36,7 +36,7 @@ Mockup source files are in `design-mockup/`. They're for reference only, because
 ## Data model (Supabase)
 
 - `profiles` (id → auth.users, username unique, display_name, avatar_color, bio, top4 episode ids, is_admin, created_at)
-- `episodes` (id, tmdb_id unique, season, number, title, overview, air_date, still_path, runtime)
+- `episodes` (id, kind: episode/special/movie, tmdb_id, season, number, title, overview, air_date, still_path, runtime; unique (tmdb_id, kind)). Specials are TMDB season 0; movies have null season/number and come from a TMDB movie search the admin picks from on the import page
 - `logs` (id, user_id, episode_id, watched_on, rating 0.5–5 in half steps or null, liked, review text, is_rewatch, created_at)
 - `watchlist` (user_id, episode_id, added_at)
 - `follows` (follower_id, followee_id)
