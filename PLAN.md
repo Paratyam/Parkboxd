@@ -120,7 +120,7 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Taste match on other people's profiles (agreement % from shared ratings, "Biggest fight"), full list at `compare.html?u=`
   - Hot takes: a rating 2★+ from the episode average (episodes with 3+ ratings). 🌶️ tag on reviews; `hottakes.html` (tab on Rankings) lists the hottest takes and spiciest people
   - Badges (13, computed in the browser, no DB): shown on profiles with progress bars
-  - "Which character are you?" on profiles: share of how much you like each character's episodes (needs character tags)
+  - South Park personality on profiles (replaced "Which character are you?"): Butters, Cartman, Stan, Kyle, Randy, Kenny, Mr. Mackey or Towelie, picked from rating/review/rewatch habits; `PERSONALITY_OVERRIDES` in js/insights.js pins paratyam to Butters
   - Season tier list `tiers.html?u=` (Tiers tab): drag, or tap a season then a tier; saved in new column `profiles.season_tiers` (jsonb, applied to the live DB)
   - Episode of the week `club.html` (nav "Club" + home card): the same pick for everyone, worked out from the week number (Monday UTC), with this week's watchers and reviews and the previous 4 picks
   - Episode page banners now load w1280 stills instead of the 4K original

@@ -35,8 +35,8 @@ $('#swatches').innerHTML = COLOURS.map(([hex, name]) => `
 $('#swatches').addEventListener('change', (e) => { colour = e.target.value; });
 
 // ---- Favourite character ----
-const { data: charTags } = await supabase.from('tags').select('name').eq('kind', 'character').order('name');
-const charNames = [...new Set([...(charTags || []).map((t) => t.name), ...FAVOURITE_CHARACTERS, profile.favourite_character].filter(Boolean))]
+// Only the curated list (plus whatever you already picked, so it isn't lost).
+const charNames = [...new Set([...FAVOURITE_CHARACTERS, profile.favourite_character].filter(Boolean))]
   .sort((a, b) => a.localeCompare(b));
 $('#fav-char').insertAdjacentHTML('beforeend', charNames.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join(''));
 $('#fav-char').value = profile.favourite_character || '';

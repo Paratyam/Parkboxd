@@ -223,5 +223,5 @@ export const FAVOURITE_CHARACTERS = [
   'Cartman', 'Stan', 'Kyle', 'Kenny', 'Butters', 'Randy', 'Sharon', 'Shelly', 'Gerald', 'Sheila', 'Ike',
   'Mr. Garrison', 'Mr. Mackey', 'PC Principal', 'Chef', 'Jesus', 'Satan', 'Towelie', 'Mr. Hankey',
   'Wendy', 'Tolkien', 'Jimmy', 'Timmy', 'Craig', 'Tweek', 'Clyde', 'Bebe', 'Heidi', 'Scott Malkinson',
-  'Officer Barbrady', 'Mayor McDaniels', 'Big Gay Al', 'Terrance and Phillip', 'Mysterion',
+  'Officer Barbrady', 'Mayor McDaniels', 'Terrance and Phillip',
 ];

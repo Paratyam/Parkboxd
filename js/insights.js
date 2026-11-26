@@ -68,29 +68,62 @@ export function tasteLabel(score) {
   return 'Basically Kyle and Cartman';
 }
 
-// ---- Which character are you? ----
+// ---- Your South Park personality ----
+
+// Usernames that get a fixed personality, whatever their habits.
+const PERSONALITY_OVERRIDES = { paratyam: 'Butters' };
+
+const PERSONALITIES = {
+  Butters: { emoji: '🍔', line: "Aw, everything's swell! You've never met an episode you didn't like." },
+  Cartman: { emoji: '😤', line: "Screw you guys. You hate everything and you're proud of it." },
+  Stan: { emoji: '🧢', line: 'Sensible. Reasonable. Kind of boring, dude.' },
+  Kyle: { emoji: '📝', line: 'You know, I learned something today… and you wrote 400 words about it.' },
+  Randy: { emoji: '🌱', line: 'All or nothing. Mostly nothing. Then everything.' },
+  Kenny: { emoji: '🧡', line: 'Mmph mmph mmph. (Translation: you rate a lot and say nothing.)' },
+  'Mr. Mackey': { emoji: '👔', line: 'Everything is fine, mmkay. Three stars, mmkay.' },
+  Towelie: { emoji: '🧻', line: "You wanna watch it again? Yeah, you do. You always do." },
+};
 
 /**
- * From one user's ratings and the character tags: each character scores the
- * "liking" (rating above 2.5) of their episodes. Needs 2+ rated episodes per character.
- * Returns [{ name, pct, avg, n }] best first, or [] if not enough data.
+ * Work out someone's South Park personality from how they rate, review and rewatch.
+ *   logs: [{ episode_id, rating, review, is_rewatch }], ratings: Map(epId → rating), avgs: Map(epId → { avg, count })
+ * Returns { name, emoji, line, why } or null when there isn't enough to go on.
  */
-export function characterAffinity(ratings, byEpisode) {
-  const per = new Map();
-  for (const [epId, r] of ratings) {
-    for (const name of byEpisode.get(epId) || []) {
-      const p = per.get(name) || { name, weight: 0, sum: 0, n: 0 };
-      p.weight += Math.max(0, r - 2.5);
-      p.sum += r;
-      p.n++;
-      per.set(name, p);
-    }
-  }
-  const list = [...per.values()].filter((p) => p.n >= 2 && p.weight > 0);
-  const total = list.reduce((s, p) => s + p.weight, 0);
-  return list
-    .map((p) => ({ name: p.name, pct: Math.round((p.weight / total) * 100), avg: p.sum / p.n, n: p.n }))
-    .sort((x, y) => y.pct - x.pct || y.avg - x.avg);
+export function personality({ username, logs, ratings, avgs }) {
+  const forced = PERSONALITY_OVERRIDES[(username || '').toLowerCase()];
+  if (forced) return { name: forced, ...PERSONALITIES[forced], why: 'Some things are just meant to be.' };
+
+  const rs = [...ratings.values()];
+  if (logs.length < 5 && rs.length < 5) return null;
+  const pct = (n) => Math.round(n * 100);
+  const share = (f) => (rs.length ? rs.filter(f).length / rs.length : 0);
+  const high = share((r) => r >= 4);
+  const low = share((r) => r <= 2);
+  const mid = share((r) => r >= 3 && r <= 3.5);
+  const mean = rs.reduce((a, b) => a + b, 0) / (rs.length || 1);
+  const sd = Math.sqrt(rs.reduce((a, r) => a + (r - mean) ** 2, 0) / (rs.length || 1));
+  const reviews = logs.filter((l) => l.review && l.review.trim());
+  const avgLen = reviews.length ? reviews.reduce((a, l) => a + l.review.trim().length, 0) / reviews.length : 0;
+  const reviewRatio = logs.length ? reviews.length / logs.length : 0;
+  const rewatches = logs.filter((l) => l.is_rewatch).length;
+  const gaps = [...ratings].map(([epId, r]) => avgs.get(epId)).filter((a) => a && a.count >= 3);
+  const gapAvg = gaps.length ? [...ratings].filter(([epId]) => avgs.get(epId)?.count >= 3)
+    .reduce((s, [epId, r]) => s + Math.abs(r - avgs.get(epId).avg), 0) / gaps.length : null;
+
+  // Each character scores 0–1 when its rule fits; the strongest fit wins.
+  const fits = [];
+  if (rs.length >= 5 && high >= 0.7) fits.push(['Butters', high, `${pct(high)}% of your ratings are 4★ or more.`]);
+  if (rs.length >= 5 && low >= 0.3) fits.push(['Cartman', Math.min(1, low * 2), `${pct(low)}% of your ratings are 2★ or less.`]);
+  if (rs.length >= 8 && sd >= 1.4 && high >= 0.2 && low >= 0.2) fits.push(['Randy', Math.min(1, sd / 2), `Your ratings swing wildly (both 4★+ and 2★- all the time).`]);
+  if (rs.length >= 5 && mid >= 0.5) fits.push(['Mr. Mackey', mid, `${pct(mid)}% of your ratings are 3 or 3½★.`]);
+  if (reviews.length >= 5 && avgLen >= 250) fits.push(['Kyle', Math.min(1, avgLen / 500), `Your reviews average ${Math.round(avgLen)} characters.`]);
+  if (logs.length >= 15 && reviewRatio < 0.05) fits.push(['Kenny', 0.6, `${logs.length} logs and ${reviews.length} review${reviews.length === 1 ? '' : 's'}.`]);
+  if (rewatches >= 5 && rewatches / logs.length >= 0.3) fits.push(['Towelie', Math.min(1, rewatches / logs.length + 0.3), `${rewatches} of your ${logs.length} logs are rewatches.`]);
+  if (gapAvg != null && gaps.length >= 5 && gapAvg <= 0.6) fits.push(['Stan', 0.55, `You're usually within ${gapAvg.toFixed(1)}★ of everyone else.`]);
+
+  fits.sort((a, b) => b[1] - a[1]);
+  const [name, , why] = fits[0] || ['Stan', 0, 'Nothing extreme about your ratings. Very Stan.'];
+  return { name, ...PERSONALITIES[name], why };
 }
 
 // ---- Badges ----

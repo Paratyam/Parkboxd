@@ -2,7 +2,7 @@ import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { thumbHTML, loadAllEpisodes } from '../episodes.js';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, characterAffinity, tasteMatch, tasteLabel } from '../insights.js';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js';
 import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML } from '../ui.js';
 import { countRatings, histogramHTML } from '../histogram.js';
 import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js';
@@ -82,19 +82,18 @@ async function render(p) {
       ${b.earned ? '<span class="got">Unlocked</span>' : `<div class="bar" aria-label="${b.have} of ${b.need}"><div style="width:${b.need ? (b.have / b.need) * 100 : 0}%;background:var(--green)"></div></div>`}
     </div>`).join('')}</div>`;
 
-  // Which character are you?
-  const aff = characterAffinity(theirRatings, chars.byEpisode).slice(0, 3);
-  const characterHtml = aff.length
+  // South Park personality, from how they rate, review and rewatch.
+  const persona = personality({ username: p.username, logs: allLogs || [], ratings: theirRatings, avgs });
+  const characterHtml = persona
     ? `<div class="char-card paper">
-        <div class="cut" style="font-size:24px;color:var(--white);line-height:1.1">${isMe ? 'You are' : `${esc(name)} is`} ${aff[0].pct}% ${esc(aff[0].name)}</div>
-        <div class="progress-list" style="margin-top:12px">${aff.map((c) => `
-          <div class="progress-row">
-            <div class="label"><a href="episodes.html?tag=${encodeURIComponent(c.name)}" style="color:var(--text)">${esc(c.name)}</a><span>${c.pct}%</span></div>
-            <div class="bar"><div style="width:${c.pct}%;background:var(--green)"></div></div>
-          </div>`).join('')}</div>
-        <p style="margin:10px 0 0;font-size:12px;color:var(--muted)">Based on how ${isMe ? 'you rate' : 'they rate'} each character's episodes.</p>
+        <div style="display:flex;gap:14px;align-items:center">
+          <span style="font-size:40px;line-height:1" aria-hidden="true">${persona.emoji}</span>
+          <div class="cut" style="font-size:26px;color:var(--white);line-height:1.1">${isMe ? "You're" : `${esc(name)} is`} a ${esc(persona.name)}</div>
+        </div>
+        <p style="margin:10px 0 0;color:var(--text-soft)">${esc(persona.line)}</p>
+        <p style="margin:8px 0 0;font-size:12px;color:var(--muted)">Why: ${esc(persona.why)}</p>
       </div>`
-    : `<p class="empty">Rate a few more character episodes and we'll tell ${isMe ? 'you who you are' : 'you who they are'}. Hopefully not Cartman.</p>`;
+    : `<p class="empty">Log and rate a few more episodes and we'll tell ${isMe ? 'you who you are' : 'you who they are'}. Hopefully not Cartman.</p>`;
 
   // Taste match (on other people's profiles)
   let tasteHtml = '';
@@ -198,7 +197,7 @@ async function render(p) {
       <aside style="display:flex;flex-direction:column;gap:32px">
         ${tasteHtml}
         <section>
-          <div class="section-head"><h2>Which character are you?</h2></div>
+          <div class="section-head"><h2>South Park personality</h2></div>
           ${characterHtml}
         </section>
         <section>
