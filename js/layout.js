@@ -8,8 +8,8 @@ const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
 
 // Set ready: true as each page gets built.
 const NAV = [
-  { label: 'Episodes', href: 'episodes.html', ready: false },
-  { label: 'Seasons', href: 'seasons.html', ready: false },
+  { label: 'Episodes', href: 'episodes.html', ready: true },
+  { label: 'Seasons', href: 'seasons.html', ready: true },
   { label: 'Lists', href: 'lists.html', ready: false },
   { label: 'Friends', href: 'friends.html', ready: false },
 ];
@@ -68,6 +68,12 @@ function renderHeader(profile, session) {
   if (session && profile) {
     const me = profile.username ? `profile.html?u=${encodeURIComponent(profile.username)}` : 'username.html';
     right = `
+      <form class="header-search" role="search" action="episodes.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <label class="visually-hidden" for="header-q">Search episodes</label>
+        <input type="search" id="header-q" name="q" placeholder="Search episodes">
+      </form>
+      <button type="button" class="btn btn-green" id="header-log">+ Log</button>
       ${profile.is_admin ? `<a class="header-link" href="import.html">Admin</a>` : ''}
       <a class="avatar-link" href="${me}" aria-label="Your profile">${avatarHTML(profile, 40)}</a>`;
   } else {
@@ -82,6 +88,19 @@ function renderHeader(profile, session) {
       <nav class="main-nav" aria-label="Main">${nav}</nav>
       <div class="header-right">${right}</div>
     </div>`;
+
+  el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
+}
+
+/**
+ * Open the log dialog. When something is saved, fires a "parkboxd:logged"
+ * event on window so the current page can refresh itself.
+ */
+export async function logEpisode(opts = {}) {
+  const { openLogModal } = await import('./log-modal.js');
+  const changed = await openLogModal(opts);
+  if (changed) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
+  return changed;
 }
 
 function renderFooter(session) {

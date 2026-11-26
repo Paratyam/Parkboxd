@@ -432,6 +432,31 @@ as $$
   where lr.episode_id = p_episode;
 $$;
 
+-- Episodes (incl. specials/movies) first released on a given month/day
+create or replace function public.aired_on_this_day(p_month int, p_day int)
+returns setof public.episodes
+language sql stable security invoker set search_path = public
+as $$
+  select * from public.episodes
+  where extract(month from air_date) = p_month and extract(day from air_date) = p_day
+  order by air_date;
+$$;
+
+-- Most-logged episodes over the last p_days days
+create or replace function public.popular_episodes(p_days int default 7, p_limit int default 12)
+returns table (episode_id bigint, log_count int, watcher_count int, avg_rating numeric)
+language sql stable security invoker set search_path = public
+as $$
+  select l.episode_id, count(*)::int, count(distinct l.user_id)::int, round(avg(l.rating), 2)
+  from public.logs l
+  where l.created_at > now() - make_interval(days => p_days)
+  group by l.episode_id
+  order by 3 desc, 2 desc
+  limit p_limit;
+$$;
+
+grant execute on function public.aired_on_this_day(int, int), public.popular_episodes(int, int) to authenticated;
+
 grant select on public.latest_ratings, public.episode_ratings, public.episode_rating_histogram,
   public.user_stats, public.user_season_averages, public.highest_rated, public.most_divisive
   to authenticated;

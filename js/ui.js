@@ -61,6 +61,14 @@ export function epCode(ep) {
   return `S${ep.season} E${ep.number}`;
 }
 
+// Profile / Diary / Watchlist tabs for a user.
+export function profileTabsHTML(username, active) {
+  const u = encodeURIComponent(username);
+  const tabs = [['profile', 'Profile', `profile.html?u=${u}`], ['diary', 'Diary', `diary.html?u=${u}`], ['watchlist', 'Watchlist', `watchlist.html?u=${u}`]];
+  return `<nav class="profile-tabs" aria-label="Profile sections">${tabs.map(([key, label, href]) =>
+    `<a href="${href}"${key === active ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>`;
+}
+
 export function stars(rating) {
   if (rating == null) return '';
   const full = Math.floor(rating);

@@ -1,7 +1,7 @@
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME, TMDB_IMAGE_BASE } from '../config.js';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode } from '../ui.js';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML } from '../ui.js';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -20,6 +20,7 @@ if (!person) {
   root.removeAttribute('aria-busy');
 } else {
   await render(person);
+  window.addEventListener('parkboxd:logged', () => render(person));
 }
 
 async function render(p) {
@@ -64,11 +65,11 @@ async function render(p) {
     ? `<ol class="diary">${recent.map((l) => `
         <li>
           <span class="date">${esc(formatDate(l.watched_on, { month: 'short', day: 'numeric', year: 'numeric' }))}</span>
-          <span class="title">${esc(l.episodes?.title ?? 'Unknown episode')}<span class="code">${esc(epCode(l.episodes))}</span></span>
+          <span class="title"><a class="title" href="episode.html?id=${l.episodes?.id}">${esc(l.episodes?.title ?? 'Unknown episode')}</a><span class="code">${esc(epCode(l.episodes))}</span></span>
           <span class="rating" aria-label="${l.rating ? `${l.rating} stars` : 'No rating'}">${stars(l.rating)}</span>
           ${l.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}
         </li>`).join('')}</ol>`
-    : `<p class="empty">${isMe ? "You haven't logged anything yet. Logging lands in the next update." : `${esc(name)} hasn't logged anything yet.`}</p>`;
+    : `<p class="empty">${isMe ? "You haven't logged anything yet. Hit \"+ Log\" up top to start." : `${esc(name)} hasn't logged anything yet.`}</p>`;
 
   const colours = ['#3fb950', '#4a90e2', '#f5c518', '#f2711c', '#d63a3a'];
   const started = (progress || []).filter((r) => r.watched > 0);
@@ -95,6 +96,8 @@ async function render(p) {
       </div>` : ''}
     </section>
 
+    ${profileTabsHTML(p.username, 'profile')}
+
     <section>
       <div class="section-head"><h2>Favourite episodes</h2></div>
       <div class="top4">${top4Html}</div>
@@ -102,7 +105,7 @@ async function render(p) {
 
     <div class="two-col">
       <section>
-        <div class="section-head"><h2>Recent diary</h2></div>
+        <div class="section-head"><h2>Recent diary</h2><a href="diary.html?u=${encodeURIComponent(p.username)}">All</a></div>
         ${diaryHtml}
       </section>
       <aside>
