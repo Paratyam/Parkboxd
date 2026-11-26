@@ -102,4 +102,12 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Episode page: Friends' average next to everyone's; friends' and your reviews listed first
   - Home: "Popular with friends this week" (falls back to everyone, then latest episodes), "Recent reviews from friends", Friends' activity feed (latest 12 logs from people you follow)
   - Progress bars are all green now
-- Next step: owner tests Part 4, then Part 5 (extras: tags, arcs, lists, "Most divisive"/"Highest rated" pages)
+- Part 4 checked by owner: following stays one-way (follower system, like Letterboxd)
+- **Part 5 (Extras): code written and live, waiting for the owner to test**. No DB changes needed
+  - Lists: `lists.html` (everyone's / mine, create), `list.html?id=` (view; owner edits title, description, adds via search, reorders, notes, removes, deletes). "Add to a list…" dialog on episode pages (`js/lists.js`)
+  - Arcs: `arc.html?id=`, "Log the whole arc" dialog (`js/arcs.js`: one date, optional shared rating/like, skips parts already logged), arc box on episode pages, "Multi-part arcs" section on `seasons.html#arcs`
+  - Tags: chips on episode pages (link to `episodes.html?tag=`), admins add/remove right there (new tag names pick character/theme), tag filter on Episodes
+  - `admin.html` (header "Admin" link): tag list (rename, delete, "Add starter tags" = ~50 common character/theme names, no episodes attached), arcs (create, edit parts, delete), "Suggested arcs" matched by title with a preview before adding. Import stays at `import.html`
+  - `rankings.html`: Highest rated and Most divisive (std-dev), adjustable minimum ratings (default 3), computed from `episode_ratings`
+  - Random episode and "Aired on this day" were already done in Part 2
+- Next step: owner tests Part 5. All planned parts are built
