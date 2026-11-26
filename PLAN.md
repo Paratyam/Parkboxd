@@ -85,5 +85,6 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Log dialog (`js/log-modal.js`) from the header "+ Log", episode pages and diary edit: date or "don't remember", ½–5 stars, like, review, rewatch. Logging removes the episode from your watchlist
   - Quick Watch/Like/Rate on an episode page with no log yet creates an undated log. Un-watching deletes all your logs for it (with a confirm)
   - Reviews and "popular" show everyone for now; Part 4 switches them to friends
-  - Shared code: `js/episodes.js` (cards, loaders, `myLogMap`), `js/stars.js`; profile pages have Profile / Diary / Watchlist tabs
+  - Shared code: `js/episodes.js` (cards, loaders, `myLogMap`), `js/stars.js`; profile pages have Profile / Diary / Watchlist / Ratings tabs
+  - Letterboxd-style ratings chart (`js/histogram.js`) on profiles; each bar links to `ratings.html?u=&r=4` listing that user's episodes at that rating
 - Next step: owner tests Part 2, then Part 3 (profiles: stats, Top 4, season rankings, edit profile)
