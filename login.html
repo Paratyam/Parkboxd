@@ -44,6 +44,18 @@
           <input type="password" id="login-password" autocomplete="current-password" required>
         </div>
         <button class="btn btn-green" type="submit">Log in</button>
+        <button type="button" class="link-button" id="show-forgot" style="align-self:center;font-size:13px">Forgot your password?</button>
+      </form>
+
+      <form class="form" id="forgot-form" novalidate hidden>
+        <h1 class="cut">Forgot it?</h1>
+        <p class="lead" style="margin:0">Happens to the best of us. Mostly Cartman. Enter your email and we'll send you a link to pick a new one.</p>
+        <div class="field">
+          <label for="forgot-email">Email</label>
+          <input type="email" id="forgot-email" autocomplete="email" required>
+        </div>
+        <button class="btn btn-green" type="submit">Send reset link</button>
+        <button type="button" class="link-button" id="back-to-login" style="align-self:center;font-size:13px">Back to log in</button>
       </form>
 
       <form class="form" id="signup-form" role="tabpanel" aria-labelledby="tab-signup" novalidate hidden>

@@ -1,7 +1,8 @@
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
-import { thumbHTML } from '../episodes.js';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, characterAffinity, tasteMatch, tasteLabel } from '../insights.js';
 import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML } from '../ui.js';
 import { countRatings, histogramHTML } from '../histogram.js';
 import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js';
@@ -32,7 +33,7 @@ async function render(p) {
   const name = p.display_name || p.username;
   document.title = `${name} · ${SITE_NAME}`;
 
-  const [{ data: stats }, { data: recent }, { data: top4Eps }, { data: progress }, { data: ratings }] = await Promise.all([
+  const [{ data: stats }, { data: recent }, { data: top4Eps }, { data: progress }, { data: ratings }, everyone, chars, avgs, all, { data: allLogs }] = await Promise.all([
     supabase.from('user_stats').select('*').eq('user_id', p.id).maybeSingle(),
     supabase.from('logs')
       .select('id, watched_on, rating, liked, is_rewatch, review, episodes(id, kind, season, number, title, air_date)')
@@ -45,7 +46,60 @@ async function render(p) {
       : Promise.resolve({ data: [] }),
     supabase.rpc('season_progress', { p_user: p.id }),
     supabase.from('latest_ratings').select('rating').eq('user_id', p.id).limit(5000),
+    allLatestRatings(),
+    characterTags(),
+    episodeAverages(),
+    loadAllEpisodes(),
+    supabase.from('logs').select('episode_id, rating, review, is_rewatch, watched_on').eq('user_id', p.id).limit(5000),
   ]);
+  const theirRatings = everyone.get(p.id) || new Map();
+
+  // Badges
+  const badges = computeBadges({
+    logs: allLogs || [], ratings: theirRatings, all, byName: chars.byName, avgs, following: stats?.following ?? 0,
+  }).sort((a, b) => Number(b.earned) - Number(a.earned) || b.have / b.need - a.have / a.need);
+  const earned = badges.filter((b) => b.earned).length;
+  const badgesHtml = `<div class="badges">${badges.map((b) => `
+    <div class="badge paper${b.earned ? ' earned' : ''}" title="${esc(b.desc)}${b.earned ? '' : ` (${b.have} / ${b.need})`}">
+      <span class="emoji" aria-hidden="true">${b.emoji}</span>
+      <strong>${esc(b.name)}</strong>
+      <span>${esc(b.desc)}</span>
+      ${b.earned ? '<span class="got">Unlocked</span>' : `<div class="bar" aria-label="${b.have} of ${b.need}"><div style="width:${b.need ? (b.have / b.need) * 100 : 0}%;background:var(--green)"></div></div>`}
+    </div>`).join('')}</div>`;
+
+  // Which character are you?
+  const aff = characterAffinity(theirRatings, chars.byEpisode).slice(0, 3);
+  const characterHtml = aff.length
+    ? `<div class="char-card paper">
+        <div class="cut" style="font-size:24px;color:var(--white);line-height:1.1">${isMe ? 'You are' : `${esc(name)} is`} ${aff[0].pct}% ${esc(aff[0].name)}</div>
+        <div class="progress-list" style="margin-top:12px">${aff.map((c) => `
+          <div class="progress-row">
+            <div class="label"><a href="episodes.html?tag=${encodeURIComponent(c.name)}" style="color:var(--text)">${esc(c.name)}</a><span>${c.pct}%</span></div>
+            <div class="bar"><div style="width:${c.pct}%;background:var(--green)"></div></div>
+          </div>`).join('')}</div>
+        <p style="margin:10px 0 0;font-size:12px;color:var(--muted)">Based on how ${isMe ? 'you rate' : 'they rate'} each character's episodes.</p>
+      </div>`
+    : `<p class="empty">Rate a few more character episodes and we'll tell ${isMe ? 'you who you are' : 'you who they are'}. Hopefully not Cartman.</p>`;
+
+  // Taste match (on other people's profiles)
+  let tasteHtml = '';
+  if (!isMe) {
+    const tm = tasteMatch(everyone.get(me.id) || new Map(), theirRatings);
+    const byId = new Map(all.map((e) => [e.id, e]));
+    tasteHtml = `
+      <section>
+        <div class="section-head"><h2>Taste match</h2>${tm ? `<a href="compare.html?u=${u}">Compare</a>` : ''}</div>
+        ${tm?.score != null
+          ? `<div class="char-card paper">
+              <div class="cut" style="font-size:34px;color:var(--white);line-height:1">${tm.score}%</div>
+              <div style="color:var(--text-soft);font-size:14px;margin-top:4px">${esc(tasteLabel(tm.score))} · ${tm.shared} episodes you both rated</div>
+              ${tm.pairs[0].diff >= 1.5 ? `<p style="margin:12px 0 0;font-size:13px;color:var(--text-soft)">Biggest fight:
+                <a href="episode.html?id=${tm.pairs[0].epId}">${esc(byId.get(tm.pairs[0].epId)?.title || '')}</a>.
+                You gave it ${stars(tm.pairs[0].a)}, ${esc(name)} gave it ${stars(tm.pairs[0].b)}.</p>` : ''}
+            </div>`
+          : `<p class="empty">You need at least 3 episodes you've both rated. ${tm ? `You have ${tm.shared}.` : ''} Get watching.</p>`}
+      </section>`;
+  }
   const ratingCounts = countRatings((ratings || []).map((r) => r.rating));
   const ratedTotal = ratingCounts.reduce((a, b) => a + b, 0);
   const u = encodeURIComponent(p.username);
@@ -114,12 +168,22 @@ async function render(p) {
       <div class="top4">${top4Html}</div>
     </section>
 
+    <section>
+      <div class="section-head"><h2>Badges</h2><span class="result-count">${earned} of ${badges.length} unlocked</span></div>
+      ${badgesHtml}
+    </section>
+
     <div class="two-col">
       <section>
         <div class="section-head"><h2>Recent diary</h2><a href="diary.html?u=${encodeURIComponent(p.username)}">All</a></div>
         ${diaryHtml}
       </section>
       <aside style="display:flex;flex-direction:column;gap:32px">
+        ${tasteHtml}
+        <section>
+          <div class="section-head"><h2>Which character are you?</h2></div>
+          ${characterHtml}
+        </section>
         <section>
           <div class="section-head"><h2><a href="ratings.html?u=${u}" style="color:inherit">Ratings</a></h2><a href="ratings.html?u=${u}">${ratedTotal}</a></div>
           ${ratedTotal

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New password · Parkboxd</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script type="module" src="js/pages/reset.js"></script>
+</head>
+<body>
+<header id="site-header" class="site-header"></header>
+
+<main>
+  <section class="hero small">
+    <svg class="hero-mountains" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 320 L0 200 L160 90 L260 170 L420 40 L560 160 L700 70 L860 180 L1000 60 L1150 170 L1300 100 L1440 190 L1440 320 Z" fill="#2c3e52"/>
+      <path d="M160 90 L200 118 L180 122 L150 112 Z M420 40 L470 82 L440 78 L410 90 L390 68 Z M700 70 L745 108 L715 104 L690 112 L672 92 Z M1000 60 L1050 104 L1020 100 L995 110 L975 86 Z M1300 100 L1335 128 L1310 126 L1285 116 Z" fill="#eef3f7"/>
+      <path d="M0 320 L0 260 L240 220 L520 250 L800 210 L1100 245 L1440 220 L1440 320 Z" fill="#eef3f7"/>
+    </svg>
+    <div class="wrap hero-inner"><div class="cut hero-tagline">New password, who dis?</div></div>
+  </section>
+
+  <div class="wrap" style="padding-bottom:64px">
+    <div class="auth-card paper">
+      <h1 class="cut">Pick a new password</h1>
+      <p class="notice" id="msg" role="status" hidden></p>
+      <form class="form" id="reset-form" novalidate>
+        <div class="field">
+          <label for="new-password">New password</label>
+          <input type="password" id="new-password" autocomplete="new-password" minlength="8" required aria-describedby="pw-hint">
+          <span class="hint" id="pw-hint">At least 8 characters. Not "password". Not "cartmanrules".</span>
+        </div>
+        <div class="field">
+          <label for="new-password-2">Same again</label>
+          <input type="password" id="new-password-2" autocomplete="new-password" required>
+        </div>
+        <button class="btn btn-green" type="submit">Save password</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer id="site-footer" class="site-footer"></footer>
+</body>
+</html>

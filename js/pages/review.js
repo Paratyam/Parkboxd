@@ -5,6 +5,7 @@ import { SITE_NAME } from '../config.js';
 import { $, esc, params, avatarHTML, notify } from '../ui.js';
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
 import { line } from '../jokes.js';
+import { episodeAverages } from '../insights.js';
 
 const { user } = await initPage({ title: 'Review', auth: 'required' });
 const root = $('#review');
@@ -21,7 +22,7 @@ async function render() {
     root.removeAttribute('aria-busy');
     return;
   }
-  const extras = await reviewExtras([r.id], user.id);
+  const [extras, avgs] = await Promise.all([reviewExtras([r.id], user.id), episodeAverages()]);
   const who = r.profiles?.display_name || r.profiles?.username;
   document.title = `${who} on ${r.episodes.title} · ${SITE_NAME}`;
   const reviewOwner = r.user_id === user.id;
@@ -31,7 +32,7 @@ async function render() {
 
   root.innerHTML = `
     <div class="section-head"><h2>Review</h2><a href="episode.html?id=${r.episodes.id}">All reviews of this episode</a></div>
-    ${r.review ? reviewHTML(r, { me: user.id, extras, friends, showEpisode: true, full: true }) : '<p class="empty">This log has no review text.</p>'}
+    ${r.review ? reviewHTML(r, { me: user.id, extras, friends, avgs, showEpisode: true, full: true }) : '<p class="empty">This log has no review text.</p>'}
     ${likerNames.length ? `<p style="margin:-8px 0 0;font-size:13px;color:var(--muted)">Liked by ${likerNames.map((p) =>
       `<a href="profile.html?u=${encodeURIComponent(p.username)}">${esc(p.display_name || p.username)}</a>`).join(', ')}</p>` : ''}
 

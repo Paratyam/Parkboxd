@@ -42,7 +42,11 @@ async function load() {
     if (!tagged.has(l.tag_id)) tagged.set(l.tag_id, new Set());
     tagged.get(l.tag_id).add(l.episode_id);
   }
-  const current = tagSelect.value || params.get('tag') || '';
+  // ?tag= can be a tag id or a tag name (e.g. ?tag=Butters).
+  let current = tagSelect.value || params.get('tag') || '';
+  if (current && !/^\d+$/.test(current)) {
+    current = String((tags || []).find((t) => t.name.toLowerCase() === current.toLowerCase())?.id ?? '');
+  }
   const group = (kind, label) => {
     const opts = (tags || []).filter((t) => t.kind === kind)
       .map((t) => `<option value="${t.id}">${esc(t.name)} (${tagged.get(t.id)?.size ?? 0})</option>`).join('');

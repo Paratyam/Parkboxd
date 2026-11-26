@@ -36,6 +36,9 @@ create table if not exists public.episodes (
   still_path  text,
   runtime     int
 );
+-- Season tier list: { "S": [5, 7], "A": [10], ... } keyed by tier, values are season numbers.
+alter table public.profiles add column if not exists season_tiers jsonb not null default '{}';
+
 -- Upgrades for databases created before specials/movies existed.
 alter table public.episodes add column if not exists kind text not null default 'episode';
 alter table public.episodes alter column season drop not null, alter column number drop not null;
@@ -271,7 +274,7 @@ create policy "read" on public.arc_episodes for select to authenticated using (t
 create policy "update own" on public.profiles for update to authenticated
   using (id = (select auth.uid())) with check (id = (select auth.uid()));
 revoke insert, update, delete on public.profiles from anon, authenticated;
-grant update (username, display_name, avatar_color, bio, top4) on public.profiles to authenticated;
+grant update (username, display_name, avatar_color, bio, top4, season_tiers) on public.profiles to authenticated;
 
 -- Own-row tables
 create policy "insert own" on public.logs for insert to authenticated with check (user_id = (select auth.uid()));

@@ -20,6 +20,7 @@ function showTab(name) {
     $(`#tab-${t}`).setAttribute('aria-selected', String(t === name));
     $(`#${t}-form`).hidden = t !== name;
   }
+  $('#forgot-form').hidden = true;
   document.title = `${name === 'login' ? 'Log in' : 'Sign up'} · ${document.title.split(' · ').pop()}`;
   notify(msg, '');
 }
@@ -48,6 +49,30 @@ $('#login-form').addEventListener('submit', async (e) => {
   }
   const { data: p } = await supabase.from('profiles').select('username').eq('id', data.user.id).maybeSingle();
   goOn(p);
+});
+
+// ---- Forgot password ----
+$('#show-forgot').addEventListener('click', () => {
+  $('#login-form').hidden = true;
+  $('#forgot-form').hidden = false;
+  $('#forgot-email').value = $('#login-email').value;
+  notify(msg, '');
+  $('#forgot-email').focus();
+});
+$('#back-to-login').addEventListener('click', () => {
+  $('#forgot-form').hidden = true;
+  showTab('login');
+});
+$('#forgot-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('#forgot-email').value.trim();
+  if (!email) return notify(msg, 'Enter your email.', 'error');
+  const btn = e.submitter || $('#forgot-form button[type="submit"]');
+  setBusy(btn, true, 'Sending…');
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: new URL('reset.html', location.href).href });
+  setBusy(btn, false);
+  if (error) return notify(msg, error.message, 'error');
+  notify(msg, `If ${email} has an account, a reset link is on its way. Check your spam too.`, 'ok');
 });
 
 // ---- Sign up ----

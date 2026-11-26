@@ -4,6 +4,8 @@ import { $, esc, epCode, stars, avatarHTML } from '../ui.js';
 import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js';
 import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js';
 import { line } from '../jokes.js';
+import { episodeAverages } from '../insights.js';
+import { weeklyPick } from '../club.js';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -71,10 +73,10 @@ async function renderHome() {
       .map((e) => cardHTML(e, { mine: mine.get(e.id), meta: e.air_date.slice(0, 4) }));
   }
 
-  const extras = await reviewExtras((reviews || []).map((r) => r.id), user.id);
+  const [extras, avgs] = await Promise.all([reviewExtras((reviews || []).map((r) => r.id), user.id), episodeAverages()]);
   const reviewsTitle = hasFriends ? 'Recent reviews from friends' : 'Recent reviews';
   const reviewsHTML = reviews?.length
-    ? reviews.map((r) => reviewHTML(r, { me: user.id, extras, showEpisode: true })).join('')
+    ? reviews.map((r) => reviewHTML(r, { me: user.id, extras, avgs, showEpisode: true })).join('')
     : `<p class="empty">${hasFriends ? 'Your friends haven\'t reviewed anything lately. Too busy at Casa Bonita, probably.' : esc(line('reviewsEmpty'))}</p>`;
 
   // Friends' latest logs (anything, not just reviews).
@@ -120,8 +122,17 @@ async function renderHome() {
     ${started.length ? '' : '<p class="empty" style="margin:0">Log something to start filling these up.</p>'}
   </div>`;
 
+  const weekly = weeklyPick(all);
+  const weeklyHTML = weekly ? `
+    <a class="paper callout tilt-right" href="club.html" style="background-color:var(--blue-2);color:var(--white)">
+      <div class="cut" style="color:var(--white)">Episode of the week</div>
+      <p style="color:var(--white)"><strong>${esc(weekly.title)}</strong> · ${esc(epCode(weekly))}. Everybody watches it, everybody argues about it.</p>
+      <span style="font-weight:700;text-decoration:underline">${mine.has(weekly.id) ? 'See the reviews' : 'Join in'}</span>
+    </a>` : '';
+
   root.innerHTML = `
     ${anniversaryHTML}
+    ${weeklyHTML}
     <section>
       <div class="section-head"><h2>${popTitle}</h2><a href="episodes.html">More</a></div>
       <div class="ep-grid">${popCards.join('')}</div>

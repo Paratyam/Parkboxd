@@ -31,6 +31,7 @@ root.innerHTML = `
     <nav class="profile-tabs" aria-label="Ranking type">
       <a href="${link('top', min)}"${type === 'top' ? ' aria-current="page"' : ''}>Highest rated</a>
       <a href="${link('divisive', min)}"${type === 'divisive' ? ' aria-current="page"' : ''}>Most divisive</a>
+      <a href="hottakes.html">🌶️ Hot takes</a>
     </nav>
   </div>
   <div class="toolbar">

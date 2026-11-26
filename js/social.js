@@ -3,6 +3,7 @@ import { supabase } from './supabase.js';
 import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js';
 import { thumbHTML } from './episodes.js';
 import { line } from './jokes.js';
+import { isHotTake } from './insights.js';
 
 export async function followingIds(userId) {
   const { data } = await supabase.from('follows').select('followee_id').eq('follower_id', userId);
@@ -58,7 +59,8 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
  *   r: log row with profiles(...) and optionally episodes(...)
  *   opts: { me, extras, friends (Set of ids), showEpisode, full }
  */
-export function reviewHTML(r, { me, extras, friends, showEpisode = false, full = false } = {}) {
+export function reviewHTML(r, { me, extras, friends, avgs, showEpisode = false, full = false } = {}) {
+  const hot = isHotTake(r.rating, avgs?.get(r.episode_id ?? r.episodes?.id));
   const likes = extras?.likes.get(r.id) || 0;
   const comments = extras?.comments.get(r.id) || 0;
   const liked = extras?.mine.has(r.id);
@@ -79,6 +81,7 @@ export function reviewHTML(r, { me, extras, friends, showEpisode = false, full =
           <span>${showEpisode ? '' : 'Review by '}<a href="profile.html?u=${encodeURIComponent(r.profiles?.username || '')}"><strong>${esc(who)}</strong></a></span>
           ${friends?.has(r.user_id) ? '<span class="friend-tag">Friend</span>' : ''}
           <span class="rating">${stars(r.rating)}</span>
+          ${hot ? `<span class="hot-tag" title="${Math.abs(Number(r.rating) - avgs.get(r.episode_id ?? r.episodes?.id).avg).toFixed(1)}★ away from the average">🌶️ Hot take</span>` : ''}
           ${r.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}
           ${r.is_rewatch ? '<span>Rewatch</span>' : ''}
           ${r.watched_on ? `<span>${esc(formatDate(r.watched_on, { month: 'short', day: 'numeric', year: 'numeric' }))}</span>` : ''}
@@ -107,4 +110,4 @@ export function wireReviewLikes(root, onChange) {
   }));
 }
 
-export const REVIEW_SELECT = 'id, user_id, rating, liked, review, is_rewatch, watched_on, created_at, profiles(username, display_name, avatar_color)';
+export const REVIEW_SELECT = 'id, user_id, episode_id, rating, liked, review, is_rewatch, watched_on, created_at, profiles(username, display_name, avatar_color)';

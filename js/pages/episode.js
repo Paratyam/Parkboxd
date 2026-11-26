@@ -40,7 +40,7 @@ if (!ep) {
 
 function renderShell() {
   document.title = `${ep.title} · ${SITE_NAME}`;
-  const big = stillUrl(ep, ep.kind === 'movie' ? 'w1280' : 'original');
+  const big = stillUrl(ep, 'w1280');
   const year = ep.air_date ? ep.air_date.slice(0, 4) : '';
   const crumbs = ep.kind === 'movie'
     ? `<a href="${seasonHref(ep)}">Movies</a>${year ? ` · ${year}` : ''}${ep.runtime ? ` · ${ep.runtime} min` : ''}`
@@ -229,7 +229,7 @@ async function refreshCommunity() {
   const sorted = (reviews || []).sort((a, b) => rank(a) - rank(b));
   const extras = await reviewExtras(sorted.map((r) => r.id), user.id);
   $('#reviews').innerHTML = sorted.length
-    ? sorted.map((r) => reviewHTML(r, { me: user.id, extras, friends })).join('')
+    ? sorted.map((r) => reviewHTML(r, { me: user.id, extras, friends, avgs: new Map([[ep.id, { avg: Number(s.avg_rating), count: s.rating_count ?? 0 }]]) })).join('')
     : `<p class="empty">${esc(line('reviewsEmpty'))}</p>`;
   wireReviewLikes($('#reviews'), refreshCommunity);
 }

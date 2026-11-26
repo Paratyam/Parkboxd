@@ -524,6 +524,7 @@ a.top4-slot { color: inherit; }
 .review-foot a:hover { color: var(--text); }
 .review-like { font-size: 12px; }
 .review-like[aria-pressed="true"] { color: var(--orange); }
+.hot-tag { background: rgba(214,58,58,.2); color: #ffb3b3; border-radius: 3px; padding: 1px 6px; font-size: 11px; font-weight: 700; }
 .friend-tag { background: rgba(74,144,226,.18); color: #b9d6fa; border-radius: 3px; padding: 1px 6px; font-size: 11px; font-weight: 700; }
 
 .people { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -596,6 +597,39 @@ a.top4-slot { color: inherit; }
 .rank-table .score { text-align: right; display: flex; flex-direction: column; }
 .rank-table .score b { color: var(--green); font-size: 22px; }
 .rank-table .score span { color: var(--muted); font-size: 12px; }
+
+/* ---- Badges, character card ---- */
+
+.badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.badge {
+  background-color: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted);
+  opacity: .6;
+}
+.badge.earned { background-color: var(--surface-2); opacity: 1; }
+.badge .emoji { font-size: 28px; line-height: 1.1; filter: grayscale(1); }
+.badge.earned .emoji { filter: none; }
+.badge strong { color: var(--white); font-size: 13px; }
+.badge .got { color: var(--green); font-weight: 700; }
+.badge .bar { height: 6px; margin-top: 4px; }
+.char-card { background-color: var(--surface-2); padding: 18px 20px; }
+
+/* ---- Tier list ---- */
+
+.tiers { display: flex; flex-direction: column; gap: 8px; }
+.tier { display: flex; min-height: 64px; background: var(--surface); border-radius: 4px; overflow: hidden; }
+.tier .label {
+  flex: 0 0 64px; display: flex; align-items: center; justify-content: center; font-family: var(--font-cut); font-size: 30px; color: var(--bg);
+}
+.tier .slot { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; align-content: flex-start; }
+.tier .slot.drop-hover, .tier-pool.drop-hover { outline: 3px dashed var(--yellow); outline-offset: -3px; }
+.tier-pool { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; background: var(--bg-deep); border-radius: 4px; min-height: 60px; }
+.tier-chip {
+  background: var(--surface-2); color: var(--white); border: 2px solid transparent; border-radius: 4px; padding: 8px 10px;
+  font: 700 13px var(--font-body); cursor: grab; user-select: none;
+}
+.tier-chip[aria-pressed="true"] { border-color: var(--yellow); }
+.tier-chip .avg { color: var(--green); font-weight: 600; margin-left: 4px; font-size: 11px; }
+.tier-view .tier-chip { cursor: default; }
 
 /* ---- Toasts ---- */
 
