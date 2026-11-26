@@ -125,3 +125,8 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Episode of the week `club.html` (nav "Club" + home card): the same pick for everyone, worked out from the week number (Monday UTC), with this week's watchers and reviews and the previous 4 picks
   - Episode page banners now load w1280 stills instead of the 4K original
 - Ideas not built yet: upcoming (unaired) episodes section, notifications, year in review
+- Butters pack (live):
+  - GROUNDED stamp on profiles for 24h after rating a Butters-tagged episode 2★ or less (from the log's `created_at`, so re-rating an old log doesn't trigger it), plus a matching reaction line
+  - Professor Chaos mode (`js/fx.js`): type "chaos" anywhere (not in a text box) to toggle; green + tinfoil theme via `html.chaos`, logo spells CHAOS, remembered in localStorage
+  - 🍔 Hamburger rain on a 5★ rating of a Butters episode (skipped with reduced motion)
+  - Favourite character (`profiles.favourite_character`, applied to the live DB): picker in Edit profile, "Team …" flair on profiles, reactions take their side
