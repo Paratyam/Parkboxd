@@ -1,7 +1,7 @@
 import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
-import { $, esc, params, epCode, formatDate, toast } from '../ui.js';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js';
 import { line } from '../jokes.js';
 import { celebrate } from '../fx.js';
 import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js';
@@ -71,6 +71,8 @@ function renderShell() {
           <div id="histogram"></div>
         </section>
 
+        <section id="my-review" hidden></section>
+
         <section>
           <div class="section-head"><h2>Reviews</h2></div>
           <div class="reviews" id="reviews"></div>
@@ -134,12 +136,55 @@ function renderPanel() {
   $('#btn-watchlist').onclick = toggleWatchlist;
   $('#btn-log').onclick = () => logEpisode({ episode: ep, rewatch: watched });
 
+  renderMyReview();
+
   const dated = myLogs.filter((l) => l.watched_on);
   $('#note').innerHTML = myLogs.length
     ? `<div class="note-card paper tilt-right"><strong>You've logged this ${myLogs.length === 1 ? 'once' : `${myLogs.length} times`}.</strong>
         ${dated.length ? `Last watched ${esc(formatDate(dated[0].watched_on))}.` : ''}
         <a href="diary.html" style="color:var(--bg);text-decoration:underline">See your diary</a></div>`
     : '';
+}
+
+// Your own review(s) up top, like Letterboxd. Rated but no review yet: a prompt that
+// adds the review to your existing log instead of making a new one.
+function renderMyReview() {
+  const box = $('#my-review');
+  const reviewed = myLogs.filter((l) => l.review && l.review.trim());
+  if (!myLogs.length) { box.hidden = true; return; }
+  box.hidden = false;
+  const meta = (l) => [
+    l.rating != null ? `<span class="rating">${stars(l.rating)}</span>` : '',
+    l.liked ? '<span class="heart" aria-label="Liked">♥</span>' : '',
+    l.is_rewatch ? '<span>Rewatch</span>' : '',
+    l.watched_on ? `<span>${esc(formatDate(l.watched_on, { month: 'short', day: 'numeric', year: 'numeric' }))}</span>` : '',
+  ].join('');
+  box.innerHTML = `
+    <div class="section-head"><h2>Your review${reviewed.length > 1 ? 's' : ''}</h2></div>
+    <div class="reviews">${reviewed.length
+      ? reviewed.map((l) => `
+        <article class="review my-review">
+          ${avatarHTML(profile, 36)}
+          <div class="review-body">
+            <div class="review-meta"><span>Review by <strong>you</strong></span>${meta(l)}</div>
+            <p>${esc(l.review)}</p>
+            <div class="review-foot">
+              <button type="button" class="link-button" data-edit-log="${l.id}">Edit review</button>
+              <a href="review.html?id=${l.id}">Likes and comments</a>
+            </div>
+          </div>
+        </article>`).join('')
+      : `<div class="review my-review">
+          ${avatarHTML(profile, 36)}
+          <div class="review-body">
+            <div class="review-meta"><span>You</span>${meta(myLogs[0])}</div>
+            <p>${myLogs[0].rating != null ? 'You rated this but haven\'t said why. Go on, the people need to know.' : 'You watched this but haven\'t reviewed it yet.'}</p>
+            <div class="review-foot"><button type="button" class="btn btn-green" data-edit-log="${myLogs[0].id}" style="padding:6px 14px">Write a review</button></div>
+          </div>
+        </div>`}</div>`;
+  box.querySelectorAll('[data-edit-log]').forEach((b) => {
+    b.onclick = () => logEpisode({ episode: ep, log: myLogs.find((l) => l.id === Number(b.dataset.editLog)) });
+  });
 }
 
 async function run(promise) {
@@ -227,9 +272,9 @@ async function refreshCommunity() {
       <span class="end">★★★★★</span>
     </div>`;
 
-  // Friends' (and your own) reviews first, then everyone else, newest first within each.
-  const rank = (r) => (r.user_id === user.id || friends.has(r.user_id) ? 0 : 1);
-  const sorted = (reviews || []).sort((a, b) => rank(a) - rank(b));
+  // Your own reviews are in "Your review" above. Friends first, then everyone else, newest first within each.
+  const rank = (r) => (friends.has(r.user_id) ? 0 : 1);
+  const sorted = (reviews || []).filter((r) => r.user_id !== user.id).sort((a, b) => rank(a) - rank(b));
   const extras = await reviewExtras(sorted.map((r) => r.id), user.id);
   $('#reviews').innerHTML = sorted.length
     ? sorted.map((r) => reviewHTML(r, { me: user.id, extras, friends, avgs: new Map([[ep.id, { avg: Number(s.avg_rating), count: s.rating_count ?? 0 }]]) })).join('')

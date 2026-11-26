@@ -83,7 +83,7 @@ export function epCode(ep) {
 // Profile / Diary / Watchlist tabs for a user.
 export function profileTabsHTML(username, active) {
   const u = encodeURIComponent(username);
-  const tabs = [['profile', 'Profile', `profile.html?u=${u}`], ['diary', 'Diary', `diary.html?u=${u}`], ['watchlist', 'Watchlist', `watchlist.html?u=${u}`], ['ratings', 'Ratings', `ratings.html?u=${u}`], ['stats', 'Stats', `stats.html?u=${u}`], ['tiers', 'Tiers', `tiers.html?u=${u}`]];
+  const tabs = [['profile', 'Profile', `profile.html?u=${u}`], ['diary', 'Diary', `diary.html?u=${u}`], ['reviews', 'Reviews', `reviews.html?u=${u}`], ['watchlist', 'Watchlist', `watchlist.html?u=${u}`], ['ratings', 'Ratings', `ratings.html?u=${u}`], ['stats', 'Stats', `stats.html?u=${u}`], ['tiers', 'Tiers', `tiers.html?u=${u}`]];
   return `<nav class="profile-tabs" aria-label="Profile sections">${tabs.map(([key, label, href]) =>
     `<a href="${href}"${key === active ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>`;
 }

@@ -5,7 +5,7 @@ import { thumbHTML, loadAllEpisodes } from '../episodes.js';
 import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js';
 import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js';
 import { countRatings, histogramHTML } from '../histogram.js';
-import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js';
 import { line } from '../jokes.js';
 import { characterColours } from '../data/character-tags.js';
 
@@ -54,6 +54,11 @@ async function render(p) {
     supabase.from('logs').select('episode_id, rating, review, is_rewatch, watched_on, created_at').eq('user_id', p.id).limit(5000),
   ]);
   const theirRatings = everyone.get(p.id) || new Map();
+  const { data: recentReviews } = await supabase.from('logs')
+    .select(`${REVIEW_SELECT}, episodes(id, kind, season, number, title, air_date, still_path)`)
+    .eq('user_id', p.id).not('review', 'is', null).neq('review', '')
+    .order('created_at', { ascending: false }).limit(3);
+  const reviewExtrasData = await reviewExtras((recentReviews || []).map((r) => r.id), me.id);
 
   // GROUNDED: rated a Butters episode 2★ or less in the last 24 hours.
   const butters = chars.byName.get('Butters') || new Set();
@@ -148,7 +153,7 @@ async function render(p) {
     ['Episodes', s.episodes_watched ?? 0],
     ['Hours', Math.round((s.minutes_watched ?? 0) / 60)],
     ['This year', s.logs_this_year ?? 0],
-    ['Reviews', s.review_count ?? 0],
+    ['Reviews', s.review_count ?? 0, `reviews.html?u=${u}`],
     ['Followers', s.followers ?? 0, `friends.html?u=${u}&tab=followers`],
     ['Following', s.following ?? 0, `friends.html?u=${u}&tab=following`],
   ];
@@ -218,6 +223,10 @@ async function render(p) {
       <section>
         <div class="section-head"><h2>Recent diary</h2><a href="diary.html?u=${encodeURIComponent(p.username)}">All</a></div>
         ${diaryHtml}
+        <div class="section-head" style="margin-top:32px"><h2><a href="reviews.html?u=${u}" style="color:inherit">Recent reviews</a></h2><a href="reviews.html?u=${u}">All</a></div>
+        <div class="reviews" id="profile-reviews">${recentReviews?.length
+          ? recentReviews.map((r) => reviewHTML(r, { me: me.id, extras: reviewExtrasData, avgs, showEpisode: true })).join('')
+          : `<p class="empty">${isMe ? 'No reviews yet. Open an episode you rated and hit "Write a review".' : 'No reviews yet.'}</p>`}</div>
       </section>
       <aside style="display:flex;flex-direction:column;gap:32px">
         ${tasteHtml}
@@ -239,4 +248,5 @@ async function render(p) {
     </div>`;
   root.removeAttribute('aria-busy');
   wireFollowButtons(root, () => render(p));
+  wireReviewLikes($('#profile-reviews'), () => render(p));
 }

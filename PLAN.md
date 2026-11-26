@@ -99,7 +99,8 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Profiles: Follow/Following button; Followers/Following stats link to the lists
   - `review.html?id=`: full review, who liked it, comments (post; delete your own, or any on your own review)
   - Reviews everywhere (`js/social.js` `reviewHTML`): "Friend" tag, ♡ Like review (not on your own), likes · comments link
-  - Episode page: Friends' average next to everyone's; friends' and your reviews listed first
+  - Episode page: Friends' average next to everyone's; "Your review" box above everyone else's (edit it, or "Write a review" adds one to your existing log), then friends' reviews first
+  - `reviews.html?u=` (profile tab "Reviews"): every review a user wrote, sort by newest / highest / lowest / most liked; profile shows the 3 most recent, and the Reviews stat links there
   - Home: "Popular with friends this week" (falls back to everyone, then latest episodes), "Recent reviews from friends", Friends' activity feed (latest 12 logs from people you follow)
   - Progress bars are all green now
 - Part 4 checked by owner: following stays one-way (follower system, like Letterboxd)
