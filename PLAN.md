@@ -87,4 +87,10 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Reviews and "popular" show everyone for now; Part 4 switches them to friends
   - Shared code: `js/episodes.js` (cards, loaders, `myLogMap`), `js/stars.js`; profile pages have Profile / Diary / Watchlist / Ratings tabs
   - Letterboxd-style ratings chart (`js/histogram.js`) on profiles; each bar links to `ratings.html?u=&r=4` listing that user's episodes at that rating
-- Next step: owner tests Part 2, then Part 3 (profiles: stats, Top 4, season rankings, edit profile)
+- **Part 3 (Profiles): code written and live, waiting for the owner to test**
+  - `settings.html`: display name, bio, avatar colour (8 swatches), link to change username, Top 4 picker (search, reorder, remove). `settings.html#top4` jumps to the picker
+  - `stats.html?u=`: tiles (watched, hours, logs this year, avg rating, reviews, liked, rewatches, specials & movies), season rankings by average rating (from `user_season_averages`), logs per month for the last 12 months, progress for every season + specials + movies, most rewatched
+  - Profile: Edit profile button, Hours stat, Top 4 shows real cards (empty slots link to the picker), season progress links to stats. Tabs: Profile / Diary / Watchlist / Ratings / Stats
+  - Episode page: "Add to your Top 4" / remove link in the action panel
+  - Charts stay single-colour green (no rainbow bars), with hover labels
+- Next step: owner tests Part 3, then Part 4 (social: follows, friends' feed, friends' averages, review likes and comments)
