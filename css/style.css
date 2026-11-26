@@ -1030,3 +1030,8 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .club-shelf { position: relative; padding: 14px 14px 30px; border-radius: 6px; background: rgba(139, 90, 43, .12); }
 .club-shelf::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 18px; border-radius: 0 0 6px 6px; background: linear-gradient(#a8743f, #7a4e24); box-shadow: 0 4px 0 #4a2e12; }
 @media (max-width: 720px) { .club-book { grid-template-columns: 1fr; } .club-hero { padding-left: 48px; } }
+/* Butters' replies: yellow sticky notes */
+.butters-reply { background: #fff3a6; color: var(--club-ink); border: 2px solid #000; border-left: 2px solid #000; border-radius: 3px; box-shadow: 3px 3px 0 #000; transform: rotate(-.5deg); max-width: 640px; }
+.butters-reply .who { color: #b23a2e; }
+.butters-reply p { color: var(--club-ink); }
+.butters-reply .host-tag { background: var(--club-blue); color: #fff; }
