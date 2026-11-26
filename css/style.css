@@ -472,6 +472,48 @@ select { width: auto; }
   border: 0; background: rgba(0,0,0,.65); color: #fff; cursor: pointer; font-size: 16px; line-height: 1;
 }
 
+/* ---- Edit profile ---- */
+
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.swatch { position: relative; cursor: pointer; border-radius: 50%; }
+.swatch input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.swatch input:checked + .avatar { outline: 3px solid var(--white); outline-offset: 3px; }
+.swatch input:focus-visible + .avatar { outline: 3px solid var(--yellow); outline-offset: 3px; }
+.top4-edit { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.top4-filled { display: flex; flex-direction: column; gap: 6px; }
+.slot-tools { display: flex; justify-content: space-between; font-size: 13px; }
+.slot-tools button:disabled { opacity: .3; cursor: default; }
+.pick-results button:disabled { opacity: .5; cursor: default; }
+a.top4-slot { color: inherit; }
+
+/* ---- Stats ---- */
+
+.stat-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.stat-tile { background-color: var(--surface-2); padding: 18px 20px; display: flex; flex-direction: column; gap: 2px; }
+.stat-tile b { font-size: 30px; color: var(--white); font-weight: 700; line-height: 1.1; }
+.stat-tile span { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+.month-chart { display: flex; align-items: flex-end; gap: 2px; height: 140px; border-bottom: 1px solid var(--line-2); }
+.month-chart .col { flex: 1; height: 100%; display: flex; align-items: flex-end; position: relative; }
+.month-chart .col .b { width: 100%; background: var(--green); border-radius: 4px 4px 0 0; min-height: 0; }
+.month-chart .col:hover .b, .month-chart .col:focus-visible .b { background: #7fd88c; }
+.month-chart .col:hover .tip, .month-chart .col:focus-visible .tip { display: block; }
+.month-chart .tip {
+  display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap;
+  background: var(--bg-deep); border: 1px solid var(--line-2); color: var(--text); font-size: 12px; padding: 4px 8px; border-radius: 4px; z-index: 2;
+}
+.month-axis { display: flex; gap: 2px; font-size: 11px; color: var(--muted); margin-top: 6px; }
+.month-axis span { flex: 1; text-align: center; }
+
+.rank-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.rank-list li { display: grid; grid-template-columns: 28px 110px 1fr 44px; gap: 10px; align-items: center; font-size: 13px; }
+.rank-list .pos { color: var(--muted); text-align: right; }
+.rank-list a { color: var(--text); font-weight: 600; }
+.rank-list .track { height: 10px; background: var(--surface); border-radius: 2px; overflow: hidden; }
+.rank-list .track div { height: 100%; background: var(--green); border-radius: 0 4px 4px 0; }
+.rank-list .val { text-align: right; color: var(--text); font-weight: 700; }
+.rank-list .sub { color: var(--muted); font-weight: 400; }
+
 /* ---- Phones ---- */
 
 @media (max-width: 640px) {

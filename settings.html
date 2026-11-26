@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edit profile · Parkboxd</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script type="module" src="js/pages/settings.js"></script>
+</head>
+<body>
+<header id="site-header" class="site-header"></header>
+
+<main>
+  <div class="wrap page">
+    <h1 class="cut" style="margin:0;color:var(--white);font-size:clamp(30px,4vw,44px)">Edit profile</h1>
+    <p class="notice" id="msg" role="status" hidden></p>
+
+    <form id="profile-form" class="two-col" novalidate>
+      <section class="form import-card paper" aria-labelledby="about-h">
+        <h2 class="cut" id="about-h" style="margin:0;color:var(--white);font-size:24px">About you</h2>
+        <div class="field">
+          <label for="display-name">Display name</label>
+          <input type="text" id="display-name" maxlength="40" autocomplete="nickname">
+          <span class="hint">Shown instead of your username. Leave empty to use <span id="uname"></span>.</span>
+        </div>
+        <div class="field">
+          <label for="bio">Bio</label>
+          <textarea id="bio" maxlength="500" rows="4" placeholder="Favourite character, hottest take, etc."></textarea>
+          <span class="hint"><span id="bio-count">0</span> / 500</span>
+        </div>
+        <fieldset class="field" style="border:0;padding:0;margin:0">
+          <legend style="font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:8px">Avatar colour</legend>
+          <div class="swatches" id="swatches"></div>
+        </fieldset>
+        <div class="field">
+          <span style="font-size:13px;font-weight:600;color:var(--text-soft)">Username</span>
+          <span>@<span id="uname2"></span> · <a href="username.html?next=settings.html">Change username</a></span>
+        </div>
+      </section>
+
+      <section class="form" aria-labelledby="top4-h" id="top4">
+        <div class="section-head" style="margin:0"><h2 id="top4-h">Top 4 favourites</h2></div>
+        <ol class="top4-edit" id="top4-slots"></ol>
+        <div class="field">
+          <label for="fav-search">Add a favourite</label>
+          <input type="search" id="fav-search" placeholder="Search episodes, specials and movies" autocomplete="off">
+        </div>
+        <ul class="pick-results" id="fav-results" aria-live="polite"></ul>
+      </section>
+    </form>
+
+    <div class="toolbar">
+      <button type="submit" form="profile-form" class="btn btn-green" id="save">Save profile</button>
+      <a class="btn btn-ghost" id="cancel" href="profile.html">Cancel</a>
+    </div>
+  </div>
+</main>
+
+<footer id="site-footer" class="site-footer"></footer>
+</body>
+</html>

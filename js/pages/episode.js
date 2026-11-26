@@ -5,7 +5,8 @@ import { $, esc, params, epCode, stars, formatDate, avatarHTML } from '../ui.js'
 import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref } from '../episodes.js';
 import { starInput } from '../stars.js';
 
-const { user } = await initPage({ title: 'Episode', auth: 'required' });
+const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
+let top4 = profile.top4 || [];
 const root = $('#episode');
 const ep = await loadEpisode(Number(params.get('id')));
 
@@ -100,7 +101,15 @@ function renderPanel() {
       <div class="label" id="rate-label">${rating ? 'Rated' : 'Rate'}</div>
       <div id="rate-stars"></div>
     </div>
-    <button type="button" class="btn btn-green" id="btn-log">${watched ? 'Review or log again' : 'Review or log'}</button>`;
+    <button type="button" class="btn btn-green" id="btn-log">${watched ? 'Review or log again' : 'Review or log'}</button>
+    <div class="panel-links">
+      ${top4.includes(ep.id)
+        ? '<button type="button" class="link-button" id="btn-top4" style="color:var(--text-soft)">★ In your Top 4 · Remove</button>'
+        : top4.length < 4
+          ? '<button type="button" class="link-button" id="btn-top4" style="color:var(--text-soft)">Add to your Top 4</button>'
+          : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
+    </div>`;
+  $('#btn-top4')?.addEventListener('click', toggleTop4);
 
   starInput($('#rate-stars'), { value: rating, size: 34, label: 'Your rating', onChange: setRating });
   $('#rate-stars').setAttribute('aria-labelledby', 'rate-label');
@@ -147,6 +156,14 @@ async function toggleWatchlist() {
   await run(onWatchlist
     ? supabase.from('watchlist').delete().eq('episode_id', ep.id).eq('user_id', user.id)
     : supabase.from('watchlist').insert({ episode_id: ep.id }));
+}
+
+async function toggleTop4() {
+  const next = top4.includes(ep.id) ? top4.filter((id) => id !== ep.id) : [...top4, ep.id].slice(0, 4);
+  const { error } = await supabase.from('profiles').update({ top4: next }).eq('id', user.id);
+  if (error) return alert(error.message);
+  top4 = next;
+  renderPanel();
 }
 
 async function setRating(value) {

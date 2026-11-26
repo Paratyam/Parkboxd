@@ -1,6 +1,7 @@
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
-import { SITE_NAME, TMDB_IMAGE_BASE } from '../config.js';
+import { SITE_NAME } from '../config.js';
+import { thumbHTML } from '../episodes.js';
 import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML } from '../ui.js';
 import { countRatings, histogramHTML } from '../histogram.js';
 
@@ -50,6 +51,7 @@ async function render(p) {
   const s = stats || {};
   const statItems = [
     ['Episodes', s.episodes_watched ?? 0],
+    ['Hours', Math.round((s.minutes_watched ?? 0) / 60)],
     ['This year', s.logs_this_year ?? 0],
     ['Reviews', s.review_count ?? 0],
     ['Followers', s.followers ?? 0],
@@ -58,12 +60,12 @@ async function render(p) {
 
   const top4Html = [0, 1, 2, 3].map((i) => {
     const ep = (top4Eps || []).find((e) => e.id === p.top4[i]);
-    if (!ep) return `<div class="top4-slot paper empty">${isMe ? 'Pick a favourite<br>(coming soon)' : 'Empty slot'}</div>`;
-    const bg = ep.still_path ? `background-image:linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.55)),url('${TMDB_IMAGE_BASE}w300${esc(ep.still_path)}');background-size:cover;background-position:center` : '';
-    return `<div class="top4-slot paper" style="${bg}">
-      <span class="ep-card-code">${esc(epCode(ep))}</span>
-      <span class="ep-card-title">${esc(ep.title)}</span>
-    </div>`;
+    if (!ep) {
+      return isMe
+        ? `<a class="top4-slot paper empty" href="settings.html#top4">+ Pick a favourite</a>`
+        : '<div class="top4-slot paper empty">Empty slot</div>';
+    }
+    return `<a class="ep-card" href="episode.html?id=${ep.id}">${thumbHTML(ep, { size: 'w500' })}</a>`;
   }).join('');
 
   const diaryHtml = recent?.length
@@ -76,14 +78,14 @@ async function render(p) {
         </li>`).join('')}</ol>`
     : `<p class="empty">${isMe ? "You haven't logged anything yet. Hit \"+ Log\" up top to start." : `${esc(name)} hasn't logged anything yet.`}</p>`;
 
-  const colours = ['#3fb950', '#4a90e2', '#f5c518', '#f2711c', '#d63a3a'];
   const started = (progress || []).filter((r) => r.watched > 0);
   const progressHtml = started.length
-    ? `<div class="progress-list">${started.map((r, i) => `
+    ? `<div class="progress-list">${started.map((r) => `
         <div class="progress-row">
-          <div class="label"><span>Season ${r.season}</span><span>${r.watched} / ${r.total}</span></div>
-          <div class="bar"><div style="width:${Math.round((r.watched / r.total) * 100)}%;background:${colours[i % 5]}"></div></div>
-        </div>`).join('')}</div>`
+          <div class="label"><a href="seasons.html?s=${r.season}" style="color:var(--text)">Season ${r.season}</a><span>${r.watched} / ${r.total}</span></div>
+          <div class="bar"><div style="width:${Math.round((r.watched / r.total) * 100)}%;background:var(--green)"></div></div>
+        </div>`).join('')}</div>
+      <p style="margin:12px 0 0;font-size:13px"><a href="stats.html?u=${u}">All stats and season rankings →</a></p>`
     : '<p class="empty">No seasons started yet.</p>';
 
   root.innerHTML = `
@@ -96,8 +98,7 @@ async function render(p) {
       </div>
       <div class="stats">${statItems.map(([label, n]) => `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join('')}</div>
       ${isMe ? `<div class="profile-actions" style="width:100%">
-        <a class="btn btn-ghost" href="username.html?next=${encodeURIComponent('profile.html')}">Change username</a>
-        <span class="btn btn-ghost" aria-disabled="true" title="Coming soon" style="opacity:.6;cursor:default">Edit profile (soon)</span>
+        <a class="btn btn-ghost" href="settings.html">Edit profile</a>
       </div>` : ''}
     </section>
 
