@@ -1,7 +1,7 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
 import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
-import { $, esc, epCode, avatarHTML, formatDate, stars } from '../ui.js';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast } from '../ui.js';
 import { buttersReview } from '../butters.js';
 import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js';
 import { weeklyPick, weekStart } from '../club.js';
@@ -23,12 +23,16 @@ async function render() {
   const next = weekStart(1);
   const daysLeft = Math.max(1, Math.ceil((next - Date.now()) / 86400000));
 
-  const [{ data: logs }, avgs, { data: tagRows }] = await Promise.all([
+  const weekKey = start.toISOString().slice(0, 10);
+  const [{ data: logs }, avgs, { data: tagRows }, { data: bLikes }] = await Promise.all([
     supabase.from('logs').select(REVIEW_SELECT).eq('episode_id', ep.id).gte('created_at', start.toISOString()).order('created_at', { ascending: false }),
     episodeAverages(),
     supabase.from('episode_tags').select('tags(name)').eq('episode_id', ep.id),
+    supabase.from('butters_likes').select('user_id').eq('week_start', weekKey),
   ]);
   const butters = buttersReview(ep, (tagRows || []).map((t) => t.tags?.name).filter(Boolean), start);
+  const bCount = (bLikes || []).length;
+  const bLiked = (bLikes || []).some((l) => l.user_id === user.id);
   const buttersHTML = `
     <article class="review butters-review">
       ${avatarHTML({ display_name: 'Butters', avatar_color: '#f5c518' }, 36)}
@@ -40,6 +44,10 @@ async function render() {
           <span class="heart" aria-label="Liked">♥</span>
         </div>
         <p>${esc(butters.text)}</p>
+        <div class="review-foot">
+          <button type="button" class="link-button review-like" id="butters-like" aria-pressed="${bLiked}">${bLiked ? '♥ Liked' : '♡ Like review'}</button>
+          <span>${bCount} like${bCount === 1 ? '' : 's'}</span>
+        </div>
       </div>
     </article>`;
   const watchers = [...new Map((logs || []).map((l) => [l.user_id, l.profiles])).values()];
@@ -84,6 +92,17 @@ async function render() {
 
   $('#club-log').onclick = () => logEpisode({ episode: ep, rewatch: mine.has(ep.id) });
   wireReviewLikes($('#club-reviews'), render);
+  $('#butters-like').onclick = async (e) => {
+    const b = e.currentTarget;
+    const liked = b.getAttribute('aria-pressed') === 'true';
+    b.disabled = true;
+    const { error } = liked
+      ? await supabase.from('butters_likes').delete().eq('week_start', weekKey).eq('user_id', user.id)
+      : await supabase.from('butters_likes').insert({ week_start: weekKey });
+    if (error) { b.disabled = false; return toast(error.message); }
+    toast(liked ? "Oh. That's okay. I'll just go sit by myself for a bit." : 'Gee, thanks! Nobody ever likes my stuff!');
+    render();
+  };
 }
 
 await render();

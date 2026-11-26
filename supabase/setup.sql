@@ -519,3 +519,19 @@ drop trigger if exists notify_review_like on public.review_likes;
 create trigger notify_review_like after insert on public.review_likes for each row execute function public.notify();
 drop trigger if exists notify_comment on public.comments;
 create trigger notify_comment after insert on public.comments for each row execute function public.notify();
+
+-- Likes on Butters' automatic Book Club review (one review per week, keyed by the week's Monday).
+create table if not exists public.butters_likes (
+  user_id     uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  week_start  date not null,
+  created_at  timestamptz not null default now(),
+  primary key (user_id, week_start)
+);
+alter table public.butters_likes enable row level security;
+grant select, insert, delete on public.butters_likes to authenticated;
+drop policy if exists "read" on public.butters_likes;
+drop policy if exists "insert own" on public.butters_likes;
+drop policy if exists "delete own" on public.butters_likes;
+create policy "read" on public.butters_likes for select to authenticated using (true);
+create policy "insert own" on public.butters_likes for insert to authenticated with check (user_id = (select auth.uid()));
+create policy "delete own" on public.butters_likes for delete to authenticated using (user_id = (select auth.uid()));
