@@ -176,6 +176,7 @@ export function showCoonTakeover(setLogo) {
     document.documentElement.classList.remove('coon-takeover-on');
     if (friendsLink) friendsLink.textContent = 'Friends';
     document.querySelectorAll('.coon-fake').forEach((el) => el.remove());
+    unrigRankings();
     toast('The Coon will return. When you least expect it.');
   });
 }
@@ -196,5 +197,17 @@ export function rigRankings(root) {
     <a href="franchise.html" class="thumb" aria-hidden="true" tabindex="-1"><div class="ep-thumb paper" style="background:repeating-linear-gradient(90deg,#3a3330 0 14px,#4a423d 14px 28px);display:flex;align-items:center;justify-content:center;font-size:30px">🦝</div></a>
     <div class="info"><a href="franchise.html">The Coon (2009)</a><span>Ranked #1 by The Coon. Totally legit. See the franchise plan.</span></div>
     <div class="score"><b>∞</b><span>1 rating (his own)</span></div>`;
+  // Everyone else gets bumped down a place (put back when the takeover is dismissed).
+  list.querySelectorAll('li .pos').forEach((p) => {
+    p.dataset.realPos = p.textContent;
+    p.textContent = String(Number(p.textContent) + 1);
+  });
   list.prepend(li);
+}
+
+function unrigRankings() {
+  document.querySelectorAll('.pos[data-real-pos]').forEach((p) => {
+    p.textContent = p.dataset.realPos;
+    delete p.dataset.realPos;
+  });
 }
