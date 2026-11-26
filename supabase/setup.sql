@@ -481,3 +481,41 @@ grant select on public.latest_ratings, public.episode_ratings, public.episode_ra
   to authenticated;
 grant execute on function public.season_progress(uuid), public.friends_episode_rating(bigint), public.is_admin()
   to authenticated;
+
+
+-- ---------------------------------------------------------------------
+-- Notifications: follows, likes on your reviews, comments on your reviews.
+-- Filled by triggers (security definer), read and cleared by the owner.
+-- ---------------------------------------------------------------------
+
+create table if not exists public.notifications (id bigint generated always as identity primary key, user_id uuid not null references public.profiles (id) on delete cascade, actor_id uuid references public.profiles (id) on delete cascade, type text not null check (type in ('follow', 'review_like', 'comment')), log_id bigint references public.logs (id) on delete cascade, comment_id bigint references public.comments (id) on delete cascade, read boolean not null default false, created_at timestamptz not null default now());
+create index if not exists notifications_user_idx on public.notifications (user_id, created_at desc);
+alter table public.notifications enable row level security;
+drop policy if exists "read own" on public.notifications;
+create policy "read own" on public.notifications for select to authenticated using (user_id = (select auth.uid()));
+drop policy if exists "update own" on public.notifications;
+create policy "update own" on public.notifications for update to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+drop policy if exists "delete own" on public.notifications;
+create policy "delete own" on public.notifications for delete to authenticated using (user_id = (select auth.uid()));
+grant select, delete on public.notifications to authenticated;
+grant update (read) on public.notifications to authenticated;
+create or replace function public.notify() returns trigger language plpgsql security definer set search_path = public as $$ declare target uuid;
+begin if tg_table_name = 'follows' then delete from notifications where user_id = new.followee_id and actor_id = new.follower_id and type = 'follow';
+insert into notifications (user_id, actor_id, type) values (new.followee_id, new.follower_id, 'follow');
+elsif tg_table_name = 'review_likes' then select user_id into target from logs where id = new.log_id;
+if target is not null and target <> new.user_id then delete from notifications where user_id = target and actor_id = new.user_id and type = 'review_like' and log_id = new.log_id;
+insert into notifications (user_id, actor_id, type, log_id) values (target, new.user_id, 'review_like', new.log_id);
+end if;
+elsif tg_table_name = 'comments' then select user_id into target from logs where id = new.log_id;
+if target is not null and target <> new.user_id then insert into notifications (user_id, actor_id, type, log_id, comment_id) values (target, new.user_id, 'comment', new.log_id, new.id);
+end if;
+end if;
+return new;
+end;
+$$;
+drop trigger if exists notify_follow on public.follows;
+create trigger notify_follow after insert on public.follows for each row execute function public.notify();
+drop trigger if exists notify_review_like on public.review_likes;
+create trigger notify_review_like after insert on public.review_likes for each row execute function public.notify();
+drop trigger if exists notify_comment on public.comments;
+create trigger notify_comment after insert on public.comments for each row execute function public.notify();
