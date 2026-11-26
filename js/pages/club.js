@@ -2,7 +2,7 @@
 import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { $, esc, epCode, avatarHTML, formatDate, stars, toast } from '../ui.js';
-import { buttersReview } from '../butters.js';
+import { buttersReview, buttersComment } from '../butters.js';
 import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js';
 import { weeklyPick, weekStart } from '../club.js';
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
@@ -10,6 +10,18 @@ import { episodeAverages } from '../insights.js';
 
 const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');
+
+// About 1 in 5 reviews get a reply from Butters, tucked under the review text.
+function withButters(html, r) {
+  const c = buttersComment(r);
+  if (!c) return html;
+  const reply = `
+        <div class="butters-reply">
+          ${avatarHTML({ display_name: 'Butters', avatar_color: '#f5c518' }, 24)}
+          <div><span class="who">Butters Stotch <span class="host-tag">📚 Host</span></span><p>${esc(c)}</p></div>
+        </div>`;
+  return html.replace(/<\/div>\s*<\/article>\s*$/, `${reply}</div></article>`);
+}
 
 async function render() {
   const [all, mine, friends] = await Promise.all([loadAllEpisodes(), myLogMap(user.id), followingIds(user.id)]);
@@ -81,7 +93,7 @@ async function render() {
     <section>
       <div class="section-head"><h2>This week's reviews</h2></div>
       <div class="reviews" id="club-reviews">${buttersHTML}${reviews.length
-        ? reviews.map((r) => reviewHTML(r, { me: user.id, extras, friends, avgs })).join('')
+        ? reviews.map((r) => withButters(reviewHTML(r, { me: user.id, extras, friends, avgs }), r)).join('')
         : '<p class="empty">Nobody else has reviewed it yet. Don\'t leave Butters hanging!</p>'}</div>
     </section>
     <section>

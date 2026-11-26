@@ -795,3 +795,8 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 
 /* Your own review on an episode page */
 .my-review { background: rgba(0,224,84,.06); border: 1px solid rgba(0,224,84,.22); border-radius: 6px; padding: 14px; }
+
+/* Butters' replies under Book Club reviews */
+.butters-reply { display: flex; gap: 10px; margin-top: 6px; padding: 10px 12px; border-left: 3px solid #f5c518; background: rgba(245,197,24,.06); border-radius: 0 6px 6px 0; }
+.butters-reply .who { font-size: 12px; font-weight: 700; color: #f5d76e; display: flex; gap: 8px; align-items: center; }
+.butters-reply p { margin: 2px 0 0; font-size: 13px; }
