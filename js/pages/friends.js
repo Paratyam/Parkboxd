@@ -4,6 +4,7 @@ import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, avatarHTML } from '../ui.js';
 import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js';
+import { line } from '../jokes.js';
 
 const { profile: me } = await initPage({ title: 'Friends', auth: 'required' });
 const root = $('#friends');
@@ -62,8 +63,8 @@ async function render() {
         ${p.id === me.id ? '<span class="result-count">You</span>' : followButtonHTML(p.id, mine.has(p.id))}
       </li>`;
     }).join('')}</ul>`
-    : `<p class="empty">${tab === 'following' ? (isMe ? 'You\'re not following anyone yet. Try "Find people".' : `${esc(name)} isn't following anyone yet.`)
-      : tab === 'followers' ? 'No followers yet.' : 'Nobody else has signed up yet. Send your friends the link!'}</p>`}`;
+    : `<p class="empty">${tab === 'following' ? (isMe ? `${esc(line('followNobody'))} Try "Find people".` : `${esc(name)} isn't following anyone yet. Lone wolf.`)
+      : tab === 'followers' ? 'No followers yet. Even Kenny has followers, and he can barely talk.' : 'Nobody else has signed up yet. Send your friends the link! Or don\'t, and keep the whole town to yourself.'}</p>`}`;
   root.removeAttribute('aria-busy');
   wireFollowButtons(root);
 }

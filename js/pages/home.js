@@ -3,6 +3,7 @@ import { supabase } from '../supabase.js';
 import { $, esc, epCode, stars, avatarHTML } from '../ui.js';
 import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js';
 import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js';
+import { line } from '../jokes.js';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -13,8 +14,9 @@ if (profile?.username) {
   $('.hero p').textContent = 'What did you watch? Log it, rate it, and roast your friends\' takes.';
   $('#hero-actions').innerHTML = `
     <button type="button" class="paper btn-paper" style="background-color:var(--green);border:0;cursor:pointer" id="hero-log">+ Log an episode</button>
-    <a class="paper btn-paper" style="background-color:var(--yellow)" href="episodes.html">Browse episodes</a>`;
+    <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">🎲 Random episode</button>`;
   $('#hero-log').onclick = () => logEpisode();
+  $('#hero-random').onclick = async () => (await import('../random.js')).openRandomPicker();
   await renderHome();
   window.addEventListener('parkboxd:logged', renderHome);
 }
@@ -73,7 +75,7 @@ async function renderHome() {
   const reviewsTitle = hasFriends ? 'Recent reviews from friends' : 'Recent reviews';
   const reviewsHTML = reviews?.length
     ? reviews.map((r) => reviewHTML(r, { me: user.id, extras, showEpisode: true })).join('')
-    : `<p class="empty">${hasFriends ? 'Your friends haven\'t reviewed anything lately.' : 'No reviews yet. Log an episode and write one!'}</p>`;
+    : `<p class="empty">${hasFriends ? 'Your friends haven\'t reviewed anything lately. Too busy at Casa Bonita, probably.' : esc(line('reviewsEmpty'))}</p>`;
 
   // Friends' latest logs (anything, not just reviews).
   const ago = (iso) => {
@@ -93,7 +95,7 @@ async function renderHome() {
               <span class="rating">${stars(a.rating)}</span>${a.liked ? ' <span class="heart" aria-label="Liked">♥</span>' : ''}</span>
             <time datetime="${esc(a.created_at)}">${ago(a.created_at)}</time>
           </li>`).join('')}</ul>`
-      : '<p class="empty">Your friends have been quiet. Suspiciously quiet.</p>')
+      : `<p class="empty">${esc(line('activityEmpty'))}</p>`)
     : `<p class="empty">Follow your friends to see what they're watching. <a href="friends.html?tab=everyone">Find people</a></p>`;
 
   // Season progress: seasons you've started (most recent activity first isn't tracked, so most complete first).
@@ -144,6 +146,7 @@ async function renderHome() {
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button type="button" class="btn btn-orange" id="rand-new">Unwatched</button>
             <button type="button" class="btn btn-outline" id="rand-fav">Rewatch a 4★+</button>
+            <button type="button" class="link-button" id="rand-more" style="color:var(--text-soft);font-size:13px">More options…</button>
           </div>
           <p class="notice" id="rand-msg" hidden style="margin-top:12px"></p>
         </section>
@@ -152,17 +155,10 @@ async function renderHome() {
 
   wireReviewLikes($('#home-reviews'), renderHome);
 
-  const pick = (list) => list[Math.floor(Math.random() * list.length)];
-  $('#rand-new').onclick = () => {
-    const e = pick(all.filter((x) => isAired(x) && !mine.has(x.id)));
-    if (e) location.href = `episode.html?id=${e.id}`;
-    else showRand("You've seen literally everything. Go outside.");
-  };
-  $('#rand-fav').onclick = () => {
-    const e = pick(all.filter((x) => (mine.get(x.id)?.rating ?? 0) >= 4));
-    if (e) location.href = `episode.html?id=${e.id}`;
-    else showRand('Rate a few episodes 4★ or higher first.');
-  };
+  const random = () => import('../random.js');
+  $('#rand-new').onclick = async () => (await random()).rollAndGo({ pool: 'unwatched', min: 0, kinds: ['episode', 'special', 'movie'], season: '' }, showRand);
+  $('#rand-fav').onclick = async () => (await random()).rollAndGo({ pool: 'rated', min: 4, kinds: ['episode', 'special', 'movie'], season: '' }, showRand);
+  $('#rand-more').onclick = async () => (await random()).openRandomPicker();
   function showRand(text) {
     const m = $('#rand-msg');
     m.textContent = text;

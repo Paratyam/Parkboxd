@@ -5,6 +5,7 @@ import { SITE_NAME } from '../config.js';
 import { $, esc, params, stars, profileTabsHTML } from '../ui.js';
 import { loadAllEpisodes, cardHTML, compareEpisodes } from '../episodes.js';
 import { BUCKETS, countRatings, histogramHTML } from '../histogram.js';
+import { line } from '../jokes.js';
 
 const { profile: me } = await initPage({ title: 'Ratings', auth: 'required' });
 const root = $('#ratings');
@@ -56,7 +57,7 @@ async function render() {
       <div class="section-head"><h2>${heading}</h2>${active ? `<a href="ratings.html?u=${u}">Show all</a>` : ''}</div>
       ${shown.length
         ? `<div class="ep-grid">${shown.map((x) => cardHTML(x.ep, { rating: x.rating, meta: x.ep.air_date ? x.ep.air_date.slice(0, 4) : '' })).join('')}</div>`
-        : `<p class="empty">${active ? `Nothing rated ${esc(stars(active))} yet.` : (isMe ? 'You haven\'t rated anything yet.' : 'No ratings yet.')}</p>`}
+        : `<p class="empty">${active ? `Nothing rated ${esc(stars(active))} yet. ${active <= 1 ? 'Generous of you.' : active >= 5 ? 'Tough crowd.' : ''}` : esc(line(isMe ? 'ratingsEmptyMine' : 'ratingsEmptyOther'))}</p>`}
     </section>`;
   root.removeAttribute('aria-busy');
 }

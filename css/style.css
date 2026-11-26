@@ -340,6 +340,9 @@ main > .notice.wrap { margin-top: 16px; }
   font: 600 13px var(--font-body); cursor: pointer;
 }
 .chip[aria-pressed="true"] { background: var(--green); color: var(--bg-deep); }
+.chip:focus-within { outline: 3px solid var(--yellow); outline-offset: 2px; }
+.icon-btn { background: var(--surface); color: var(--text); border: 0; border-radius: 6px; padding: 8px 10px; font-size: 18px; line-height: 1; cursor: pointer; }
+.icon-btn:hover { background: var(--line-2); }
 select { width: auto; }
 .result-count { color: var(--muted); font-size: 13px; }
 
@@ -593,6 +596,17 @@ a.top4-slot { color: inherit; }
 .rank-table .score { text-align: right; display: flex; flex-direction: column; }
 .rank-table .score b { color: var(--green); font-size: 22px; }
 .rank-table .score span { color: var(--muted); font-size: 12px; }
+
+/* ---- Toasts ---- */
+
+#toasts { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 8px; width: min(460px, calc(100vw - 32px)); pointer-events: none; }
+.toast {
+  background-color: var(--yellow); color: var(--bg); padding: 14px 18px; font-weight: 700; font-size: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.45); transform: rotate(-.6deg); animation: toast-in .25s ease-out;
+}
+.toast.out { opacity: 0; transition: opacity .4s; }
+@keyframes toast-in { from { transform: translateY(20px) rotate(-.6deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .toast { animation: none; } }
 
 /* ---- Phones ---- */
 

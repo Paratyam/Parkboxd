@@ -2,6 +2,7 @@
 import { supabase, isConfigured } from './supabase.js';
 import { SITE_NAME } from './config.js';
 import { esc, avatarHTML, currentPage } from './ui.js';
+import { line } from './jokes.js';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -25,6 +26,8 @@ const never = () => new Promise(() => {});
  */
 export async function initPage({ title = '', auth = 'optional', needsUsername = true } = {}) {
   document.title = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
+  // Swap plain "Loading…" placeholders for something in character.
+  document.querySelectorAll('[aria-busy="true"] .empty').forEach((el) => { el.textContent = line('loading'); });
 
   const { data: { session } } = await supabase.auth.getSession();
   let profile = null;
@@ -74,6 +77,7 @@ function renderHeader(profile, session) {
         <label class="visually-hidden" for="header-q">Search episodes</label>
         <input type="search" id="header-q" name="q" placeholder="Search episodes">
       </form>
+      <button type="button" class="icon-btn" id="header-random" aria-label="Random episode" title="Random episode">🎲</button>
       <button type="button" class="btn btn-green" id="header-log">+ Log</button>
       ${profile.is_admin ? `<a class="header-link" href="admin.html">Admin</a>` : ''}
       <a class="avatar-link" href="${me}" aria-label="Your profile">${avatarHTML(profile, 40)}</a>`;
@@ -91,6 +95,7 @@ function renderHeader(profile, session) {
     </div>`;
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
+  el.querySelector('#header-random')?.addEventListener('click', async () => (await import('./random.js')).openRandomPicker());
 }
 
 /**
@@ -111,7 +116,8 @@ function renderFooter(session) {
     <div class="wrap footer-inner">
       <span>Episode data from <a href="https://www.themoviedb.org/" rel="noopener">TMDB</a>.
         This product uses the TMDB API but is not endorsed or certified by TMDB.
-        Fan project, not affiliated with South Park Studios.</span>
+        Fan project, not affiliated with South Park Studios.
+        All ratings on this site, even those based on real opinions, are entirely fictional and probably wrong.</span>
       ${session ? `<button type="button" class="link-button" id="logout">Screw you guys, I'm logging out</button>` : ''}
     </div>`;
   el.querySelector('#logout')?.addEventListener('click', async () => {

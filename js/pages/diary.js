@@ -2,6 +2,7 @@ import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, epCode, stars, profileTabsHTML } from '../ui.js';
+import { line } from '../jokes.js';
 
 const { profile: me } = await initPage({ title: 'Diary', auth: 'required' });
 const root = $('#diary');
@@ -58,7 +59,7 @@ async function render() {
             </li>`).join('')}
         </ol>
       </section>`).join('')
-    : `<p class="empty">${isMe ? 'Your diary is empty. Hit "+ Log" up top to add your first episode.' : `${esc(name)} hasn't logged anything yet.`}</p>`;
+    : `<p class="empty">${esc(isMe ? line('diaryEmptyMine') : line('diaryEmptyOther', { name }))}</p>`;
 
   root.innerHTML = `
     <div>

@@ -1,6 +1,7 @@
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { $, params, safeNext, notify, setBusy, USERNAME_RE } from '../ui.js';
+import { line } from '../jokes.js';
 
 const msg = $('#msg');
 const { session, profile } = await initPage({ title: 'Log in', needsUsername: false });
@@ -41,7 +42,7 @@ $('#login-form').addEventListener('submit', async (e) => {
     const text = /confirm/i.test(error.message)
       ? 'You need to confirm your email first. Check your inbox (and spam).'
       : /invalid/i.test(error.message)
-        ? 'Wrong email or password. Oh my God, you killed it.'
+        ? line('wrongPassword')
         : error.message;
     return notify(msg, text, 'error');
   }

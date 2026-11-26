@@ -4,6 +4,7 @@ import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, avatarHTML, notify } from '../ui.js';
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
+import { line } from '../jokes.js';
 
 const { user } = await initPage({ title: 'Review', auth: 'required' });
 const root = $('#review');
@@ -47,7 +48,7 @@ async function render() {
             </div>
             <p>${esc(c.body)}</p>
           </div>
-        </li>`).join('')}</ol>` : '<p class="empty">No comments yet. Start the argument.</p>'}
+        </li>`).join('')}</ol>` : `<p class="empty">${esc(line('commentsEmpty'))}</p>`}
     </section>
 
     <form class="form" id="comment-form" novalidate>
@@ -62,7 +63,7 @@ async function render() {
 
   wireReviewLikes(root, render);
   root.querySelectorAll('[data-delete]').forEach((b) => b.addEventListener('click', async () => {
-    if (!confirm('Delete this comment? This can\'t be undone.')) return;
+    if (!confirm('Delete this comment? No take-backs.')) return;
     const { error } = await supabase.from('comments').delete().eq('id', Number(b.dataset.delete));
     if (error) return alert(error.message);
     render();

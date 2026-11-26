@@ -1,7 +1,8 @@
 import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
-import { $, esc, params, epCode, stars, formatDate, avatarHTML } from '../ui.js';
+import { $, esc, params, epCode, formatDate, toast } from '../ui.js';
+import { line, ratingReaction } from '../jokes.js';
 import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js';
 import { starInput } from '../stars.js';
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
@@ -19,14 +20,19 @@ const CHECK = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" strok
 
 let myLogs = [];
 let onWatchlist = false;
+let tagNames = [];
 
 if (!ep) {
   document.title = `Not found · ${SITE_NAME}`;
   root.innerHTML = `<div class="wrap big-message"><h1 class="cut">Episode not found</h1>
-    <p>Maybe Cartman deleted it.</p><a class="btn btn-green" href="episodes.html">Browse episodes</a></div>`;
+    <p>${esc(line('notFound'))}</p><a class="btn btn-green" href="episodes.html">Browse episodes</a></div>`;
   root.removeAttribute('aria-busy');
 } else {
   renderShell();
+  $('#roll-again')?.addEventListener('click', async () => {
+    const r = await import('../random.js');
+    r.rollAndGo(r.savedSettings(), (m) => toast(m));
+  });
   await Promise.all([refreshMine(), refreshCommunity(), renderNeighbours(), renderTags(), renderArc()]);
   root.removeAttribute('aria-busy');
   window.addEventListener('parkboxd:logged', () => { refreshMine(); refreshCommunity(); renderArc(); });
@@ -50,6 +56,8 @@ function renderShell() {
 
       <div class="ep-main">
         <div>
+          ${params.get('rolled') ? `<div class="toolbar" style="margin-bottom:10px"><span class="tag-chip">🎲 The dice have spoken</span>
+            <button type="button" class="btn btn-ghost" id="roll-again" style="padding:6px 12px">Roll again</button></div>` : ''}
           <div class="crumbs">${crumbs}</div>
           <h1 class="cut">${esc(ep.title)}</h1>
         </div>
@@ -149,7 +157,7 @@ async function toggleWatched() {
     return refreshMine();
   }
   const n = myLogs.length;
-  if (!confirm(`Remove ${n === 1 ? 'your log' : `all ${n} of your logs`} for this episode, including ratings and reviews? This can't be undone.`)) return;
+  if (!confirm(`Remove ${n === 1 ? 'your log' : `all ${n} of your logs`} for this episode, including ratings and reviews? They'll be gone like Kenny, except they won't come back next week.`)) return;
   await run(supabase.from('logs').delete().eq('episode_id', ep.id).eq('user_id', user.id));
 }
 
@@ -175,6 +183,7 @@ async function toggleTop4() {
 async function setRating(value) {
   const target = myLogs[0];
   await run(target ? supabase.from('logs').update({ rating: value }).eq('id', target.id) : quickLog({ rating: value }));
+  toast(ratingReaction(value, tagNames));
 }
 
 // ---- Everyone's numbers and reviews ----
@@ -221,7 +230,7 @@ async function refreshCommunity() {
   const extras = await reviewExtras(sorted.map((r) => r.id), user.id);
   $('#reviews').innerHTML = sorted.length
     ? sorted.map((r) => reviewHTML(r, { me: user.id, extras, friends })).join('')
-    : '<p class="empty">No reviews yet. Be the first to have an opinion.</p>';
+    : `<p class="empty">${esc(line('reviewsEmpty'))}</p>`;
   wireReviewLikes($('#reviews'), refreshCommunity);
 }
 
@@ -234,6 +243,7 @@ async function renderTags() {
   ]);
   const tags = (mineTags || []).map((t) => t.tags).filter(Boolean)
     .sort((a, b) => a.kind.localeCompare(b.kind) || a.name.localeCompare(b.name));
+  tagNames = tags.map((t) => t.name);
 
   $('#tags').innerHTML = `
     ${tags.map((t) => `<span class="tag-chip ${t.kind}"><a href="episodes.html?tag=${t.id}" style="color:inherit">${esc(t.name)}</a>

@@ -3,6 +3,7 @@ import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, profileTabsHTML } from '../ui.js';
 import { cardHTML, compareEpisodes } from '../episodes.js';
+import { line } from '../jokes.js';
 
 const { profile: me } = await initPage({ title: 'Watchlist', auth: 'required' });
 const root = $('#watchlist');
@@ -38,7 +39,7 @@ async function render() {
       ${eps.length
         ? `<div class="ep-grid">${eps.map((e) => `<div style="position:relative">${cardHTML(e, { meta: e.air_date ? e.air_date.slice(0, 4) : '' })}
             ${isMe ? `<button type="button" class="remove-x" data-remove="${e.id}" aria-label="Remove ${esc(e.title)} from watchlist">×</button>` : ''}</div>`).join('')}</div>`
-        : `<p class="empty">${isMe ? 'Nothing here. Hit "Watchlist" on any episode page to save it for later.' : 'Nothing here yet.'}</p>`}
+        : `<p class="empty">${esc(line(isMe ? 'watchlistEmptyMine' : 'watchlistEmptyOther'))}</p>`}
     </section>`;
   root.removeAttribute('aria-busy');
 

@@ -1,6 +1,7 @@
 // The "log an episode" dialog, used by the header "+ Log" button, episode pages and the diary.
 import { supabase } from './supabase.js';
-import { esc, epCode } from './ui.js';
+import { esc, epCode, toast } from './ui.js';
+import { line, ratingReaction } from './jokes.js';
 import { starInput } from './stars.js';
 import { loadAllEpisodes, thumbHTML, todayISO } from './episodes.js';
 
@@ -128,7 +129,7 @@ export function openLogModal({ episode = null, log = null, rewatch = false } = {
       $d('[data-close]').onclick = () => d.close();
 
       $d('#log-delete')?.addEventListener('click', async () => {
-        if (!confirm('Delete this log? This can\'t be undone.')) return;
+        if (!confirm(line('deleteLog'))) return;
         const { error } = await supabase.from('logs').delete().eq('id', log.id);
         if (error) return showMsg(error.message);
         changed = true;
@@ -145,7 +146,7 @@ export function openLogModal({ episode = null, log = null, rewatch = false } = {
           review: $d('#log-review').value.trim() || null,
           is_rewatch: $d('#log-rewatch').checked,
         };
-        if (row.watched_on && row.watched_on > todayISO()) return showMsg("You can't have watched it in the future. Unless you're Timmy.");
+        if (row.watched_on && row.watched_on > todayISO()) return showMsg(line('futureDate'));
         const save = $d('#log-save');
         save.disabled = true;
         const { error } = editing
@@ -154,6 +155,10 @@ export function openLogModal({ episode = null, log = null, rewatch = false } = {
         save.disabled = false;
         if (error) return showMsg(error.message);
         if (!editing) await supabase.from('watchlist').delete().eq('episode_id', ep.id);
+        if (row.rating != null && row.rating !== log?.rating) {
+          const { data: t } = await supabase.from('episode_tags').select('tags(name)').eq('episode_id', ep.id);
+          toast(ratingReaction(row.rating, (t || []).map((x) => x.tags?.name).filter(Boolean)));
+        }
         changed = true;
         d.close();
       });

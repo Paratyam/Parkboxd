@@ -30,6 +30,24 @@ export function notify(el, text, type = 'info') {
   el.hidden = !text;
 }
 
+// A short message that pops up at the bottom of the screen and fades away.
+export function toast(text, ms = 4500) {
+  if (!text) return;
+  let host = document.getElementById('toasts');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'toasts';
+    host.setAttribute('role', 'status');
+    host.setAttribute('aria-live', 'polite');
+    document.body.append(host);
+  }
+  const t = document.createElement('div');
+  t.className = 'toast paper';
+  t.textContent = text;
+  host.append(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, ms);
+}
+
 export function setBusy(button, busy, busyText = 'Working…') {
   if (busy) {
     button.dataset.label = button.textContent;

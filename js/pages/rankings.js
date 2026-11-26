@@ -55,7 +55,7 @@ root.innerHTML = `
           : `<b>±${r.sd.toFixed(2)}</b><span>avg ${r.avg.toFixed(1)} · ${r.rating_count} ratings</span>`}
       </div>
     </li>`).join('')}</ol>`
-    : `<p class="empty">Nothing has ${min} or more ratings yet. Get your friends rating, or lower the minimum.</p>`}`;
+    : `<p class="empty">Nothing has ${min} or more ratings yet. Get your friends rating, or lower the minimum. Democracy takes time, mkay.</p>`}`;
 root.removeAttribute('aria-busy');
 
 $('#min').addEventListener('change', (e) => { location.href = link(type, e.target.value); });

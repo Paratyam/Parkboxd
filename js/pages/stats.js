@@ -99,7 +99,7 @@ async function render() {
           <span class="val">${Number(r.avg_rating).toFixed(1)}</span>
         </li>`).join('')}</ol>
       <p style="margin:10px 0 0;font-size:12px;color:var(--muted)">Average of ${isMe ? 'your' : 'their'} ratings in each season. Bars run from 0 to 5★.</p>`
-    : `<p class="empty">${isMe ? 'Rate some episodes to rank the seasons.' : 'No ratings yet.'}</p>`;
+    : `<p class="empty">${isMe ? 'Rate some episodes to rank the seasons. Then you can finally settle the argument.' : 'No ratings yet.'}</p>`;
 
   // ---- Most rewatched ----
   const counts = new Map();

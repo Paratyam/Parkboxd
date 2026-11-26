@@ -3,6 +3,7 @@ import { supabase } from '../supabase.js';
 import { $, esc, params } from '../ui.js';
 import { loadAllEpisodes, myLogMap, cardHTML } from '../episodes.js';
 import { FOCUS_CHARACTERS } from '../data/character-tags.js';
+import { line } from '../jokes.js';
 
 const { user } = await initPage({ title: 'Episodes', auth: 'required' });
 
@@ -91,7 +92,7 @@ function render() {
         const meta = c?.avg_rating ? `avg ${Number(c.avg_rating).toFixed(1)}` : (e.air_date ? e.air_date.slice(0, 4) : '');
         return cardHTML(e, { mine: mine.get(e.id), meta });
       }).join('')
-    : '<p class="empty" style="grid-column:1/-1">Nothing matches. Screw you guys, I\'m going home.</p>';
+    : `<p class="empty" style="grid-column:1/-1">${esc(line('searchEmpty'))}</p>`;
 }
 
 q.addEventListener('input', () => {

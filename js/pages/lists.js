@@ -4,6 +4,7 @@ import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, avatarHTML, notify } from '../ui.js';
 import { thumbHTML } from '../episodes.js';
+import { line } from '../jokes.js';
 
 const { user } = await initPage({ title: 'Lists', auth: 'required' });
 const root = $('#lists');
@@ -42,7 +43,7 @@ root.innerHTML = `
       </div>
     </a>`;
   }).join('')}</div>`
-    : `<p class="empty">${tab === 'mine' ? 'You haven\'t made any lists yet.' : 'No lists yet. Make the first one!'}</p>`}`;
+    : `<p class="empty">${esc(line(tab === 'mine' ? 'listsEmptyMine' : 'listsEmpty'))}</p>`}`;
 root.removeAttribute('aria-busy');
 
 $('#new-list').addEventListener('submit', async (e) => {

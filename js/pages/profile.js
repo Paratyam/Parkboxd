@@ -5,6 +5,7 @@ import { thumbHTML } from '../episodes.js';
 import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML } from '../ui.js';
 import { countRatings, histogramHTML } from '../histogram.js';
 import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js';
+import { line } from '../jokes.js';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -78,7 +79,7 @@ async function render(p) {
           <span class="rating" aria-label="${l.rating ? `${l.rating} stars` : 'No rating'}">${stars(l.rating)}</span>
           ${l.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}
         </li>`).join('')}</ol>`
-    : `<p class="empty">${isMe ? "You haven't logged anything yet. Hit \"+ Log\" up top to start." : `${esc(name)} hasn't logged anything yet.`}</p>`;
+    : `<p class="empty">${esc(isMe ? line('diaryEmptyMine') : line('diaryEmptyOther', { name }))}</p>`;
 
   const started = (progress || []).filter((r) => r.watched > 0);
   const progressHtml = started.length
@@ -88,7 +89,7 @@ async function render(p) {
           <div class="bar"><div style="width:${Math.round((r.watched / r.total) * 100)}%;background:var(--green)"></div></div>
         </div>`).join('')}</div>
       <p style="margin:12px 0 0;font-size:13px"><a href="stats.html?u=${u}">All stats and season rankings →</a></p>`
-    : '<p class="empty">No seasons started yet.</p>';
+    : '<p class="empty">No seasons started yet. Season 1 is right there, dude.</p>';
 
   root.innerHTML = `
     <section class="profile-head paper" aria-label="Profile">
@@ -123,7 +124,7 @@ async function render(p) {
           <div class="section-head"><h2><a href="ratings.html?u=${u}" style="color:inherit">Ratings</a></h2><a href="ratings.html?u=${u}">${ratedTotal}</a></div>
           ${ratedTotal
             ? histogramHTML(ratingCounts, { href: (b) => `ratings.html?u=${u}&r=${b}` })
-            : `<p class="empty">${isMe ? 'Rate some episodes and your chart shows up here.' : 'No ratings yet.'}</p>`}
+            : `<p class="empty">${esc(line(isMe ? 'ratingsEmptyMine' : 'ratingsEmptyOther'))}</p>`}
         </section>
         <section>
           <div class="section-head"><h2>Season progress</h2></div>

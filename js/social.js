@@ -2,6 +2,7 @@
 import { supabase } from './supabase.js';
 import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js';
 import { thumbHTML } from './episodes.js';
+import { line } from './jokes.js';
 
 export async function followingIds(userId) {
   const { data } = await supabase.from('follows').select('followee_id').eq('follower_id', userId);
@@ -22,7 +23,7 @@ export function followButtonHTML(targetId, following) {
 export function wireFollowButtons(root, onChange) {
   root.querySelectorAll('[data-follow]').forEach((b) => b.addEventListener('click', async () => {
     const following = b.getAttribute('aria-pressed') === 'true';
-    if (following && !confirm('Unfollow? They won\'t be told. Probably.')) return;
+    if (following && !confirm(line('unfollow'))) return;
     b.disabled = true;
     const { error } = await setFollow(b.dataset.follow, !following);
     b.disabled = false;
