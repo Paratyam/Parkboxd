@@ -88,7 +88,9 @@ export function reviewHTML(r, { me, extras, friends, avgs, showEpisode = false, 
         </div>
         <p>${esc(text)}</p>
         <div class="review-foot">
-          ${own ? '' : `<button type="button" class="link-button review-like" data-like-log="${r.id}" aria-pressed="${!!liked}">${liked ? '♥ Liked' : '♡ Like review'}</button>`}
+          ${own
+            ? `<button type="button" class="link-button review-edit" data-edit-review="${r.id}">✎ Edit review</button>`
+            : `<button type="button" class="link-button review-like" data-like-log="${r.id}" aria-pressed="${!!liked}">${liked ? '♥ Liked' : '♡ Like review'}</button>`}
           <a href="review.html?id=${r.id}">${plural(likes, 'like')} · ${plural(comments, 'comment')}</a>
         </div>
       </div>
@@ -107,6 +109,17 @@ export function wireReviewLikes(root, onChange) {
     b.disabled = false;
     if (error) return alert(error.message);
     onChange?.();
+  }));
+  // Your own reviews: [data-edit-review] opens the log dialog on that log (save fires parkboxd:logged).
+  root.querySelectorAll('[data-edit-review]').forEach((b) => b.addEventListener('click', async () => {
+    b.disabled = true;
+    const { data: log, error } = await supabase.from('logs')
+      .select('*, episodes(id, kind, season, number, title, air_date, still_path)').eq('id', Number(b.dataset.editReview)).maybeSingle();
+    b.disabled = false;
+    if (error || !log) return alert(error?.message || "Couldn't find that review.");
+    const { logEpisode } = await import('./layout.js');
+    const changed = await logEpisode({ episode: log.episodes, log });
+    if (changed) onChange?.();
   }));
 }
 
