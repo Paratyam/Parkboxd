@@ -66,24 +66,27 @@ export function ratingReaction(rating, tagNames = []) {
   if (rating == null) return null;
   const has = (n) => tagNames.some((t) => t.toLowerCase() === n.toLowerCase());
   const s = rating === 1 ? '1 star' : `${rating} stars`;
-  const low = rating <= 1.5;
+  // Negative reactions at 2.5★ and below, positive ones at 4.5★ and above. 3–4★ stays quiet
+  // (apart from Timmy, who reacts to everything).
+  const low = rating <= 2.5;
   const high = rating >= 4.5;
 
   if (has('Kenny') && low) return `Oh my God, you rated Kenny's episode ${s}! You bastard!`;
   if (has('Kenny') && high) return "Kenny says thanks. Well, he says \"mmph mmph mmph\". Same thing.";
-  if (has('Butters') && rating <= 2) return `${s}? Aw, hamburgers. Now Butters is grounded and it's your fault.`;
+  if (has('Butters') && low) return `${s}? Aw, hamburgers. Now Butters is grounded and it's your fault.`;
   if (has('Butters') && high) return 'Butters is so happy he might do the little fist-rubbing thing.';
-  if (has('Cartman') && rating === 5) return 'Sweet! Kewl! Cartman respects your authoritah.';
+  if (has('Cartman') && high) return 'Sweet! Kewl! Cartman respects your authoritah.';
   if (has('Cartman') && low) return 'Screw you guys, Cartman is going home.';
   if (has('Randy') && high) return 'Randy is crying tears of pure Tegridy.';
   if (has('Randy') && low) return `${s}? Randy's going to say "I thought this was America!"`;
   if (has('Kyle') && low) return `You know, I learned something today: you gave Kyle ${s}.`;
   if (has('Stan') && low) return `${s}? Dude, Stan is going to throw up. On Wendy.`;
-  if (has('Mr. Mackey') || has('Mr. Garrison')) return low ? `${s} is bad, mmkay.` : null;
-  if (has('Towelie')) return high ? "Don't forget to bring a towel!" : "You wanna get high? No? Then why'd you rate it like that?";
+  if ((has('Mr. Mackey') || has('Mr. Garrison')) && low) return `${s} is bad, mmkay.`;
+  if (has('Towelie') && high) return "Don't forget to bring a towel!";
+  if (has('Towelie') && low) return "You wanna get high? No? Then why'd you rate it like that?";
   if (has('Timmy')) return 'TIMMY!';
   if (has('Jimmy') && high) return 'What a terrific audience! Jimmy thanks you.';
   if (rating === 0.5) return "Half a star? That's pretty harsh, dude.";
-  if (rating === 5 && Math.random() < 0.5) return 'Five stars. That episode just went down in history, mkay.';
+  if (high && Math.random() < 0.5) return `${s[0].toUpperCase()}${s.slice(1)}. That episode just went down in history, mkay.`;
   return null;
 }
