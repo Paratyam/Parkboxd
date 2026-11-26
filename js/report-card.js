@@ -68,7 +68,19 @@ const INCOMPLETE = [
   'Did you lose your homework? {s} needs {n} more ratings before I grade it.',
 ];
 
-const pick = (arr, seed) => arr[((seed * 2654435761) >>> 0) % arr.length];
+// Comments rotate by season and never repeat on one card (until a list runs out).
+const picker = () => {
+  const used = new Map();
+  return (arr, seed) => {
+    const u = used.get(arr) || new Set();
+    used.set(arr, u);
+    if (u.size >= arr.length) u.clear();
+    let i = (seed * 7 + 3) % arr.length;
+    while (u.has(i)) i = (i + 1) % arr.length;
+    u.add(i);
+    return arr[i];
+  };
+};
 
 /**
  * reportCardHTML({ seasonAvgs, all, seen, isMe, name })
@@ -76,6 +88,7 @@ const pick = (arr, seed) => arr[((seed * 2654435761) >>> 0) % arr.length];
  */
 export function reportCardHTML({ seasonAvgs, all, seen, isMe, name }) {
   const today = new Date().toLocaleDateString('en-CA');
+  const pick = picker();
   const totals = new Map();
   for (const e of all) {
     if (e.kind !== 'episode' || !e.season || (e.air_date && e.air_date > today)) continue; // unaired episodes don't count
