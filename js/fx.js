@@ -187,30 +187,52 @@ export function showCoonTakeover(setLogo) {
     unrigRankings();
     toast('The Coon will return. When you least expect it.');
   });
+
+  // Members of Coon & Friends (badge holders) get VIP treatment.
+  import('./coon-member.js').then(({ coonMember }) => coonMember()).then((member) => {
+    if (!member || !banner.isConnected) return;
+    banner.querySelector('.coon-title').textContent = `Welcome back, ${member.name}. Member of Coon & Friends.`;
+    banner.querySelector('.coon-sub').innerHTML = 'You may stay. Everyone else: respect his authoritah. <a href="franchise.html" style="color:#fff;text-decoration:underline">Your spin-off is in the franchise plan</a>';
+  }).catch(() => {});
 }
 
 // …and rigs the Rankings: pages with a ranked list call this after rendering.
-export function rigRankings(root) {
+// The Coon goes in at #1; a Coon & Friends member gets #2 as his Official Sidekick.
+export async function rigRankings(root) {
   if (!document.documentElement.classList.contains('coon-takeover-on') || !root) return;
+  const member = await import('./coon-member.js').then(({ coonMember }) => coonMember()).catch(() => null);
+  if (!document.documentElement.classList.contains('coon-takeover-on')) return; // dismissed meanwhile
+
   let list = root.querySelector('.rank-table');
   if (!list) {
     list = document.createElement('ol');
     list.className = 'rank-table coon-fake';
     (root.querySelector('section') || root).append(list);
   }
-  const li = document.createElement('li');
-  li.className = 'coon-fake';
-  li.innerHTML = `
+  const stripes = 'background:repeating-linear-gradient(90deg,#3a3330 0 14px,#4a423d 14px 28px);display:flex;align-items:center;justify-content:center;font-size:30px';
+  const rows = [`
     <span class="pos">1</span>
-    <a href="franchise.html" class="thumb" aria-hidden="true" tabindex="-1"><div class="ep-thumb paper" style="background:repeating-linear-gradient(90deg,#3a3330 0 14px,#4a423d 14px 28px);display:flex;align-items:center;justify-content:center;font-size:30px">🦝</div></a>
+    <a href="franchise.html" class="thumb" aria-hidden="true" tabindex="-1"><div class="ep-thumb paper" style="${stripes}">🦝</div></a>
     <div class="info"><a href="franchise.html">The Coon (2009)</a><span>Ranked #1 by The Coon. Totally legit. See the franchise plan.</span></div>
-    <div class="score"><b>∞</b><span>1 rating (his own)</span></div>`;
-  // Everyone else gets bumped down a place (put back when the takeover is dismissed).
-  list.querySelectorAll('li .pos').forEach((p) => {
-    p.dataset.realPos = p.textContent;
-    p.textContent = String(Number(p.textContent) + 1);
+    <div class="score"><b>∞</b><span>1 rating (his own)</span></div>`];
+  if (member) {
+    rows.push(`
+    <span class="pos">2</span>
+    <a href="franchise.html" class="thumb" aria-hidden="true" tabindex="-1"><div class="ep-thumb paper" style="${stripes}">🤝</div></a>
+    <div class="info"><a href="franchise.html">${member.name.replace(/[<>&"]/g, '')}: Official Sidekick</a><span>Appointed by The Coon. Ranked just below him, where sidekicks belong.</span></div>
+    <div class="score"><b>99.9</b><span>Coon-approved</span></div>`);
+  }
+  // Everyone else moves down to make room (put back when the takeover is dismissed).
+  list.querySelectorAll('li:not(.coon-fake) .pos').forEach((p) => {
+    p.dataset.realPos ??= p.textContent;
+    p.textContent = String(Number(p.dataset.realPos) + rows.length);
   });
-  list.prepend(li);
+  for (const html of rows.reverse()) {
+    const li = document.createElement('li');
+    li.className = 'coon-fake';
+    li.innerHTML = html;
+    list.prepend(li);
+  }
 }
 
 function unrigRankings() {

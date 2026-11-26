@@ -2,6 +2,7 @@
 import { initPage } from '../layout.js';
 import { $, esc, epCode } from '../ui.js';
 import { loadAllEpisodes, myLogMap, thumbHTML } from '../episodes.js';
+import { coonMember } from '../coon-member.js';
 
 const { user } = await initPage({ title: "The Coon's Franchise Plan", auth: 'required' });
 const root = $('#franchise');
@@ -21,6 +22,9 @@ const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '
 const [all, mine] = await Promise.all([loadAllEpisodes(), myLogMap(user.id)]);
 const byTitle = new Map(all.filter((e) => e.kind === 'episode').map((e) => [norm(e.title), e]));
 const rows = PHASES.map((p) => ({ ...p, ep: p.title ? byTitle.get(norm(p.title)) : null }));
+// Members of Coon & Friends (badge holders) get a phase of their own.
+const member = await coonMember();
+if (member) rows.push({ phase: 'Phase 8', spinoff: `${member.name}'s spin-off`, note: 'Approved by The Coon (reluctantly). Budget: whatever is left after Phase 6.', ep: null });
 const real = rows.filter((r) => r.ep);
 const seen = real.filter((r) => mine.has(r.ep.id)).length;
 
@@ -40,12 +44,12 @@ root.innerHTML = `
         <span class="pos">${i + 1}</span>
         ${r.ep
           ? `<a href="episode.html?id=${r.ep.id}" class="thumb" aria-hidden="true" tabindex="-1">${thumbHTML(r.ep, { showTitle: false })}</a>`
-          : '<div class="thumb"><div class="ep-thumb paper" style="background-color:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;font-weight:700">TBA</div></div>'}
+          : `<div class="thumb"><div class="ep-thumb paper" style="background-color:${r.spinoff ? 'var(--yellow)' : 'var(--surface)'};display:flex;align-items:center;justify-content:center;color:${r.spinoff ? 'var(--bg)' : 'var(--muted)'};font-size:${r.spinoff ? '26px' : '12px'};font-weight:700">${r.spinoff ? '⭐' : 'TBA'}</div></div>`}
         <div class="info">
-          <a ${r.ep ? `href="episode.html?id=${r.ep.id}"` : ''} style="${r.ep ? '' : 'color:var(--muted)'}">${esc(r.phase)}: ${esc(r.ep?.title || 'Coming soon(ish)')}</a>
+          <a ${r.ep ? `href="episode.html?id=${r.ep.id}"` : ''} style="${r.ep || r.spinoff ? '' : 'color:var(--muted)'}">${esc(r.phase)}: ${esc(r.ep?.title || r.spinoff || 'Coming soon(ish)')}</a>
           <span>${r.ep ? `${esc(epCode(r.ep))} · ` : ''}${esc(r.note)}</span>
         </div>
-        <div class="score">${r.ep ? (mine.has(r.ep.id) ? '<b style="font-size:16px">✓ Seen</b>' : '<span>Not seen</span>') : '<span>Not real</span>'}</div>
+        <div class="score">${r.ep ? (mine.has(r.ep.id) ? '<b style="font-size:16px">✓ Seen</b>' : '<span>Not seen</span>') : (r.spinoff ? '<b style="font-size:16px">⭐ Yours</b>' : '<span>Not real</span>')}</div>
       </li>`).join('')}
   </ol>
   <p class="result-count" style="margin:0">Professor Chaos has asked for his own spin-off. The Coon said no.</p>`;
