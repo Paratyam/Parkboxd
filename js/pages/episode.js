@@ -8,6 +8,7 @@ import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seas
 import { starInput } from '../stars.js';
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
 import { loadArcs, openLogArc } from '../arcs.js';
+import { loadVotes, loadRatings, scoreVotes, ranking } from '../cage.js';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -21,6 +22,7 @@ const CHECK = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" strok
 
 let myLogs = [];
 let onWatchlist = false;
+let cageInfo = null;
 let tagNames = [];
 
 if (!ep) {
@@ -92,13 +94,19 @@ function renderShell() {
 // ---- Your actions ----
 
 async function refreshMine() {
-  const [{ data: logs }, { count }] = await Promise.all([
+  const [{ data: logs }, { count }, cageVotes, cageRatings] = await Promise.all([
     supabase.from('logs').select('*').eq('episode_id', ep.id).eq('user_id', user.id)
       .order('watched_on', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false }),
     supabase.from('watchlist').select('episode_id', { count: 'exact', head: true }).eq('episode_id', ep.id).eq('user_id', user.id),
+    loadVotes(user.id),
+    loadRatings(user.id),
   ]);
   myLogs = logs || [];
   onWatchlist = count > 0;
+  // Your Cage Match record for this episode, if it has fought.
+  const cageList = ranking(scoreVotes(cageVotes, cageRatings));
+  const cagePos = cageList.findIndex((x) => x.id === ep.id);
+  cageInfo = cagePos < 0 ? null : { pos: cagePos + 1, of: cageList.length, ...cageList[cagePos] };
   renderPanel();
 }
 
@@ -142,7 +150,8 @@ function renderPanel() {
   $('#note').innerHTML = myLogs.length
     ? `<div class="note-card paper tilt-right"><strong>You've logged this ${myLogs.length === 1 ? 'once' : `${myLogs.length} times`}.</strong>
         ${dated.length ? `Last watched ${esc(formatDate(dated[0].watched_on))}.` : ''}
-        <a href="diary.html" style="color:var(--bg);text-decoration:underline">See your diary</a></div>`
+        <a href="diary.html" style="color:var(--bg);text-decoration:underline">See your diary</a>
+        ${cageInfo ? `<span class="cage-note">🥊 Cage Match: <b>#${cageInfo.pos}</b> of ${cageInfo.of} · ${cageInfo.wins}–${cageInfo.losses}${cageInfo.pos === 1 ? " · 👑 your champion" : ""} · <a href="cage.html" style="color:var(--bg);text-decoration:underline">Fight</a></span>` : ""}</div>`
     : '';
 }
 

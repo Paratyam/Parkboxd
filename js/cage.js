@@ -3,6 +3,7 @@ import { supabase } from './supabase.js';
 
 const K = 32;
 export const UNDEFEATED_MIN = 3; // wins needed before "undefeated" means anything
+export const SETTLED_FIGHTS = 3; // fights before an episode's spot counts as settled
 
 // Starting score from your star rating, so the ranking begins somewhere sensible.
 const startScore = (rating) => 1000 + (rating == null ? 0 : (Number(rating) - 3) * 60);
