@@ -184,11 +184,11 @@ const MENTIONS = [
     "I cried too, {name}. Don't tell anybody. Especially Eric.",
     "It's okay to cry, {name}. I do it all the time. Like, all the time.",
   ]],
-  [/\b(best|masterpiece|classic|goat|perfect)\b/i, [
+  [/\b(best|masterpiece|classic|goat|perfect)\b/i, 'good', [
     'A classic! Just like a real book, {name}. Which this totally is.',
     "{name} called it a classic! I'm adding it to my all-time Book Club list.",
   ]],
-  [/\b(worst|boring|bad|meh|mid)\b/i, [
+  [/\b(worst|boring|bad|meh|mid)\b/i, 'bad', [
     "Boring? Oh. Well. I'll try to pick more explosions next week, {name}.",
     'Aw, {name}, maybe it will grow on you. Like a mushroom. A nice one.',
   ]],
@@ -207,8 +207,11 @@ export function buttersComment(r) {
   const rating = r.rating == null ? null : Number(r.rating);
 
   const pools = [];
-  const mention = MENTIONS.find(([re]) => re.test(text));
-  if (mention) pools.push(mention[1], mention[1]); // a mention is twice as likely to win
+  // Mood words only count when the stars agree ("not bad" on a 5★ review isn't a complaint).
+  const fits = (mood) => !mood || rating == null || (mood === 'good' ? rating >= 3.5 : rating <= 3);
+  const mention = MENTIONS.map((m) => (m.length === 3 ? m : [m[0], null, m[1]]))
+    .find(([re, mood]) => fits(mood) && re.test(text));
+  if (mention) pools.push(mention[2], mention[2]); // a mention is twice as likely to win
   pools.push(rating == null ? NO_RATING : rating >= 4 ? LOVED : rating >= 3 ? MIXED : HATED);
   if (text.trim().length < 40) pools.push(SHORT);
   if (text.length > 400) pools.push(LONG);
