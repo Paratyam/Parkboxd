@@ -239,9 +239,9 @@ export const CHARACTER_COLOURS = {
   Sharon: ['#e88fb0', DARK],          // pink
   Shelly: ['#c98bd9', DARK],          // purple
   Gerald: ['#7a8b99', DARK],
-  Sheila: ['#3f8f6b', LIGHT],         // green dress
+  Sheila: ['#2e6f52', LIGHT],         // green dress
   Ike: ['#9bd3f5', DARK],
-  'Mr. Garrison': ['#6b8e23', LIGHT],
+  'Mr. Garrison': ['#4f6b18', LIGHT],
   'Mr. Mackey': ['#8e7cc3', DARK],    // purple tie
   'PC Principal': ['#c49a6c', DARK],
   Chef: ['#e9eef2', DARK],            // white chef's hat
@@ -252,7 +252,7 @@ export const CHARACTER_COLOURS = {
   Wendy: ['#a371f7', DARK],           // purple beret
   Tolkien: ['#7a3fa0', LIGHT],
   Jimmy: ['#f7d774', DARK],
-  Timmy: ['#e0453a', DARK],           // red wheelchair
+  Timmy: ['#ea6156', DARK],           // red wheelchair
   Craig: ['#2f6db0', LIGHT],          // blue chullo
   Tweek: ['#7fb069', DARK],
   Clyde: ['#d9534f', DARK],
