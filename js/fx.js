@@ -142,8 +142,14 @@ export function initModes(onChange) {
 // ---- Coon takeover: about 1 page load in 150, The Coon "hijacks" the site ----
 // Add ?coon=1 to any page URL to force it (for showing friends).
 
+// Once The Coon takes over he stays (for this browser tab) until you click "Fine, whatever".
+const COON_KEY = 'parkboxd-coon';
 export function coonTakeoverDue() {
-  return new URLSearchParams(location.search).get('coon') === '1' || Math.random() < 1 / 150;
+  const due = sessionStorage.getItem(COON_KEY) === '1'
+    || new URLSearchParams(location.search).get('coon') === '1'
+    || Math.random() < 1 / 150;
+  if (due) sessionStorage.setItem(COON_KEY, '1');
+  return due;
 }
 
 /** Show the banner. setLogo(text) swaps the logo text while it's up (null puts it back). */
@@ -174,6 +180,7 @@ export function showCoonTakeover(setLogo) {
     banner.remove();
     setLogo?.(null);
     document.documentElement.classList.remove('coon-takeover-on');
+    sessionStorage.removeItem(COON_KEY);
     if (friendsLink) friendsLink.textContent = 'Friends';
     document.querySelectorAll('.coon-fake').forEach((el) => el.remove());
     unrigRankings();
