@@ -11,6 +11,7 @@ const root = $('#friends');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 let tab = params.get('tab');
+let query = ''; // kept across re-renders (e.g. after a follow click)
 
 async function render() {
   const [{ data: people }, { data: follows }, { data: stats }, mine] = await Promise.all([
@@ -52,9 +53,15 @@ async function render() {
         ${tabs.map(([key, label]) => `<a href="friends.html?u=${u}&tab=${key}"${key === tab ? ' aria-current="page"' : ''}>${esc(label)}</a>`).join('')}
       </nav>
     </div>
+    ${list.length ? `<div class="toolbar">
+      <label class="visually-hidden" for="people-q">Search people</label>
+      <input type="search" id="people-q" placeholder="Search by name or @username" autocomplete="off" value="${esc(query)}">
+      <span class="result-count" id="people-count" aria-live="polite"></span>
+    </div>
+    <p class="empty" id="people-none" hidden></p>` : ''}
     ${list.length ? `<ul class="people">${list.map((p) => {
       const s = statsBy.get(p.id);
-      return `<li>
+      return `<li data-q="${esc(`${p.display_name || ''} ${p.username}`.toLowerCase())}">
         <a href="profile.html?u=${encodeURIComponent(p.username)}" aria-hidden="true" tabindex="-1">${avatarHTML(p, 48)}</a>
         <div class="who">
           <a href="profile.html?u=${encodeURIComponent(p.username)}">${esc(p.display_name || p.username)}</a>
@@ -67,6 +74,24 @@ async function render() {
       : tab === 'followers' ? 'No followers yet. Even Kenny has followers, and he can barely talk.' : 'Nobody else has signed up yet. Send your friends the link! Or don\'t, and keep the whole town to yourself.'}</p>`}`;
   root.removeAttribute('aria-busy');
   wireFollowButtons(root);
+
+  const q = $('#people-q');
+  if (!q) return;
+  const filter = () => {
+    query = q.value;
+    const term = query.trim().toLowerCase().replace(/^@/, '');
+    const rows = [...root.querySelectorAll('.people li')];
+    let shown = 0;
+    rows.forEach((li) => { li.hidden = !!term && !li.dataset.q.includes(term); if (!li.hidden) shown++; });
+    $('#people-count').textContent = term ? `${shown} of ${rows.length}` : '';
+    const none = $('#people-none');
+    none.hidden = shown > 0;
+    none.innerHTML = tab === 'everyone' || !isMe
+      ? `Nobody called "${esc(query.trim())}" here. Must be one of those kids from North Park.`
+      : `Nobody called "${esc(query.trim())}" here. Try <a href="friends.html?u=${u}&tab=everyone">Find people</a>.`;
+  };
+  q.addEventListener('input', filter);
+  filter();
 }
 
 await render();
