@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Import episodes · Parkboxd</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script type="module" src="js/pages/import.js"></script>
+</head>
+<body>
+<header id="site-header" class="site-header"></header>
+
+<main>
+  <div class="wrap page" id="import-root">
+    <p class="empty">Checking your authoritah…</p>
+  </div>
+
+  <template id="import-ui">
+    <section class="import-card paper">
+      <h1 class="cut">Import episodes</h1>
+      <p>Pulls every season and episode of South Park from TMDB and saves them to the database. Existing episodes get updated, so re-run this whenever new episodes air. <span id="db-count"></span></p>
+      <form class="form" id="import-form" autocomplete="off">
+        <div class="field">
+          <label for="tmdb-key">TMDB API key or read access token</label>
+          <input type="password" id="tmdb-key" required spellcheck="false" aria-describedby="tmdb-key-hint">
+          <span class="hint" id="tmdb-key-hint">From themoviedb.org → Settings → API. It stays in this tab and is never saved.</span>
+        </div>
+        <label class="checkbox"><input type="checkbox" id="specials"> Include specials (season 0)</label>
+        <button class="btn btn-green" type="submit">Run import</button>
+      </form>
+    </section>
+
+    <section id="import-output" hidden>
+      <div class="section-head"><h2>Progress</h2><span id="import-summary" style="font-size:13px;color:var(--muted)"></span></div>
+      <div class="bar import-progress" aria-hidden="true"><div id="import-bar"></div></div>
+      <ol class="import-log" id="import-log" aria-live="polite" style="margin-top:12px"></ol>
+    </section>
+  </template>
+</main>
+
+<footer id="site-footer" class="site-footer"></footer>
+</body>
+</html>

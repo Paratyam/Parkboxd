@@ -1,0 +1,114 @@
+import { initPage } from '../layout.js';
+import { supabase } from '../supabase.js';
+import { SITE_NAME, TMDB_IMAGE_BASE } from '../config.js';
+import { $, esc, params, avatarHTML, formatDate, stars } from '../ui.js';
+
+const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
+const root = $('#profile');
+
+const wanted = (params.get('u') || me.username).toLowerCase();
+const { data: person } = await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
+
+if (!person) {
+  document.title = `Not found · ${SITE_NAME}`;
+  root.innerHTML = `
+    <div class="big-message">
+      <h1 class="cut">They killed ${esc(wanted)}!</h1>
+      <p>Nobody on ${esc(SITE_NAME)} goes by that name. Maybe they never existed.</p>
+      <a class="btn btn-green" href="profile.html">Back to your profile</a>
+    </div>`;
+  root.removeAttribute('aria-busy');
+} else {
+  await render(person);
+}
+
+async function render(p) {
+  const isMe = p.id === me.id;
+  const name = p.display_name || p.username;
+  document.title = `${name} · ${SITE_NAME}`;
+
+  const [{ data: stats }, { data: recent }, { data: top4Eps }, { data: progress }] = await Promise.all([
+    supabase.from('user_stats').select('*').eq('user_id', p.id).maybeSingle(),
+    supabase.from('logs')
+      .select('id, watched_on, rating, liked, is_rewatch, review, episodes(id, season, number, title)')
+      .eq('user_id', p.id)
+      .order('watched_on', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .limit(8),
+    p.top4.length
+      ? supabase.from('episodes').select('id, season, number, title, still_path').in('id', p.top4)
+      : Promise.resolve({ data: [] }),
+    supabase.rpc('season_progress', { p_user: p.id }),
+  ]);
+
+  const s = stats || {};
+  const statItems = [
+    ['Episodes', s.episodes_watched ?? 0],
+    ['This year', s.logs_this_year ?? 0],
+    ['Reviews', s.review_count ?? 0],
+    ['Followers', s.followers ?? 0],
+    ['Following', s.following ?? 0],
+  ];
+
+  const top4Html = [0, 1, 2, 3].map((i) => {
+    const ep = (top4Eps || []).find((e) => e.id === p.top4[i]);
+    if (!ep) return `<div class="top4-slot paper empty">${isMe ? 'Pick a favourite<br>(coming soon)' : 'Empty slot'}</div>`;
+    const bg = ep.still_path ? `background-image:linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.55)),url('${TMDB_IMAGE_BASE}w300${esc(ep.still_path)}');background-size:cover;background-position:center` : '';
+    return `<div class="top4-slot paper" style="${bg}">
+      <span class="ep-card-code">S${ep.season} E${ep.number}</span>
+      <span class="ep-card-title">${esc(ep.title)}</span>
+    </div>`;
+  }).join('');
+
+  const diaryHtml = recent?.length
+    ? `<ol class="diary">${recent.map((l) => `
+        <li>
+          <span class="date">${esc(formatDate(l.watched_on, { month: 'short', day: 'numeric', year: 'numeric' }))}</span>
+          <span class="title">${esc(l.episodes?.title ?? 'Unknown episode')}<span class="code">S${l.episodes?.season} E${l.episodes?.number}</span></span>
+          <span class="rating" aria-label="${l.rating ? `${l.rating} stars` : 'No rating'}">${stars(l.rating)}</span>
+          ${l.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}
+        </li>`).join('')}</ol>`
+    : `<p class="empty">${isMe ? "You haven't logged anything yet. Logging lands in the next update." : `${esc(name)} hasn't logged anything yet.`}</p>`;
+
+  const colours = ['#3fb950', '#4a90e2', '#f5c518', '#f2711c', '#d63a3a'];
+  const started = (progress || []).filter((r) => r.watched > 0);
+  const progressHtml = started.length
+    ? `<div class="progress-list">${started.map((r, i) => `
+        <div class="progress-row">
+          <div class="label"><span>Season ${r.season}</span><span>${r.watched} / ${r.total}</span></div>
+          <div class="bar"><div style="width:${Math.round((r.watched / r.total) * 100)}%;background:${colours[i % 5]}"></div></div>
+        </div>`).join('')}</div>`
+    : '<p class="empty">No seasons started yet.</p>';
+
+  root.innerHTML = `
+    <section class="profile-head paper" aria-label="Profile">
+      ${avatarHTML(p, 96)}
+      <div class="who">
+        <h1 class="cut">${esc(name)}</h1>
+        <span class="handle">@${esc(p.username)} · joined ${esc(formatDate(p.created_at, { month: 'long', year: 'numeric' }))}</span>
+        ${p.bio ? `<p class="bio">${esc(p.bio)}</p>` : ''}
+      </div>
+      <div class="stats">${statItems.map(([label, n]) => `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join('')}</div>
+      ${isMe ? `<div class="profile-actions" style="width:100%">
+        <a class="btn btn-ghost" href="username.html?next=${encodeURIComponent('profile.html')}">Change username</a>
+        <span class="btn btn-ghost" aria-disabled="true" title="Coming soon" style="opacity:.6;cursor:default">Edit profile (soon)</span>
+      </div>` : ''}
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Favourite episodes</h2></div>
+      <div class="top4">${top4Html}</div>
+    </section>
+
+    <div class="two-col">
+      <section>
+        <div class="section-head"><h2>Recent diary</h2></div>
+        ${diaryHtml}
+      </section>
+      <aside>
+        <div class="section-head"><h2>Season progress</h2></div>
+        ${progressHtml}
+      </aside>
+    </div>`;
+  root.removeAttribute('aria-busy');
+}
