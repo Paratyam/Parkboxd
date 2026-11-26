@@ -33,6 +33,7 @@ async function render(p) {
   const isMe = p.id === me.id;
   const name = p.display_name || p.username;
   document.title = `${name} · ${SITE_NAME}`;
+  const u = encodeURIComponent(p.username);
 
   const [{ data: stats }, { data: recent }, { data: top4Eps }, { data: progress }, { data: ratings }, everyone, chars, avgs, all, { data: allLogs }] = await Promise.all([
     supabase.from('user_stats').select('*').eq('user_id', p.id).maybeSingle(),
@@ -146,7 +147,6 @@ async function render(p) {
   }
   const ratingCounts = countRatings((ratings || []).map((r) => r.rating));
   const ratedTotal = ratingCounts.reduce((a, b) => a + b, 0);
-  const u = encodeURIComponent(p.username);
 
   const s = stats || {};
   const statItems = [
