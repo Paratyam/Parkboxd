@@ -4,7 +4,7 @@ import { supabase } from '../supabase.js';
 import { $, esc, epCode, avatarHTML, formatDate, stars, toast } from '../ui.js';
 import { buttersReview, buttersComment } from '../butters.js';
 import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js';
-import { weeklyPick, weekStart } from '../club.js';
+import { weekStart, loadPicks } from '../club.js';
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
 import { episodeAverages } from '../insights.js';
 
@@ -25,7 +25,10 @@ function withButters(html, r) {
 
 async function render() {
   const [all, mine, friends] = await Promise.all([loadAllEpisodes(), myLogMap(user.id), followingIds(user.id)]);
-  const ep = weeklyPick(all);
+  // This week, the last four, and next week (the one being voted on).
+  const picks = await loadPicks(all, [0, -1, -2, -3, -4, 1]);
+  const ep = picks[0].pick;
+  const upcoming = picks[5];
   if (!ep) {
     root.innerHTML = '<p class="empty">No episodes yet. Ask your admin to run the import.</p>';
     root.removeAttribute('aria-busy');
@@ -68,7 +71,45 @@ async function render() {
   const reviews = (logs || []).filter((l) => l.review && l.review.trim());
   const extras = await reviewExtras(reviews.map((r) => r.id), user.id);
   const iWatched = (logs || []).some((l) => l.user_id === user.id);
-  const past = [-1, -2, -3, -4].map((o) => ({ ep: weeklyPick(all, o), start: weekStart(o) })).filter((x) => x.ep);
+  const past = picks.slice(1, 5).map((p) => ({ ep: p.pick, start: p.start, end: p.end })).filter((x) => x.ep);
+  // Club average: ratings members gave each past pick during its week.
+  const { data: pastLogs } = past.length
+    ? await supabase.from('logs').select('user_id, episode_id, rating, created_at')
+      .in('episode_id', past.map((x) => x.ep.id)).gte('created_at', past[past.length - 1].start.toISOString()).limit(2000)
+    : { data: [] };
+  const clubStats = (x) => {
+    const inWeek = (pastLogs || []).filter((l) => l.episode_id === x.ep.id && new Date(l.created_at) >= x.start && new Date(l.created_at) < x.end);
+    const latest = new Map();
+    for (const l of inWeek) if (l.rating != null) latest.set(l.user_id, Number(l.rating));
+    const r = [...latest.values()];
+    return { members: new Set(inWeek.map((l) => l.user_id)).size, avg: r.length ? r.reduce((a, b) => a + b, 0) / r.length : null };
+  };
+  const pastMeta = (x) => {
+    const s = clubStats(x);
+    const week = `Week of ${formatDate(x.start.toISOString().slice(0, 10), { month: 'short', day: 'numeric' })}`;
+    return s.avg != null ? `${week} · club ★${s.avg.toFixed(1)} (${s.members})` : s.members ? `${week} · ${s.members} read it` : `${week} · nobody read it`;
+  };
+  // Next week's vote.
+  const myVote = upcoming.votes.find((v) => v.user_id === user.id)?.episode_id ?? null;
+  const totalVotes = upcoming.votes.length;
+  const voteHTML = upcoming.candidates.length ? `
+    <section class="club-vote">
+      <div class="section-head"><h2>🗳️ Vote for next week's book</h2><span class="result-count">${totalVotes} vote${totalVotes === 1 ? '' : 's'} · closes when the new book starts</span></div>
+      <p class="club-vote-butters">“I picked three and I couldn't decide, so you fellas decide! If nobody votes, I get to pick. I'll pick the first one.” <span>— Butters</span></p>
+      <div class="club-vote-grid">${upcoming.candidates.map((c, i) => {
+        const n = upcoming.counts.get(c.id) || 0;
+        const pct = totalVotes ? Math.round((n / totalVotes) * 100) : 0;
+        const leading = totalVotes && upcoming.pick?.id === c.id;
+        return `<div class="club-vote-card${myVote === c.id ? ' mine' : ''}${leading ? ' leading' : ''}">
+          ${leading ? '<span class="club-vote-flag cut">📈 Leading</span>' : i === 0 && !totalVotes ? '<span class="club-vote-flag cut">Butters\' fave</span>' : ''}
+          <a href="episode.html?id=${c.id}" tabindex="-1" aria-hidden="true">${thumbHTML(c, { showTitle: false })}</a>
+          <a href="episode.html?id=${c.id}" class="club-vote-title">${esc(c.title)}</a>
+          <span class="club-vote-code">${esc(epCode(c))}${mine.has(c.id) ? ' · you\'ve seen it' : ''}</span>
+          <div class="club-vote-bar" role="img" aria-label="${n} votes"><div style="width:${pct}%"></div></div>
+          <button type="button" class="btn ${myVote === c.id ? 'btn-green' : 'btn-ghost'}" data-vote="${c.id}">${myVote === c.id ? '✓ Your vote' : 'Vote'} · ${n}</button>
+        </div>`;
+      }).join('')}</div>
+    </section>` : '';
 
   const newPickDay = new Date(next).toLocaleDateString(undefined, { weekday: 'long' });
   root.innerHTML = `
@@ -113,14 +154,25 @@ async function render() {
         ? reviews.map((r) => withButters(reviewHTML(r, { me: user.id, extras, friends, avgs }), r)).join('')
         : '<p class="empty">Nobody else has reviewed it yet. Don\'t leave Butters hanging!</p>'}</div>
     </section>
+    ${voteHTML}
     <section>
       <div class="section-head"><h2>📚 Past reads</h2></div>
-      <div class="club-shelf"><div class="ep-grid">${past.map((x) => cardHTML(x.ep, { mine: mine.get(x.ep.id), meta: `Week of ${formatDate(x.start.toISOString().slice(0, 10), { month: 'short', day: 'numeric' })}` })).join('')}</div></div>
+      <div class="club-shelf"><div class="ep-grid">${past.map((x) => cardHTML(x.ep, { mine: mine.get(x.ep.id), meta: pastMeta(x) })).join('')}</div></div>
     </section>`;
   root.removeAttribute('aria-busy');
 
   $('#club-log').onclick = () => logEpisode({ episode: ep, rewatch: mine.has(ep.id) });
   wireReviewLikes($('#club-reviews'), render);
+  root.querySelectorAll('[data-vote]').forEach((b) => b.addEventListener('click', async () => {
+    const id = Number(b.dataset.vote);
+    root.querySelectorAll('[data-vote]').forEach((x) => { x.disabled = true; });
+    const { error } = myVote === id
+      ? await supabase.from('club_votes').delete().eq('week_start', upcoming.key).eq('user_id', user.id)
+      : await supabase.from('club_votes').upsert({ user_id: user.id, week_start: upcoming.key, episode_id: id }, { onConflict: 'user_id,week_start' });
+    if (error) { root.querySelectorAll('[data-vote]').forEach((x) => { x.disabled = false; }); return toast(error.message); }
+    toast(myVote === id ? "Aw, you took your vote back. That's okay, I won't cry." : 'Gee, thanks for voting! Democracy is swell!');
+    render();
+  }));
   $('#butters-like').onclick = async (e) => {
     const b = e.currentTarget;
     const liked = b.getAttribute('aria-pressed') === 'true';

@@ -1035,3 +1035,38 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .butters-reply .who { color: #b23a2e; }
 .butters-reply p { color: var(--club-ink); }
 .butters-reply .host-tag { background: var(--club-blue); color: #fff; }
+
+/* Book Club vote */
+.club-vote-butters { margin: 0 0 14px; font-size: 14px; color: var(--text-soft); font-style: italic; }
+.club-vote-butters span { font-style: normal; color: var(--muted); }
+.club-vote-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+.club-vote-card { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 12px; border: 3px solid #000; border-radius: 6px; box-shadow: 4px 4px 0 #000; color: var(--club-ink);
+  background: repeating-linear-gradient(var(--club-paper) 0 23px, var(--club-line) 23px 24px); }
+.club-vote-card:nth-child(2) { transform: rotate(.8deg); } .club-vote-card:nth-child(3) { transform: rotate(-.6deg); }
+.club-vote-card.mine { box-shadow: 0 0 0 3px var(--green), 4px 4px 0 #000; }
+.club-vote-flag { position: absolute; top: -12px; right: 10px; z-index: 2; background: #f5c518; color: #1a1a1a; padding: 2px 10px; border: 2px solid #000; border-radius: 4px; font-size: 13px; transform: rotate(4deg); }
+.club-vote-card.leading .club-vote-flag { background: #d63a3a; color: #fff; }
+.club-vote-title { font-weight: 800; color: var(--club-blue); }
+.club-vote-code { font-size: 12px; color: #6b7a93; }
+.club-vote-bar { height: 8px; border: 2px solid #000; border-radius: 4px; background: #fff; overflow: hidden; }
+.club-vote-bar > div { height: 100%; background: var(--club-blue); }
+.club-vote-card .btn-ghost { color: var(--club-ink); border-color: rgba(0,0,0,.35); }
+
+/* Profile: Book Club library card */
+.library-card { max-width: 760px; border: 3px solid #000; border-radius: 8px; box-shadow: 5px 5px 0 #000; overflow: hidden; background: #f3ead2; color: var(--club-ink); transform: rotate(-.4deg); }
+.lc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 8px 16px; background: #b23a2e; color: #fff; }
+.lc-head .cut { font-size: 18px; }
+.lc-head span:last-child { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: .9; }
+.lc-body { display: grid; grid-template-columns: 170px 1fr; gap: 14px; padding: 14px 16px; background: repeating-linear-gradient(#f3ead2 0 23px, #d9c9a3 23px 24px); }
+.lc-who { display: flex; flex-direction: column; gap: 2px; }
+.lc-who > span:first-child { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #8a6d3b; }
+.lc-who strong { font-size: 18px; }
+.lc-count { font-size: 13px; margin-top: 6px; }
+.lc-count b { font-family: 'Luckiest Guy', cursive; font-size: 20px; color: #b23a2e; }
+.lc-stamps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.lc-slot { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 52px; border: 1px solid #b9a77f; border-radius: 4px; background: rgba(255,255,255,.55); color: #6b5a3a; overflow: hidden; }
+.lc-date { font-size: 11px; font-weight: 700; }
+.lc-stamp { margin-top: 2px; padding: 1px 6px; border: 2px solid #c0392b; border-radius: 4px; color: #c0392b; font-size: 13px; transform: rotate(-10deg); opacity: .9; }
+.lc-slot.now { border: 2px dashed var(--club-blue); }
+.lc-now { font-size: 10px; color: var(--club-blue); font-weight: 800; text-transform: uppercase; }
+@media (max-width: 560px) { .lc-body { grid-template-columns: 1fr; } }

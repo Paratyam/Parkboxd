@@ -555,3 +555,22 @@ drop policy if exists "delete own" on public.cage_votes;
 create policy "read" on public.cage_votes for select to authenticated using (true);
 create policy "insert own" on public.cage_votes for insert to authenticated with check (user_id = (select auth.uid()));
 create policy "delete own" on public.cage_votes for delete to authenticated using (user_id = (select auth.uid()));
+
+-- Book Club: vote for next week's book (one vote per person per week; week_start = the Monday the pick is for).
+create table if not exists public.club_votes (
+  user_id     uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  week_start  date not null,
+  episode_id  bigint not null references public.episodes (id) on delete cascade,
+  created_at  timestamptz not null default now(),
+  primary key (user_id, week_start)
+);
+alter table public.club_votes enable row level security;
+grant select, insert, update, delete on public.club_votes to authenticated;
+drop policy if exists "read" on public.club_votes;
+drop policy if exists "insert own" on public.club_votes;
+drop policy if exists "update own" on public.club_votes;
+drop policy if exists "delete own" on public.club_votes;
+create policy "read" on public.club_votes for select to authenticated using (true);
+create policy "insert own" on public.club_votes for insert to authenticated with check (user_id = (select auth.uid()));
+create policy "update own" on public.club_votes for update to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+create policy "delete own" on public.club_votes for delete to authenticated using (user_id = (select auth.uid()));

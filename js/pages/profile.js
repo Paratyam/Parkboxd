@@ -10,6 +10,7 @@ import { line } from '../jokes.js';
 import { characterColours } from '../data/character-tags.js';
 import { loadVotes, scoreVotes, champion } from '../cage.js';
 import { streakInfo } from '../streak.js';
+import { loadPicks } from '../club.js';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -66,6 +67,8 @@ async function render(p) {
 
   // Cage Match champion: #1 in their personal head-to-head ranking.
   const cageVotes = await loadVotes(p.id);
+  // Book Club: this week and the 51 before it, for the Bookworm badge and the library card.
+  const clubPicks = await loadPicks(all, Array.from({ length: 52 }, (_, i) => -i));
   const champ = champion(scoreVotes(cageVotes, theirRatings));
   const champEp = champ && all.find((e) => e.id === champ.top.id);
   const champHtml = champEp ? `
@@ -105,8 +108,30 @@ async function render(p) {
   // Badges
   const badges = computeBadges({
     username: p.username, logs: allLogs || [], ratings: theirRatings, all, byName: chars.byName, avgs, following: stats?.following ?? 0,
+    clubPicks, cageMatches: cageVotes.length,
   }).sort((a, b) => Number(b.earned) - Number(a.earned) || b.have / b.need - a.have / a.need);
   const earned = badges.filter((b) => b.earned).length;
+
+  // Library card: the last 10 Book Club picks, stamped if read during their week.
+  const readInWeek = (pk) => pk.pick && (allLogs || []).some((l) => l.episode_id === pk.pick.id
+    && new Date(l.created_at) >= pk.start && new Date(l.created_at) < pk.end);
+  const lastTen = clubPicks.slice(0, 10).reverse(); // oldest first, this week last
+  const readCount = lastTen.filter(readInWeek).length;
+  const libraryHtml = `
+    <div class="library-card">
+      <div class="lc-head"><span class="cut">South Park Elementary Library</span><span>Book Club card</span></div>
+      <div class="lc-body">
+        <div class="lc-who"><span>Member</span><strong>${esc(name)}</strong><span class="lc-count">Read <b>${readCount}</b> of the last ${lastTen.length} picks</span></div>
+        <div class="lc-stamps">${lastTen.map((pk, i) => {
+          const done = readInWeek(pk);
+          const current = i === lastTen.length - 1;
+          const label = formatDate(pk.start.toISOString().slice(0, 10), { month: 'short', day: 'numeric' });
+          return `<a class="lc-slot${done ? ' read' : ''}${current ? ' now' : ''}" href="episode.html?id=${pk.pick?.id || ''}" title="Week of ${esc(label)}: ${esc(pk.pick?.title || '')}${done ? ' (read)' : current ? ' (this week)' : ' (missed)'}">
+            <span class="lc-date">${esc(label)}</span>${done ? '<span class="lc-stamp cut">Read</span>' : current ? '<span class="lc-now">this week</span>' : ''}
+          </a>`;
+        }).join('')}</div>
+      </div>
+    </div>`;
   // Two badges unlock a secret mode. Only the person who earned it sees how to use it.
   const SECRETS = {
     chaos: 'Secret unlocked: type "chaos" anywhere on the site (or tap the logo 5 times on a phone) to become Professor Chaos.',
@@ -245,6 +270,11 @@ async function render(p) {
     <section>
       <div class="section-head"><h2>Badges</h2><span class="result-count">${earned} of ${badges.length} unlocked</span></div>
       ${badgesHtml}
+    </section>
+
+    <section>
+      <div class="section-head"><h2><a href="club.html" style="color:inherit">📚 Library card</a></h2></div>
+      ${libraryHtml}
     </section>
 
     <div class="two-col">

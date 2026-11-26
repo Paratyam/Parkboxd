@@ -5,7 +5,7 @@ import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js';
 import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js';
 import { line } from '../jokes.js';
 import { episodeAverages } from '../insights.js';
-import { weeklyPick } from '../club.js';
+import { loadPicks } from '../club.js';
 import { isChaos } from '../fx.js';
 import { streakInfo, streakHTML } from '../streak.js';
 import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js';
@@ -129,7 +129,7 @@ async function renderHome() {
     ${started.length ? '' : '<p class="empty" style="margin:0">Log something to start filling these up.</p>'}
   </div>`;
 
-  const weekly = weeklyPick(all);
+  const weekly = (await loadPicks(all, [0]))[0].pick; // this week's book (follows last week's vote)
   const weeklyHTML = weekly ? `
     <a class="club-ad" href="club.html">
       <span class="club-tape" aria-hidden="true"></span>
