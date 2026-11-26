@@ -77,4 +77,13 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Pages: `index.html` (placeholder home), `login.html` (log in / sign up tabs), `username.html` (pick or change username), `profile.html?u=` (header, stats, Top 4 slots, recent diary, season progress), `import.html` (admin only)
   - Shared code: `js/config.js`, `js/supabase.js`, `js/layout.js` (header/footer, auth gate, nav list with `ready` flags), `js/ui.js`, `css/style.css`; page scripts in `js/pages/`
   - Checked locally: home and login render at desktop and phone width. Not yet checked against a real Supabase project
-- Next step: owner runs the test checklist, then Part 2 (core loop)
+- Part 1 tested and live. Fixes along the way: explicit table grants (new Supabase projects don't grant them), `episodes.kind` for specials/movies. DB has 337 episodes, 32 specials, 8 movies (non-South Park search hits deleted)
+- **Part 2 (Core loop): code written and live, waiting for the owner to test**
+  - New SQL functions `aired_on_this_day(month, day)` and `popular_episodes(days, limit)` (already applied to the live DB)
+  - Pages: `episode.html?id=` (still hero, Watch/Like/Watchlist toggles, half-star rating, rating histogram + average, everyone's reviews, prev/next), `seasons.html` (season covers with progress) and `seasons.html?s=5|specials|movies`, `episodes.html` (search, filters, sort; header search lands here), `diary.html?u=` (grouped by month, edit/delete own), `watchlist.html?u=`
+  - Home (logged in): aired on this day, popular this week (falls back to latest episodes), recent reviews, your progress, random unwatched / 4★+ buttons
+  - Log dialog (`js/log-modal.js`) from the header "+ Log", episode pages and diary edit: date or "don't remember", ½–5 stars, like, review, rewatch. Logging removes the episode from your watchlist
+  - Quick Watch/Like/Rate on an episode page with no log yet creates an undated log. Un-watching deletes all your logs for it (with a confirm)
+  - Reviews and "popular" show everyone for now; Part 4 switches them to friends
+  - Shared code: `js/episodes.js` (cards, loaders, `myLogMap`), `js/stars.js`; profile pages have Profile / Diary / Watchlist tabs
+- Next step: owner tests Part 2, then Part 3 (profiles: stats, Top 4, season rankings, edit profile)
