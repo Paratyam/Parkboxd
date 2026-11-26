@@ -393,6 +393,9 @@ select { width: auto; }
 .histogram { display: flex; align-items: flex-end; gap: 4px; height: 70px; }
 .histogram .bucket { flex: 1; background: var(--line-2); border-radius: 2px 2px 0 0; min-height: 2px; }
 .histogram .end { color: var(--green); font-size: 11px; }
+.histogram.clickable .bucket { display: block; background: #678; transition: background .15s; }
+.histogram.clickable .bucket:hover, .histogram.clickable .bucket:focus-visible { background: var(--green); }
+.histogram.clickable .bucket.active { background: var(--green); }
 .avg-big { color: var(--green); font-size: 22px; font-weight: 700; }
 
 .review { display: flex; gap: 14px; border-bottom: 1px solid var(--surface); padding-bottom: 18px; }

@@ -2,6 +2,7 @@ import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME, TMDB_IMAGE_BASE } from '../config.js';
 import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML } from '../ui.js';
+import { countRatings, histogramHTML } from '../histogram.js';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -28,7 +29,7 @@ async function render(p) {
   const name = p.display_name || p.username;
   document.title = `${name} · ${SITE_NAME}`;
 
-  const [{ data: stats }, { data: recent }, { data: top4Eps }, { data: progress }] = await Promise.all([
+  const [{ data: stats }, { data: recent }, { data: top4Eps }, { data: progress }, { data: ratings }] = await Promise.all([
     supabase.from('user_stats').select('*').eq('user_id', p.id).maybeSingle(),
     supabase.from('logs')
       .select('id, watched_on, rating, liked, is_rewatch, review, episodes(id, kind, season, number, title, air_date)')
@@ -40,7 +41,11 @@ async function render(p) {
       ? supabase.from('episodes').select('id, kind, season, number, title, air_date, still_path').in('id', p.top4)
       : Promise.resolve({ data: [] }),
     supabase.rpc('season_progress', { p_user: p.id }),
+    supabase.from('latest_ratings').select('rating').eq('user_id', p.id).limit(5000),
   ]);
+  const ratingCounts = countRatings((ratings || []).map((r) => r.rating));
+  const ratedTotal = ratingCounts.reduce((a, b) => a + b, 0);
+  const u = encodeURIComponent(p.username);
 
   const s = stats || {};
   const statItems = [
@@ -108,9 +113,17 @@ async function render(p) {
         <div class="section-head"><h2>Recent diary</h2><a href="diary.html?u=${encodeURIComponent(p.username)}">All</a></div>
         ${diaryHtml}
       </section>
-      <aside>
-        <div class="section-head"><h2>Season progress</h2></div>
-        ${progressHtml}
+      <aside style="display:flex;flex-direction:column;gap:32px">
+        <section>
+          <div class="section-head"><h2><a href="ratings.html?u=${u}" style="color:inherit">Ratings</a></h2><a href="ratings.html?u=${u}">${ratedTotal}</a></div>
+          ${ratedTotal
+            ? histogramHTML(ratingCounts, { href: (b) => `ratings.html?u=${u}&r=${b}` })
+            : `<p class="empty">${isMe ? 'Rate some episodes and your chart shows up here.' : 'No ratings yet.'}</p>`}
+        </section>
+        <section>
+          <div class="section-head"><h2>Season progress</h2></div>
+          ${progressHtml}
+        </section>
       </aside>
     </div>`;
   root.removeAttribute('aria-busy');
