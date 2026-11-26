@@ -875,3 +875,66 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .rc-stars a { color: #1d3557; font-weight: 600; }
 .rc-st { color: #b9770e; letter-spacing: 1px; }
 .cage-card .cage-rating { font-size: 13px; color: var(--muted); } .cage-card .cage-rating b { color: var(--green); letter-spacing: 1px; font-size: 16px; }
+
+/* ===== Cartman's Cage Match arena ===== */
+.cage-ring {
+  position: relative; display: flex; flex-direction: column; gap: 16px; padding: 22px 22px 18px;
+  border: 6px solid #1a1a1a; border-radius: 10px; overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 236, 170, .22), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 2px, transparent 2px 22px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,.06) 0 2px, transparent 2px 22px),
+    #15181d;
+  box-shadow: inset 0 0 0 3px #f5c518, inset 0 0 60px rgba(0,0,0,.8), 0 10px 30px rgba(0,0,0,.4);
+}
+.cage-ring::before { content: ""; position: absolute; inset: 0 0 auto; height: 8px; background: repeating-linear-gradient(-45deg, #f5c518 0 14px, #1a1a1a 14px 28px); }
+.cage-banner { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.cage-title {
+  font-size: clamp(26px, 5vw, 46px); line-height: 1; transform: rotate(-2deg);
+  background: linear-gradient(180deg, #ffe066 0%, #f5a623 55%, #d63a3a 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(3px 3px 0 #000); letter-spacing: 1px;
+}
+.cage-round { background: #d63a3a; color: #fff; padding: 4px 12px; border: 3px solid #000; border-radius: 6px; font-size: 18px; transform: rotate(3deg); box-shadow: 3px 3px 0 #000; }
+.cage-host { display: flex; gap: 14px; align-items: flex-start; }
+.cage-mic { flex: 0 0 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-size: 28px; background: radial-gradient(circle at 35% 35%, #ff6b6b, #b71c1c); border: 3px solid #000; box-shadow: 3px 3px 0 #000; }
+.cage-bubble { position: relative; flex: 1; background: #fffdf3; color: #1a1a1a; border: 3px solid #000; border-radius: 14px; padding: 10px 16px 12px; box-shadow: 4px 4px 0 #000; }
+.cage-bubble::before { content: ""; position: absolute; left: -14px; top: 18px; border: 8px solid transparent; border-right: 12px solid #000; }
+.cage-bubble::after { content: ""; position: absolute; left: -8px; top: 20px; border: 6px solid transparent; border-right: 9px solid #fffdf3; }
+.cage-bubble .who { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #d63a3a; }
+.cage-bubble .call { margin: 2px 0 0; font-family: 'Luckiest Guy', cursive; font-size: clamp(17px, 2.4vw, 22px); line-height: 1.25; letter-spacing: .3px; }
+.cage-bubble .next { margin: 6px 0 0; font-size: 14px; font-weight: 600; color: #444; }
+.cage-bubble .next:empty { display: none; }
+.cage-bubble.pop { animation: cage-pop .35s cubic-bezier(.2, 1.6, .5, 1); }
+@keyframes cage-pop { 0% { transform: scale(.85) rotate(-2deg); } 100% { transform: scale(1) rotate(0); } }
+
+.cage-ring .cage-arena { position: relative; }
+.cage-card { position: relative; background: #22262d; border: 3px solid #000; box-shadow: 4px 4px 0 #000; padding: 10px 10px 12px; overflow: visible; }
+.cage-card.red { border-top: 6px solid #d63a3a; }
+.cage-card.blue { border-top: 6px solid #4a90e2; }
+.cage-card.champ { border-top-color: #f5c518; box-shadow: 0 0 0 2px #f5c518, 4px 4px 0 #000, 0 0 24px rgba(245,197,24,.35); }
+.cage-card .corner { align-self: flex-start; font-size: 13px; padding: 2px 8px; border-radius: 4px; background: #d63a3a; color: #fff; transform: rotate(-2deg); }
+.cage-card.blue .corner { background: #4a90e2; }
+.cage-card.champ .corner { background: #f5c518; color: #1a1a1a; }
+.cage-card:hover, .cage-card:focus-visible { border-color: #f5c518; transform: translateY(-4px) rotate(-.6deg); }
+.cage-ring .cage-vs { font-size: clamp(40px, 6vw, 64px); color: #f5c518; text-shadow: 3px 3px 0 #d63a3a, 6px 6px 0 #000; animation: cage-vs 1.4s ease-in-out infinite; }
+@keyframes cage-vs { 0%, 100% { transform: rotate(-8deg) scale(1); } 50% { transform: rotate(-4deg) scale(1.12); } }
+.cage-card::after { position: absolute; top: 38%; left: 50%; font-family: 'Luckiest Guy', cursive; font-size: clamp(28px, 4vw, 44px); padding: 4px 14px; border: 4px solid currentColor; border-radius: 8px; transform: translate(-50%, -50%) rotate(-12deg) scale(2.5); opacity: 0; pointer-events: none; background: rgba(0,0,0,.55); }
+.cage-card.win { border-color: #f5c518; transform: scale(1.04); box-shadow: 0 0 0 3px #f5c518, 0 0 36px rgba(245,197,24,.6); }
+.cage-card.win::after { content: "WINNER!"; color: #f5c518; animation: cage-stamp .3s ease-out forwards; }
+.cage-card.ko { filter: grayscale(1) brightness(.6); transform: rotate(4deg) translateY(10px); transition: transform .35s, filter .35s; }
+.cage-card.ko::after { content: "K.O."; color: #ff5a5a; animation: cage-stamp .3s .1s ease-out forwards; }
+@keyframes cage-stamp { to { opacity: 1; transform: translate(-50%, -50%) rotate(-12deg) scale(1); } }
+.cage-arena.fought .cage-vs { animation: cage-shake .4s; }
+@keyframes cage-shake { 0%, 100% { transform: rotate(-8deg); } 25% { transform: rotate(-20deg) scale(1.3); } 75% { transform: rotate(6deg) scale(1.2); } }
+.cage-crowd { text-align: center; min-height: 1.2em; font-weight: 800; color: #ffe066; letter-spacing: .5px; opacity: 0; }
+.cage-crowd.show { animation: cage-crowd 2.2s ease-out; }
+@keyframes cage-crowd { 0% { opacity: 0; transform: translateY(8px) scale(.9); } 15% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; } }
+.cage-ring .btn-ghost { border-color: rgba(255,255,255,.3); }
+.cage-controls { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--text-soft); }
+.cage-keys { color: var(--muted); }
+@media (prefers-reduced-motion: reduce) {
+  .cage-ring .cage-vs, .cage-bubble.pop, .cage-crowd.show { animation: none; }
+  .cage-crowd.show { opacity: 1; }
+  .cage-card.win::after, .cage-card.ko::after { animation: none; opacity: 1; transform: translate(-50%, -50%) rotate(-12deg); }
+}
+@media (max-width: 640px) { .cage-ring { padding: 18px 12px 14px; } .cage-mic { flex-basis: 44px; height: 44px; font-size: 22px; } }

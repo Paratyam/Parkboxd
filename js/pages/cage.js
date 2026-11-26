@@ -1,11 +1,15 @@
-// cage.html?u=name: Cage Match. On your own page: the game (pick the better of two episodes
-// you've watched) plus your ranking. On someone else's: just their ranking.
+// cage.html?u=name: Cartman's Cage Match. On your own page: the game (pick the better of two
+// episodes you've watched, Cartman hosting) plus your ranking. On someone else's: just their ranking.
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js';
 import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js';
-import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, CARTMAN, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js';
+import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js';
+import {
+  introLine, resultLine, crowd, hostPick,
+  HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
+} from '../cage-host.js';
 import { burgerRain } from '../fx.js';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
@@ -15,14 +19,10 @@ const wanted = (params.get('u') || me.username).toLowerCase();
 const { data: person } = await supabase.from('profiles').select('id, username, display_name').eq('username', wanted).maybeSingle();
 
 // (Constants live above the start() call: it runs at load, before anything declared below it.)
-const SKIP_LINES = [
-  "Can't decide? Wow. Indecisive much?",
-  'Skipping? Fine. Coward.',
-  "Ugh, you're worse than Kyle at making decisions.",
-  "Whatever. Next. I don't have all day.",
-];
 const RANK_SHOWN = 50;
 const FILTER_KEY = 'parkboxd-cage-filter';
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 if (!person) {
   root.innerHTML = '<div class="big-message"><h1 class="cut">Nobody by that name</h1><a class="btn btn-green" href="cage.html">Your Cage Match</a></div>';
@@ -34,7 +34,7 @@ if (!person) {
 async function start() {
   const isMe = person.id === me.id;
   const name = person.display_name || person.username;
-  document.title = `${isMe ? 'Cage Match' : `${name}'s Cage Match`} · ${SITE_NAME}`;
+  document.title = `${isMe ? "Cartman's Cage Match" : `${name}'s Cage Match`} · ${SITE_NAME}`;
 
   const [all, votes, ratings, mine] = await Promise.all([
     loadAllEpisodes(), loadVotes(person.id), loadRatings(person.id), isMe ? myLogMap(me.id) : Promise.resolve(new Map()),
@@ -49,7 +49,9 @@ async function start() {
   let busy = false;
   let sessionPicks = 0;
   let showAll = false;
-  let comment = isMe ? 'Pick the better one. No pressure. Actually, lots of pressure.' : '';
+  const streaks = new Map(); // wins in a row this visit
+  // What Cartman says: `call` is his reaction, `next` hypes the fight on screen.
+  let call = hostPick(HOST_WELCOME);
 
   // ---- Which episodes fight: everything you've watched, one season, the extras, your 4★+, or the finals ----
   const seasons = [...new Set(watched.map((id) => byId.get(id)).filter((e) => e.kind === 'episode').map((e) => e.season))].sort((a, b) => a - b);
@@ -75,20 +77,32 @@ async function start() {
       <h1 class="cut" style="margin:0 0 14px;color:var(--white);font-size:clamp(30px,4vw,44px)">${isMe ? 'Cage Match' : `${esc(name)}'s Cage Match`}</h1>
       ${profileTabsHTML(person.username, 'cage')}
     </div>
-    ${isMe ? `<section class="cage-game" id="cage-game" aria-label="Pick the better episode">
-      <div class="cage-top">
-        <p class="result-count" style="margin:0">Two episodes enter. One leaves. Every pick builds your personal ranking. Keys: ← → pick, ↓ skip, Backspace undo.</p>
-        <label class="cage-filter"><span>Fight within</span>
-          <select id="cage-filter">${FILTERS.map(([k, label]) => `<option value="${k}"${k === filter ? ' selected' : ''}>${esc(label)}</option>`).join('')}</select>
-        </label>
+    ${isMe ? `<section class="cage-ring" id="cage-game" aria-label="Cartman's Cage Match: pick the better episode">
+      <div class="cage-banner">
+        <span class="cage-title cut">Cartman's Cage Match</span>
+        <span class="cage-round cut" id="round"></span>
       </div>
-      <div class="cage-meter" id="meter"></div>
+      <div class="cage-host">
+        <div class="cage-mic" aria-hidden="true">🎤</div>
+        <div class="cage-bubble" id="host" aria-live="polite">
+          <span class="who">Eric Cartman · Your host</span>
+          <p class="call" id="call"></p>
+          <p class="next" id="next"></p>
+        </div>
+      </div>
       <div class="cage-arena" id="arena"></div>
-      <p class="cage-comment" id="comment" aria-live="polite"></p>
+      <div class="cage-crowd" id="crowd" aria-hidden="true"></div>
       <div class="toolbar" style="justify-content:center">
         <button type="button" class="btn btn-ghost" id="skip">Skip (can't decide)</button>
         <button type="button" class="btn btn-ghost" id="undo">Undo last pick</button>
       </div>
+      <div class="cage-controls">
+        <label class="cage-filter"><span>Fight within</span>
+          <select id="cage-filter">${FILTERS.map(([k, label]) => `<option value="${k}"${k === filter ? ' selected' : ''}>${esc(label)}</option>`).join('')}</select>
+        </label>
+        <span class="cage-keys">Keys: ← → pick · ↓ skip · Backspace undo</span>
+      </div>
+      <div class="cage-meter" id="meter"></div>
     </section>` : ''}
     <section>
       <div class="section-head"><h2 id="rank-title"></h2></div>
@@ -133,7 +147,6 @@ async function start() {
   // How settled the ranking is: share of the current pool with enough fights.
   function renderMeter(pool) {
     if (!isMe) return;
-    const fights = (id) => (scores.get(id)?.wins || 0) + (scores.get(id)?.losses || 0);
     const settled = pool.filter((id) => fights(id) >= SETTLED_FIGHTS).length;
     const pct = pool.length ? Math.round((settled / pool.length) * 100) : 0;
     const label = pct >= 100 ? 'Locked in. This is your true ranking.' : pct >= 75 ? 'Almost settled.' : pct >= 40 ? 'Taking shape.' : pct > 0 ? 'Just getting started.' : 'No fights yet.';
@@ -142,37 +155,63 @@ async function start() {
       <div class="bar" role="img" aria-label="${pct}% settled"><div style="width:${pct}%;background:var(--orange)"></div></div>`;
   }
 
+  const fights = (id) => (scores.get(id)?.wins || 0) + (scores.get(id)?.losses || 0);
+  const titleOf = (id) => byId.get(id)?.title || 'that one';
+
+  // Cartman's bubble pops every time he speaks.
+  function host(main, next = '') {
+    $('#call').textContent = main;
+    $('#next').textContent = next;
+    const b = $('#host');
+    b.classList.remove('pop');
+    void b.offsetWidth; // restart the animation
+    b.classList.add('pop');
+  }
+
+  function crowdBurst(text) {
+    const el = $('#crowd');
+    el.textContent = `📣 ${text}`;
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+  }
+
   function renderPair(forced = null) {
     if (!isMe) return;
     const arena = $('#arena');
     const pool = poolFor(filter);
     renderMeter(pool);
+    $('#round').textContent = `Round ${votes.length + 1}`;
     if (pool.length < 2) {
       pair = null;
       arena.innerHTML = `<p class="empty">${watched.length < 2
         ? 'You need at least 2 watched episodes to fight. Go log some, then come back.'
         : filter === 'finals' ? 'Finals need a ranking first. Play a few rounds with "Everything I\'ve watched".' : 'Not enough episodes here to fight. Pick something else to fight within.'}</p>`;
-      $('#comment').textContent = '';
+      host(watched.length < 2 ? "No fighters?! What kind of show is this? Go log some episodes!" : 'This arena is empty! Pick somewhere else to fight, genius.');
       return;
     }
     pair = forced || nextPair(pool, scores, ratings, recent);
+    const list = ranking(scores);
+    const champId = champion(scores)?.top.id;
     const card = (id, side) => {
       const e = byId.get(id);
-      const s = scores.get(id);
-      const pos = ranking(scores).findIndex((x) => x.id === id);
-      return `<button type="button" class="cage-card" data-pick="${side}" aria-label="${esc(e.title)} wins">
+      const pos = list.findIndex((x) => x.id === id);
+      return `<button type="button" class="cage-card ${side ? 'blue' : 'red'}${id === champId ? ' champ' : ''}" data-pick="${side}" aria-label="${esc(e.title)} wins">
+        <span class="corner cut">${id === champId ? '👑 Champion' : side ? 'Blue corner' : 'Red corner'}</span>
         ${thumbHTML(e, { showTitle: false, size: 'w780' })}
         <strong>${esc(e.title)}</strong>
-        <span>${esc(epCode(e))}${s ? ` · #${pos + 1}` : " · first fight"}</span>
-        <span class="cage-rating">${ratings.has(id) ? `<b>${stars(ratings.get(id))}</b> your rating` : "Not rated"}</span>
+        <span>${esc(epCode(e))}${pos >= 0 ? ` · #${pos + 1}` : ' · first fight'}</span>
+        <span class="cage-rating">${ratings.has(id) ? `<b>${stars(ratings.get(id))}</b> your rating` : 'Not rated'}</span>
       </button>`;
     };
-    arena.innerHTML = `${card(pair[0], 0)}<span class="cage-vs cut">VS</span>${card(pair[1], 1)}`;
+    arena.innerHTML = `${card(pair[0], 0)}<span class="cage-vs cut" aria-hidden="true">VS</span>${card(pair[1], 1)}`;
     arena.querySelectorAll('[data-pick]').forEach((b) => { b.onclick = () => pick(Number(b.dataset.pick)); });
-    $('#comment').textContent = comment;
+    const next = introLine({
+      a: titleOf(pair[0]), b: titleOf(pair[1]), ra: ratings.get(pair[0]), rb: ratings.get(pair[1]),
+      ids: pair, champId, fights: new Map(pair.map((id) => [id, fights(id)])),
+    });
+    host(call, next);
   }
-
-  const titleOf = (id) => byId.get(id)?.title || 'that one';
 
   async function pick(side) {
     if (busy || !pair) return;
@@ -180,23 +219,43 @@ async function start() {
     const [w, l] = side === 0 ? pair : [pair[1], pair[0]];
     const before = champion(scores)?.top.id;
     const gap = (scores.get(l)?.score ?? 1000) - (scores.get(w)?.score ?? 1000);
-    const { data, error } = await supabase.from('cage_votes').insert({ winner_id: w, loser_id: l }).select('id').single();
+    const debut = fights(w) === 0;
+    // The knockout: winner glows, loser goes down, while the pick saves.
+    const cards = [...$('#arena').querySelectorAll('.cage-card')];
+    cards[side]?.classList.add('win');
+    cards[1 - side]?.classList.add('ko');
+    $('#arena').classList.add('fought');
+    const [{ data, error }] = await Promise.all([
+      supabase.from('cage_votes').insert({ winner_id: w, loser_id: l }).select('id').single(),
+      sleep(reducedMotion() ? 0 : 650),
+    ]);
     busy = false;
-    if (error) return toast(error.message);
+    $('#arena').classList.remove('fought');
+    if (error) {
+      cards.forEach((c) => c.classList.remove('win', 'ko'));
+      return toast(error.message);
+    }
     votes.push({ id: data.id, winner_id: w, loser_id: l });
     recent.push(pair);
     if (recent.length > 12) recent.shift();
     sessionPicks++;
+    streaks.set(w, (streaks.get(w) || 0) + 1);
+    streaks.set(l, 0);
     scores = scoreVotes(votes, ratings);
     const after = champion(scores)?.top.id;
-    if (before && after !== before) {
-      comment = `👑 NEW CHAMPION: ${titleOf(after)}! ${titleOf(before)} has been dethroned. Ha!`;
-      burgerRain(18);
-    } else if (gap >= 120) {
-      comment = `😱 UPSET! ${titleOf(w)} just beat ${titleOf(l)}. Nobody saw that coming.`;
-    } else {
-      comment = CARTMAN[Math.floor(Math.random() * CARTMAN.length)].replaceAll('{w}', titleOf(w)).replaceAll('{l}', titleOf(l));
-    }
+    const rw = ratings.get(w);
+    const rl = ratings.get(l);
+    let kind = 'win';
+    if (before && after !== before) kind = 'newChamp';
+    else if (before && w === before && votes.length > 1) kind = 'defends';
+    else if (gap >= 120) kind = 'upset';
+    else if (streaks.get(w) >= 3) kind = 'streak';
+    else if (rw != null && rl != null && rw - rl >= 2) kind = 'stomp';
+    else if (rw != null && rl != null && Math.abs(rw - rl) <= 0.5) kind = 'close';
+    else if (debut) kind = 'debut';
+    call = resultLine({ w: titleOf(w), l: titleOf(l), kind, n: streaks.get(w), o: titleOf(before) });
+    if (kind === 'newChamp') burgerRain(24);
+    if (['newChamp', 'upset', 'streak', 'stomp'].includes(kind) || Math.random() < 0.25) crowdBurst(crowd());
     renderPair();
     renderRanking();
   }
@@ -211,9 +270,10 @@ async function start() {
     if (error) return toast(error.message);
     votes.pop();
     if (sessionPicks) sessionPicks--;
+    streaks.set(last.winner_id, Math.max(0, (streaks.get(last.winner_id) || 1) - 1));
     recent = recent.filter((p) => !(p.includes(last.winner_id) && p.includes(last.loser_id)));
     scores = scoreVotes(votes, ratings);
-    comment = 'Undo? Chicken. Fine, pick again.';
+    call = hostPick(HOST_UNDO);
     // Bring the same fight back so it can be re-picked (if both are still in this pool).
     const pool = poolFor(filter);
     const again = pool.includes(last.winner_id) && pool.includes(last.loser_id) ? [last.winner_id, last.loser_id] : null;
@@ -226,12 +286,12 @@ async function start() {
       filter = e.target.value;
       localStorage.setItem(FILTER_KEY, filter);
       recent = [];
-      comment = filter === 'finals' ? 'The FINALS. Only the best survive. Like me.' : 'New arena. Same rules. I win.';
+      call = hostPick(filter === 'finals' ? HOST_FINALS : HOST_NEW_ARENA);
       renderPair();
     };
     $('#skip').onclick = () => {
       if (busy) return;
-      comment = SKIP_LINES[Math.floor(Math.random() * SKIP_LINES.length)];
+      call = hostPick(HOST_SKIP);
       if (pair) recent.push(pair);
       renderPair();
     };
@@ -246,9 +306,10 @@ async function start() {
       votes.length = 0;
       sessionPicks = 0;
       recent = [];
+      streaks.clear();
       startPos.clear();
       scores = scoreVotes(votes, ratings);
-      comment = 'Fresh start. Try not to screw it up this time.';
+      call = hostPick(HOST_RESET);
       renderPair();
       renderRanking();
     };
