@@ -3,7 +3,7 @@ import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { thumbHTML, loadAllEpisodes } from '../episodes.js';
 import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML } from '../ui.js';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js';
 import { countRatings, histogramHTML } from '../histogram.js';
 import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js';
 import { line } from '../jokes.js';
@@ -76,13 +76,36 @@ async function render(p) {
     logs: allLogs || [], ratings: theirRatings, all, byName: chars.byName, avgs, following: stats?.following ?? 0,
   }).sort((a, b) => Number(b.earned) - Number(a.earned) || b.have / b.need - a.have / a.need);
   const earned = badges.filter((b) => b.earned).length;
+  // Two badges unlock a secret mode. Only the person who earned it sees how to use it.
+  const SECRETS = {
+    chaos: 'Secret unlocked: type "chaos" anywhere on the site (or tap the logo 5 times on a phone) to become Professor Chaos.',
+    kenny: 'Secret unlocked: type "mysterion" anywhere on the site (or press and hold the logo on a phone) to become Mysterion.',
+  };
+  const secretLine = (b) => {
+    if (!SECRETS[b.id]) return '';
+    return b.earned && isMe
+      ? `<span class="secret-hint">🔓 ${esc(SECRETS[b.id])}</span>`
+      : '<span class="secret-hint locked">🔒 Unlocks a secret</span>';
+  };
   const badgesHtml = `<div class="badges">${badges.map((b) => `
     <div class="badge paper${b.earned ? ' earned' : ''}" title="${esc(b.desc)}${b.earned ? '' : ` (${b.have} / ${b.need})`}">
       <span class="emoji" aria-hidden="true">${b.emoji}</span>
       <strong>${esc(b.name)}</strong>
       <span>${esc(b.desc)}</span>
       ${b.earned ? '<span class="got">Unlocked</span>' : `<div class="bar" aria-label="${b.have} of ${b.need}"><div style="width:${b.need ? (b.have / b.need) * 100 : 0}%;background:var(--green)"></div></div>`}
+      ${secretLine(b)}
     </div>`).join('')}</div>`;
+
+  // The first time you see a secret badge you've earned, announce the secret.
+  if (isMe) {
+    const seenKey = 'parkboxd-secrets-seen';
+    const seen = new Set(JSON.parse(localStorage.getItem(seenKey) || '[]'));
+    for (const b of badges.filter((x) => x.earned && SECRETS[x.id] && !seen.has(x.id))) {
+      setTimeout(() => toast(`${b.emoji} You earned the ${b.name} badge! ${SECRETS[b.id]}`, 9000), 600);
+      seen.add(b.id);
+    }
+    localStorage.setItem(seenKey, JSON.stringify([...seen]));
+  }
 
   // South Park personality, from how they rate, review and rewatch.
   const persona = personality({ username: p.username, logs: allLogs || [], ratings: theirRatings, avgs });

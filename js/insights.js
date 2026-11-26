@@ -171,7 +171,7 @@ export function computeBadges(ctx) {
   return [
     b('authoritah', '👮', 'Respect My Authoritah', 'Rate 100 episodes', ratings.size, 100),
     b('tegridy', '🌱', 'Tegridy', 'Watch every Randy episode', randyHave, randyNeed),
-    b('kenny', '🧡', 'They Killed Kenny', 'Watch every Kenny episode', kennyHave, kennyNeed),
+    b('kenny', '❓', 'Mysterion', 'Watch every Kenny episode', kennyHave, kennyNeed),
     b('chaos', '😈', 'Professor Chaos', 'Watch every Butters episode', buttersHave, buttersNeed),
     b('coon', '🦝', 'Coon & Friends', 'Watch the whole Coon saga', coonEps.filter((e) => seen.has(e.id)).length, coonEps.length),
     b('completionist', '🏔️', 'Completionist', 'Finish every season', finishedSeasons, seasons.size),

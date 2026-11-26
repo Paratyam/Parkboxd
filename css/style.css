@@ -628,6 +628,8 @@ a.top4-slot { color: inherit; }
 .badge strong { color: var(--white); font-size: 13px; }
 .badge .got { color: var(--green); font-weight: 700; }
 .badge .bar { height: 6px; margin-top: 4px; }
+.badge .secret-hint { margin-top: 6px; padding: 6px 8px; border-radius: 4px; background: rgba(121,224,106,.12); color: #b6f0aa; font-size: 11px; font-weight: 600; line-height: 1.4; }
+.badge .secret-hint.locked { background: rgba(255,255,255,.05); color: var(--muted); }
 .char-card { background-color: var(--surface-2); padding: 18px 20px; }
 
 /* ---- Tier list ---- */

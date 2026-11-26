@@ -119,7 +119,7 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Shared maths in `js/insights.js`: everyone's latest ratings, episode averages, character tags
   - Taste match on other people's profiles (agreement % from shared ratings, "Biggest fight"), full list at `compare.html?u=`
   - Hot takes: a rating 2★+ from the episode average (episodes with 3+ ratings). 🌶️ tag on reviews; `hottakes.html` (tab on Rankings) lists the hottest takes and spiciest people
-  - Badges (14 incl. 🦝 Coon & Friends for the Coon saga, computed in the browser, no DB): shown on profiles with progress bars
+  - Badges (14 incl. 🦝 Coon & Friends for the Coon saga; ❓ Mysterion (every Kenny episode) and 😈 Professor Chaos (every Butters episode) reveal their secret mode on your own profile, with a one-time pop-up; computed in the browser, no DB): shown on profiles with progress bars
   - South Park personality on profiles (replaced "Which character are you?"): Butters (75%+ at 4★+), Jimmy (65–75%, lowest priority like Stan), Cartman (2★ or less, 2½★ counts half, 18%+; just below Randy in priority), Randy (spread 1.0+, 12%+ at each end, more love than hate), Mr. Mackey, Kyle (200+ character reviews), Kenny (35+ logs, under 3% reviewed), Towelie (22%+ rewatches), Stan as fallback; tuned against a 1,500-user simulation; `PERSONALITY_OVERRIDES` in js/insights.js pins paratyam to Butters
   - Season tier list `tiers.html?u=` (Tiers tab): drag, or tap a season then a tier; saved in new column `profiles.season_tiers` (jsonb, applied to the live DB)
   - Episode of the week `club.html` (nav "Club" + home card): the same pick for everyone, worked out from the week number (Monday UTC), with this week's watchers and reviews and the previous 4 picks
