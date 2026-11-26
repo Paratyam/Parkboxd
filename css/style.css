@@ -800,3 +800,23 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .butters-reply { display: flex; gap: 10px; margin-top: 6px; padding: 10px 12px; border-left: 3px solid #f5c518; background: rgba(245,197,24,.06); border-radius: 0 6px 6px 0; }
 .butters-reply .who { font-size: 12px; font-weight: 700; color: #f5d76e; display: flex; gap: 8px; align-items: center; }
 .butters-reply p { margin: 2px 0 0; font-size: 13px; }
+
+/* Cage Match */
+.cage-game { display: flex; flex-direction: column; gap: 14px; }
+.cage-arena { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: center; }
+.cage-card { background: var(--surface); border: 2px solid transparent; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px; text-align: left; color: var(--text); cursor: pointer; transition: transform .12s, border-color .12s; font: inherit; }
+.cage-card:hover, .cage-card:focus-visible { border-color: var(--orange); transform: translateY(-3px) rotate(-.5deg); }
+.cage-card strong { font-size: 18px; color: var(--white); }
+.cage-card span { font-size: 13px; color: var(--muted); }
+.cage-vs { font-size: 38px; color: var(--orange); transform: rotate(-8deg); }
+.cage-comment { text-align: center; margin: 0; min-height: 1.4em; color: var(--yellow); font-weight: 600; }
+.cage-champ { display: grid; grid-template-columns: minmax(140px, 260px) 1fr; gap: 18px; align-items: center; padding: 14px; margin-bottom: 18px; background-color: var(--surface); color: var(--text); border: 2px solid var(--yellow); }
+.cage-champ > div { display: flex; flex-direction: column; gap: 4px; }
+.cage-champ .cut { color: var(--yellow); font-size: 22px; }
+.cage-champ strong { font-size: 22px; color: var(--white); }
+.cage-champ span:last-child { color: var(--muted); font-size: 13px; }
+@media (max-width: 640px) {
+  .cage-arena { grid-template-columns: 1fr; }
+  .cage-vs { text-align: center; }
+  .cage-champ { grid-template-columns: 1fr; }
+}

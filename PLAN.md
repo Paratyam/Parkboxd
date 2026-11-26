@@ -139,3 +139,9 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Coon & Friends badge reward (`js/coon-member.js`): during a takeover members get "Welcome back, <name>. Member of Coon & Friends." and appear as #2 "Official Sidekick" on the rigged Rankings; the franchise plan adds "Phase 8: <name>'s spin-off"
 - 🔁 Same Old Story badge holders (10+ rewatch logs) get a 🧻 drifting across the screen and "Don't forget to bring a towel!" whenever they log a rewatch (log dialog or log-whole-arc)
 - `BADGE_GRANTS` in js/insights.js hands out badges by username (paratyam has 📅 Day One)
+
+### Cage Match (personal)
+- `cage.html?u=` (profile tab "Cage Match"): on your own page, pick the better of two episodes you've watched (click, or ← → keys, ↓ to skip; undo; reset). Cartman comments on every pick
+- Votes are stored in `cage_votes`; scores are Elo worked out in the browser (`js/cage.js`), starting from your star rating so the ranking begins sensibly. Pairs favour episodes with few fights and similar scores, and avoid recent repeats
+- Ranking list with W–L record per episode (🔥 unbeaten after 3+ wins); other people's pages show their ranking only
+- Profile: "Cage Match champion" spot under Favourite episodes (🏆 Undefeated champion if #1 never lost and has 3+ wins); a prompt to play if you have none yet

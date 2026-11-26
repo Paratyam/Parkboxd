@@ -8,6 +8,7 @@ import { countRatings, histogramHTML } from '../histogram.js';
 import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js';
 import { line } from '../jokes.js';
 import { characterColours } from '../data/character-tags.js';
+import { loadVotes, scoreVotes, champion } from '../cage.js';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -60,6 +61,28 @@ async function render(p) {
     .eq('user_id', p.id).not('review', 'is', null).neq('review', '')
     .order('created_at', { ascending: false }).limit(3);
   const reviewExtrasData = await reviewExtras((recentReviews || []).map((r) => r.id), me.id);
+
+  // Cage Match champion: #1 in their personal head-to-head ranking.
+  const cageVotes = await loadVotes(p.id);
+  const champ = champion(scoreVotes(cageVotes, theirRatings));
+  const champEp = champ && all.find((e) => e.id === champ.top.id);
+  const champHtml = champEp ? `
+    <section>
+      <div class="section-head"><h2>Cage Match champion</h2><a href="cage.html?u=${u}">Full ranking</a></div>
+      <a class="cage-champ paper" href="episode.html?id=${champEp.id}">
+        ${thumbHTML(champEp, { showTitle: false, size: 'w780' })}
+        <div><span class="cut">${champ.undefeated ? '🏆 Undefeated champion' : '👑 Reigning champion'}</span>
+          <strong>${esc(champEp.title)}</strong>
+          <span>${esc(epCode(champEp))} · ${champ.top.wins}–${champ.top.losses} after ${cageVotes.length} matches${champ.undefeated ? ' · never lost' : ''}</span></div>
+      </a>
+    </section>`
+    : isMe ? `
+    <section>
+      <div class="section-head"><h2>Cage Match champion</h2></div>
+      <a class="callout paper tilt-left" href="cage.html" style="display:block;background-color:var(--surface);color:var(--text)">
+        <strong>No champion yet.</strong> Play <span style="text-decoration:underline">Cage Match</span>: pick the better of two episodes until your true favourite rises to the top.
+      </a>
+    </section>` : '';
 
   // GROUNDED: rated a Butters episode 2★ or less in the last 24 hours.
   const butters = chars.byName.get('Butters') || new Set();
@@ -213,6 +236,8 @@ async function render(p) {
       <div class="section-head"><h2>Favourite episodes</h2></div>
       <div class="top4">${top4Html}</div>
     </section>
+
+    ${champHtml}
 
     <section>
       <div class="section-head"><h2>Badges</h2><span class="result-count">${earned} of ${badges.length} unlocked</span></div>

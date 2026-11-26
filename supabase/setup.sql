@@ -535,3 +535,23 @@ drop policy if exists "delete own" on public.butters_likes;
 create policy "read" on public.butters_likes for select to authenticated using (true);
 create policy "insert own" on public.butters_likes for insert to authenticated with check (user_id = (select auth.uid()));
 create policy "delete own" on public.butters_likes for delete to authenticated using (user_id = (select auth.uid()));
+
+-- Cage Match: personal head-to-head picks. Each row = one match you judged.
+-- Rankings are worked out in the browser (Elo), so votes are the only thing stored.
+create table if not exists public.cage_votes (
+  id          bigint generated always as identity primary key,
+  user_id     uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  winner_id   bigint not null references public.episodes (id) on delete cascade,
+  loser_id    bigint not null references public.episodes (id) on delete cascade,
+  created_at  timestamptz not null default now(),
+  check (winner_id <> loser_id)
+);
+create index if not exists cage_votes_user_idx on public.cage_votes (user_id, created_at);
+alter table public.cage_votes enable row level security;
+grant select, insert, delete on public.cage_votes to authenticated;
+drop policy if exists "read" on public.cage_votes;
+drop policy if exists "insert own" on public.cage_votes;
+drop policy if exists "delete own" on public.cage_votes;
+create policy "read" on public.cage_votes for select to authenticated using (true);
+create policy "insert own" on public.cage_votes for insert to authenticated with check (user_id = (select auth.uid()));
+create policy "delete own" on public.cage_votes for delete to authenticated using (user_id = (select auth.uid()));
