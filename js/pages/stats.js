@@ -4,7 +4,7 @@ import { supabase } from '../supabase.js';
 import { SITE_NAME } from '../config.js';
 import { $, esc, params, profileTabsHTML } from '../ui.js';
 import { loadAllEpisodes, cardHTML } from '../episodes.js';
-import { reportCardHTML } from '../report-card.js';
+import { mountReportCard } from '../report-card.js';
 import { streakInfo, streakHTML } from '../streak.js';
 
 const { profile: me } = await initPage({ title: 'Stats', auth: 'required' });
@@ -26,11 +26,12 @@ async function render() {
   const name = person.display_name || person.username;
   document.title = `${isMe ? 'Your stats' : `${name}'s stats`} · ${SITE_NAME}`;
 
-  const [all, { data: logs }, { data: seasonAvgs }, { data: s }] = await Promise.all([
+  const [all, { data: logs }, { data: seasonAvgs }, { data: s }, { data: latest }] = await Promise.all([
     loadAllEpisodes(),
     supabase.from('logs').select('episode_id, watched_on, rating, liked, review, is_rewatch, created_at').eq('user_id', person.id).limit(5000),
     supabase.from('user_season_averages').select('season, avg_rating, rated_count').eq('user_id', person.id),
     supabase.from('user_stats').select('*').eq('user_id', person.id).maybeSingle(),
+    supabase.from('latest_ratings').select('episode_id, rating').eq('user_id', person.id).limit(5000),
   ]);
   const byId = new Map(all.map((e) => [e.id, e]));
   const L = logs || [];
@@ -120,7 +121,7 @@ async function render() {
     </section>
     <section>
       <div class="section-head"><h2>Mr. Garrison's Report Card</h2></div>
-      ${reportCardHTML({ seasonAvgs, all, seen, isMe, name })}
+      <div id="report-card"></div>
     </section>
     <div class="two-col">
       <section>
@@ -141,4 +142,5 @@ async function render() {
       <div class="ep-grid">${rewatched.map(([id, n]) => byId.get(id) && cardHTML(byId.get(id), { meta: `${n}× watched` })).filter(Boolean).join('')}</div>
     </section>` : ''}`;
   root.removeAttribute('aria-busy');
+  mountReportCard($('#report-card'), { seasonAvgs, all, seen, ratings: new Map((latest || []).map((r) => [r.episode_id, Number(r.rating)])), isMe, name });
 }
