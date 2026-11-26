@@ -144,7 +144,7 @@ async function start() {
       renderRanking();
     };
     document.addEventListener('keydown', (e) => {
-      if (e.target.closest('input, textarea, select, dialog')) return;
+      if (e.target.closest?.('input, textarea, select, dialog') || e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.code === 'ArrowLeft') { e.preventDefault(); pick(0); }
       if (e.code === 'ArrowRight') { e.preventDefault(); pick(1); }
       if (e.code === 'ArrowDown') { e.preventDefault(); $('#skip').click(); }

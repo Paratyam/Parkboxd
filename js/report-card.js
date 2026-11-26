@@ -55,6 +55,19 @@ function studentNote({ avg, rated, seasons }) {
   return 'A fair grader with reasonable opinions. Boring, but reasonable. Promoted to the next grade.';
 }
 
+// A season needs this share of its episodes rated (and at least MIN_RATED) to be graded.
+const SHARE = 0.4;
+const MIN_RATED = 3;
+const neededFor = (total) => Math.max(MIN_RATED, Math.ceil(total * SHARE));
+
+const INCOMPLETE = [
+  'Incomplete. I can\'t grade {s} on a handful of homework. Rate {n} more.',
+  'You can\'t just watch a couple and call it a season. {n} more ratings, then we talk.',
+  'Incomplete. {s} is sitting in the hallway until you rate {n} more episodes.',
+  'I don\'t do partial credit. Rate {n} more and I\'ll give {s} a real grade.',
+  'Did you lose your homework? {s} needs {n} more ratings before I grade it.',
+];
+
 const pick = (arr, seed) => arr[((seed * 2654435761) >>> 0) % arr.length];
 
 /**
@@ -62,51 +75,63 @@ const pick = (arr, seed) => arr[((seed * 2654435761) >>> 0) % arr.length];
  *   seasonAvgs: rows from user_season_averages; all: episodes; seen: Set of watched episode ids
  */
 export function reportCardHTML({ seasonAvgs, all, seen, isMe, name }) {
+  const today = new Date().toLocaleDateString('en-CA');
   const totals = new Map();
   for (const e of all) {
-    if (e.kind !== 'episode' || !e.season) continue;
+    if (e.kind !== 'episode' || !e.season || (e.air_date && e.air_date > today)) continue; // unaired episodes don't count
     const t = totals.get(e.season) || { total: 0, watched: 0 };
     t.total++;
     if (seen.has(e.id)) t.watched++;
     totals.set(e.season, t);
   }
-  const rows = (seasonAvgs || []).filter((r) => r.season > 0 && r.rated_count >= 2)
+  const all_rows = (seasonAvgs || []).filter((r) => r.season > 0 && r.rated_count >= 1)
     .sort((a, b) => a.season - b.season)
     .map((r) => {
       const avg = Number(r.avg_rating);
-      const g = gradeFor(avg);
+      const att = totals.get(r.season) || { total: 0, watched: 0 };
+      const need = neededFor(att.total);
       const s = `Season ${r.season}`;
-      return { season: r.season, avg, g, rated: r.rated_count, att: totals.get(r.season) || { total: 0, watched: 0 },
+      if (r.rated_count < need) {
+        return { season: r.season, avg, g: 'INC', rated: r.rated_count, need, att, incomplete: true,
+          comment: pick(INCOMPLETE, r.season).replaceAll('{s}', s).replaceAll('{n}', String(need - r.rated_count)) };
+      }
+      const g = gradeFor(avg);
+      return { season: r.season, avg, g, rated: r.rated_count, need, att,
         comment: pick(COMMENTS[g[0]], r.season).replaceAll('{s}', s) };
     });
-  if (!rows.length) {
-    return `<p class="empty">${isMe ? 'No grades yet. Rate at least 2 episodes in a season and Mr. Garrison will grade it. He\'s been waiting.' : `${esc(name)} hasn't rated enough for a report card.`}</p>`;
+  const rows = all_rows.filter((r) => !r.incomplete);
+  if (!all_rows.length) {
+    return `<p class="empty">${isMe ? `No grades yet. Rate enough of a season (about ${Math.round(SHARE * 100)}% of it) and Mr. Garrison will grade it. He's been waiting.` : `${esc(name)} hasn't rated enough for a report card.`}</p>`;
   }
-  const gpa = rows.reduce((a, r) => a + GPA[r.g], 0) / rows.length;
-  const rated = rows.reduce((a, r) => a + r.rated, 0);
-  const avg = rows.reduce((a, r) => a + r.avg * r.rated, 0) / rated;
+  const gpa = rows.length ? rows.reduce((a, r) => a + GPA[r.g], 0) / rows.length : null;
+  const rated = all_rows.reduce((a, r) => a + r.rated, 0);
+  const avg = all_rows.reduce((a, r) => a + r.avg * r.rated, 0) / rated;
   const best = [...rows].sort((a, b) => b.avg - a.avg)[0];
   const worst = [...rows].sort((a, b) => a.avg - b.avg)[0];
-  const gradeClass = (g) => `grade-${g[0].toLowerCase()}`;
+  const gradeClass = (g) => (g === 'INC' ? 'grade-inc' : `grade-${g[0].toLowerCase()}`);
 
   return `
     <div class="report-card paper">
       <div class="rc-head">
         <div><span class="cut">South Park Elementary</span><strong>Report Card</strong></div>
-        <div class="rc-meta">Student: <b>${esc(name)}</b><br>Teacher: Mr. Garrison<br>Class GPA: <b>${gpa.toFixed(2)}</b></div>
+        <div class="rc-meta">Student: <b>${esc(name)}</b><br>Teacher: Mr. Garrison<br>Class GPA: <b>${gpa == null ? 'pending' : gpa.toFixed(2)}</b></div>
       </div>
       <table class="rc-table">
-        <thead><tr><th scope="col">Subject</th><th scope="col">Grade</th><th scope="col">Attendance</th><th scope="col">Teacher's comments</th></tr></thead>
-        <tbody>${rows.map((r) => `
-          <tr>
+        <thead><tr><th scope="col">Subject</th><th scope="col">Grade</th><th scope="col">Rated</th><th scope="col">Teacher's comments</th></tr></thead>
+        <tbody>${all_rows.map((r) => `
+          <tr${r.incomplete ? ' class="rc-inc"' : ''}>
             <th scope="row"><a href="seasons.html?s=${r.season}">Season ${r.season}</a></th>
-            <td><span class="rc-grade ${gradeClass(r.g)}" title="${r.avg.toFixed(2)}★ average from ${r.rated} rated">${r.g}</span></td>
-            <td>${r.att.watched}/${r.att.total}</td>
+            <td><span class="rc-grade ${gradeClass(r.g)}" title="${r.incomplete
+              ? `Incomplete: ${r.rated} of ${r.att.total} rated, needs ${r.need} for a grade`
+              : `${r.avg.toFixed(2)}★ average from ${r.rated} rated`}">${r.g}</span></td>
+            <td>${r.rated}/${r.att.total}${r.incomplete ? `<span class="rc-need">needs ${r.need}</span>` : ''}</td>
             <td>${esc(r.comment)}</td>
           </tr>`).join('')}</tbody>
       </table>
       <div class="rc-foot">
-        <p><b>Valedictorian:</b> Season ${best.season} (${best.g}). <b>Most likely to repeat a grade:</b> Season ${worst.season} (${worst.g}).</p>
+        ${best ? `<p><b>Valedictorian:</b> Season ${best.season} (${best.g}).${rows.length > 1 ? ` <b>Most likely to repeat a grade:</b> Season ${worst.season} (${worst.g}).` : ''}</p>`
+          : '<p><b>No grades yet.</b> Every season is incomplete. Rate more of a season to get it graded.</p>'}
+        <p style="font-size:12px;color:#666">A season gets a grade once ${Math.round(SHARE * 100)}% of its episodes are rated (at least ${MIN_RATED}). INC = incomplete.</p>
         <p><b>Note about the student:</b> ${esc(studentNote({ avg, rated, seasons: rows.length }))}</p>
         <p class="rc-sign">— Mr. Garrison</p>
       </div>
