@@ -143,7 +143,7 @@ async function renderHome() {
   const champEp = champ && byId.get(champ.top.id);
   const cageAd = `
     <a class="cage-ad" href="cage.html">
-      <span class="cage-ad-title cut">🥊 Cartman's Cage Match</span>
+      <span class="cage-ad-head"><span class="cage-ad-glove" aria-hidden="true">🥊</span><span class="cage-ad-title cut">Cartman's Cage Match</span></span>
       <span class="cage-ad-text">${champEp
         ? `Your champion: <strong>${esc(champEp.title)}</strong>${champ.undefeated ? ' (undefeated!)' : ''}. Think anything can take it down? Step into the cage.`
         : "Two episodes enter. One leaves. Pick winners until your true favourite episode is crowned. Hosted by Eric Cartman, who is very humble about it."}</span>
