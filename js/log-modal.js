@@ -2,7 +2,7 @@
 import { supabase } from './supabase.js';
 import { esc, epCode } from './ui.js';
 import { line } from './jokes.js';
-import { celebrate } from './fx.js';
+import { celebrate, towelieRewatch } from './fx.js';
 import { starInput } from './stars.js';
 import { loadAllEpisodes, thumbHTML, todayISO } from './episodes.js';
 
@@ -163,6 +163,7 @@ export function openLogModal({ episode = null, log = null, rewatch = false } = {
           ]);
           celebrate(row.rating, (t || []).map((x) => x.tags?.name).filter(Boolean), me?.favourite_character);
         }
+        if (!editing && row.is_rewatch) towelieRewatch(supabase);
         changed = true;
         d.close();
       });

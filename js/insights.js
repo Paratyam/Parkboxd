@@ -138,8 +138,13 @@ export function personality({ username, logs, ratings, avgs }) {
  *        byName: Map(character → Set(epIds)), avgs: Map, following: number }
  * Returns [{ id, emoji, name, desc, earned, have, need }]
  */
+// Badges given to someone by hand, whatever their logs say.
+const BADGE_GRANTS = { paratyam: ['dayone'] };
+
 export function computeBadges(ctx) {
-  const { logs, ratings, all, byName, avgs, following } = ctx;
+  const { logs, ratings, all, byName, avgs, following, username } = ctx;
+  // Badges handed out by hand (usernames → badge ids).
+  const granted = new Set(BADGE_GRANTS[(username || '').toLowerCase()] || []);
   const seen = new Set(logs.map((l) => l.episode_id));
   const byId = new Map(all.map((e) => [e.id, e]));
 
@@ -167,7 +172,9 @@ export function computeBadges(ctx) {
   const coonTitles = ['The Coon', 'Coon 2: Hindsight', 'Mysterion Rises', 'Coon vs. Coon & Friends'].map(normTitle);
   const coonEps = all.filter((e) => e.kind === 'episode' && coonTitles.includes(normTitle(e.title)));
 
-  const b = (id, emoji, name, desc, have, need) => ({ id, emoji, name, desc, have: Math.min(have, need), need, earned: need > 0 && have >= need });
+  const b = (id, emoji, name, desc, have, need) => (granted.has(id)
+    ? { id, emoji, name, desc, have: need || 1, need: need || 1, earned: true }
+    : { id, emoji, name, desc, have: Math.min(have, need), need, earned: need > 0 && have >= need });
   return [
     b('authoritah', '👮', 'Respect My Authoritah', 'Rate 100 episodes', ratings.size, 100),
     b('tegridy', '🌱', 'Tegridy', 'Watch every Randy episode', randyHave, randyNeed),

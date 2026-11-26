@@ -3,6 +3,7 @@ import { supabase } from './supabase.js';
 import { esc, epCode } from './ui.js';
 import { starInput } from './stars.js';
 import { todayISO } from './episodes.js';
+import { towelieRewatch } from './fx.js';
 
 // All arcs with their episode ids in order: [{ id, name, episodeIds: [] }]
 export async function loadArcs() {
@@ -90,6 +91,7 @@ export function openLogArc(arc, eps, mine) {
         return;
       }
       await supabase.from('watchlist').delete().in('episode_id', targets.map((t) => t.id));
+      if (rows.some((r) => r.is_rewatch)) towelieRewatch(supabase);
       saved = true;
       d.close();
     });

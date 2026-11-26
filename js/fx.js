@@ -241,3 +241,20 @@ function unrigRankings() {
     delete p.dataset.realPos;
   });
 }
+
+// ---- 🧻 Towelie: Same Old Story badge holders (10+ rewatches) get a towel for every rewatch ----
+
+export async function towelieRewatch(supabase) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  const { count } = await supabase.from('logs').select('id', { count: 'exact', head: true }).eq('user_id', user.id).eq('is_rewatch', true);
+  if ((count || 0) < 10) return;
+  setTimeout(() => toast("🧻 Don't forget to bring a towel! (Same Old Story: rewatch number " + count + '.)', 5000), 400);
+  if (reducedMotion()) return;
+  const t = document.createElement('div');
+  t.className = 'towel-float';
+  t.setAttribute('aria-hidden', 'true');
+  t.textContent = '🧻';
+  document.body.append(t);
+  setTimeout(() => t.remove(), 4200);
+}

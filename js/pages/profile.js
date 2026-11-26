@@ -73,7 +73,7 @@ async function render(p) {
 
   // Badges
   const badges = computeBadges({
-    logs: allLogs || [], ratings: theirRatings, all, byName: chars.byName, avgs, following: stats?.following ?? 0,
+    username: p.username, logs: allLogs || [], ratings: theirRatings, all, byName: chars.byName, avgs, following: stats?.following ?? 0,
   }).sort((a, b) => Number(b.earned) - Number(a.earned) || b.have / b.need - a.have / a.need);
   const earned = badges.filter((b) => b.earned).length;
   // Two badges unlock a secret mode. Only the person who earned it sees how to use it.
