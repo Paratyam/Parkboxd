@@ -97,7 +97,7 @@ function baseReaction(rating, tagNames) {
   if (has('Towelie') && high) return "Don't forget to bring a towel!";
   if (has('Towelie') && low) return "You wanna get high? No? Then why'd you rate it like that?";
   if (has('Timmy')) return 'TIMMY!';
-  if (has('Jimmy') && high) return 'What a terrific audience! Jimmy thanks you.';
+  if (has('Jimmy') && high) return 'What a t-t-terrific audience! Jimmy th-th-thanks you.';
   if (rating === 0.5) return "Half a star? That's pretty harsh, dude.";
   if (rating === 5 && Math.random() < 0.5) return 'Five stars. That episode just went down in history, mkay.';
   // Fence-sitters: 3 or 3.5 stars, about 1 time in 5.

@@ -76,7 +76,7 @@ const PERSONALITY_OVERRIDES = { paratyam: 'Butters' };
 
 const PERSONALITIES = {
   Butters: { emoji: '🍔', line: "Aw, everything's swell! You've never met an episode you didn't like." },
-  Jimmy: { emoji: '🎤', line: "What a terrific audience! You're easy to please, but not THAT easy." },
+  Jimmy: { emoji: '🎤', line: "What a t-t-terrific audience! You're easy to please, but not THAT e-e-easy." },
   Cartman: { emoji: '😤', line: "Screw you guys. You hate everything and you're proud of it." },
   Stan: { emoji: '🧢', line: 'Sensible. Reasonable. Kind of boring, dude.' },
   Kyle: { emoji: '📝', line: 'You know, I learned something today… and you wrote 400 words about it.' },
