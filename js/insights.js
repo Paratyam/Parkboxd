@@ -60,11 +60,12 @@ export function tasteMatch(a, b) {
   return { score, shared: pairs.length, pairs };
 }
 
+// Bands match where scores really fall (most friend pairs land around 70–90%).
 export function tasteLabel(score) {
   if (score >= 90) return 'Basically Tweek and Craig';
-  if (score >= 75) return 'Super Best Friends';
-  if (score >= 60) return 'Mostly on the same page';
-  if (score >= 45) return 'Butters and Professor Chaos';
+  if (score >= 84) return 'Super Best Friends';
+  if (score >= 78) return 'Mostly on the same page';
+  if (score >= 70) return 'Butters and Professor Chaos';
   return 'Basically Kyle and Cartman';
 }
 
