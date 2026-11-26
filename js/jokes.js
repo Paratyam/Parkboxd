@@ -88,5 +88,15 @@ export function ratingReaction(rating, tagNames = []) {
   if (has('Jimmy') && high) return 'What a terrific audience! Jimmy thanks you.';
   if (rating === 0.5) return "Half a star? That's pretty harsh, dude.";
   if (rating === 5 && Math.random() < 0.5) return 'Five stars. That episode just went down in history, mkay.';
+  // Fence-sitters: 3 or 3.5 stars, about 1 time in 5.
+  if ((rating === 3 || rating === 3.5) && Math.random() < 0.2) {
+    return pick([
+      `${s}. Wow, way to take a stand. Very Stan's dad of you.`,
+      "Not bad, not great. You're basically a Canadian about this.",
+      `${s}? That's the most Butters rating possible.`,
+      'Mmm, middle of the road, mmkay. Mr. Mackey approves.',
+      "You're on the fence. Careful, Kyle's mom will build a wall on it.",
+    ]);
+  }
   return null;
 }
