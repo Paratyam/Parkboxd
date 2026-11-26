@@ -83,6 +83,7 @@ export function initModes(onChange) {
     localStorage.setItem(MODE_KEY, wasOn ? '' : mode);
     applyMode();
     onChange?.(currentMode());
+    window.dispatchEvent(new CustomEvent('parkboxd:mode', { detail: currentMode() }));
     toast(wasOn ? MODES[mode].off : MODES[mode].on);
   };
 

@@ -1,11 +1,12 @@
 import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
-import { $, esc, epCode, stars, avatarHTML } from '../ui.js';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js';
 import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js';
 import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js';
 import { line } from '../jokes.js';
 import { episodeAverages } from '../insights.js';
 import { weeklyPick } from '../club.js';
+import { isChaos } from '../fx.js';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -18,7 +19,11 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--green);border:0;cursor:pointer" id="hero-log">+ Log an episode</button>
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">🎲 Random episode</button>`;
   $('#hero-log').onclick = () => logEpisode();
-  $('#hero-random').onclick = async () => (await import('../random.js')).openRandomPicker();
+  $('#hero-random').onclick = async () => {
+    const r = await import('../random.js');
+    if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
+  };
+  syncHeroRandom();
   await renderHome();
   window.addEventListener('parkboxd:logged', renderHome);
 }
@@ -151,29 +156,58 @@ async function renderHome() {
           <div class="section-head"><h2>Your progress</h2></div>
           ${progressHTML}
         </section>
-        <section class="paper" style="background-color:var(--surface-2);padding:22px">
-          <div class="cut" style="font-size:20px;color:var(--orange);margin-bottom:8px">Can't decide?</div>
-          <p style="margin:0 0 14px;font-size:14px;color:var(--text-soft)">Get a random episode you haven't seen, or one you rated 4★ or higher.</p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button type="button" class="btn btn-orange" id="rand-new">Unwatched</button>
-            <button type="button" class="btn btn-outline" id="rand-fav">Rewatch a 4★+</button>
-            <button type="button" class="link-button" id="rand-more" style="color:var(--text-soft);font-size:13px">More options…</button>
-          </div>
-          <p class="notice" id="rand-msg" hidden style="margin-top:12px"></p>
-        </section>
+        <section class="paper" id="decide-box" style="background-color:var(--surface-2);padding:22px"></section>
       </aside>
     </div>`;
 
   wireReviewLikes($('#home-reviews'), renderHome);
+  renderDecideBox();
+}
 
+// "Can't decide?" box. In Professor Chaos mode it turns evil and picks from your worst-rated episodes.
+function renderDecideBox() {
+  const box = $('#decide-box');
+  if (!box) return;
   const random = () => import('../random.js');
-  $('#rand-new').onclick = async () => (await random()).rollAndGo({ pool: 'unwatched', min: 0, kinds: ['episode', 'special', 'movie'], season: '' }, showRand);
-  $('#rand-fav').onclick = async () => (await random()).rollAndGo({ pool: 'rated', min: 4, kinds: ['episode', 'special', 'movie'], season: '' }, showRand);
-  $('#rand-more').onclick = async () => (await random()).openRandomPicker();
-  function showRand(text) {
+  const evil = isChaos();
+  box.innerHTML = evil
+    ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>
+       <p style="margin:0 0 14px;font-size:14px;color:var(--text-soft)">He'll pick one of the episodes you rated lowest. Suffer.</p>
+       <div style="display:flex;gap:8px;flex-wrap:wrap">
+         <button type="button" class="btn btn-green" id="rand-evil">😈 Make me suffer</button>
+       </div>
+       <p class="notice" id="rand-msg" hidden style="margin-top:12px"></p>`
+    : `<div class="cut" style="font-size:20px;color:var(--orange);margin-bottom:8px">Can't decide?</div>
+       <p style="margin:0 0 14px;font-size:14px;color:var(--text-soft)">Get a random episode you haven't seen, or one you rated 4★ or higher.</p>
+       <div style="display:flex;gap:8px;flex-wrap:wrap">
+         <button type="button" class="btn btn-orange" id="rand-new">Unwatched</button>
+         <button type="button" class="btn btn-outline" id="rand-fav">Rewatch a 4★+</button>
+         <button type="button" class="link-button" id="rand-more" style="color:var(--text-soft);font-size:13px">More options…</button>
+       </div>
+       <p class="notice" id="rand-msg" hidden style="margin-top:12px"></p>`;
+
+  const showRand = (text) => {
     const m = $('#rand-msg');
     m.textContent = text;
     m.className = 'notice notice-info';
     m.hidden = false;
+  };
+  if (evil) {
+    $('#rand-evil').onclick = async () => (await random()).rollWorst(showRand);
+    return;
   }
+  $('#rand-new').onclick = async () => (await random()).rollAndGo({ pool: 'unwatched', min: 0, kinds: ['episode', 'special', 'movie'], season: '' }, showRand);
+  $('#rand-fav').onclick = async () => (await random()).rollAndGo({ pool: 'rated', min: 4, kinds: ['episode', 'special', 'movie'], season: '' }, showRand);
+  $('#rand-more').onclick = async () => (await random()).openRandomPicker();
 }
+
+// Big hero button: 🎲 normally, 😈 in Professor Chaos mode.
+function syncHeroRandom() {
+  const b = $('#hero-random');
+  if (b) b.textContent = isChaos() ? '😈 Unleash chaos' : '🎲 Random episode';
+}
+
+window.addEventListener('parkboxd:mode', () => {
+  syncHeroRandom();
+  renderDecideBox();
+});
