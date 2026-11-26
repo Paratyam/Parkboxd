@@ -101,7 +101,7 @@ async function start() {
 
   function renderRanking() {
     const list = ranking(scores).filter((x) => byId.has(x.id));
-    $('#rank-title').textContent = list.length ? `${isMe ? 'Your' : `${name}'s`} ranking · ${list.length} episodes · ${votes.length} matches` : 'Ranking';
+    $('#rank-title').textContent = list.length ? `${isMe ? 'Your' : `${name}'s`} ranking · ${list.length} episode${list.length === 1 ? '' : 's'} · ${votes.length} match${votes.length === 1 ? '' : 'es'}` : 'Ranking';
     const c = champion(scores);
     const champEp = c && byId.get(c.top.id);
     $('#champ').innerHTML = champEp ? `
