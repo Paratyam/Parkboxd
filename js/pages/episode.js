@@ -149,14 +149,15 @@ async function run(promise) {
 }
 
 // A quick log with no date, used by the Watch/Like/Rate buttons when there's no log yet.
-const quickLog = (extra) => supabase.from('logs').insert({ episode_id: ep.id, watched_on: null, ...extra });
+// Watching something takes it off your watchlist, same as the log dialog.
+async function quickLog(extra) {
+  const res = await supabase.from('logs').insert({ episode_id: ep.id, watched_on: null, ...extra });
+  if (!res.error) await supabase.from('watchlist').delete().eq('episode_id', ep.id).eq('user_id', user.id);
+  return res;
+}
 
 async function toggleWatched() {
-  if (!myLogs.length) {
-    await run(quickLog({}));
-    await supabase.from('watchlist').delete().eq('episode_id', ep.id);
-    return refreshMine();
-  }
+  if (!myLogs.length) return run(quickLog({}));
   const n = myLogs.length;
   if (!confirm(`Remove ${n === 1 ? 'your log' : `all ${n} of your logs`} for this episode, including ratings and reviews? They'll be gone like Kenny, except they won't come back next week.`)) return;
   await run(supabase.from('logs').delete().eq('episode_id', ep.id).eq('user_id', user.id));
