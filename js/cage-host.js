@@ -57,7 +57,7 @@ const RESULT = {
   upset: [
     "😱 UPSET!! {w} just beat {l}! I DID NOT SEE THAT COMING! Nobody did! I'm shook!",
     '😱 OH MY GOD! {l} goes DOWN! {w} with the shocker of the year!',
-    '😱 What?! WHAT?! {w} beats {l}?! I want a recount! I want my mom!',
+    '😱 What?! WHAT?! {w} beats {l}?! I want a recount! I want my mem!',
   ],
   streak: [
     '🔥 {w} is ON FIRE! That is {n} wins in a row! Somebody stop it! Actually, don\'t!',
