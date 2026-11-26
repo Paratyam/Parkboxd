@@ -126,6 +126,22 @@ create table if not exists public.arc_episodes (
 
 
 -- ---------------------------------------------------------------------
+-- Table privileges
+-- Newer Supabase projects don't grant these automatically. RLS (below)
+-- still decides which rows each user can actually touch.
+-- ---------------------------------------------------------------------
+
+grant usage on schema public to anon, authenticated;
+grant select on all tables in schema public to authenticated;
+grant insert, update, delete on
+  public.logs, public.watchlist, public.follows, public.review_likes, public.comments,
+  public.lists, public.list_items,
+  public.episodes, public.tags, public.episode_tags, public.arcs, public.arc_episodes
+  to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
+
+
+-- ---------------------------------------------------------------------
 -- Helper functions
 -- ---------------------------------------------------------------------
 
