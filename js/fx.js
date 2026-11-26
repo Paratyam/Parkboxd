@@ -67,17 +67,24 @@ export function initChaos(onToggle) {
     toggle();
   });
 
-  // Phones: tap the logo 5 times within 2 seconds (the taps don't navigate home).
-  let taps = [];
+  // Phones: tap the logo 5 times quickly. A single tap still goes home, just a moment
+  // later, so a second tap can arrive first and start the count instead.
+  let taps = 0;
+  let timer;
   document.addEventListener('click', (e) => {
     const logo = e.target.closest?.('.logo');
-    if (!logo) return;
-    const now = Date.now();
-    taps = [...taps.filter((t) => now - t < 2000), now];
-    if (taps.length > 1) e.preventDefault(); // second tap onwards: stay on this page
-    if (taps.length >= 5) {
-      taps = [];
+    if (!logo || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    clearTimeout(timer);
+    taps++;
+    if (taps >= 5) {
+      taps = 0;
       toggle();
+      return;
     }
+    timer = setTimeout(() => {
+      if (taps === 1) location.href = logo.href; // it really was just one tap
+      taps = 0;
+    }, 350);
   });
 }
