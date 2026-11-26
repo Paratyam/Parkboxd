@@ -114,12 +114,12 @@ export function personality({ username, logs, ratings, avgs }) {
   const fits = [];
   if (rs.length >= 5 && high >= 0.7) fits.push(['Butters', high, `${pct(high)}% of your ratings are 4★ or more.`]);
   if (rs.length >= 5 && low >= 0.3) fits.push(['Cartman', Math.min(1, low * 2), `${pct(low)}% of your ratings are 2★ or less.`]);
-  if (rs.length >= 8 && sd >= 1.4 && high >= 0.2 && low >= 0.2) fits.push(['Randy', Math.min(1, sd / 2), `Your ratings swing wildly (both 4★+ and 2★- all the time).`]);
-  if (rs.length >= 5 && mid >= 0.5) fits.push(['Mr. Mackey', mid, `${pct(mid)}% of your ratings are 3 or 3½★.`]);
+  if (rs.length >= 8 && sd >= 1.4 && high >= 0.2 && low >= 0.2) fits.push(['Randy', 1.2, `Your ratings swing wildly (both 4★+ and 2★- all the time).`]);
+  if (rs.length >= 5 && mid >= 0.6) fits.push(['Mr. Mackey', mid + 0.2, `${pct(mid)}% of your ratings are 3 or 3½★.`]);
   if (reviews.length >= 5 && avgLen >= 250) fits.push(['Kyle', Math.min(1, avgLen / 500), `Your reviews average ${Math.round(avgLen)} characters.`]);
   if (logs.length >= 15 && reviewRatio < 0.05) fits.push(['Kenny', 0.6, `${logs.length} logs and ${reviews.length} review${reviews.length === 1 ? '' : 's'}.`]);
   if (rewatches >= 5 && rewatches / logs.length >= 0.3) fits.push(['Towelie', Math.min(1, rewatches / logs.length + 0.3), `${rewatches} of your ${logs.length} logs are rewatches.`]);
-  if (gapAvg != null && gaps.length >= 5 && gapAvg <= 0.6) fits.push(['Stan', 0.55, `You're usually within ${gapAvg.toFixed(1)}★ of everyone else.`]);
+  if (gapAvg != null && gaps.length >= 5 && gapAvg <= 0.6) fits.push(['Stan', 0.9 - gapAvg, `You're usually within ${gapAvg.toFixed(1)}★ of everyone else.`]);
 
   fits.sort((a, b) => b[1] - a[1]);
   const [name, , why] = fits[0] || ['Stan', 0, 'Nothing extreme about your ratings. Very Stan.'];
