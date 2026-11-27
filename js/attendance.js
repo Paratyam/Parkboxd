@@ -1,9 +1,9 @@
 // Book Club attendance: weeks in a row you logged that week's pick, with stickers along the way.
 // Worked out from your logs (by when they were made, so backdating doesn't count). No database.
-import { stickerSVG } from './art.js?v=20261127144749';
-import { CLUB_START, weekStart } from './club.js?v=20261127144749';
+import { stickerSVG } from './art.js?v=20261127145910';
+import { CLUB_START, weekStart } from './club.js?v=20261127145910';
 
-const SLIP_EVERY = 10; // one late slip forgives one missed week in any 10
+const SLIP_EVERY = 10; // one free life (a forgiven missed week) in any 10
 
 export const STICKERS = [
   { n: 3, key: 'apple', name: 'Apple', line: "Three whole weeks! You're a regular now." },
@@ -23,16 +23,16 @@ export const readInWeek = (pk, logs) => !!pk.pick && logs.some((l) => l.episode_
   && new Date(l.created_at) >= pk.start && new Date(l.created_at) < pk.end);
 
 /**
- * attendance(picks, logs) -> { streak, best, slipReady, forgiven, readThisWeek }
+ * attendance(picks, logs) -> { streak, best, lifeReady, lifeIn, forgiven, readThisWeek }
  *   picks: from loadPicks, any order (real weeks only count). The week still running never breaks
- *   a streak. A late slip keeps the streak through one missed week, without adding to it.
+ *   a streak. A free life keeps the streak through one missed week, without adding to it.
  */
 export function attendance(picks, logs, now = new Date()) {
   const weeks = picks.filter((p) => p.real).sort((a, b) => a.start - b.start);
   let streak = 0;
   let best = 0;
   let slipAt = -SLIP_EVERY;
-  let forgiven = false; // the current streak is being held up by a late slip
+  let forgiven = false; // the current streak is being held up by a free life
   let readThisWeek = false;
   weeks.forEach((pk, i) => {
     const read = readInWeek(pk, logs);
@@ -45,7 +45,8 @@ export function attendance(picks, logs, now = new Date()) {
       if (i - slipAt >= SLIP_EVERY) { slipAt = i; forgiven = true; } else { streak = 0; forgiven = false; }
     }
   });
-  return { streak, best, forgiven, slipReady: weeks.length - 1 - slipAt >= SLIP_EVERY, readThisWeek };
+  const lifeIn = Math.max(0, slipAt + SLIP_EVERY - (weeks.length - 1)); // weeks until it's back
+  return { streak, best, forgiven, lifeReady: !lifeIn, lifeIn, readThisWeek };
 }
 
 /** The streak line, stickers and Butters' words. mine: shows the nudge to log this week's book. */
@@ -54,7 +55,10 @@ export function attendanceHTML(a, { mine = false } = {}) {
   const nudge = mine && !a.readThisWeek ? `Log this week's book to make it ${a.streak + 1}!` : '';
   return `<div class="attend">
     <p class="attend-line" style="margin:0"><strong>🔥 ${a.streak} week${a.streak === 1 ? '' : 's'} in a row</strong>
-      <span>· Best: ${a.best} · ${a.slipReady ? 'Late slip ready' : 'Late slip used'}${nudge ? ` · ${nudge}` : ''}</span></p>
+      <span>· Best: ${a.best}${nudge ? ` · ${nudge}` : ''}</span></p>
+    <p class="attend-life${a.lifeReady ? '' : ' used'}"><span class="attend-heart" aria-hidden="true">${a.lifeReady ? '❤️' : '🖤'}</span>
+      <span><b>${a.lifeReady ? '1 free life' : 'Free life used'}</b>
+      ${a.lifeReady ? 'Miss a week and the streak survives.' : `A new one arrives in ${a.lifeIn} week${a.lifeIn === 1 ? '' : 's'}. Another miss before then resets the streak.`}</span></p>
     <ul class="attend-stickers">${STICKERS.map((s) => `<li class="${a.best >= s.n ? '' : 'locked'}" title="${s.name}: ${s.n} weeks in a row${a.best >= s.n ? ' (earned)' : ''}">${stickerSVG(s.key)}<span>${a.best >= s.n ? s.name : `${s.n} weeks`}</span></li>`).join('')}</ul>
     ${top ? `<p class="attend-butters">“${top.line}” — Butters</p>` : ''}
   </div>`;

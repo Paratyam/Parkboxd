@@ -1,11 +1,11 @@
 // stats.html?u=name: totals, monthly activity, season progress and season rankings.
-import { initPage } from '../layout.js?v=20261127144749';
-import { supabase } from '../supabase.js?v=20261127144749';
-import { SITE_NAME } from '../config.js?v=20261127144749';
-import { $, esc, params, profileTabsHTML } from '../ui.js?v=20261127144749';
-import { loadAllEpisodes, cardHTML } from '../episodes.js?v=20261127144749';
-import { mountReportCard } from '../report-card.js?v=20261127144749';
-import { streakInfo, streakHTML } from '../streak.js?v=20261127144749';
+import { initPage } from '../layout.js?v=20261127145910';
+import { supabase } from '../supabase.js?v=20261127145910';
+import { SITE_NAME } from '../config.js?v=20261127145910';
+import { $, esc, params, profileTabsHTML } from '../ui.js?v=20261127145910';
+import { loadAllEpisodes, cardHTML } from '../episodes.js?v=20261127145910';
+import { mountReportCard } from '../report-card.js?v=20261127145910';
+import { streakInfo, streakHTML } from '../streak.js?v=20261127145910';
 
 const { profile: me } = await initPage({ title: 'Stats', auth: 'required' });
 const root = $('#stats');

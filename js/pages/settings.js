@@ -1,10 +1,10 @@
-import { initPage, refreshBell } from '../layout.js?v=20261127144749';
-import { supabase } from '../supabase.js?v=20261127144749';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127144749';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127144749';
-import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127144749';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127144749';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127144749';
+import { initPage, refreshBell } from '../layout.js?v=20261127145910';
+import { supabase } from '../supabase.js?v=20261127145910';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127145910';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127145910';
+import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127145910';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127145910';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127145910';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
