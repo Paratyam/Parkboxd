@@ -1,25 +1,25 @@
-import { initPage } from '../layout.js?v=20261127031458';
-import { supabase } from '../supabase.js?v=20261127031458';
-import { SITE_NAME } from '../config.js?v=20261127031458';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127031458';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127031458';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127031458';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127031458';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127031458';
-import { line } from '../jokes.js?v=20261127031458';
-import { characterColours } from '../data/character-tags.js?v=20261127031458';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127031458';
-import { streakInfo } from '../streak.js?v=20261127031458';
-import { loadPicks } from '../club.js?v=20261127031458';
-import { beltSVG } from '../art.js?v=20261127031458';
-import { roastSet } from '../jimmy.js?v=20261127031458';
+import { initPage } from '../layout.js?v=20261127032110';
+import { supabase } from '../supabase.js?v=20261127032110';
+import { SITE_NAME } from '../config.js?v=20261127032110';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127032110';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127032110';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127032110';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127032110';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127032110';
+import { line } from '../jokes.js?v=20261127032110';
+import { characterColours } from '../data/character-tags.js?v=20261127032110';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127032110';
+import { streakInfo } from '../streak.js?v=20261127032110';
+import { loadPicks } from '../club.js?v=20261127032110';
+import { beltSVG } from '../art.js?v=20261127032110';
+import { roastJokes } from '../jimmy.js?v=20261127032110';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' (pretend) account lives in code, not the database.
-const { BUTTERS_USERNAME, renderButtersProfile } = wanted === 'butters' ? await import('../butters-profile.js?v=20261127031458') : {};
+const { BUTTERS_USERNAME, renderButtersProfile } = wanted === 'butters' ? await import('../butters-profile.js?v=20261127032110') : {};
 const { data: person } = wanted === BUTTERS_USERNAME ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (wanted === BUTTERS_USERNAME) {
@@ -314,36 +314,30 @@ async function render(p) {
   root.removeAttribute('aria-busy');
   wireFollowButtons(root, () => render(p));
 
-  // Jimmy's Comedy Roast: a stand-up set from this person's real stats.
-  $('#jimmy-roast')?.addEventListener('click', () => {
-    const ctx = {
-      name, logs: allLogs || [], ratings: theirRatings, avgs, byId: new Map(all.map((e) => [e.id, e])),
-      hours: Math.round((s.minutes_watched ?? 0) / 60), reviewCount: s.review_count ?? 0,
-      champTitle: champEp?.title, streak, persona: persona?.name, fav: p.favourite_character, top4: p.top4,
-    };
-    const d = document.createElement('dialog');
-    d.className = 'log-dialog';
-    d.setAttribute('aria-labelledby', 'roast-title');
-    document.body.append(d);
-    const draw = () => {
-      d.innerHTML = `
-        <div class="sheet paper jimmy-sheet">
-          <div class="jimmy-stage" aria-hidden="true">🎤</div>
-          <h2 class="cut" id="roast-title">Jimmy's Comedy Roast of ${esc(name)}</h2>
-          <ol class="jimmy-set">${roastSet(ctx).map((j, i) => `<li style="animation-delay:${i * 0.25}s">${esc(j)}</li>`).join('')}</ol>
-          <p class="jimmy-crowd" aria-hidden="true">👏 *rimshot* 🥁</p>
-          <div class="actions">
-            <button type="button" class="btn btn-ghost" data-close>Close</button>
-            <button type="button" class="btn btn-green" data-again>Another set</button>
-          </div>
-        </div>`;
-      d.querySelector('[data-close]').onclick = () => d.close();
-      d.querySelector('[data-again]').onclick = draw;
-    };
-    draw();
-    d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
-    d.addEventListener('close', () => d.remove());
-    d.showModal();
+  // Jimmy's Comedy Roast: one joke per click, from this person's real stats. Stat jokes come
+  // first; when they run out the list reshuffles.
+  let jokes = [];
+  let jokeAt = 0;
+  $('#jimmy-roast')?.addEventListener('click', (e) => {
+    if (jokeAt >= jokes.length) {
+      jokes = roastJokes({
+        name, logs: allLogs || [], ratings: theirRatings, avgs, byId: new Map(all.map((ep) => [ep.id, ep])),
+        hours: Math.round((s.minutes_watched ?? 0) / 60), reviewCount: s.review_count ?? 0,
+        champTitle: champEp?.title, streak, persona: persona?.name, fav: p.favourite_character, top4: p.top4,
+      });
+      jokeAt = 0;
+    }
+    const joke = jokes[jokeAt++];
+    let bubble = $('#jimmy-bubble');
+    if (!bubble) {
+      e.currentTarget.closest('.profile-actions').insertAdjacentHTML('afterend', '<div class="jimmy-bubble" id="jimmy-bubble" aria-live="polite"></div>');
+      bubble = $('#jimmy-bubble');
+    }
+    bubble.innerHTML = `<span class="jimmy-mic" aria-hidden="true">🎤</span><p>${esc(joke)}</p><span class="jimmy-rim" aria-hidden="true">🥁 ba-dum-tss</span>`;
+    bubble.classList.remove('pop');
+    void bubble.offsetWidth;
+    bubble.classList.add('pop');
+    e.currentTarget.textContent = '🎤 Another one, Jimmy';
   });
   wireReviewLikes($('#profile-reviews'), () => render(p));
 }

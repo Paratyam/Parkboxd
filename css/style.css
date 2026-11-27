@@ -1251,3 +1251,10 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .kenny-ad-title { font-size: 26px; line-height: 1.05; color: #fff; text-shadow: 2px 2px 0 #000; }
 .kenny-ad-text { font-size: 14px; font-weight: 600; }
 .kenny-ad-cta { align-self: flex-start; margin-top: auto; background: #2b1300; color: #fff; padding: 4px 12px; border: 3px solid #000; border-radius: 6px; box-shadow: 3px 3px 0 #000; font-size: 15px; }
+/* Jimmy: one joke at a time, in a speech bubble under the profile buttons */
+.jimmy-bubble { width: 100%; display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; background: var(--surface-2); color: var(--white); border: 2px solid #000; border-radius: 14px; box-shadow: 3px 3px 0 #000; }
+.jimmy-bubble p { margin: 0; flex: 1; font-size: 15px; line-height: 1.45; }
+.jimmy-mic { flex: 0 0 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffe066, #c99700); border: 2px solid #000; font-size: 17px; }
+.jimmy-rim { align-self: flex-end; font-size: 11px; color: var(--muted); white-space: nowrap; }
+.jimmy-bubble.pop { animation: cage-pop .3s cubic-bezier(.2, 1.6, .5, 1); }
+@media (prefers-reduced-motion: reduce) { .jimmy-bubble.pop { animation: none; } }

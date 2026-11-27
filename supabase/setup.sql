@@ -601,3 +601,48 @@ $$;
 grant execute on function public.username_available(text) to anon, authenticated;
 alter table public.profiles drop constraint if exists profiles_username_reserved;
 alter table public.profiles add constraint profiles_username_reserved check (username is null or username not in ('butters'));
+-- Reserved usernames: South Park characters (for built-in profiles like Butters', now or later).
+create or replace function public.is_reserved_username(p text) returns boolean
+language sql immutable as $$
+  select lower(coalesce(p, '')) = any (array[
+    'cartman','eric','eric_cartman','ericcartman','kyle','kyle_broflovski','stan','stan_marsh','kenny','kenny_mccormick',
+    'butters','butters_stotch','leopold','randy','randy_marsh','sharon','shelly','shelley','gerald','sheila','ike',
+    'mr_garrison','mrgarrison','garrison','mr_mackey','mrmackey','mackey','pc_principal','pcprincipal','chef','towelie',
+    'mr_hankey','mrhankey','wendy','tolkien','token','jimmy','timmy','craig','tweek','clyde','bebe','heidi',
+    'scott_tenorman','professor_chaos','professorchaos','mysterion','the_coon','thecoon','coon','terrance','phillip',
+    'big_gay_al','satan','jesus','manbearpig','mr_slave','mrslave','liane','barbrady','officer_barbrady','mayor_mcdaniels',
+    'nathan','mimsy','pip','dougie','general_disarray','scott_malkinson','red','annie','nichole','bradley','mintberry'
+  ]);
+$$;
+create or replace function public.username_available(p_username text)
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select lower(p_username) ~ '^[a-z0-9_]{3,20}$'
+     and not public.is_reserved_username(p_username)
+     and not exists (select 1 from public.profiles where username = lower(p_username));
+$$;
+grant execute on function public.username_available(text) to anon, authenticated;
+alter table public.profiles drop constraint if exists profiles_username_reserved;
+alter table public.profiles add constraint profiles_username_reserved check (username is null or not public.is_reserved_username(username));
+
+-- Kenny's Daily Mystery Episode: one row per person per day (day = days since 1970-01-01 UTC).
+create table if not exists public.mystery_plays (
+  user_id    uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  day        int not null,
+  guesses    bigint[] not null default '{}',
+  done       boolean not null default false,
+  won        boolean not null default false,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, day)
+);
+alter table public.mystery_plays enable row level security;
+grant select, insert, update, delete on public.mystery_plays to authenticated;
+drop policy if exists "read" on public.mystery_plays;
+drop policy if exists "insert own" on public.mystery_plays;
+drop policy if exists "update own" on public.mystery_plays;
+drop policy if exists "delete own" on public.mystery_plays;
+create policy "read" on public.mystery_plays for select to authenticated using (true);
+create policy "insert own" on public.mystery_plays for insert to authenticated with check (user_id = (select auth.uid()));
+create policy "update own" on public.mystery_plays for update to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+create policy "delete own" on public.mystery_plays for delete to authenticated using (user_id = (select auth.uid()));

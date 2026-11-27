@@ -1,9 +1,9 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture and Kenny gives a (muffled) hint. Six tries.
-import { initPage, logEpisode } from '../layout.js?v=20261127031458';
-import { supabase } from '../supabase.js?v=20261127031458';
-import { $, esc, epCode, toast } from '../ui.js?v=20261127031458';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127031458';
+import { initPage, logEpisode } from '../layout.js?v=20261127032110';
+import { supabase } from '../supabase.js?v=20261127032110';
+import { $, esc, epCode, toast } from '../ui.js?v=20261127032110';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127032110';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -46,16 +46,27 @@ const HINTS = [
 ];
 const muffle = (text) => text.split(/\s+/).map((w, i) => ['Mmph', 'mmrph', 'mph', 'mmmph', 'rmph'][(w.length + i) % 5]).join(' ') + '!';
 
-// ---- Saved progress and stats ----
-const load = () => { try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch { return {}; } };
-const store = load();
-store.days = store.days || {};
+// ---- Saved progress and stats: one database row per day, so they follow you between devices ----
+const { data: rows } = await supabase.from('mystery_plays').select('day, guesses, done, won')
+  .eq('user_id', user.id).order('day', { ascending: false }).limit(400);
+const store = { days: Object.fromEntries((rows || []).map((r) => [r.day, { guesses: r.guesses || [], done: r.done, won: r.won }])) };
+// One-time move of games saved in this browser before stats lived in the database.
+try {
+  const old = JSON.parse(localStorage.getItem(STORE));
+  const moved = Object.entries(old?.days || {}).filter(([d]) => !store.days[d])
+    .map(([d, g]) => ({ user_id: user.id, day: Number(d), guesses: g.guesses || [], done: !!g.done, won: !!g.won }));
+  if (moved.length) {
+    const { error } = await supabase.from('mystery_plays').upsert(moved, { onConflict: 'user_id,day' });
+    if (!error) moved.forEach((m) => { store.days[m.day] = { guesses: m.guesses, done: m.done, won: m.won }; });
+  }
+  if (old) localStorage.removeItem(STORE);
+} catch { /* nothing to move */ }
 const game = store.days[today] || { guesses: [], done: false, won: false };
 const save = () => {
   store.days[today] = game;
-  // keep the last 60 days only
-  for (const k of Object.keys(store.days)) if (Number(k) < today - 60) delete store.days[k];
-  localStorage.setItem(STORE, JSON.stringify(store));
+  supabase.from('mystery_plays')
+    .upsert({ user_id: user.id, day: today, guesses: game.guesses, done: game.done, won: game.won, updated_at: new Date().toISOString() }, { onConflict: 'user_id,day' })
+    .then(({ error }) => { if (error) toast(`Couldn't save that guess: ${error.message}`); });
 };
 function stats() {
   const days = Object.entries(store.days).map(([d, g]) => ({ d: Number(d), ...g })).filter((g) => g.done);

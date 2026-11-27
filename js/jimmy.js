@@ -1,28 +1,16 @@
-// Jimmy's Comedy Roast: a short stand-up set built from someone's real Parkboxd stats.
-// Every joke needs a fact behind it; a set is an opener, five jokes and a closer.
+// Jimmy's Comedy Roast: jokes built from someone's real Parkboxd stats, one per click.
+// Every stat joke needs a fact behind it; a few filler jokes cover quiet profiles.
 
-const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
 const shuffle = (arr) => arr.map((x) => [Math.random(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 const stars = (r) => `${r}★`;
 
-const OPENERS = [
-  "Hey everybody! What a t-t-terrific audience! Tonight we're roasting {name}!",
-  'Thank you, thank you! Ladies and gentlemen, give it up for my good friend {name}! Now let\'s d-d-destroy them.',
-  "Hey, everybody! I'm Jimmy, I'll be here all week. {name} won't, after this.",
-];
-const CLOSERS = [
-  "Thank you, I'll be here all w-w-week! Tip your waitress!",
-  "That's my time! {name}, I love you, b-b-buddy. Mostly.",
-  "Goodnight, everybody! Don't forget to rate me five stars. {name} won't.",
-  "I'm kidding, {name}, you're t-t-terrific! No you're not. Goodnight!",
-];
-
 /**
- * roastSet(ctx) -> [string]
+ * roastJokes(ctx) -> [string], one joke per click
  *   ctx: { name, logs, ratings (Map ep -> stars), avgs (Map ep -> {avg,count}), byId (Map ep -> episode),
  *          hours, reviewCount, champTitle, streak: {current,longest}, persona, fav, top4 (ep ids) }
  */
-export function roastSet(ctx) {
+export function roastJokes(ctx) {
   const { name, logs = [], ratings = new Map(), avgs = new Map(), byId = new Map() } = ctx;
   const title = (id) => byId.get(id)?.title || 'some episode';
   const jokes = [];
@@ -63,7 +51,6 @@ export function roastSet(ctx) {
     `${name} said they'd write a review "later." Later never came. Later is still out there s-s-somewhere.`,
     `${name} is so quiet on here, the site thought their account was a b-b-bot.`,
   ];
-  const set = shuffle(jokes).slice(0, 5);
-  for (const f of shuffle(FILLER)) if (set.length < 4) set.push(f);
-  return [pick(OPENERS).replaceAll('{name}', name), ...set, pick(CLOSERS).replaceAll('{name}', name)];
+  // Real-stat jokes first (shuffled), then the filler ones.
+  return [...shuffle(jokes), ...shuffle(FILLER)];
 }
