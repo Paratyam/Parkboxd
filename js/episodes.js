@@ -1,7 +1,7 @@
 // Episode data helpers and the shared episode card.
-import { supabase } from './supabase.js?v=20261127182140';
-import { TMDB_IMAGE_BASE } from './config.js?v=20261127182140';
-import { esc, epCode, stars, fetchAll } from './ui.js?v=20261127182140';
+import { supabase } from './supabase.js?v=20261127182314';
+import { TMDB_IMAGE_BASE } from './config.js?v=20261127182314';
+import { esc, epCode, stars, fetchAll } from './ui.js?v=20261127182314';
 
 const FALLBACK = ['#b8432f', '#3b6ea8', '#6b4fa0', '#d0682a', '#2f8a5a', '#a8892f'];
 const EP_FIELDS = 'id, kind, season, number, title, overview, air_date, still_path, runtime';

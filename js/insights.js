@@ -1,6 +1,6 @@
 // Rating maths: taste match, hot takes, "which character are you", badges.
-import { fetchAll } from './ui.js?v=20261127182140';
-import { supabase } from './supabase.js?v=20261127182140';
+import { fetchAll } from './ui.js?v=20261127182314';
+import { supabase } from './supabase.js?v=20261127182314';
 
 // ---- Loaders ----
 
@@ -199,7 +199,7 @@ export function computeBadges(ctx) {
     b('coon', '🦝', 'Coon & Friends', 'Watch the whole Coon saga', coonEps.filter((e) => seen.has(e.id)).length, coonEps.length),
     b('chaos', '😈', 'Professor Chaos', 'Watch every Butters episode', buttersHave, buttersNeed),
     b('kenny', '❓', 'Mysterion', 'Watch every Kenny episode', kennyHave, kennyNeed),
-    b('tegridy', '🌱', 'Tegridy', 'Watch every Randy episode', randyHave, randyNeed),
+    b('tegridy', '🌱', 'I Thought This Was America','Watch every Randy episode', randyHave, randyNeed),
     b('movies', '🎬', 'Bigger, Longer & Logged', 'Watch every movie', movies.filter((m) => seen.has(m.id)).length, movies.length),
     b('completionist', '🏔️', 'Completionist', 'Finish every season', finishedSeasons, seasons.size),
   ];

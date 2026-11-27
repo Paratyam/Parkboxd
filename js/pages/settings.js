@@ -1,12 +1,12 @@
-import { initPage, refreshBell } from '../layout.js?v=20261127182140';
-import { supabase } from '../supabase.js?v=20261127182140';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127182140';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127182140';
-import { loadStreaks } from '../streak.js?v=20261127182140';
-import { loadBadges } from '../badges.js?v=20261127182140';
-import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127182140';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127182140';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127182140';
+import { initPage, refreshBell } from '../layout.js?v=20261127182314';
+import { supabase } from '../supabase.js?v=20261127182314';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127182314';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127182314';
+import { loadStreaks } from '../streak.js?v=20261127182314';
+import { loadBadges } from '../badges.js?v=20261127182314';
+import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127182314';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127182314';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127182314';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
