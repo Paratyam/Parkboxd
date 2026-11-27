@@ -1,18 +1,19 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
-import { initPage, logEpisode } from '../layout.js?v=20261127143645';
-import { supabase } from '../supabase.js?v=20261127143645';
-import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127143645';
-import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127143645';
-import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127143645';
-import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127143645';
-import { booksSVG } from '../art.js?v=20261127143645';
-import { BUTTERS_NOTES } from '../data/butters-notes.js?v=20261127143645';
-import { BUTTERS } from '../butters-profile.js?v=20261127143645';
-import { threadHTML, wireThread } from '../comments.js?v=20261127143645';
+import { initPage, logEpisode } from '../layout.js?v=20261127144749';
+import { supabase } from '../supabase.js?v=20261127144749';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127144749';
+import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127144749';
+import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127144749';
+import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127144749';
+import { booksSVG } from '../art.js?v=20261127144749';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127144749';
+import { BUTTERS_NOTES } from '../data/butters-notes.js?v=20261127144749';
+import { BUTTERS } from '../butters-profile.js?v=20261127144749';
+import { threadHTML, wireThread } from '../comments.js?v=20261127144749';
 
 const SHELF = 12; // past weeks on the shelf
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127143645';
-import { episodeAverages } from '../insights.js?v=20261127143645';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127144749';
+import { episodeAverages } from '../insights.js?v=20261127144749';
 
 const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');
@@ -117,6 +118,14 @@ async function render() {
     const week = `Week of ${formatDate(x.start.toISOString().slice(0, 10), { month: 'short', day: 'numeric' })}`;
     return s.avg != null ? `${week} · club ★${s.avg.toFixed(1)} (${s.members})` : s.members ? `${week} · ${s.members} read it` : `${week} · nobody read it`;
   };
+  // Your attendance streak (this week's page only).
+  let attendHTML = '';
+  if (!archive) {
+    const clubPicks = await loadPicks(all, clubOffsets());
+    const { data: myLogs } = await supabase.from('logs').select('episode_id, created_at').eq('user_id', user.id)
+      .in('episode_id', clubPicks.filter((p) => p.real && p.pick).map((p) => p.pick.id)).limit(2000);
+    attendHTML = attendanceHTML(attendance(clubPicks, myLogs || []), { mine: true });
+  }
   // Next week's vote.
   const myVote = upcoming.votes.find((v) => v.user_id === user.id)?.episode_id ?? null;
   const totalVotes = upcoming.votes.length;
@@ -172,6 +181,7 @@ async function render() {
           ${archive ? "<a class=\"btn btn-green\" href=\"club.html\">See this week's book</a>" : `<button type="button" class="btn btn-green" id="club-log">${iWatched ? 'Log it again' : "I read it! Let's talk"}</button>`}
           ${!archive && mine.has(ep.id) && !iWatched ? '<span class="result-count">You\'ve read it before, but not this week.</span>' : ''}
         </div>
+        ${attendHTML}
         <div class="club-members">
           <span class="club-members-label">Checked out ${archive ? 'that' : 'this'} week</span>
           <div>${watchers.length ? `${watchers.map((p) => `<a href="profile.html?u=${encodeURIComponent(p?.username || '')}" title="${esc(p?.display_name || p?.username)}">${avatarHTML(p, 30)}</a>`).join('')}

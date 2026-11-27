@@ -1,10 +1,11 @@
-// Shareable paper-cutout cards: one of your reviews, or your Top 4, drawn on a canvas.
-// Original art, plus the episode stills on both cards. Any button with data-share-review="<log id>" or
+// Shareable paper-cutout cards: one of your reviews, your Top 4 or your Cage Match top 10, drawn on
+// a canvas. Original art, plus the episode stills on the review and Top 4 cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
-import { supabase } from './supabase.js?v=20261127143645';
-import { epCode, stars, toast } from './ui.js?v=20261127143645';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127143645';
-import { SITE_LINK } from './config.js?v=20261127143645';
+import { supabase } from './supabase.js?v=20261127144749';
+import { epCode, stars, toast } from './ui.js?v=20261127144749';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127144749';
+import { SITE_LINK } from './config.js?v=20261127144749';
+import { beltSVG } from './art.js?v=20261127144749';
 
 const W = 1080;
 const H = 1350;
@@ -216,7 +217,7 @@ export async function drawTop4Card({ name, picks }) {
 
 /** Resolves to the loaded image, or null. The extra query keeps the browser from reusing the
  *  page's own (non-CORS) cached copy, which would stop the canvas being saved. */
-function loadPicture(src) {
+function loadPicture(src, bust = true) {
   if (!src) return null;
   return new Promise((resolve) => {
     const img = new Image();
@@ -224,7 +225,7 @@ function loadPicture(src) {
     img.crossOrigin = 'anonymous';
     img.onload = () => { clearTimeout(timer); resolve(img); };
     img.onerror = () => { clearTimeout(timer); resolve(null); };
-    img.src = `${src}${src.includes('?') ? '&' : '?'}card=1`;
+    img.src = bust ? `${src}${src.includes('?') ? '&' : '?'}card=1` : src;
   });
 }
 
@@ -255,6 +256,37 @@ export async function drawAwardCard({ kicker, emoji, heading, line, name }) {
   c.font = `700 36px ${BODY}`;
   text(c, clamp(c, `— ${name}`, 760, 1)[0], W / 2, 1100, { size: 36, weight: 700, colour: NAVY, align: 'center' });
   return canvas;
+}
+
+/** { name, picks: [{ title, code, record }] } best first -> canvas. Original art only. */
+export async function drawTop10Card({ name, picks }) {
+  const { canvas, c } = await newCanvas();
+  const ten = picks.slice(0, 10);
+  c.font = `400 54px ${DISPLAY}`;
+  text(c, clamp(c, `${name}'s Cage Match Top ${ten.length}`, 960, 1)[0], W / 2, 210, { size: 54, font: DISPLAY, colour: '#fff', align: 'center' });
+  const [champ, ...rest] = ten;
+  paper(c, 70, 270, 940, 190, '#f5c518', -0.8);
+  const belt = beltSVG().replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="280" height="128" ');
+  const img = await loadPicture(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(belt)}`, false);
+  if (img) c.drawImage(img, 700, 300, 280, 128);
+  text(c, 'CHAMPION', 110, 320, { size: 30, font: DISPLAY, colour: '#c0392b' });
+  c.font = `400 44px ${DISPLAY}`;
+  clamp(c, champ.title, 560, 2).forEach((line, n) => text(c, line, 110, 368 + n * 46, { size: 44, font: DISPLAY, colour: NAVY }));
+  text(c, `${champ.code} · ${champ.record}`, 110, 442, { size: 24, weight: 700, colour: '#333' });
+  rest.forEach((p, i) => {
+    const y = 485 + i * 76;
+    paper(c, 80, y, 920, 64, PAPER, i % 2 ? 0.35 : -0.35);
+    text(c, String(i + 2), 130, y + 45, { size: 38, font: DISPLAY, colour: '#c0392b', align: 'center' });
+    c.font = `700 30px ${BODY}`;
+    text(c, clamp(c, p.title, 610, 1)[0], 180, y + 42, { size: 30, weight: 700, colour: NAVY });
+    text(c, p.record, 965, y + 42, { size: 28, colour: '#555', align: 'right' });
+  });
+  return canvas;
+}
+
+/** Draw the top 10 card and open the preview. */
+export async function shareTop10(data) {
+  showPreview(await drawTop10Card(data), 'parkboxd-cage-top10.png');
 }
 
 // ---- Preview dialog ----

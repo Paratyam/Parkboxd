@@ -764,3 +764,22 @@ create policy "read" on public.guest_review_comments for select to authenticated
 create policy "insert own" on public.guest_review_comments for insert to authenticated with check (user_id = (select auth.uid()));
 create policy "update own" on public.guest_review_comments for update to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 create policy "delete own" on public.guest_review_comments for delete to authenticated using (user_id = (select auth.uid()));
+
+-- Mystery cold cases: a game played after its own day. It never counts toward stats or streaks.
+alter table public.mystery_plays add column if not exists cold boolean not null default false;
+
+-- Cage Match crowd champion: every judge counts once per episode (their own win rate), pulled
+-- toward 50% so one or two fans can't top the table.
+create or replace view public.cage_community with (security_invoker = true) as
+with fights as (
+  select user_id, winner_id as episode_id, 1 as win from public.cage_votes
+  union all
+  select user_id, loser_id, 0 from public.cage_votes
+), per_user as (
+  select user_id, episode_id, sum(win) as wins, count(*) as fights from fights group by user_id, episode_id
+)
+select episode_id, count(*)::int as judges, sum(wins)::int as wins, (sum(fights) - sum(wins))::int as losses,
+  round((sum(wins::numeric / fights) + 1) / (count(*) + 2), 4) as score
+from per_user group by episode_id;
+revoke all on public.cage_community from anon;
+grant select on public.cage_community to authenticated;

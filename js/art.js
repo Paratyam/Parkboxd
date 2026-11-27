@@ -47,6 +47,25 @@ export function gloveSVG() {
   </svg>`;
 }
 
+/** Book Club attendance stickers: apple, star, bookmark, trophy, crown on a round paper sticker. */
+export function stickerSVG(key) {
+  const cut = `stroke="${INK}" stroke-width="3" stroke-linejoin="round"`;
+  const shapes = {
+    apple: `<path d="M32 22 C20 14 12 26 17 38 C21 49 28 52 32 47 C36 52 43 49 47 38 C52 26 44 14 32 22 Z" fill="#d63a3a" ${cut}/>
+      <path d="M32 22 Q31 15 35 11" fill="none" ${cut}/><path d="M35 15 Q45 8 48 16 Q41 21 35 15 Z" fill="#3fb950" ${cut}/>`,
+    star: `<path d="M32 10 L38 25 L54 26 L42 37 L46 52 L32 44 L18 52 L22 37 L10 26 L26 25 Z" fill="#f5c518" ${cut}/>`,
+    bookmark: `<path d="M20 11 L44 11 L45 53 L32 43 L19 53 Z" fill="#f5c518" ${cut}/><circle cx="32" cy="26" r="6" fill="#d63a3a" ${cut}/>`,
+    trophy: `<path d="M19 13 L45 13 Q45 36 32 38 Q19 36 19 13 Z" fill="#f5c518" ${cut}/>
+      <path d="M19 18 Q9 18 13 27 Q16 31 22 30 M45 18 Q55 18 51 27 Q48 31 42 30" fill="none" ${cut}/>
+      <path d="M29 38 L35 38 L36 45 L42 46 L43 53 L21 53 L22 46 L28 45 Z" fill="#b8860b" ${cut}/>`,
+    crown: `<path d="M12 20 L23 31 L32 13 L41 31 L52 20 L47 47 L17 47 Z" fill="#f5c518" ${cut}/>
+      <circle cx="32" cy="38" r="5" fill="#4a90e2" ${cut}/>`,
+  };
+  return `<svg class="art art-sticker" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <circle cx="32" cy="32" r="30" fill="#fff" ${cut}/>${shapes[key] || shapes.star}
+  </svg>`;
+}
+
 /** Paper championship belt: gold plate with a star on a black strap. */
 export function beltSVG() {
   return `<svg class="art art-belt" viewBox="0 0 140 64" aria-hidden="true" focusable="false">

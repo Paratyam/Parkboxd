@@ -1,18 +1,19 @@
 // cage.html: Cartman's Cage Match, the game (pick the better of two episodes you've watched) plus your ranking.
 // cage.html?u=name&view=ranking: a profile's Rankings tab, just the ranking list.
 
-import { initPage } from '../layout.js?v=20261127143645';
-import { supabase } from '../supabase.js?v=20261127143645';
-import { SITE_NAME } from '../config.js?v=20261127143645';
-import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127143645';
-import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127143645';
-import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127143645';
+import { initPage } from '../layout.js?v=20261127144749';
+import { supabase } from '../supabase.js?v=20261127144749';
+import { SITE_NAME } from '../config.js?v=20261127144749';
+import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127144749';
+import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127144749';
+import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127144749';
 import {
   introLine, resultLine, crowd, hostPick,
   HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
-} from '../cage-host.js?v=20261127143645';
-import { burgerRain } from '../fx.js?v=20261127143645';
-import { beltSVG } from '../art.js?v=20261127143645';
+} from '../cage-host.js?v=20261127144749';
+import { burgerRain } from '../fx.js?v=20261127144749';
+import { beltSVG } from '../art.js?v=20261127144749';
+import { shareTop10 } from '../share.js?v=20261127144749';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
@@ -112,10 +113,12 @@ async function start() {
     <section>
       <div class="section-head"><h2 id="rank-title"></h2></div>
       <div id="champ"></div>
+      <div id="rank-share"></div>
       <ol class="rank-table" id="ranking"></ol>
       <div id="rank-more"></div>
       ${showGame ? '<p style="margin:14px 0 0"><button type="button" class="link-button" id="reset" style="color:var(--muted)">Reset my Cage Match</button></p>' : ''}
-    </section>`;
+    </section>
+    ${showGame ? '<section id="crowd-champ" hidden></section>' : ''}`;
   root.removeAttribute('aria-busy');
 
   function renderRanking() {
@@ -130,6 +133,21 @@ async function start() {
           <strong>${esc(champEp.title)}</strong>
           <span>${esc(epCode(champEp))} · ${c.top.wins}–${c.top.losses}${c.undefeated ? ' · never lost a match' : ''}</span></div>
       </a>` : '';
+    $('#rank-share').innerHTML = isMe && list.length >= 3
+      ? `<p class="cage-share"><button type="button" class="btn btn-green" id="share-top">📤 Share my top ${Math.min(10, list.length)}</button></p>` : '';
+    $('#share-top')?.addEventListener('click', async (e) => {
+      const b = e.currentTarget;
+      b.disabled = true;
+      try {
+        await shareTop10({
+          name,
+          picks: list.slice(0, 10).map((x) => ({ title: titleOf(x.id), code: epCode(byId.get(x.id)), record: `${x.wins}–${x.losses}` })),
+        });
+      } catch (err) {
+        toast(`Couldn't make the card: ${err?.message || err}`);
+      }
+      b.disabled = false;
+    });
     const shown = showAll ? list : list.slice(0, RANK_SHOWN);
     $('#ranking').innerHTML = list.length ? shown.map((x, i) => {
       const e = byId.get(x.id);
@@ -333,6 +351,36 @@ async function start() {
     });
   }
 
+  // The crowd's champion: everyone's picks together (the cage_community view), next to your spot.
+  async function renderCrowd() {
+    if (!showGame) return;
+    const { data, error } = await supabase.from('cage_community').select('episode_id, judges, wins, losses, score')
+      .order('score', { ascending: false }).order('judges', { ascending: false }).order('wins', { ascending: false }).limit(10);
+    const top = (data || []).filter((x) => byId.has(x.episode_id));
+    if (error || !top.length) return;
+    const myPos = new Map(ranking(scores).map((x, i) => [x.id, i + 1]));
+    const first = top[0].episode_id;
+    const verdict = !myPos.has(first) ? "You haven't even judged the crowd's champion. Do your job!"
+      : myPos.get(first) === 1 ? 'You and the crowd agree. How boring.'
+        : myPos.get(first) <= 10 ? `The crowd's champ is only #${myPos.get(first)} for you. Close, but wrong.`
+          : `The crowd loves ${titleOf(first)} and you've got it at #${myPos.get(first)}? Somebody's wrong, and it's probably you.`;
+    const box = $('#crowd-champ');
+    box.innerHTML = `
+      <div class="section-head"><h2>👥 The crowd's champion</h2><span class="result-count">Everyone's picks, one voice each</span></div>
+      <p class="cage-crowd-champ">“${esc(verdict)}” <span>— Cartman</span></p>
+      <ol class="rank-table">${top.map((x, i) => {
+        const e = byId.get(x.episode_id);
+        return `<li>
+          <span class="pos">${i + 1}</span>
+          <a href="episode.html?id=${e.id}" class="thumb" aria-hidden="true" tabindex="-1">${thumbHTML(e, { showTitle: false })}</a>
+          <div class="info"><a href="episode.html?id=${e.id}">${i === 0 ? '👑 ' : ''}${esc(e.title)}</a><span>${esc(epCode(e))} · ${x.judges} judge${x.judges === 1 ? '' : 's'} <span class="crowd-you">${myPos.has(e.id) ? `· you: #${myPos.get(e.id)}` : ''}</span></span></div>
+          <div class="score"><b style="font-size:16px">${x.wins}–${x.losses}</b><span title="Crowd score">${Math.round(x.score * 100)}%</span></div>
+        </li>`;
+      }).join('')}</ol>`;
+    box.hidden = false;
+  }
+
   renderPair();
   renderRanking();
+  renderCrowd().catch(() => {});
 }
