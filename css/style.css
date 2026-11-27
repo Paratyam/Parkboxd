@@ -1245,12 +1245,6 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .kenny-says { font-family: 'Luckiest Guy', cursive; font-size: 16px; }
 .kenny-means { font-size: 13px; font-weight: 600; }
 .mystery-stats { padding: 14px 16px; background-color: var(--surface); border-radius: 8px; }
-.mystery-nums { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-bottom: 10px; }
-.mystery-nums b { display: block; font-family: 'Luckiest Guy', cursive; font-size: 26px; color: var(--white); }
-.mystery-nums span { font-size: 11px; text-transform: uppercase; color: var(--muted); }
-.mystery-dist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.mystery-dist li { display: flex; gap: 8px; align-items: center; font-size: 12px; }
-.mystery-dist li > div { background: #f2711c; color: #2b1300; font-weight: 800; padding: 1px 6px; border-radius: 3px; text-align: right; min-width: 20px; }
 @media (max-width: 760px) { .mystery-layout { grid-template-columns: 1fr; } }
 
 /* Home: Kenny's mystery card */
@@ -1500,3 +1494,16 @@ html.chaos .install-ad, html.mysterion .install-ad { bottom: 66px; }
 .attend-life > i { color: #d63a3a; font-size: 15px; line-height: 1; font-style: normal; }
 .attend-life.used { border-color: #9a9a9a; color: #666; }
 .attend-life.used > i { color: #8a8a8a; }
+
+/* Mystery stats: equal tiles, and a chart whose rows all span the panel */
+.mystery-side .mystery-stats { padding: 20px 22px; }
+.mystery-side .mystery-stats h2 { text-align: center; }
+.mystery-nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.mystery-nums > div { padding: 10px 4px 8px; border-radius: 8px; background: rgba(255,255,255,.07); }
+.mystery-nums b { display: block; font-family: 'Luckiest Guy', cursive; font-weight: 400; font-size: 28px; line-height: 1.1; color: var(--white); }
+.mystery-nums span { font-size: 11px; text-transform: uppercase; color: #cdb6ee; }
+.mystery-stats h3 { margin: 16px 0 8px; text-align: center; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #cdb6ee; }
+.mystery-dist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.mystery-dist li { display: grid; grid-template-columns: 22px 1fr 22px; gap: 8px; align-items: center; font-size: 12px; text-align: center; }
+.mystery-dist .md-track { height: 14px; border-radius: 7px; background: rgba(255,255,255,.08); overflow: hidden; }
+.mystery-dist .md-track > div { height: 100%; border-radius: 7px; background: #f2711c; }

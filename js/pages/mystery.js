@@ -1,13 +1,13 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127150223';
-import { initPage, logEpisode } from '../layout.js?v=20261127150223';
-import { supabase } from '../supabase.js?v=20261127150223';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127150223';
-import { followingIds } from '../social.js?v=20261127150223';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127150223';
-import { mysterySVG } from '../art.js?v=20261127150223';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127150223';
+import { SITE_LINK } from '../config.js?v=20261127150350';
+import { initPage, logEpisode } from '../layout.js?v=20261127150350';
+import { supabase } from '../supabase.js?v=20261127150350';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127150350';
+import { followingIds } from '../social.js?v=20261127150350';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127150350';
+import { mysterySVG } from '../art.js?v=20261127150350';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127150350';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -263,7 +263,8 @@ function render() {
         <div class="mystery-stats paper">
           <h2 class="cut">Your stats</h2>
           <div class="mystery-nums"><div><b>${s.played}</b><span>Played</span></div><div><b>${s.played ? Math.round((s.won / s.played) * 100) : 0}%</b><span>Won</span></div><div><b>${s.streak}</b><span>Streak</span></div></div>
-          <ol class="mystery-dist">${s.dist.map((n, i) => `<li><span>${i + 1}</span><div style="width:${Math.max(6, (n / Math.max(1, ...s.dist)) * 100)}%">${n}</div></li>`).join('')}</ol>
+          <h3>Guesses it took to win</h3>
+          <ol class="mystery-dist">${s.dist.map((n, i) => `<li><span>${i + 1}</span><div class="md-track"><div style="width:${(n / Math.max(1, ...s.dist)) * 100}%"></div></div><b>${n}</b></li>`).join('')}</ol>
         </div>
         ${coldCasesHTML()}
       </aside>
