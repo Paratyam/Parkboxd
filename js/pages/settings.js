@@ -1,10 +1,10 @@
-import { initPage, refreshBell } from '../layout.js?v=20261127151509';
-import { supabase } from '../supabase.js?v=20261127151509';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127151509';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127151509';
-import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127151509';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127151509';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127151509';
+import { initPage, refreshBell } from '../layout.js?v=20261127164324';
+import { supabase } from '../supabase.js?v=20261127164324';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127164324';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127164324';
+import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127164324';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127164324';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127164324';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -182,7 +182,7 @@ $('#password-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const pw = $('#new-password').value;
   const btn = e.submitter || $('#password-form button');
-  if (pw.length < 6) return notify($('#password-msg'), 'At least 6 characters, please. Even Cartman knows that.', 'error');
+  if (pw.length < 8) return notify($('#password-msg'), 'At least 8 characters, please. Even Cartman knows that.', 'error');
   if (pw !== $('#new-password2').value) return notify($('#password-msg'), "The two passwords don't match.", 'error');
   setBusy(btn, true, 'Saving…');
   const { error } = await supabase.auth.updateUser({ password: pw });

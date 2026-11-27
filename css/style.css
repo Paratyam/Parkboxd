@@ -314,7 +314,7 @@ main > .notice.wrap { margin-top: 16px; }
 /* ---- Episode cards ---- */
 
 .ep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 18px 16px; }
-.ep-grid.wide { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.ep-grid.wide { grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); }
 .ep-card { color: var(--text); display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .ep-card:hover { color: var(--white); }
 .ep-thumb {
@@ -575,7 +575,7 @@ a.top4-slot { color: inherit; }
 
 /* ---- Lists ---- */
 
-.list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+.list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 24px; }
 .list-card { display: flex; flex-direction: column; gap: 10px; color: var(--text); }
 .list-card:hover strong { color: var(--blue-hover); }
 .list-stack { display: flex; }
@@ -607,7 +607,7 @@ a.top4-slot { color: inherit; }
 .arc-box ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
 .arc-box li[aria-current] { font-weight: 700; color: var(--white); }
 
-.admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; align-items: start; }
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 32px; align-items: start; }
 
 /* ---- Rankings ---- */
 
@@ -945,7 +945,7 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 @media (max-width: 640px) { .cage-ring { padding: 18px 12px 14px; } .cage-mic { flex-basis: 44px; height: 44px; font-size: 22px; } }
 
 /* Home: Book Club + Cage Match side by side */
-.home-promos { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; align-items: stretch; }
+.home-promos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 18px; align-items: stretch; }
 .home-promos > * { margin: 0; }
 .cage-ad {
   position: relative; display: flex; flex-direction: column; gap: 8px; padding: 22px 20px 18px; border-radius: 8px; color: #eee; overflow: hidden;
@@ -1164,7 +1164,7 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 
 /* Settings: account section */
 .account { margin-top: 36px; }
-.account-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; align-items: start; }
+.account-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 18px; align-items: start; }
 .account-grid h3 { margin: 0; font-size: 20px; color: var(--white); }
 .btn-danger { background: var(--red); color: #fff; border: 0; }
 .btn-danger:hover { background: #b52a2a; }
@@ -1520,3 +1520,51 @@ html.chaos .install-ad, html.mysterion .install-ad { bottom: 66px; }
 .ep-peoples .art { flex: none; width: 76px; height: auto; transform: rotate(-5deg); }
 .ep-peoples strong { display: block; font-size: 22px; font-weight: 400; color: var(--yellow); }
 .ep-peoples span span { font-size: 13px; color: var(--muted); }
+
+/* ===== Phone fixes ===== */
+@media (max-width: 760px) { .dm-layout, .mystery-layout { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 720px) { .club-book { grid-template-columns: minmax(0, 1fr); } }
+/* Long words, names and links never push the page sideways */
+.profile-head .who { min-width: min(220px, 100%); }
+.profile-head .bio, .char-card .cut, .list-info strong, .list-info .desc { overflow-wrap: anywhere; }
+.list-stack .ep-thumb { flex-basis: 34%; min-width: 0; }
+.ep-side { min-width: 0; }
+.ep-counts { flex-wrap: wrap; row-gap: 4px; }
+.tag-add { flex-wrap: wrap; max-width: 100%; }
+.tag-add input { flex: 1 1 120px; min-width: 0; max-width: 180px; }
+/* Very small phones: the header still fits on one row */
+@media (max-width: 360px) {
+  .header-inner { gap: 6px; }
+  .logo { gap: 1px; }
+  .logo-letter { font-size: 11px !important; padding: 2px 1px 1px; }
+  .header-right { gap: 6px; }
+}
+/* Touch screens: bigger tap targets, and 16px fields so iPhones don't zoom in when typing */
+@media (pointer: coarse) {
+  input, select, textarea { font-size: 16px !important; }
+  .link-button { padding-top: 6px; padding-bottom: 6px; }
+}
+/* The ☰ menu's search results keep normal text, not the menu's capitals */
+.main-nav .search-pop { text-transform: none; letter-spacing: normal; font-weight: 400; }
+/* The app ad stays out of the way while the menu or a dialog is open */
+body:has(.site-header.menu-open) .install-ad, body:has(dialog[open]) .install-ad { display: none; }
+/* Diary rows on phones: the title gets the full line, stars and buttons go underneath */
+@media (max-width: 560px) {
+  .diary li { flex-wrap: wrap; gap: 4px 12px; }
+  .diary .date { flex: 0 0 100%; }
+  .diary-month .date { flex: 0 0 22px; }
+  .diary li > .title { flex: 1 1 100%; }
+  .diary-month .diary li > .title { flex-basis: calc(100% - 34px); }
+  .diary-month .diary li > .rating { margin-left: 34px; }
+  .diary .actions { margin-left: auto; }
+}
+/* Episode page on phones: Watch, Like and Rate come right after the summary, not under every review */
+@media (max-width: 640px) {
+  .ep-layout { flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 18px; }
+  .ep-layout > .ep-side { flex: none; }
+  .ep-main, .ep-aside { display: contents; }
+  .ep-aside > #panel { order: 1; }
+  .ep-aside > #note, .ep-aside > #arc-box { order: 2; }
+  .ep-aside > :empty { display: none; }
+  .ep-main > section, .ep-main > #neighbours { order: 3; }
+}

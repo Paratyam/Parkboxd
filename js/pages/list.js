@@ -1,9 +1,9 @@
 // list.html?id=N: view a list; its owner can edit it here.
-import { initPage } from '../layout.js?v=20261127151509';
-import { supabase } from '../supabase.js?v=20261127151509';
-import { SITE_NAME } from '../config.js?v=20261127151509';
-import { $, esc, params, epCode, avatarHTML, notify } from '../ui.js?v=20261127151509';
-import { loadAllEpisodes, cardHTML, myLogMap } from '../episodes.js?v=20261127151509';
+import { initPage } from '../layout.js?v=20261127164324';
+import { supabase } from '../supabase.js?v=20261127164324';
+import { SITE_NAME } from '../config.js?v=20261127164324';
+import { $, esc, params, epCode, avatarHTML, notify } from '../ui.js?v=20261127164324';
+import { loadAllEpisodes, cardHTML, myLogMap } from '../episodes.js?v=20261127164324';
 
 const { user } = await initPage({ title: 'List', auth: 'required' });
 const root = $('#list');
@@ -99,7 +99,7 @@ async function render() {
       <li><button type="button" data-add="${e.id}" ${inList.has(e.id) ? 'disabled' : ''}><span>${esc(e.title)}</span>
         <span class="code">${inList.has(e.id) ? 'in list' : esc(epCode(e))}</span></button></li>`).join('');
     $('#add-results').querySelectorAll('[data-add]').forEach((b) => b.onclick = async () => {
-      const { error } = await supabase.from('list_items').insert({ list_id: id, episode_id: Number(b.dataset.add), position: rows.length });
+      const { error } = await supabase.from('list_items').insert({ list_id: id, episode_id: Number(b.dataset.add), position: Math.max(-1, ...rows.map((r) => r.position)) + 1 });
       if (error) return notify($('#msg'), error.message, 'error');
       await render();
       $('#add-search')?.focus();

@@ -1,7 +1,7 @@
 // Episode data helpers and the shared episode card.
-import { supabase } from './supabase.js?v=20261127151509';
-import { TMDB_IMAGE_BASE } from './config.js?v=20261127151509';
-import { esc, epCode, stars } from './ui.js?v=20261127151509';
+import { supabase } from './supabase.js?v=20261127164324';
+import { TMDB_IMAGE_BASE } from './config.js?v=20261127164324';
+import { esc, epCode, stars, fetchAll } from './ui.js?v=20261127164324';
 
 const FALLBACK = ['#b8432f', '#3b6ea8', '#6b4fa0', '#d0682a', '#2f8a5a', '#a8892f'];
 const EP_FIELDS = 'id, kind, season, number, title, overview, air_date, still_path, runtime';
@@ -107,12 +107,12 @@ export function cardHTML(ep, { mine, meta = '', rating, extra = '', href = null,
  * Map(episode_id → { count, rating (latest), liked (latest), lastDate })
  */
 export async function myLogMap(userId) {
-  const { data } = await supabase.from('logs')
+  const { data } = await fetchAll(() => supabase.from('logs')
     .select('episode_id, rating, liked, watched_on, created_at')
     .eq('user_id', userId)
     .order('watched_on', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false })
-    .limit(5000);
+    .order('id'));
   const map = new Map();
   for (const l of data || []) {
     const m = map.get(l.episode_id);

@@ -1,11 +1,12 @@
 // Rating maths: taste match, hot takes, "which character are you", badges.
-import { supabase } from './supabase.js?v=20261127151509';
+import { fetchAll } from './ui.js?v=20261127164324';
+import { supabase } from './supabase.js?v=20261127164324';
 
 // ---- Loaders ----
 
 /** Map(user_id → Map(episode_id → rating)) of everyone's current ratings. */
 export async function allLatestRatings() {
-  const { data } = await supabase.from('latest_ratings').select('user_id, episode_id, rating').limit(20000);
+  const { data } = await fetchAll(() => supabase.from('latest_ratings').select('user_id, episode_id, rating').order('user_id').order('episode_id'));
   const out = new Map();
   for (const r of data || []) {
     if (!out.has(r.user_id)) out.set(r.user_id, new Map());
@@ -22,7 +23,7 @@ export async function episodeAverages() {
 
 /** { byEpisode: Map(epId → [names]), byName: Map(name → Set(epIds)) } for character tags. */
 export async function characterTags() {
-  const { data } = await supabase.from('episode_tags').select('episode_id, tags!inner(name, kind)').eq('tags.kind', 'character').limit(10000);
+  const { data } = await fetchAll(() => supabase.from('episode_tags').select('episode_id, tags!inner(name, kind)').eq('tags.kind', 'character').order('episode_id').order('tag_id'));
   const byEpisode = new Map();
   const byName = new Map();
   for (const r of data || []) {

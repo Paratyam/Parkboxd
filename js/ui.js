@@ -1,5 +1,5 @@
 // Small DOM helpers shared by every page.
-import { AVATAR_ICONS } from './avatars.js?v=20261127151509';
+import { AVATAR_ICONS } from './avatars.js?v=20261127164324';
 
 export const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -100,4 +100,16 @@ export function stars(rating) {
   if (rating == null) return '';
   const full = Math.floor(rating);
   return '★'.repeat(full) + (rating % 1 ? '½' : '');
+}
+
+// The database hands back at most 1,000 rows per request, whatever .limit() says. This reads
+// page after page. `query` builds a fresh query each time and must order on something unique.
+export async function fetchAll(query, size = 1000) {
+  const rows = [];
+  for (let from = 0; ; from += size) {
+    const { data, error } = await query().range(from, from + size - 1);
+    if (error) return { data: rows.length ? rows : null, error };
+    rows.push(...(data || []));
+    if (!data || data.length < size) return { data: rows, error: null };
+  }
 }

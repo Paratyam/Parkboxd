@@ -1,11 +1,11 @@
 // stats.html?u=name: totals, monthly activity, season progress and season rankings.
-import { initPage } from '../layout.js?v=20261127151509';
-import { supabase } from '../supabase.js?v=20261127151509';
-import { SITE_NAME } from '../config.js?v=20261127151509';
-import { $, esc, params, profileTabsHTML } from '../ui.js?v=20261127151509';
-import { loadAllEpisodes, cardHTML } from '../episodes.js?v=20261127151509';
-import { mountReportCard } from '../report-card.js?v=20261127151509';
-import { streakInfo, streakHTML } from '../streak.js?v=20261127151509';
+import { initPage } from '../layout.js?v=20261127164324';
+import { supabase } from '../supabase.js?v=20261127164324';
+import { SITE_NAME } from '../config.js?v=20261127164324';
+import { $, esc, params, profileTabsHTML, fetchAll } from '../ui.js?v=20261127164324';
+import { loadAllEpisodes, cardHTML } from '../episodes.js?v=20261127164324';
+import { mountReportCard } from '../report-card.js?v=20261127164324';
+import { streakInfo, streakHTML } from '../streak.js?v=20261127164324';
 
 const { profile: me } = await initPage({ title: 'Stats', auth: 'required' });
 const root = $('#stats');
@@ -28,7 +28,7 @@ async function render() {
 
   const [all, { data: logs }, { data: seasonAvgs }, { data: s }, { data: latest }] = await Promise.all([
     loadAllEpisodes(),
-    supabase.from('logs').select('episode_id, watched_on, rating, liked, review, is_rewatch, created_at').eq('user_id', person.id).limit(5000),
+    fetchAll(() => supabase.from('logs').select('episode_id, watched_on, rating, liked, review, is_rewatch, created_at').eq('user_id', person.id).order('id')),
     supabase.from('user_season_averages').select('season, avg_rating, rated_count').eq('user_id', person.id),
     supabase.from('user_stats').select('*').eq('user_id', person.id).maybeSingle(),
     supabase.from('latest_ratings').select('episode_id, rating').eq('user_id', person.id).limit(5000),

@@ -1,6 +1,6 @@
 // "Add to a list…" dialog for an episode.
-import { supabase } from './supabase.js?v=20261127151509';
-import { esc } from './ui.js?v=20261127151509';
+import { supabase } from './supabase.js?v=20261127164324';
+import { esc } from './ui.js?v=20261127164324';
 
 export async function openAddToList(ep) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -45,8 +45,8 @@ export async function openAddToList(ep) {
   };
 
   async function add(listId, title) {
-    const { count } = await supabase.from('list_items').select('list_id', { count: 'exact', head: true }).eq('list_id', listId);
-    const { error } = await supabase.from('list_items').insert({ list_id: listId, episode_id: ep.id, position: count ?? 0 });
+    const { data: last } = await supabase.from('list_items').select('position').eq('list_id', listId).order('position', { ascending: false }).limit(1);
+    const { error } = await supabase.from('list_items').insert({ list_id: listId, episode_id: ep.id, position: (last?.[0]?.position ?? -1) + 1 });
     if (error) return msg(error.message, 'error');
     msg(`Added to "${title}".`);
   }

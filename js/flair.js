@@ -2,9 +2,10 @@
 //   🏔️ Completionist  → gold ring around their avatar
 //   ✍️ Critic (25+ reviews) → "Critic" tag after their name
 //   🌶️ Hot Take Artist (5+ hot takes) → 🌶️ after their name
-import { supabase } from './supabase.js?v=20261127151509';
-import { loadAllEpisodes, todayISO } from './episodes.js?v=20261127151509';
-import { allLatestRatings, episodeAverages, isHotTake } from './insights.js?v=20261127151509';
+import { fetchAll } from './ui.js?v=20261127164324';
+import { supabase } from './supabase.js?v=20261127164324';
+import { loadAllEpisodes, todayISO } from './episodes.js?v=20261127164324';
+import { allLatestRatings, episodeAverages, isHotTake } from './insights.js?v=20261127164324';
 
 const CACHE_KEY = 'parkboxd-flair';
 const CACHE_MS = 10 * 60 * 1000;
@@ -19,7 +20,7 @@ async function loadFlair() {
   const [all, { data: stats }, { data: logs }, everyone, avgs] = await Promise.all([
     loadAllEpisodes(),
     supabase.from('user_stats').select('user_id, username, review_count'),
-    supabase.from('logs').select('user_id, episode_id').limit(50000),
+    fetchAll(() => supabase.from('logs').select('user_id, episode_id').order('id')),
     allLatestRatings(),
     episodeAverages(),
   ]);

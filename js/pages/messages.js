@@ -1,14 +1,15 @@
 // messages.html?u=name: direct messages. You can only message people who follow you back
 // (the database enforces it too). The open conversation checks for new messages every few seconds.
-import { initPage, refreshMail } from '../layout.js?v=20261127151509';
-import { supabase } from '../supabase.js?v=20261127151509';
-import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127151509';
+import { initPage, refreshMail } from '../layout.js?v=20261127164324';
+import { supabase } from '../supabase.js?v=20261127164324';
+import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127164324';
 
 const { user } = await initPage({ title: 'Messages', auth: 'required' });
 const root = $('#messages');
 const me = user.id;
 let withName = (params.get('u') || '').toLowerCase();
 let poll = null;
+let shown = false;
 
 const CARTMAN_LINES = [
   'Heard that through the grapevine, did you?',
@@ -53,7 +54,8 @@ async function render() {
     const { data: someone } = await supabase.from('profiles').select('id, username, display_name, avatar_color, avatar_icon').eq('username', withName).maybeSingle();
     if (someone && someone.id !== me) notMutual = { p: someone, iFollow: following.has(someone.id), theyFollow: followers.has(someone.id) };
   }
-  if (!current && !notMutual && convos[0]?.last) current = convos[0].p;
+  // Not on phones: the chat sits below the list, so it would be marked read without being seen.
+  if (!current && !notMutual && convos[0]?.last && !matchMedia('(max-width: 760px)').matches) current = convos[0].p;
 
   root.innerHTML = `
     <section class="dm-head">
@@ -80,11 +82,17 @@ async function render() {
             <a class="btn btn-ghost" href="profile.html?u=${encodeURIComponent(notMutual.p.username)}">Go to their profile</a>
           </div>`
           : current ? threadHTML(current, msgs.filter((m) => other(m) === current.id).reverse())
-            : '<div class="dm-empty"><p>Pick someone on the left to start talking.</p></div>'}
+            : '<div class="dm-empty"><p>Pick someone to start talking.</p></div>'}
       </section>
     </div>`;
   root.removeAttribute('aria-busy');
-  if (current) wireThread(current);
+  if (current) {
+    current.newestId = msgs.find((m) => other(m) === current.id)?.id; // msgs are newest first
+    wireThread(current);
+  }
+  // Phones stack the list above the chat: bring an opened chat into view, once.
+  if (!shown && params.get('u') && matchMedia('(max-width: 760px)').matches) $('#dm-thread').scrollIntoView({ block: 'start' });
+  shown = true;
 }
 
 function threadHTML(p, list) {
@@ -107,7 +115,8 @@ async function wireThread(p) {
   await supabase.from('messages').update({ read: true }).eq('recipient_id', me).eq('sender_id', p.id).eq('read', false);
   refreshMail();
   const ta = $('#dm-text');
-  ta.focus();
+  // Not on touch screens: the keyboard would pop up and cover the conversation.
+  if (matchMedia('(pointer: fine)').matches) ta.focus();
   ta.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#dm-compose').requestSubmit(); } });
   $('#dm-compose').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -124,12 +133,13 @@ async function wireThread(p) {
   });
   // Check for new messages while the page is open.
   clearInterval(poll);
-  let lastSeen = box.querySelectorAll('li').length;
+  const newest = p.newestId;
   poll = setInterval(async () => {
     if (document.hidden || $('#dm-text')?.value) return; // don't redraw while typing
-    const { count } = await supabase.from('messages').select('id', { count: 'exact', head: true })
-      .or(`and(sender_id.eq.${me},recipient_id.eq.${p.id}),and(sender_id.eq.${p.id},recipient_id.eq.${me})`);
-    if (count != null && count !== lastSeen && !(count === 0 && lastSeen === 1)) { lastSeen = count; render(); }
+    const { data } = await supabase.from('messages').select('id')
+      .or(`and(sender_id.eq.${me},recipient_id.eq.${p.id}),and(sender_id.eq.${p.id},recipient_id.eq.${me})`)
+      .order('created_at', { ascending: false }).limit(1);
+    if (data?.length && data[0].id !== newest) render();
   }, 6000);
 }
 

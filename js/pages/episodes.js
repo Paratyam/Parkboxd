@@ -1,10 +1,10 @@
-import { initPage } from '../layout.js?v=20261127151509';
-import { supabase } from '../supabase.js?v=20261127151509';
-import { $, esc, params } from '../ui.js?v=20261127151509';
-import { loadAllEpisodes, myLogMap, cardHTML, seasonCode, matchesCode } from '../episodes.js?v=20261127151509';
-import { FOCUS_CHARACTERS } from '../data/character-tags.js?v=20261127151509';
-import { line } from '../jokes.js?v=20261127151509';
-import { searchEpisodes } from '../search.js?v=20261127151509';
+import { initPage } from '../layout.js?v=20261127164324';
+import { supabase } from '../supabase.js?v=20261127164324';
+import { $, esc, params, fetchAll } from '../ui.js?v=20261127164324';
+import { loadAllEpisodes, myLogMap, cardHTML, seasonCode, matchesCode } from '../episodes.js?v=20261127164324';
+import { FOCUS_CHARACTERS } from '../data/character-tags.js?v=20261127164324';
+import { line } from '../jokes.js?v=20261127164324';
+import { searchEpisodes } from '../search.js?v=20261127164324';
 
 const { user } = await initPage({ title: 'Episodes', auth: 'required' });
 
@@ -33,7 +33,7 @@ async function load() {
     myLogMap(user.id),
     supabase.from('episode_ratings').select('episode_id, avg_rating, rating_count, watcher_count').limit(2000),
     supabase.from('tags').select('id, name, kind').order('name'),
-    supabase.from('episode_tags').select('episode_id, tag_id').limit(10000),
+    fetchAll(() => supabase.from('episode_tags').select('episode_id, tag_id').order('episode_id').order('tag_id')),
   ]);
   all = eps;
   mine = logs;
