@@ -1,10 +1,10 @@
-import { initPage, refreshBell } from '../layout.js?v=20261127133501';
-import { supabase } from '../supabase.js?v=20261127133501';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127133501';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127133501';
-import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127133501';
-import { tourStatus, startTour, endTour } from '../tour.js?v=20261127133501';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127133501';
+import { initPage, refreshBell } from '../layout.js?v=20261127133859';
+import { supabase } from '../supabase.js?v=20261127133859';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127133859';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127133859';
+import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127133859';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127133859';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127133859';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -148,6 +148,15 @@ $('#tour-toggle').addEventListener('click', () => {
   if (tourStatus(user.id) === 'on') endTour(user.id);
   else startTour(user.id);
   showTour();
+  refreshBell();
+});
+$('#tour-speedrun').addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
+  setBusy(btn, true, 'Speedrunning…');
+  await speedrunTour(user.id);
+  setBusy(btn, false);
+  showTour();
+  $('#tour-state').insertAdjacentHTML('beforeend', ' <a href="notifications.html">Read it in your notifications.</a>');
   refreshBell();
 });
 showTour();

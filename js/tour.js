@@ -1,17 +1,19 @@
 // Stan's site tour, worked out in the browser like the Book Club notes (js/club-notes.js, which
 // merges these into the bell and the notifications page). New members get a welcome, then at most
-// one note per day they visit, skipping features they've already used. Members who joined before
-// the tour existed only get an invite. State is remembered per person in localStorage.
-import { supabase } from './supabase.js?v=20261127133501';
+// one note per day they visit (or all at once with a speedrun), skipping features they've already
+// used, except the finale. Members who joined before the tour existed only get an invite. State is
+// remembered per person in localStorage.
+import { supabase } from './supabase.js?v=20261127133859';
 
 const LAUNCH = '2026-11-27T00:00:00Z'; // accounts older than this are invited, not enrolled
 
 const WELCOME = {
   id: 'welcome', href: 'notifications.html',
-  text: "Hey, I'm showing you around Parkboxd. One tip a day, tops. If it gets annoying, hit “End the tour” on your notifications page. I won't take it personally, dude.",
+  text: "Hey, I'm showing you around Parkboxd. One tip a day, tops, or hit “Speedrun the tour” on your notifications page to get it all now. If it gets annoying, hit “End the tour” on your notifications page. I won't take it personally, dude.",
 };
 
-// `used` lists the tables that show someone has already found the feature.
+// `used` lists the tables that show someone has already found the feature. The last stop is the
+// goodbye, so it has none: it's never skipped.
 const STEPS = [
   { id: 'log', href: 'episodes.html', used: [['logs', 'user_id']],
     text: "📺 Start here: find an episode you've seen and log it. Rating, review, whatever. Most of the cool stuff runs on that." },
@@ -25,8 +27,8 @@ const STEPS = [
     text: "🍎 Your Stats page has your streak and a report card from Mr. Garrison. Seriously, don't take the grades personally." },
   { id: 'badges', href: 'profile.html',
     text: "🏅 Check out the badges on your profile. Some of them unlock cool stuff, like a gold ring around your picture, a tag next to your name, or a secret mode. I'm not spoiling how you get them all, dude." },
-  { id: 'friends', href: 'friends.html', used: [['follows', 'follower_id']],
-    text: "🤝 Last stop: find your friends and follow them, so you can see what they're watching. That's the tour. You're good, dude." },
+  { id: 'friends', href: 'friends.html',
+    text: "🤝 Last stop: find your friends and follow them, so you can see what they're watching. That's the tour, but there's a ton of other cool stuff on here, so go explore and find it. You're good, dude." },
 ];
 
 const key = (userId) => `parkboxd-tour-${userId}`;
@@ -45,7 +47,9 @@ async function alreadyUsed(userId, step) {
   return counts.some((r) => r.count > 0);
 }
 
-const handled = (state) => new Set([...state.sent.map((s) => s.id), ...state.skipped]);
+// Tours saved before the finale became unskippable may list it as skipped: ignore that.
+const FINALE = STEPS[STEPS.length - 1].id;
+const handled = (state) => new Set([...state.sent.map((s) => s.id), ...state.skipped.filter((id) => id !== FINALE)]);
 const nextStep = (state) => STEPS.find((s) => !handled(state).has(s.id));
 
 // First sight of this person on this device: start the tour, or leave an invite.
@@ -108,6 +112,27 @@ export function tourStatus(userId) {
 /** Start from the welcome. Running it again replays every stop, used or not. */
 export function startTour(userId) {
   save(userId, newRun(Boolean(load(userId)?.run)));
+}
+
+/** Every remaining stop right now. Starts the tour first if it isn't running. */
+export async function speedrunTour(userId) {
+  if (tourStatus(userId) !== 'on') startTour(userId);
+  const state = load(userId);
+  const sending = [];
+  const skipped = [];
+  for (const step of STEPS.filter((s) => !handled(state).has(s.id))) {
+    const skip = !state.replay && await alreadyUsed(userId, step);
+    (skip ? skipped : sending).push(step.id);
+  }
+  const fresh = load(userId);
+  if (!fresh || fresh.status !== 'on' || fresh.run !== state.run) return;
+  const ids = [...new Set([...fresh.sent.map((s) => s.id), ...sending])];
+  // The list shows newest first, so date them backwards: it then reads welcome to goodbye.
+  const now = Date.now();
+  fresh.sent = ids.map((id, i) => ({ id, at: new Date(now - i).toISOString() }));
+  fresh.skipped.push(...skipped);
+  fresh.day = today();
+  save(userId, fresh);
 }
 
 /** No more tips. Ones already delivered stay in the list. */

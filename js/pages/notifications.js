@@ -1,9 +1,9 @@
 // notifications.html: who followed you, liked your reviews, or commented on them.
-import { initPage, refreshBell } from '../layout.js?v=20261127133501';
-import { supabase } from '../supabase.js?v=20261127133501';
-import { $, esc, avatarHTML } from '../ui.js?v=20261127133501';
-import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127133501';
-import { tourStatus, startTour, endTour } from '../tour.js?v=20261127133501';
+import { initPage, refreshBell } from '../layout.js?v=20261127133859';
+import { supabase } from '../supabase.js?v=20261127133859';
+import { $, esc, avatarHTML } from '../ui.js?v=20261127133859';
+import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127133859';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127133859';
 
 const { user } = await initPage({ title: 'Notifications', auth: 'required' });
 const root = $('#notifs');
@@ -58,7 +58,8 @@ async function render() {
   const touring = ['on', 'invited'].includes(tourStatus(user.id));
   root.innerHTML = `
     <div class="section-head"><h2>Notifications</h2>
-      <span style="display:flex;gap:16px">
+      <span style="display:flex;gap:16px;flex-wrap:wrap;justify-content:flex-end">
+        ${touring ? '<button type="button" class="link-button" id="speedrun-tour" style="font-size:13px">Speedrun the tour</button>' : ''}
         ${touring ? '<button type="button" class="link-button" id="end-tour" style="font-size:13px">End the tour</button>' : ''}
         ${items?.length ? '<button type="button" class="link-button" id="clear-all" style="font-size:13px">Clear all</button>' : ''}
       </span></div>
@@ -71,6 +72,13 @@ async function render() {
           </li>`).join('')}</ol>`
       : '<p class="empty">No notifications. Nobody is talking about you. Yet.</p>'}`;
   root.removeAttribute('aria-busy');
+
+  $('#speedrun-tour')?.addEventListener('click', async (e) => {
+    e.currentTarget.disabled = true;
+    await speedrunTour(user.id);
+    await render();
+    refreshBell();
+  });
 
   $('#end-tour')?.addEventListener('click', async () => {
     endTour(user.id);
