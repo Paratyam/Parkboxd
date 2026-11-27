@@ -1442,3 +1442,7 @@ html.coon-takeover-on .histogram .end { font-size: 7px; }
 .advent-cert h2 { margin: 6px 0; }
 .advent-cert p { margin: 0; }
 @media (prefers-reduced-motion: reduce) { .door.ready { transition: none; } }
+
+/* Share cards: preview dialog */
+.share-dialog img { display: block; max-width: 100%; max-height: 58vh; margin: 0 auto; border-radius: 6px; }
+.share-dialog .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }

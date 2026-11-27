@@ -1,11 +1,12 @@
 // Follows, review likes and the shared review block.
-import { supabase } from './supabase.js?v=20261127122713';
-import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261127122713';
-import { thumbHTML } from './episodes.js?v=20261127122713';
-import { line } from './jokes.js?v=20261127122713';
-import { isHotTake } from './insights.js?v=20261127122713';
-import { buttersLikes } from './butters.js?v=20261127122713';
-import { pcButtonHTML, installPC } from './pc.js?v=20261127122713';
+import { supabase } from './supabase.js?v=20261127122852';
+import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261127122852';
+import { thumbHTML } from './episodes.js?v=20261127122852';
+import { line } from './jokes.js?v=20261127122852';
+import { isHotTake } from './insights.js?v=20261127122852';
+import { buttersLikes } from './butters.js?v=20261127122852';
+import './share.js?v=20261127122852';
+import { pcButtonHTML, installPC } from './pc.js?v=20261127122852';
 
 installPC(); // PC Principal's "PC it" toggle on review cards
 
@@ -94,7 +95,8 @@ export function reviewHTML(r, { me, extras, friends, avgs, showEpisode = false, 
         <p>${esc(text)}</p>
         <div class="review-foot">
           ${own
-            ? `<button type="button" class="link-button review-edit" data-edit-review="${r.id}">✎ Edit review</button>`
+            ? `<button type="button" class="link-button review-edit" data-edit-review="${r.id}">✎ Edit review</button>
+              <button type="button" class="link-button" data-share-review="${r.id}">🖼️ Share card</button>`
             : `<button type="button" class="link-button review-like" data-like-log="${r.id}" aria-pressed="${!!liked}">${liked ? '♥ Liked' : '♡ Like review'}</button>`}
           <a href="review.html?id=${r.id}">${plural(likes, 'like')} · ${plural(comments, 'comment')}</a>
           ${pcButtonHTML(r.rating)}
@@ -123,7 +125,7 @@ export function wireReviewLikes(root, onChange) {
       .select('*, episodes(id, kind, season, number, title, air_date, still_path)').eq('id', Number(b.dataset.editReview)).maybeSingle();
     b.disabled = false;
     if (error || !log) return alert(error?.message || "Couldn't find that review.");
-    const { logEpisode } = await import('./layout.js?v=20261127122713');
+    const { logEpisode } = await import('./layout.js?v=20261127122852');
     const changed = await logEpisode({ episode: log.episodes, log });
     if (changed) onChange?.();
   }));
