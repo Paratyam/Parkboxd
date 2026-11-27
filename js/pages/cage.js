@@ -1,19 +1,19 @@
 // cage.html: Cartman's Cage Match, the game (pick the better of two episodes you've watched) plus your ranking.
 // cage.html?u=name&view=ranking: a profile's Rankings tab, just the ranking list.
 
-import { initPage } from '../layout.js?v=20261127150114';
-import { supabase } from '../supabase.js?v=20261127150114';
-import { SITE_NAME } from '../config.js?v=20261127150114';
-import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127150114';
-import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127150114';
-import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127150114';
+import { initPage } from '../layout.js?v=20261127150223';
+import { supabase } from '../supabase.js?v=20261127150223';
+import { SITE_NAME } from '../config.js?v=20261127150223';
+import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127150223';
+import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127150223';
+import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127150223';
 import {
   introLine, resultLine, crowd, hostPick,
   HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
-} from '../cage-host.js?v=20261127150114';
-import { burgerRain } from '../fx.js?v=20261127150114';
-import { beltSVG } from '../art.js?v=20261127150114';
-import { shareTop10 } from '../share.js?v=20261127150114';
+} from '../cage-host.js?v=20261127150223';
+import { burgerRain } from '../fx.js?v=20261127150223';
+import { beltSVG } from '../art.js?v=20261127150223';
+import { shareTop10 } from '../share.js?v=20261127150223';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
@@ -110,6 +110,7 @@ async function start() {
       </div>
       <div class="cage-meter" id="meter"></div>
     </section>` : ''}
+    ${showGame ? '<section id="crowd-champ" hidden></section>' : ''}
     <section>
       <div class="section-head"><h2 id="rank-title"></h2></div>
       <div id="champ"></div>
@@ -117,8 +118,7 @@ async function start() {
       <ol class="rank-table" id="ranking"></ol>
       <div id="rank-more"></div>
       ${showGame ? '<p style="margin:14px 0 0"><button type="button" class="link-button" id="reset" style="color:var(--muted)">Reset my Cage Match</button></p>' : ''}
-    </section>
-    ${showGame ? '<section id="crowd-champ" hidden></section>' : ''}`;
+    </section>`;
   root.removeAttribute('aria-busy');
 
   function renderRanking() {
@@ -351,7 +351,7 @@ async function start() {
     });
   }
 
-  // The crowd's champion: everyone's picks together (the cage_community view), next to your spot.
+  // The crowd's champion (under the game): everyone's picks together (the cage_community view), next to your spot.
   async function renderCrowd() {
     if (!showGame) return;
     const { data, error } = await supabase.from('cage_community').select('episode_id, judges, wins, losses, score')

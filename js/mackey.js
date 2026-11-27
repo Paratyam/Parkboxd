@@ -1,5 +1,5 @@
 // Mr. Mackey's short counselor notes on the more intense episodes. Spoiler-light on purpose.
-import { esc } from './ui.js?v=20261127150114';
+import { esc } from './ui.js?v=20261127150223';
 
 const NOTES = {
   "Scott Tenorman Must Die": "This one's revenge goes way, way too far. Maybe don't eat during it, m'kay.",
