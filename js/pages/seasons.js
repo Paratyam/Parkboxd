@@ -1,9 +1,9 @@
 // seasons.html: all seasons. seasons.html?s=5 | ?s=specials | ?s=movies: one group's episodes.
-import { initPage } from '../layout.js?v=20261127113852';
-import { SITE_NAME } from '../config.js?v=20261127113852';
-import { $, esc, params } from '../ui.js?v=20261127113852';
-import { loadAllEpisodes, myLogMap, cardHTML, thumbHTML, isAired } from '../episodes.js?v=20261127113852';
-import { loadArcs } from '../arcs.js?v=20261127113852';
+import { initPage } from '../layout.js?v=20261127114426';
+import { SITE_NAME } from '../config.js?v=20261127114426';
+import { $, esc, params } from '../ui.js?v=20261127114426';
+import { loadAllEpisodes, myLogMap, cardHTML, thumbHTML, isAired } from '../episodes.js?v=20261127114426';
+import { loadArcs } from '../arcs.js?v=20261127114426';
 
 const { user } = await initPage({ title: 'Seasons', auth: 'required' });
 const root = $('#seasons');

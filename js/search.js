@@ -1,7 +1,7 @@
 // "Describe what happened" episode search: matches the title, the TMDB overview and the
 // hand-written keywords in js/data/episode-keywords.js. Every meaningful word must match
 // somewhere (light stemming + synonyms); title hits rank first, then plot hits.
-import { EPISODE_KEYWORDS, SEARCH_SYNONYMS } from './data/episode-keywords.js?v=20261127113852';
+import { EPISODE_KEYWORDS, SEARCH_SYNONYMS } from './data/episode-keywords.js?v=20261127114426';
 
 const STOP = new Set(("a an and are as at be been but by for from has have he her him his how i in into is it its " +
   "me my of on or our out she so than that the their them then there they this to up was we were what when where " +
@@ -101,14 +101,16 @@ export function searchEpisodes(all, query, { prefixLast = true } = {}) {
       // Whole phrase in the plot or keywords ("theme park") beats scattered words.
       if (terms.length > 1 && (fold(ep.overview).includes(q) || fold(d.kwText).includes(q))) score += 5;
       score -= miss * 3;
-      out.push({ ep, score, inTitle: fullTitle || titleAll, terms });
+      out.push({ ep, score, inTitle: fullTitle || titleAll, terms, miss: fullTitle ? 0 : miss });
     }
     return out;
   };
   let hits = run(0);
-  // Nothing matches every word: show the closest ones (all but one word, then all but two…).
+  // Long descriptions rarely match word for word: with few exact hits, add the ones missing a
+  // single word underneath. Nothing at all: all but one word, then all but two…
+  if (terms.length >= 3 && hits.length < 5) hits = run(1);
   for (let miss = 1; !hits.length && miss < terms.length; miss++) hits = run(miss);
-  return hits.sort((a, b) => (b.inTitle - a.inTitle) || (b.score - a.score));
+  return hits.sort((a, b) => (b.inTitle - a.inTitle) || (a.miss - b.miss) || (b.score - a.score));
 }
 
 const escHTML = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
