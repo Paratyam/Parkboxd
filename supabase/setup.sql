@@ -588,3 +588,16 @@ begin
 end $$;
 revoke all on function public.delete_my_account() from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
+
+-- Reserved usernames: "butters" is Butters' built-in profile (js/butters-profile.js), so no member can take it.
+create or replace function public.username_available(p_username text)
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select lower(p_username) ~ '^[a-z0-9_]{3,20}$'
+     and lower(p_username) not in ('butters')
+     and not exists (select 1 from public.profiles where username = lower(p_username));
+$$;
+grant execute on function public.username_available(text) to anon, authenticated;
+alter table public.profiles drop constraint if exists profiles_username_reserved;
+alter table public.profiles add constraint profiles_username_reserved check (username is null or username not in ('butters'));
