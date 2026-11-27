@@ -1,18 +1,18 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127075451';
-import { supabase } from '../supabase.js?v=20261127075451';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127075451';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127075451';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127075451';
-import { line } from '../jokes.js?v=20261127075451';
-import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127075451';
-import { stanPicks, stanLine } from '../stan.js?v=20261127075451';
-import { loadPicks } from '../club.js?v=20261127075451';
-import { isChaos } from '../fx.js?v=20261127075451';
-import { streakInfo, streakHTML } from '../streak.js?v=20261127075451';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127075451';
-import { gloveSVG, booksSVG, mysterySVG } from '../art.js?v=20261127075451';
-import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261127075451';
-import { guestReviewsFor } from '../guest-reviews.js?v=20261127075451';
+import { initPage, logEpisode } from '../layout.js?v=20261127075546';
+import { supabase } from '../supabase.js?v=20261127075546';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127075546';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127075546';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127075546';
+import { line } from '../jokes.js?v=20261127075546';
+import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127075546';
+import { stanPicks, stanLine } from '../stan.js?v=20261127075546';
+import { loadPicks } from '../club.js?v=20261127075546';
+import { isChaos } from '../fx.js?v=20261127075546';
+import { streakInfo, streakHTML } from '../streak.js?v=20261127075546';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127075546';
+import { gloveSVG, booksSVG, mysterySVG } from '../art.js?v=20261127075546';
+import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261127075546';
+import { guestReviewsFor } from '../guest-reviews.js?v=20261127075546';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -30,7 +30,7 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">🎲 Random episode</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js?v=20261127075451');
+    const r = await import('../random.js?v=20261127075546');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -185,14 +185,14 @@ async function renderHome() {
       <span class="cage-ad-cta cut">${champEp ? 'Defend the title' : 'Enter the cage'} →</span>
     </a>`;
 
-  // Kyle's note of the day: one of his reviews, a different one each day (same for everyone).
+  // Kyle's review of the day: one of his reviews, a different one each day (same for everyone).
   const normT = (t) => t.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
   const kyleTitle = KYLE_REVIEWS[dayNo % KYLE_REVIEWS.length][0];
   const kyleEp = all.find((e) => normT(e.title) === normT(kyleTitle));
   const kyle = kyleEp && guestReviewsFor(kyleEp).find((g) => g.who.username === 'kyle');
   const kyleHTML = kyle ? `
         <section class="kyle-note paper">
-          <div class="section-head"><h2>📖 Kyle's note of the day</h2></div>
+          <div class="section-head"><h2>📖 Kyle's review of the day</h2></div>
           <a class="kyle-note-ep" href="episode.html?id=${kyleEp.id}"><strong>${esc(kyleEp.title)}</strong> <span>${esc(epCode(kyleEp))}</span></a>
           <span class="rating">${stars(kyle.rating)}</span>
           <p class="kyle-note-text">“${esc(kyle.text)}”</p>
@@ -240,7 +240,7 @@ async function renderHome() {
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js?v=20261127075451');
+  const random = () => import('../random.js?v=20261127075546');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>
