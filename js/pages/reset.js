@@ -1,7 +1,7 @@
 // reset.html: the link from the "forgot password" email lands here, already signed in.
-import { initPage } from '../layout.js?v=20261127193350';
-import { supabase } from '../supabase.js?v=20261127193350';
-import { $, notify, setBusy } from '../ui.js?v=20261127193350';
+import { initPage } from '../layout.js?v=20261127193601';
+import { supabase } from '../supabase.js?v=20261127193601';
+import { $, notify, setBusy } from '../ui.js?v=20261127193601';
 
 const msg = $('#msg');
 const { session } = await initPage({ title: 'New password', needsUsername: false });

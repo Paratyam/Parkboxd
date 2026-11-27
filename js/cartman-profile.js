@@ -2,9 +2,9 @@
 // Kyle, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. He loves the episodes where he wins and hates nearly everything else, and he leaves a
 // comment under every one of Kyle's reviews. Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127193350';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127193350';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127193350';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127193601';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127193601';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127193601';
 
 export const CARTMAN = { username: 'cartman', display_name: 'Eric Cartman', avatar_color: '#e5534b', avatar_icon: 'beanie' };
 
@@ -95,7 +95,7 @@ export async function renderCartmanProfile(root) {
       <div class="who">
         <h1 class="cut">Eric Cartman</h1>
         <span class="handle">@cartman · joined ${esc(formatDate('2026-11-27', { month: 'long', year: 'numeric' }))} · 👑 The only critic who matters</span>
-        <p class="bio">Episodes where I win: masterpieces. Everything else: garbage. Do not argue with me, Kyle.</p>
+        <p class="bio">Hey, I'm Eric. I'm super cool, really smart and everybody likes me. I review episodes so you guys know which ones are good. If you disagree, screw you.</p>
         <div style="margin-top:6px"><span class="team-flair paper" style="background-color:#e5534b;color:#1a1a1a">Team Me</span></div>
       </div>
       <div class="stats">
