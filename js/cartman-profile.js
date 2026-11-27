@@ -2,9 +2,9 @@
 // Kyle, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. He loves the episodes where he wins and hates nearly everything else, and he leaves a
 // comment under every one of Kyle's reviews. Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127200432';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127200432';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127200432';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201216';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201216';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127201216';
 
 export const CARTMAN = { username: 'cartman', display_name: 'Eric Cartman', avatar_color: '#e5534b', avatar_icon: 'beanie' };
 

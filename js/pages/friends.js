@@ -1,11 +1,11 @@
 // friends.html?u=name&tab=following|followers|everyone
-import { initPage } from '../layout.js?v=20261127200432';
-import { supabase } from '../supabase.js?v=20261127200432';
-import { SITE_NAME } from '../config.js?v=20261127200432';
-import { $, esc, params, avatarHTML } from '../ui.js?v=20261127200432';
-import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261127200432';
-import { line } from '../jokes.js?v=20261127200432';
-import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261127200432';
+import { initPage } from '../layout.js?v=20261127201216';
+import { supabase } from '../supabase.js?v=20261127201216';
+import { SITE_NAME } from '../config.js?v=20261127201216';
+import { $, esc, params, avatarHTML } from '../ui.js?v=20261127201216';
+import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261127201216';
+import { line } from '../jokes.js?v=20261127201216';
+import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261127201216';
 
 const { profile: me } = await initPage({ title: 'Friends', auth: 'required' });
 const root = $('#friends');

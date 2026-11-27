@@ -1,14 +1,15 @@
-// Reviews from the built-in character accounts (Butters, Kyle, Cartman), shown on episode pages.
+// Reviews from the built-in character accounts (Butters, Kyle, Cartman, Kenny), shown on episode pages.
 // The reviews live in code, not the database, so they never count toward averages. People can
 // still like and comment on them: guest_review_likes / guest_review_comments, keyed by
 // '<character>:<normalised episode title>'.
-import { supabase } from './supabase.js?v=20261127200432';
-import { esc, stars, avatarHTML, toast } from './ui.js?v=20261127200432';
-import { threadHTML, wireThread } from './comments.js?v=20261127200432';
-import { pcButtonHTML, installPC } from './pc.js?v=20261127200432';
-import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127200432';
-import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127200432';
-import { CARTMAN, RATED as C_RATED, REVIEWS as C_REVIEWS, cartmanCommentHTML } from './cartman-profile.js?v=20261127200432';
+import { supabase } from './supabase.js?v=20261127201216';
+import { esc, stars, avatarHTML, toast } from './ui.js?v=20261127201216';
+import { threadHTML, wireThread } from './comments.js?v=20261127201216';
+import { pcButtonHTML, installPC } from './pc.js?v=20261127201216';
+import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127201216';
+import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127201216';
+import { CARTMAN, RATED as C_RATED, REVIEWS as C_REVIEWS, cartmanCommentHTML } from './cartman-profile.js?v=20261127201216';
+import { KENNY, RATED as N_RATED, REVIEWS as N_REVIEWS } from './kenny-profile.js?v=20261127201216';
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 
@@ -22,6 +23,9 @@ const GUESTS = [
   { who: CARTMAN, rated: C_RATED, reviews: C_REVIEWS, noteLabel: '',
     thanks: ['Obviously. What took you so long?', 'Screw you guys. I never wanted your like.'],
     placeholder: 'Argue with Cartman, if you dare…' },
+  { who: KENNY, rated: N_RATED, reviews: N_REVIEWS, noteLabel: '',
+    thanks: ['Mmph mmf!!', 'Mmf... mmph.'],
+    placeholder: 'Say something to Kenny… mmph?' },
 ];
 
 installPC(); // "PC it" toggle (also installed by social.js; installing twice is a no-op)
