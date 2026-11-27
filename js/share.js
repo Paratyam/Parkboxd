@@ -1,9 +1,9 @@
 // Shareable paper-cutout cards: one of your reviews, or your Top 4, drawn on a canvas.
-// Original art, except the Top 4 tiles, which show the episode stills. Any button with data-share-review="<log id>" or
+// Original art, plus the episode stills on both cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" opens the preview.
-import { supabase } from './supabase.js?v=20261127124031';
-import { epCode, stars, toast } from './ui.js?v=20261127124031';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127124031';
+import { supabase } from './supabase.js?v=20261127124259';
+import { epCode, stars, toast } from './ui.js?v=20261127124259';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127124259';
 
 const W = 1080;
 const H = 1350;
@@ -141,21 +141,31 @@ async function newCanvas() {
   return { canvas, c };
 }
 
-/** { name, title, code, rating, liked, review } -> canvas */
-export async function drawReviewCard({ name, title, code, rating, liked, review }) {
+/** { name, title, code, rating, liked, review, picture } -> canvas */
+export async function drawReviewCard({ name, title, code, rating, liked, review, picture }) {
   const { canvas, c } = await newCanvas();
   paper(c, 70, 180, 940, 970, PAPER, -0.8);
-  c.font = `400 66px ${DISPLAY}`;
+  const img = await loadPicture(picture);
+  // With a picture on top, everything under it is a bit smaller to leave room for the review.
+  if (img) cover(c, img, 130, 215, 820, 310);
+  const headSize = img ? 52 : 66;
+  c.font = `400 ${headSize}px ${DISPLAY}`;
   const heading = clamp(c, title, 820, 2);
-  let y = 280;
-  for (const line of heading) { text(c, line, 130, y, { size: 66, font: DISPLAY, colour: NAVY }); y += 72; }
-  text(c, code, 130, y - 14, { size: 30, colour: '#555' });
-  y += 62;
-  const score = [stars(rating), liked ? '♥' : ''].filter(Boolean);
-  if (score.length) {
-    text(c, stars(rating), 130, y, { size: 64, colour: '#b9770e' });
-    if (liked) text(c, '♥', 950, y, { size: 64, colour: '#d63a3a', align: 'right' });
-    y += 34;
+  let y = img ? 590 : 280;
+  for (const line of heading) { text(c, line, 130, y, { size: headSize, font: DISPLAY, colour: NAVY }); y += headSize + 6; }
+  text(c, code, 130, y - 14, { size: img ? 28 : 30, colour: '#555' });
+  if (img) {
+    // Stars and heart share the episode code's line.
+    if (liked) text(c, '♥', 950, y - 12, { size: 44, colour: '#d63a3a', align: 'right' });
+    text(c, stars(rating), liked ? 890 : 950, y - 12, { size: 44, colour: '#b9770e', align: 'right' });
+    y += 8;
+  } else {
+    y += 62;
+    if (rating != null || liked) {
+      text(c, stars(rating), 130, y, { size: 64, colour: '#b9770e' });
+      if (liked) text(c, '♥', 950, y, { size: 64, colour: '#d63a3a', align: 'right' });
+      y += 34;
+    }
   }
   c.fillStyle = '#c0392b';
   c.fillRect(130, y, 820, 3);
@@ -272,7 +282,7 @@ function showPreview(canvas, filename) {
 
 async function reviewData(id) {
   const { data: r, error } = await supabase.from('logs')
-    .select('rating, liked, review, profiles!logs_user_id_fkey(username, display_name), episodes(id, kind, season, number, title, air_date)')
+    .select('rating, liked, review, profiles!logs_user_id_fkey(username, display_name), episodes(id, kind, season, number, title, air_date, still_path)')
     .eq('id', id).maybeSingle();
   if (error || !r?.review) throw new Error(error?.message || "Couldn't find that review.");
   return {
@@ -282,6 +292,7 @@ async function reviewData(id) {
     rating: r.rating == null ? null : Number(r.rating),
     liked: r.liked,
     review: r.review,
+    picture: stillUrl(r.episodes, 'w780'),
   };
 }
 
