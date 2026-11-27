@@ -1,7 +1,7 @@
 // Book Club notifications, worked out in the browser (no server job needed): a note when a new
 // week's book starts, and one telling you whether the episode you voted for won.
 // "Read" is remembered per person in localStorage.
-import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127070806';
+import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127071053';
 
 const seenKey = (userId) => `parkboxd-club-seen-${userId}`;
 const seen = (userId) => new Set(JSON.parse(localStorage.getItem(seenKey(userId)) || '[]'));
@@ -9,7 +9,7 @@ const seen = (userId) => new Set(JSON.parse(localStorage.getItem(seenKey(userId)
 /** [{ id, text, href, created_at, read }] for this week. */
 export async function clubNotes(userId) {
   if (!userId || weekKey(0) < CLUB_START) return [];
-  const { loadAllEpisodes } = await import('./episodes.js?v=20261127070806');
+  const { loadAllEpisodes } = await import('./episodes.js?v=20261127071053');
   const [pk] = await loadPicks(await loadAllEpisodes(), [0]);
   if (!pk?.pick) return [];
   const title = pk.pick.title;

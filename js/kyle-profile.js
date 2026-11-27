@@ -2,9 +2,9 @@
 // real member: nothing is in the database, so his ratings never touch site averages. He reviews
 // the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
 // also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127070806';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127070806';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127070806';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127071053';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127071053';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127071053';
 
 export const KYLE_USERNAME = 'kyle';
 export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#f2711c', avatar_icon: 'earflaps' };

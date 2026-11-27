@@ -1,8 +1,8 @@
 // Reviews from the built-in character accounts (Butters, Kyle), shown on episode pages.
 // They live in code, not the database, so they never count toward averages or likes.
-import { esc, stars, avatarHTML } from './ui.js?v=20261127070806';
-import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127070806';
-import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127070806';
+import { esc, stars, avatarHTML } from './ui.js?v=20261127071053';
+import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127071053';
+import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127071053';
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 

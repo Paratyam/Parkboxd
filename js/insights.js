@@ -1,5 +1,5 @@
 // Rating maths: taste match, hot takes, "which character are you", badges.
-import { supabase } from './supabase.js?v=20261127070806';
+import { supabase } from './supabase.js?v=20261127071053';
 
 // ---- Loaders ----
 
@@ -72,7 +72,7 @@ export function tasteLabel(score) {
 // ---- Your South Park personality ----
 
 // Usernames that get a fixed personality, whatever their habits.
-const PERSONALITY_OVERRIDES = { paratyam: 'Butters' };
+const PERSONALITY_OVERRIDES = { paratyam: 'Butters', itai: 'Kenny' };
 
 const PERSONALITIES = {
   Butters: { emoji: '🍔', line: "Aw, everything's swell! You've never met an episode you didn't like." },

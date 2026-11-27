@@ -1,10 +1,10 @@
 // admin.html: manage tags and arcs. Episode import lives on import.html.
-import { initPage } from '../layout.js?v=20261127070806';
-import { supabase } from '../supabase.js?v=20261127070806';
-import { $, esc, epCode, notify } from '../ui.js?v=20261127070806';
-import { loadAllEpisodes } from '../episodes.js?v=20261127070806';
-import { loadArcs } from '../arcs.js?v=20261127070806';
-import { CHARACTER_TAGS } from '../data/character-tags.js?v=20261127070806';
+import { initPage } from '../layout.js?v=20261127071053';
+import { supabase } from '../supabase.js?v=20261127071053';
+import { $, esc, epCode, notify } from '../ui.js?v=20261127071053';
+import { loadAllEpisodes } from '../episodes.js?v=20261127071053';
+import { loadArcs } from '../arcs.js?v=20261127071053';
+import { CHARACTER_TAGS } from '../data/character-tags.js?v=20261127071053';
 
 const { profile } = await initPage({ title: 'Admin', auth: 'required' });
 const root = $('#admin');
