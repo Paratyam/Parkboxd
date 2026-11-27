@@ -1,11 +1,11 @@
 // Badges for several people at once (computeBadges in insights.js does the maths), plus the
 // rank their badge count earns. Used by the flair around avatars and the picture picker.
-import { fetchAll } from './ui.js?v=20261127175826';
-import { supabase } from './supabase.js?v=20261127175826';
-import { loadAllEpisodes } from './episodes.js?v=20261127175826';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges } from './insights.js?v=20261127175826';
-import { loadPicks } from './club.js?v=20261127175826';
-import { clubOffsets } from './attendance.js?v=20261127175826';
+import { fetchAll } from './ui.js?v=20261127175948';
+import { supabase } from './supabase.js?v=20261127175948';
+import { loadAllEpisodes } from './episodes.js?v=20261127175948';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges } from './insights.js?v=20261127175948';
+import { loadPicks } from './club.js?v=20261127175948';
+import { clubOffsets } from './attendance.js?v=20261127175948';
 
 // Best first.
 export const RANKS = [

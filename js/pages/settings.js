@@ -1,12 +1,12 @@
-import { initPage, refreshBell } from '../layout.js?v=20261127175826';
-import { supabase } from '../supabase.js?v=20261127175826';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127175826';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127175826';
-import { loadStreaks } from '../streak.js?v=20261127175826';
-import { loadBadges } from '../badges.js?v=20261127175826';
-import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127175826';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127175826';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127175826';
+import { initPage, refreshBell } from '../layout.js?v=20261127175948';
+import { supabase } from '../supabase.js?v=20261127175948';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127175948';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127175948';
+import { loadStreaks } from '../streak.js?v=20261127175948';
+import { loadBadges } from '../badges.js?v=20261127175948';
+import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127175948';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127175948';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127175948';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -44,20 +44,26 @@ let icon = AVATAR_ICONS[profile.avatar_icon] ? profile.avatar_icon : null;
 let longest = 0;
 let badges = new Map(); // badge id -> badge
 function drawIcons() {
-  $('#icon-picker').innerHTML = [null, ...AVATAR_KEYS].map((key) => {
+  const items = [null, ...AVATAR_KEYS].map((key) => {
     const { streak = 0, badge } = AVATAR_ICONS[key] || {};
     const b = badges.get(badge);
     const locked = (streak > longest || (!!badge && !b?.earned)) && key !== profile.avatar_icon;
     const how = streak ? `reach a ${streak}-day streak` : `earn the ${b?.name || ''} badge. ${b?.desc || ''}`;
     const label = `${key ? AVATAR_ICONS[key].label : 'First letter'}${locked ? ` (locked: ${how})` : ''}`;
-    return `
+    return { locked, html: `
     <label class="swatch${locked ? ' locked' : ''}" title="${esc(label)}">
       <input type="radio" name="avatar-icon" value="${key || ''}"${key === icon ? ' checked' : ''}${locked ? ' disabled' : ''}>
       ${avatarHTML({ display_name: profile.display_name || profile.username, avatar_color: colour, avatar_icon: key }, 52)}
       ${locked ? `<span class="lock-days" aria-hidden="true">🔒${streak || b?.emoji || ''}</span>` : ''}
       <span class="visually-hidden">${esc(label)}</span>
-    </label>`;
-  }).join('');
+    </label>` };
+  });
+  // The greyed-out ones go last, under a line saying what they are.
+  const group = (locked) => items.filter((i) => i.locked === locked).map((i) => i.html).join('');
+  const waiting = group(true);
+  $('#icon-picker').innerHTML = group(false) + (waiting
+    ? `<p class="locked-note">🔒 Avatars you can unlock: earn the badge, or reach the streak, shown under each one.</p>${waiting}`
+    : '');
 }
 drawIcons();
 loadStreaks([user.id]).then((m) => { longest = m.get(user.id).longest; drawIcons(); });

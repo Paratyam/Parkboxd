@@ -1,30 +1,30 @@
-import { initPage } from '../layout.js?v=20261127175826';
-import { supabase } from '../supabase.js?v=20261127175826';
-import { SITE_NAME } from '../config.js?v=20261127175826';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127175826';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127175826';
-import { shareInvite } from '../invite.js?v=20261127175826';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast, fetchAll } from '../ui.js?v=20261127175826';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127175826';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127175826';
-import { line } from '../jokes.js?v=20261127175826';
-import { characterColours } from '../data/character-tags.js?v=20261127175826';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127175826';
-import { rankFor, nextRank } from '../badges.js?v=20261127175826';
-import { loadStreaks, streakHTML } from'../streak.js?v=20261127175826';
-import { loadPicks } from '../club.js?v=20261127175826';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127175826';
-import { AVATAR_ICONS } from '../avatars.js?v=20261127175826';
-import { beltSVG } from'../art.js?v=20261127175826';
-import { roastJokes } from '../jimmy.js?v=20261127175826';
+import { initPage } from '../layout.js?v=20261127175948';
+import { supabase } from '../supabase.js?v=20261127175948';
+import { SITE_NAME } from '../config.js?v=20261127175948';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127175948';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127175948';
+import { shareInvite } from '../invite.js?v=20261127175948';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast, fetchAll } from '../ui.js?v=20261127175948';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127175948';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127175948';
+import { line } from '../jokes.js?v=20261127175948';
+import { characterColours } from '../data/character-tags.js?v=20261127175948';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127175948';
+import { rankFor, nextRank } from '../badges.js?v=20261127175948';
+import { loadStreaks, streakHTML } from'../streak.js?v=20261127175948';
+import { loadPicks } from '../club.js?v=20261127175948';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127175948';
+import { AVATAR_ICONS } from '../avatars.js?v=20261127175948';
+import { beltSVG } from'../art.js?v=20261127175948';
+import { roastJokes } from '../jimmy.js?v=20261127175948';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' and Kyle's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127175826')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127175826')).renderKyleProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127175948')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127175948')).renderKyleProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {
@@ -160,7 +160,8 @@ async function render(p) {
   const rewardLine = (b) => {
     const a = Object.values(AVATAR_ICONS).find((x) => x.badge === b.id);
     if (!a) return '';
-    const text = b.earned && isMe ? `<a href="settings.html">Use the ${esc(a.label)} picture</a>` : `Picture: ${esc(a.label)}`;
+    const text = !b.earned ? `${isMe ? 'Avatar you unlock' : 'Unlockable avatar'}: ${esc(a.label)}`
+      : isMe ? `<a href="settings.html">Use your unlocked ${esc(a.label)} avatar</a>` : `Unlocked avatar: ${esc(a.label)}`;
     return `<span class="badge-reward"><span class="avatar has-icon" style="--c:${esc(p.avatar_color)};--size:30px" aria-hidden="true">${a.svg}</span><span>${text}${b.id === 'completionist' ? ' and a crown' : ''}</span></span>`;
   };
   const rank = rankFor(earned);
@@ -239,7 +240,7 @@ async function render(p) {
     const got = streak.longest >= a.streak;
     return `<div class="streak-reward paper${got ? ' earned' : ''}">
       <span class="avatar has-icon" style="--c:${esc(p.avatar_color)};--size:44px" aria-hidden="true">${a.svg}</span>
-      <span><strong>${esc(a.label)}</strong><small>${got ? (isMe ? '<a href="settings.html">Unlocked: use it</a>' : 'Unlocked') : `${a.streak}-day streak`}</small></span>
+      <span><strong>${esc(a.label)}</strong><small>${got ? (isMe ? '<a href="settings.html">Unlocked: use it</a>' : 'Unlocked') : `${isMe ? 'Avatar you unlock' : 'Unlockable avatar'} with a ${a.streak}-day streak`}</small></span>
     </div>`;
   }).join('')}</div>`;
 
