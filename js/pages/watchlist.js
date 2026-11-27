@@ -1,10 +1,10 @@
-import { initPage } from '../layout.js?v=20261127192938';
-import { supabase } from '../supabase.js?v=20261127192938';
-import { SITE_NAME } from '../config.js?v=20261127192938';
-import { $, esc, params, profileTabsHTML } from '../ui.js?v=20261127192938';
-import { cardHTML, compareEpisodes } from '../episodes.js?v=20261127192938';
-import { line } from '../jokes.js?v=20261127192938';
-import { recommendationsFor } from '../recommend.js?v=20261127192938';
+import { initPage } from '../layout.js?v=20261127193350';
+import { supabase } from '../supabase.js?v=20261127193350';
+import { SITE_NAME } from '../config.js?v=20261127193350';
+import { $, esc, params, profileTabsHTML } from '../ui.js?v=20261127193350';
+import { cardHTML, compareEpisodes } from '../episodes.js?v=20261127193350';
+import { line } from '../jokes.js?v=20261127193350';
+import { recommendationsFor } from '../recommend.js?v=20261127193350';
 
 const { profile: me } = await initPage({ title: 'Watchlist', auth: 'required' });
 const root = $('#watchlist');

@@ -2,9 +2,9 @@
 // Kyle, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. He loves the episodes where he wins and hates nearly everything else, and he leaves a
 // comment under every one of Kyle's reviews. Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127192938';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127192938';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127192938';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127193350';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127193350';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127193350';
 
 export const CARTMAN = { username: 'cartman', display_name: 'Eric Cartman', avatar_color: '#e5534b', avatar_icon: 'beanie' };
 
@@ -16,43 +16,43 @@ const LOSSES = ['Breast Cancer Show Ever', 'AWESOM-O', 'Cartmanland', 'Cartoon W
 export const RATED = [...TOP4.map((t) => [t, 5, true]), ...LOSSES.map((t) => [t, 0.5, false])];
 
 export const REVIEWS = [
-  ['Scott Tenorman Must Die', "The greatest thing ever put on television. A guy owes me money, I handle it like a mature adult, and my favourite band shows up to watch. Five stars."],
-  ['Make Love, Not Warcraft', "I led. I trained. I saved an entire online world while certain people whined about their hands. You're welcome, nerds. Five stars."],
-  ['Casa Bonita', "One kid goes missing for a little while and everybody makes a huge deal out of it. I got the cliff divers AND the sopapillas. Totally worth it. Five stars."],
-  ['Die Hippie, Die', "Finally, an episode about the real threat. I warned everyone, nobody listened, and then who came crawling to me for help? Five stars."],
-  ['Breast Cancer Show Ever', "Fake. Staged. I wasn't even trying, you guys. I had something in my eye the whole time and my mem can confirm it. Half a star."],
-  ['AWESOM-O', "This episode never happened. Anyone who brings up any tapes is getting reported. Half a star, and Butters is banned from talking about it."],
-  ['Cartmanland', "I had the greatest theme park in the world with no lines, because nobody else was allowed in. Then it all got ruined by money stuff. Lame. Half a star."],
-  ['Cartoon Wars (2)', "I was RIGHT THERE. One more hallway and that show was finished forever. Then somebody had to stick their dumb green hat in it. Half a star."],
-  ['Le Petit Tourette', "I had the perfect system: say whatever I want and get away with it. Then it backfired on live TV, which is sabotage. Half a star."],
-  ['Dances With Smurfs', "I was a brilliant, honest, fearless broadcaster and Wendy ambushed me by agreeing with me. Who DOES that?! Half a star."],
+  ['Scott Tenorman Must Die', "Best episode ever made, and if you disagree you're wrong and probably crying about it. Some jerk thought he could rip off ME. Nyah nyah nyah nyah nyah nyah. Five stars, and I'd do it all again."],
+  ['Make Love, Not Warcraft', "I carried every single one of you losers. I trained you, I yelled at you, I saved the whole game, and did anybody say \"thank you, Eric\"? No. Because you're jealous little noobs. Five stars for me."],
+  ['Casa Bonita', "Cliff divers. Black Bart's Cave. Sopapillas. All I had to do was make one dumb kid disappear for a while, and I'd call that a bargain. TOTALLY worth it. Sweeeet."],
+  ['Die Hippie, Die', "Seriously, you guys, I TOLD you. Hippies everywhere, stinking up the whole town, and you all laughed at me. Then who comes begging for help? That's right. Kiss my ass, then say thank you. Five stars."],
+  ['Breast Cancer Show Ever', "This is fake news and whoever made it can suck my balls. I was NOT scared, I was being strategic, and I had a tummy ache. My mem wrote a note. Half a star, and that's me being generous."],
+  ['AWESOM-O', "LAME. Total invasion of privacy. Butters, if you show anybody that tape I will end you, and that was a totally different kid dancing anyway. Half a star. Delete this episode."],
+  ['Cartmanland', "My park. MY rides. No lines, because you guys weren't invited, ha ha. Then a bunch of greedy grown-ups ruined it with bills and Kyle suddenly got all happy about it. Weak. Half a star."],
+  ['Cartoon Wars (2)', "Goddammit, I was ONE hallway away! One! And then Kahl shows up with his stupid green hat and his stupid speech like anybody asked. Half a star. I hope your hat falls in the toilet."],
+  ['Le Petit Tourette', "I had the greatest scam of all time: say whatever the hell I want and everybody has to be nice to me. Then my own mouth betrayed me on live TV. Sabotage. Half a star. I hate you guys."],
+  ['Dances With Smurfs', "I was the only honest voice at that school and that sneaky hippie Wendy ambushed me by AGREEING with me. Who does that?! Cheater. Half a star. Screw you guys, I'm going home."],
 ];
 
 // One comment under each of Kyle's reviews: [the title Kyle used, comment].
 const KYLE_COMMENTS = [
-  ['Chinpokomon', 'You bought the dumbest ones, Kyle. Everybody saw. It was embarrassing for all of us.'],
-  ['Something Wall-Mart This Way Comes', '"Shop local," says the guy who has never bought me a single thing, locally or otherwise.'],
-  ['Trapped in the Closet', "Oh WOW, Stan gets to be special. I would've been a way better prophet and I'd have charged more."],
-  ['Smug Alert!', "Kyle reviewing an episode about being smug. I can't. I literally can't. Somebody get a gas mask."],
-  ['Cartoon Wars (1)', 'It WAS about principles. My principle is that I wanted it gone.'],
-  ['Cartoon Wars (2)', 'Five stars because you got to give a speech. We get it, Kyle. You like speeches.'],
-  ['Douche and Turd', '"I get both sides." Pick one, you fence-sitting weenie.'],
-  ['Goobacks', "A whole paragraph about jobs. You don't even HAVE a job."],
-  ['Margaritaville', "You spent all that money on strangers and now you want applause? Dumbest thing I ever heard. Also you owe me five bucks."],
-  ['Best Friends Forever', "That handheld fight was totally legit. Read the paperwork, Kyle. Don't ask who wrote it."],
-  ['Quest for Ratings', "Our show would've crushed Craig's if everyone had just done exactly what I said."],
-  ['The Passion of the Jew', 'You wrote a whole review about feeling bad. Super fun read. Next.'],
-  ['Go God Go XII (2)', 'I waited like five hundred years for that console and you had all that time to type this? Lame.'],
-  ['Dances With Smurfs', '"My favorite kind of ending." Of course it is. Go marry the ending.'],
-  ['Safe Space', 'From now on only nice comments about me are allowed. Butters, get on it.'],
-  ['Go God Go (1)', '"Mostly setup." Excuse me, that was my emotional journey.'],
-  ['Stunning and Brave', 'You got in trouble and for once it was not my fault? Best part of the whole episode.'],
-  ['The Hobbit', 'Wendy is NOT usually right. Stop encouraging her.'],
-  ['Breast Cancer Show Ever', "You've watched it HOW many times? That's creepy, Kyle. I'm telling your mom. And my mem."],
-  ['Put It Down', 'Aww, a sweet little episode about listening. Anyway, I stopped reading.'],
-  ['The Cissy', "I had a very real need for a private bathroom and you're making it weird."],
-  ['South Park: The End of Obesity', 'FINALLY you admit the villain is paperwork and not me. Screenshotting this.'],
-  ['South Park (Not Suitable for Children)', "You read the title and still reviewed it? I'm telling."],
+  ['Chinpokomon', "\"I'm not proud.\" You shouldn't be, Kahl. You showed up late with the crappiest one and everybody laughed. I laughed hardest."],
+  ['Something Wall-Mart This Way Comes', "\"Shop local,\" says the cheapskate who has never bought me one single thing. Shut your stupid mouth."],
+  ['Trapped in the Closet', "Oh WOW, Stan gets to be the special one. I would've been a way better prophet, and I'd actually charge people. Weak."],
+  ['Smug Alert!', "KYLE reviewing an episode about being smug. I can't. I literally can't. Somebody get me a gas mask."],
+  ['Cartoon Wars (1)', "It WAS about principles. My principle is that I hate it and I want it gone. Read a book, jackass."],
+  ['Cartoon Wars (2)', "Five stars because you got to give a speech. Nobody was listening, Kahl. Nobody has EVER been listening."],
+  ['Douche and Turd', "\"I get both sides.\" Pick one, you spineless fence-sitting butthole."],
+  ['Goobacks', "A whole paragraph about jobs from a kid who's never had one. Go cry about it to somebody who cares."],
+  ['Margaritaville', "You blew all that money on strangers and not ONE cent on your good buddy Eric? Selfish piece of crap."],
+  ['Best Friends Forever', "That handheld fight was totally legit. I had paperwork. Don't ask who wrote it. Nyah."],
+  ['Quest for Ratings', "Our show would've crushed Craig's if you dumbasses had just done exactly what I said."],
+  ['The Passion of the Jew', "A whole review about your feelings. Boo hoo. Call a waaah-mbulance."],
+  ['Go God Go XII (2)', "I froze my ass off for like five hundred years and you're just sitting there taking notes? Screw you, Kyle."],
+  ['Dances With Smurfs', "\"My favorite kind of ending.\" Of course it is. Why don't you and Wendy go get married, nerd."],
+  ['Safe Space', "From now on only nice comments about me are allowed, and yours don't count. Butters, delete this poophead."],
+  ['Go God Go (1)', "\"Mostly setup.\" Excuse me, that was MY emotional journey, you insensitive dick."],
+  ['Stunning and Brave', "YOU got in trouble and for once it wasn't me? Haha! Hahahaha! Best day of my life."],
+  ['The Hobbit', "Wendy is NOT usually right, you kiss-ass. Stop encouraging that hippie."],
+  ['Breast Cancer Show Ever', "You've watched it HOW many times? You sick freak. I'm telling your mom. And my mem. MEHHHM!"],
+  ['Put It Down', "Aww, what a sweet widdle episode about listening. Anyway, I stopped reading. Lame."],
+  ['The Cissy', "I had a very real need for a private bathroom and you're making it weird. I do what I want!"],
+  ['South Park: The End of Obesity', "FINALLY you admit the villain is paperwork and not me. Screenshotting this. Suck it, Kahl."],
+  ['South Park (Not Suitable for Children)', "You read that title and still reviewed it? Oh, you are SO busted. Respect my authoritah and log off."],
 ];
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');

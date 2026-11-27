@@ -1,20 +1,20 @@
 // cage.html: Cartman's Cage Match, the game (pick the better of two episodes you've watched) plus your ranking.
 // cage.html?u=name&view=ranking: a profile's Rankings tab, just the ranking list.
 
-import { sfx } from '../sfx.js?v=20261127192938';
-import { initPage } from '../layout.js?v=20261127192938';
-import { supabase } from '../supabase.js?v=20261127192938';
-import { SITE_NAME } from '../config.js?v=20261127192938';
-import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127192938';
-import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127192938';
-import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, peoplesChampion, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127192938';
+import { sfx } from '../sfx.js?v=20261127193350';
+import { initPage } from '../layout.js?v=20261127193350';
+import { supabase } from '../supabase.js?v=20261127193350';
+import { SITE_NAME } from '../config.js?v=20261127193350';
+import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127193350';
+import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127193350';
+import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, peoplesChampion, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127193350';
 import {
   introLine, resultLine, crowd, hostPick,
   HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_REFEREE, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
-} from '../cage-host.js?v=20261127192938';
-import { burgerRain } from '../fx.js?v=20261127192938';
-import { beltSVG, peoplesCupSVG } from '../art.js?v=20261127192938';
-import { shareTop10 } from '../share.js?v=20261127192938';
+} from '../cage-host.js?v=20261127193350';
+import { burgerRain } from '../fx.js?v=20261127193350';
+import { beltSVG, peoplesCupSVG } from '../art.js?v=20261127193350';
+import { shareTop10 } from '../share.js?v=20261127193350';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
