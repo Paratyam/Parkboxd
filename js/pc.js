@@ -1,7 +1,7 @@
 // PC Principal's "PC it" filter: rewrites a review in his voice with word swaps, plus an opener,
 // a closer and a verdict from the star rating. Browser only, never saved. Any review card with a
 // [data-pc] button gets the toggle (installPC() listens once for the whole page).
-import { esc } from './ui.js?v=20261127081202';
+import { esc } from './ui.js?v=20261127081456';
 
 // [pattern, replacement]. Order matters: longer phrases first.
 const SWAPS = [

@@ -1,10 +1,10 @@
 // rankings.html?type=top|divisive&min=3&kind=all|episode|special|movie
-import { initPage } from '../layout.js?v=20261127081202';
-import { supabase } from '../supabase.js?v=20261127081202';
-import { SITE_NAME } from '../config.js?v=20261127081202';
-import { $, esc, params, epCode, stars } from '../ui.js?v=20261127081202';
-import { loadAllEpisodes, myLogMap, thumbHTML } from '../episodes.js?v=20261127081202';
-import { rigRankings } from '../fx.js?v=20261127081202';
+import { initPage } from '../layout.js?v=20261127081456';
+import { supabase } from '../supabase.js?v=20261127081456';
+import { SITE_NAME } from '../config.js?v=20261127081456';
+import { $, esc, params, epCode, stars } from '../ui.js?v=20261127081456';
+import { loadAllEpisodes, myLogMap, thumbHTML } from '../episodes.js?v=20261127081456';
+import { rigRankings } from '../fx.js?v=20261127081456';
 
 const { user } = await initPage({ title: 'Rankings', auth: 'required' });
 const root = $('#rankings');

@@ -1,17 +1,17 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
-import { initPage, logEpisode } from '../layout.js?v=20261127081202';
-import { supabase } from '../supabase.js?v=20261127081202';
-import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127081202';
-import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127081202';
-import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127081202';
-import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127081202';
-import { booksSVG } from '../art.js?v=20261127081202';
-import { BUTTERS } from '../butters-profile.js?v=20261127081202';
-import { threadHTML, wireThread } from '../comments.js?v=20261127081202';
+import { initPage, logEpisode } from '../layout.js?v=20261127081456';
+import { supabase } from '../supabase.js?v=20261127081456';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127081456';
+import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127081456';
+import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127081456';
+import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127081456';
+import { booksSVG } from '../art.js?v=20261127081456';
+import { BUTTERS } from '../butters-profile.js?v=20261127081456';
+import { threadHTML, wireThread } from '../comments.js?v=20261127081456';
 
 const SHELF = 12; // past weeks on the shelf
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127081202';
-import { episodeAverages } from '../insights.js?v=20261127081202';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127081456';
+import { episodeAverages } from '../insights.js?v=20261127081456';
 
 const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');
