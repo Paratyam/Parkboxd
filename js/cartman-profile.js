@@ -2,10 +2,10 @@
 // Kyle, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. He loves the episodes where he wins and hates nearly everything else, and he leaves a
 // comment under every one of Kyle's reviews. Episodes are matched by title.
-import { pcTalkButtonHTML } from './pc.js?v=20261127202937';
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127202937';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127202937';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127202937';
+import { pcTalkButtonHTML } from './pc.js?v=20261127203257';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127203257';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127203257';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127203257';
 
 export const CARTMAN = { username: 'cartman', display_name: 'Eric Cartman', avatar_color: '#e5534b', avatar_icon: 'beanie' };
 
@@ -160,7 +160,7 @@ export async function renderCartmanProfile(root) {
     </div>`;
 
   // Loaded here, not at the top: guest-reviews.js imports this file.
-  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127202937');
+  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127203257');
   await showProfileReviews(root.querySelector('[data-guest-list]'), 'cartman', reviews.map((x) => x.ep));
   root.removeAttribute('aria-busy');
 

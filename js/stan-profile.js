@@ -2,9 +2,9 @@
 // accounts, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. His reviews also show on those episode pages (js/guest-reviews.js). Episodes are
 // matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127202937';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127202937';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127202937';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127203257';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127203257';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127203257';
 
 export const STAN = { username: 'stan', display_name: 'Stan Marsh', avatar_color: '#4a90e2', avatar_icon: 'mountain' };
 
@@ -76,6 +76,7 @@ export async function renderStanProfile(root) {
         ${badge('🏈', 'Quarterback', 'Plays for the South Park Cows')}
         ${badge('🐕', 'Dog Person', 'Sparky is a good boy')}
         ${badge('🤝', 'Super Best Friend', 'Hangs out with Kyle basically every day')}
+        ${badge('🤢', 'Nervous Stomach', 'Threw up when Wendy said hi')}
       </div>
     </section>
 
@@ -111,7 +112,7 @@ export async function renderStanProfile(root) {
     </div>`;
 
   // Loaded here, not at the top: guest-reviews.js imports this file.
-  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127202937');
+  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127203257');
   await showProfileReviews(root.querySelector('[data-guest-list]'), 'stan', reviews.map((x) => x.ep));
   root.removeAttribute('aria-busy');
 
