@@ -1,12 +1,12 @@
 // friends.html?u=name&tab=following|followers|everyone
-import { CHARACTERS } from '../characters.js?v=20261127211246';
-import { initPage } from '../layout.js?v=20261127211246';
-import { supabase } from '../supabase.js?v=20261127211246';
-import { SITE_NAME } from '../config.js?v=20261127211246';
-import { $, esc, params, avatarHTML } from '../ui.js?v=20261127211246';
-import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261127211246';
-import { line } from '../jokes.js?v=20261127211246';
-import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261127211246';
+import { CHARACTERS } from '../characters.js?v=20261127211334';
+import { initPage } from '../layout.js?v=20261127211334';
+import { supabase } from '../supabase.js?v=20261127211334';
+import { SITE_NAME } from '../config.js?v=20261127211334';
+import { $, esc, params, avatarHTML } from '../ui.js?v=20261127211334';
+import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261127211334';
+import { line } from '../jokes.js?v=20261127211334';
+import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261127211334';
 
 const { profile: me } = await initPage({ title: 'Friends', auth: 'required' });
 const root = $('#friends');

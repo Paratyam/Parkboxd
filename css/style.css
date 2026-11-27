@@ -1978,3 +1978,5 @@ body:has(.site-header.menu-open) .install-ad, body:has(dialog[open]) .install-ad
 .gang-row a[aria-current] { opacity: 1; color: var(--white); }
 .gang-row a[aria-current]::after { content: ""; width: 22px; height: 3px; margin-top: -3px; border-radius: 2px; background: var(--gang); }
 .gang-row a[aria-current] > :first-child { box-shadow: 0 0 0 2px #14181c, 0 0 0 4px var(--gang); }
+/* Character headers all share one layout (name and bio beside the avatar, stats underneath), however long the bio is. */
+.gang-row ~ .profile-head .who { flex-basis: calc(100% - 140px); }
