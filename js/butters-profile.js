@@ -1,15 +1,15 @@
 // Butters' own (pretend) Parkboxd account, shown at profile.html?u=butters. It isn't a real
 // member: nothing here is in the database, so his ratings never touch site averages, Stan's
 // Picks or taste matches. Episodes are matched by title; any title TMDB names differently is skipped.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127064518';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127064518';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127064518';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127070806';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127070806';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127070806';
 
 export const BUTTERS_USERNAME = 'butters';
 export const BUTTERS = { username: 'butters', display_name: 'Butters Stotch', avatar_color: '#f5c518', avatar_icon: 'books' };
 
 // [title, stars, liked]. He likes nearly everything. The scary ones lose half a star.
-const RATED = [
+export const RATED = [
   ["Butters' Very Own Episode", 5, true], ['Professor Chaos', 5, true], ['Casa Bonita', 4.5, true], ['Marjorine', 5, true],
   ['Scott Tenorman Must Die', 5, true], ['Make Love, Not Warcraft', 5, true], ['Good Times with Weapons', 5, true],
   ['AWESOM-O', 4.5, true], ['Raisins', 4.5, false], ['The Coon', 5, true], ['Coon 2: Hindsight', 5, true], ['Mysterion Rises', 4.5, true],
@@ -26,7 +26,7 @@ const RATED = [
 const TOP4 = ["Butters' Very Own Episode", 'Professor Chaos', 'Marjorine', "Butters' Bottom Bitch"];
 
 // Five reviews of popular episodes, with Butters knowing exactly what he is.
-const REVIEWS = [
+export const REVIEWS = [
   ["Butters' Very Own Episode", 'Golly, a whole episode about me! My dad says I can\'t review it because it\'s a "conflict of interest", so I\'m only giving it five stars instead of six. Also, nobody has ever explained to me how I can watch a show that I\'m in. I asked once and got grounded.'],
   ['Professor Chaos', "I don't know who this Professor Chaos fella is, but he seems real cool and very misunderstood. Five stars. Not because I'm him. I'm definitely not him. Please don't tell my parents."],
   ['Scott Tenorman Must Die', "Eric is real scary in this one. I'm giving it five stars because if I don't, he'll find out. He reads all my reviews. Hi Eric! I love your episodes! Please don't put anything in my chili."],

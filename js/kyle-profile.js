@@ -1,0 +1,165 @@
+// Kyle's own (pretend) Parkboxd account, shown at profile.html?u=kyle. Like Butters, he isn't a
+// real member: nothing is in the database, so his ratings never touch site averages. He reviews
+// the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
+// also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127070806';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127070806';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127070806';
+
+export const KYLE_USERNAME = 'kyle';
+export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#f2711c', avatar_icon: 'earflaps' };
+
+// [title, stars, liked]. Tough but fair. Everything he reviewed is in here too.
+export const RATED = [
+  ['Chinpokomon', 4.5, true], ['Something Wall-Mart This Way Comes', 4.5, true], ['Trapped in the Closet', 5, true],
+  ['Smug Alert!', 4.5, true], ['Cartoon Wars (1)', 4.5, true], ['Cartoon Wars (2)', 5, true], ['Douche and Turd', 5, true],
+  ['Goobacks', 4, false], ['Margaritaville', 5, true], ['Best Friends Forever', 4.5, true], ['Quest for Ratings', 4, false],
+  ['The Passion of the Jew', 3.5, false], ['Red Man\'s Greed', 4, false], ['Go God Go (1)', 4, false], ['Go God Go XII (2)', 4.5, true],
+  ['Stunning and Brave', 4, false], ['Where My Country Gone?', 4, false], ['Dances With Smurfs', 4.5, true],
+  ['Night of the Living Homeless', 4, false], ['The China Probrem', 4, false], ['W.T.F.', 3.5, false], ['Whale Whores', 4, false],
+  ['Crack Baby Athletic Association', 4, false], ['Ass Burgers', 4, false], ['Safe Space', 4.5, true],
+  ['Scott Tenorman Must Die', 5, true], ['Make Love, Not Warcraft', 4.5, true], ['Casa Bonita', 3, false],
+  ['The Death Camp of Tolerance', 4, false], ['Super Best Friends', 4.5, true], ['Ginger Kids', 3.5, false],
+  ['Toilet Paper', 3.5, false], ['Free Hat', 4.5, true], ['Here Comes the Neighborhood', 3.5, false],
+];
+
+const TOP4 = ['Margaritaville', 'Douche and Turd', 'Cartoon Wars (2)', 'Trapped in the Closet'];
+
+// [title, review, reading-list note on what the episode is spoofing].
+export const REVIEWS = [
+  ['Chinpokomon', "Every kid in town buys the same toy because a commercial told them to, and I was one of them. I'm not proud. Four and a half stars, and I'd like my allowance back.",
+    'Spoofs the late-90s collectible-monster craze and how kids\' marketing works on you before you notice.'],
+  ['Something Wall-Mart This Way Comes', "A giant store moves in, everything's cheap, and the whole town falls apart. The twist about who's really behind it is the smartest bit. Shop local, people.",
+    'A horror-movie take on big-box stores pushing out small-town shops.'],
+  ['Trapped in the Closet', "Stan takes one personality test and ends up a prophet. It explains a real belief system more clearly than most documentaries, then refuses to come out of the closet about it. Five stars.",
+    'Takes on Scientology and celebrity, and famously walks through its origin story with a big on-screen caption.'],
+  ['Smug Alert!', "Stan's dad buys a hybrid and gets so pleased with himself that it becomes a weather system. Caring about the planet is good. Being insufferable about it is a separate thing. Four and a half stars.",
+    'Pokes fun at people who make doing the right thing all about how great they are.'],
+  ['Cartoon Wars (1)', "Cartman tries to get a cartoon pulled for his own reasons and I have to stop him. The first half is a setup, but it's a really good setup.",
+    'Part one of a two-parter about free speech and whether a show should censor itself out of fear.'],
+  ['Cartoon Wars (2)', "The payoff. It makes a real argument about free speech and then gets censored on its own network, which kind of proves the point. Five stars. Cartman was wrong, as usual.",
+    'The ending is about the network cutting a scene, which is the whole point of the episode.'],
+  ['Douche and Turd', "Stan won't vote because both choices are terrible, and he gets banished for it. I'm going to say it: this is the most honest election episode ever made. Five stars.",
+    'Election-year satire about feeling stuck choosing between two bad options.'],
+  ['Goobacks', "People from the future come back for work and everyone panics about their jobs. The solution is very dumb and I'm choosing to respect it. Four stars.",
+    'An immigration debate, told with time travellers.'],
+  ['Margaritaville', "I put the whole town's debt on my own card to save the economy. Did it work? Kind of. Do I regret it? Also kind of. A real explainer on how money works. Five stars.",
+    'Explains the 2008 financial crisis as if the economy were a religion people pray to.'],
+  ['Best Friends Forever', "Kenny gets a handheld, dies, and becomes the center of a huge court fight. Packs a serious debate into twenty-two minutes and still makes it funny. Four and a half stars.",
+    "Aired the same week as a real right-to-die court case, and it's about who gets to decide."],
+  ['Quest for Ratings', "We make a school news show and get way too competitive about viewers. Pretty accurate about what TV does for ratings, honestly. Four stars.",
+    'A look at how TV news chases viewers over facts.'],
+  ['The Passion of the Jew', "I see a movie, feel guilty, and try to apologize to everyone. Cartman gets way too into it. A hard one for me personally, so three and a half stars. I stand by it.",
+    'A response to a famous 2004 film and the big debate it sparked.'],
+  ['Go God Go XII (2)', "Cartman freezes himself to skip the wait for a game console and wakes up in a future where everyone's fighting about whose idea of science is right. Arguing never changes, apparently.",
+    'A future war about who\'s right that spoofs online atheism arguments.'],
+  ['Dances With Smurfs', "Cartman takes over the school announcements and makes them really mean. Wendy just facts him to death, which is my favorite kind of ending. Four and a half stars.",
+    'Takes on angry talk-show hosts, and parodies a big 2009 sci-fi movie along the way.'],
+  ['Safe Space', "A whole town decides to filter out anything that hurts its feelings. There's a lesson here about criticism being good for you. Also there's a guy whose job is reading the mean comments. Four and a half stars.",
+    'Big season-19 satire about social media, body shaming and only wanting to hear nice things.'],
+];
+
+const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
+
+export async function renderKyleProfile(root) {
+  const all = await loadAllEpisodes();
+  const byTitle = new Map(all.map((e) => [norm(e.title), e]));
+  const find = (t) => byTitle.get(norm(t));
+  const rated = RATED.map(([t, r, liked]) => ({ ep: find(t), r, liked })).filter((x) => x.ep);
+  const rateOf = (t) => RATED.find(([rt]) => norm(rt) === norm(t)) || [t, 4, false];
+  const reviews = REVIEWS.map(([t, text, note]) => ({ ep: find(t), text, note, r: rateOf(t)[1], liked: rateOf(t)[2] })).filter((x) => x.ep);
+  const top4 = TOP4.map(find).filter(Boolean);
+  const day = (n) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+  const diary = rated.slice(0, 8).map((x, i) => ({ ...x, date: day(i * 3 + 1) }));
+  const hours = Math.round((rated.length * 22) / 60);
+  const avg = rated.reduce((s, x) => s + x.r, 0) / (rated.length || 1);
+  document.title = 'Kyle Broflovski · Parkboxd';
+
+  const badge = (emoji, name, desc) => `<div class="badge paper earned" title="${esc(desc)}"><span class="emoji" aria-hidden="true">${emoji}</span><strong>${esc(name)}</strong><span>${esc(desc)}</span><span class="got">Unlocked</span></div>`;
+
+  root.innerHTML = `
+    <section class="profile-head paper" aria-label="Profile">
+      ${avatarHTML(KYLE, 96)}
+      <div class="who">
+        <h1 class="cut">Kyle Broflovski</h1>
+        <span class="handle">@kyle · joined ${esc(formatDate('2026-11-27', { month: 'long', year: 'numeric' }))} · 📖 Reviews the smart ones</span>
+        <p class="bio">I review the episodes that are actually about something, and I add a note on what each one is making fun of. Somebody on this site has to read the subtext. Don't tell Cartman I'm on here.</p>
+        <div style="margin-top:6px"><span class="team-flair paper" style="background-color:#3fb950;color:#1a1a1a">Team Kyle</span></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>${rated.length}</b><span>Episodes</span></div>
+        <div class="stat"><b>${hours}</b><span>Hours</span></div>
+        <div class="stat"><b>${reviews.length}</b><span>Reviews</span></div>
+        <div class="stat"><b>${avg.toFixed(1)}</b><span>Avg rating</span></div>
+        <div class="stat"><b>1</b><span>Followers</span></div>
+        <div class="stat"><b>Stan</b><span>Following</span></div>
+      </div>
+      <div class="profile-actions" style="width:100%">
+        <button type="button" class="btn btn-green" id="follow-kyle">Follow</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Favourite episodes</h2></div>
+      <div class="top4">${top4.map((ep) => `<a class="ep-card" href="episode.html?id=${ep.id}">${thumbHTML(ep, { size: 'w500' })}</a>`).join('')}</div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Badges</h2><span class="result-count">he earned these fair and square</span></div>
+      <div class="badges">
+        ${badge('📖', 'Reading List', 'Wrote a note on every episode he reviewed')}
+        ${badge('🗳️', 'Civic Duty', 'Reviewed every election episode')}
+        ${badge('🧠', 'Subtext Spotter', 'Explained the satire so you don\'t have to')}
+        ${badge('🤝', 'Super Best Friend', 'Follows exactly one person. It\'s Stan.')}
+        ${badge('😤', 'Not Today, Cartman', 'Never gave a Cartman scheme 5★ for the scheme')}
+      </div>
+    </section>
+
+    <div class="two-col">
+      <section>
+        <div class="section-head"><h2>Reviews &amp; reading list</h2><span class="result-count">${reviews.length} reviews</span></div>
+        <div class="reviews">${reviews.map((x) => `
+          <article class="review">
+            <a href="episode.html?id=${x.ep.id}" style="flex:0 0 110px" aria-hidden="true" tabindex="-1">${thumbHTML(x.ep, { showTitle: false })}</a>
+            <div class="review-body">
+              <div style="font-size:14px"><a class="ep-link" href="episode.html?id=${x.ep.id}">${esc(x.ep.title)}</a> <span style="color:var(--muted)">${esc(epCode(x.ep))}</span></div>
+              <div class="review-meta">${avatarHTML(KYLE, 22)}<span><strong>Kyle Broflovski</strong></span><span class="rating">${stars(x.r)}</span>${x.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}</div>
+              <p>${esc(x.text)}</p>
+              <p class="guest-note">📖 <strong>Kyle's note:</strong> ${esc(x.note)}</p>
+            </div>
+          </article>`).join('')}</div>
+
+        <div class="section-head" style="margin-top:32px"><h2>Recent diary</h2></div>
+        <ol class="diary">${diary.map((l) => `
+          <li>
+            <span class="date">${esc(formatDate(l.date, { month: 'short', day: 'numeric', year: 'numeric' }))}</span>
+            <span class="title"><a class="title" href="episode.html?id=${l.ep.id}">${esc(l.ep.title)}</a><span class="code">${esc(epCode(l.ep))}</span></span>
+            <span class="rating">${stars(l.r)}</span>
+            ${l.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}
+          </li>`).join('')}</ol>
+      </section>
+      <aside style="display:flex;flex-direction:column;gap:32px">
+        <section>
+          <div class="section-head"><h2>South Park personality</h2></div>
+          <div class="char-card paper">
+            <div style="display:flex;gap:14px;align-items:center"><span style="font-size:40px;line-height:1" aria-hidden="true">🧠</span>
+              <div class="cut" style="font-size:26px;color:var(--white);line-height:1.1">Kyle is a Kyle</div></div>
+            <p style="margin:10px 0 0;color:var(--text-soft)">He retook the quiz three times to make sure it was accurate. It was.</p>
+          </div>
+        </section>
+        <section>
+          <div class="section-head"><h2>Ratings</h2><span class="result-count">${rated.length}</span></div>
+          ${histogramHTML(countRatings(rated.map((x) => x.r)))}
+          <p style="margin:10px 0 0;font-size:12px;color:var(--muted)">Mostly 4s and up. "I only watch the good ones. That's not bias, that's taste." — Kyle</p>
+        </section>
+      </aside>
+    </div>`;
+  root.removeAttribute('aria-busy');
+
+  const follow = root.querySelector('#follow-kyle');
+  follow.addEventListener('click', () => {
+    follow.textContent = '✓ Following';
+    follow.disabled = true;
+    toast("Cool, thanks, dude. (He won't show up in your feed, he's busy writing notes.)");
+  });
+}

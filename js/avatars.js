@@ -65,6 +65,12 @@ export const AVATAR_ICONS = {
     <path d="M7 13 L33 12 L34 20 L8 21 Z" fill="#3fb950" ${S}/>
     <path d="M12 16.5 L24 16" stroke="#f4f8fb" stroke-width="2"/>
     <path d="M20 12 Q19 5 24 4" stroke="#5b3a1e" stroke-width="2" fill="none"/>`) },
+  earflaps: { label: 'Earflap hat', svg: svg(`
+    <path d="M8 24 Q8 8 20 8 Q32 8 32 24 Z" fill="#3fb950" ${S}/>
+    <path d="M8 22 L7 33 Q10 35 13 32 L13 22 Z" fill="#3fb950" ${S}/>
+    <path d="M32 22 L33 33 Q30 35 27 32 L27 22 Z" fill="#3fb950" ${S}/>
+    <rect x="7" y="21" width="26" height="5" rx="2" fill="#2a8a3a" ${S}/>
+    <path d="M14 13 Q17 10 21 10" stroke="#8fe39b" stroke-width="2" fill="none"/>`) },
 };
 
 export const AVATAR_KEYS = Object.keys(AVATAR_ICONS);
