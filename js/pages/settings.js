@@ -1,9 +1,10 @@
-import { initPage } from '../layout.js?v=20261127132459';
-import { supabase } from '../supabase.js?v=20261127132459';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127132459';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127132459';
-import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127132459';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127132459';
+import { initPage, refreshBell } from '../layout.js?v=20261127133021';
+import { supabase } from '../supabase.js?v=20261127133021';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127133021';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127133021';
+import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127133021';
+import { tourStatus, startTour, endTour } from '../tour.js?v=20261127133021';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127133021';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -130,6 +131,26 @@ $('#profile-form').addEventListener('submit', async (e) => {
   if (error) return notify($('#msg'), error.message, 'error');
   location.href = `profile.html?u=${encodeURIComponent(profile.username)}`;
 });
+
+// ---- Stan's tour: takes effect straight away, no "Save profile" needed ----
+const TOUR_TEXT = {
+  on: ['The tour is on: at most one tip a day in your notifications.', 'End the tour'],
+  done: ["You've had the whole tour.", 'Restart the tour'],
+  off: ['The tour is off.', 'Restart the tour'],
+  invited: ['Short tips about what the site can do, at most one a day in your notifications.', 'Start the tour'],
+};
+function showTour() {
+  const [text, label] = TOUR_TEXT[tourStatus(user.id)] || TOUR_TEXT.invited;
+  $('#tour-state').textContent = `${text} This setting is remembered on this device only.`;
+  $('#tour-toggle').textContent = label;
+}
+$('#tour-toggle').addEventListener('click', () => {
+  if (tourStatus(user.id) === 'on') endTour(user.id);
+  else startTour(user.id);
+  showTour();
+  refreshBell();
+});
+showTour();
 
 // ---- Account: email, password, delete ----
 const { data: { user: authUser } } = await supabase.auth.getUser();

@@ -2,19 +2,22 @@
 // week's book starts, and one telling you whether the episode you voted for won.
 // Also a note when Butters likes one of your reviews (buttersLikes in js/butters.js). Not for his
 // best friends: he likes all of theirs. "Read" is remembered per person in localStorage.
-import { supabase } from './supabase.js?v=20261127132459';
-import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261127132459';
-import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127132459';
+// Stan's site tour (js/tour.js) travels the same way, so its notes are merged in here too.
+import { supabase } from './supabase.js?v=20261127133021';
+import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261127133021';
+import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127133021';
+import { tourNotes } from './tour.js?v=20261127133021';
 
 const seenKey = (userId) => `parkboxd-club-seen-${userId}`;
 const seen = (userId) => new Set(JSON.parse(localStorage.getItem(seenKey(userId)) || '[]'));
 
-/** [{ id, text, href, created_at, read }]: this week's book notes plus Butters' likes. */
+/** [{ id, text, href, created_at, read, from? }]: book notes, Butters' likes and Stan's tour. */
 export async function clubNotes(userId) {
   if (!userId) return [];
-  const [book, likes] = await Promise.all([bookNotes(userId).catch(() => []), buttersLikeNotes(userId).catch(() => [])]);
+  const [book, likes, tour] = await Promise.all(
+    [bookNotes, buttersLikeNotes, tourNotes].map((get) => get(userId).catch(() => [])));
   const read = seen(userId);
-  return [...book, ...likes].filter((n) => !isHiddenClubNote(userId, n.id)).map((n) => ({ ...n, read: read.has(n.id) }));
+  return [...book, ...likes, ...tour].filter((n) => !isHiddenClubNote(userId, n.id)).map((n) => ({ ...n, read: read.has(n.id) }));
 }
 
 // Butters liked your review. Only reviews of 4 stars and up can qualify, so only those are fetched.
@@ -31,7 +34,7 @@ async function buttersLikeNotes(userId) {
 
 async function bookNotes(userId) {
   if (weekKey(0) < CLUB_START) return [];
-  const { loadAllEpisodes } = await import('./episodes.js?v=20261127132459');
+  const { loadAllEpisodes } = await import('./episodes.js?v=20261127133021');
   const [pk] = await loadPicks(await loadAllEpisodes(), [0]);
   if (!pk?.pick) return [];
   const title = pk.pick.title;

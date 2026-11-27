@@ -1,11 +1,18 @@
 // notifications.html: who followed you, liked your reviews, or commented on them.
-import { initPage, refreshBell } from '../layout.js?v=20261127132459';
-import { supabase } from '../supabase.js?v=20261127132459';
-import { $, esc, avatarHTML } from '../ui.js?v=20261127132459';
-import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127132459';
+import { initPage, refreshBell } from '../layout.js?v=20261127133021';
+import { supabase } from '../supabase.js?v=20261127133021';
+import { $, esc, avatarHTML } from '../ui.js?v=20261127133021';
+import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127133021';
+import { tourStatus, startTour, endTour } from '../tour.js?v=20261127133021';
 
 const { user } = await initPage({ title: 'Notifications', auth: 'required' });
 const root = $('#notifs');
+
+// The "want a tour?" invite links here with ?tour=start.
+if (new URLSearchParams(location.search).get('tour') === 'start') {
+  if (['invited', 'off', 'none'].includes(tourStatus(user.id))) startTour(user.id);
+  history.replaceState(null, '', 'notifications.html');
+}
 
 const ago = (iso) => {
   const mins = Math.round((Date.now() - new Date(iso)) / 60000);
@@ -22,15 +29,17 @@ async function render() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(60);
-  // Book Club notes (new book, vote result) join the list, from Butters.
+  // Browser-made notes join the list: Book Club ones from Butters, tour tips from Stan.
   const club = await clubNotes(user.id);
   const BUTTERS = { display_name: 'Butters', avatar_color: '#f5c518', avatar_icon: 'books' };
-  const items = [...(dbItems || []), ...club.map((n) => ({ ...n, type: 'club', actor: BUTTERS }))]
+  const STAN = { display_name: 'Stan', avatar_color: '#8a5a3b', avatar_icon: 'beanie' };
+  const items = [...(dbItems || []), ...club.map((n) => ({ ...n, type: 'club', actor: n.from === 'stan' ? STAN : BUTTERS }))]
     .sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
 
   const line = (n) => {
     const who = `<a href="profile.html?u=${encodeURIComponent(n.actor?.username || '')}"><strong>${esc(n.actor?.display_name || n.actor?.username || 'Someone')}</strong></a>`;
     const ep = n.logs?.episodes?.title ? `<a href="review.html?id=${n.log_id}">${esc(n.logs.episodes.title)}</a>` : 'an episode';
+    if (n.from === 'stan') return `<strong>Stan:</strong> <a href="${n.href}">${esc(n.text)}</a>`;
     if (n.type === 'club') return `<a href="${n.href}">${esc(n.text)}</a>`;
     if (n.type === 'follow') return `${who} followed you. New friend, or new stalker?`;
     if (n.type === 'review_like') return `${who} liked your review of ${ep}. ♥ What a t-t-terrific audience!`;
@@ -46,9 +55,13 @@ async function render() {
   };
 
   const unread = (items || []).filter((n) => !n.read).length;
+  const touring = ['on', 'invited'].includes(tourStatus(user.id));
   root.innerHTML = `
     <div class="section-head"><h2>Notifications</h2>
-      ${items?.length ? '<button type="button" class="link-button" id="clear-all" style="font-size:13px">Clear all</button>' : ''}</div>
+      <span style="display:flex;gap:16px">
+        ${touring ? '<button type="button" class="link-button" id="end-tour" style="font-size:13px">End the tour</button>' : ''}
+        ${items?.length ? '<button type="button" class="link-button" id="clear-all" style="font-size:13px">Clear all</button>' : ''}
+      </span></div>
     ${items?.length
       ? `<ol class="notif-list">${items.map((n) => `
           <li class="${n.read ? '' : 'unread'}">
@@ -58,6 +71,12 @@ async function render() {
           </li>`).join('')}</ol>`
       : '<p class="empty">No notifications. Nobody is talking about you. Yet.</p>'}`;
   root.removeAttribute('aria-busy');
+
+  $('#end-tour')?.addEventListener('click', async () => {
+    endTour(user.id);
+    await render();
+    refreshBell();
+  });
 
   $('#clear-all')?.addEventListener('click', async () => {
     if (!confirm('Clear all notifications? They\'ll be gone for good.')) return;

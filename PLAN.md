@@ -179,6 +179,9 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Book Club notifications (`js/club-notes.js`, worked out in the browser): a note when a new book starts and whether your vote won; count in the bell, read/cleared state in localStorage
 - Comments: edit your own (inline), delete your own or any on your review
 
+### Stan's tour
+- Site guide (`js/tour.js`): notes from Stan in the bell and on the notifications page, worked out in the browser. A welcome, then at most one tip per day visited (log, Book Club, Cage Match, Daily Mystery, Stats/report card, friends), skipping features already used. Accounts older than 27 Nov 2026 only get an invite. "End the tour" on the notifications page; start/end/restart in Edit profile (a restart replays every stop). State is in localStorage, so per device
+
 ### Characters
 - 🎤 Jimmy's Comedy Roast (`js/jimmy.js`): a button on every profile ("Roast me, Jimmy" / "Get Jimmy to roast them") opens a stand-up set built from that person's real stats (harshest and softest takes vs the site average, average rating, hours, log and review counts, rewatches, Cage Match champion, streak, personality, favourite character, a low-rated Top 4 pick), with Jimmy's stutter; "Another set" rerolls
 - 👦 Stan's Picks (`js/stan.js`, home page): unseen aired episodes ranked by how much people with your taste loved them (each member weighted by taste match squared, strangers lightly; someone must have rated it 4★+), falling back to the site's best-rated
