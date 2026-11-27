@@ -1,5 +1,6 @@
 // Mr. Garrison's Report Card: every season gets a letter grade from your ratings.
-import { esc, stars, toast } from './ui.js?v=20261127125716';
+import { SITE_LINK } from './config.js?v=20261127130557';
+import { esc, stars, toast } from './ui.js?v=20261127130557';
 
 // Season averages bunch up between 3 and 4, so the scale is set around that: 4.2+ is
 // already exceptional across a whole season, and 3.0 is a perfectly fine season.
@@ -204,6 +205,7 @@ export function reportCardHTML({ seasonAvgs, all, seen, ratings = new Map(), isM
         <p style="font-size:12px;color:#666">A season gets a grade once ${Math.round(SHARE * 100)}% of its episodes are rated (at least ${MIN_RATED}, or the whole season if it has fewer). INC = incomplete, ABS = absent (nothing rated yet).</p>
         <p><b>Note about the student:</b> ${esc(studentNote({ avg, rated, seasons: rows.length }))}</p>
         <p class="rc-sign">— Mr. Garrison</p>
+        <p class="rc-link">Parkboxd · ${SITE_LINK}</p>
       </div>
     </div>`;
 }
@@ -222,7 +224,7 @@ async function saveImage(card, name, button) {
     });
     const file = new File([blob], `report-card-${name}.png`, { type: 'image/png' });
     if (navigator.canShare?.({ files: [file] }) && matchMedia('(pointer: coarse)').matches) {
-      await navigator.share({ files: [file], title: "Mr. Garrison's Report Card" });
+      await navigator.share({ files: [file], title: "Mr. Garrison's Report Card", text: `Get your own at https://${SITE_LINK}` });
     } else {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);

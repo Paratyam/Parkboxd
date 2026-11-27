@@ -3,6 +3,8 @@
 // Find both in Supabase → Project Settings → API (the "publishable" key works too).
 
 export const SITE_NAME = 'Parkboxd';
+// The public address, printed on share images and share text.
+export const SITE_LINK = 'parkboxd.pages.dev';
 
 export const SUPABASE_URL = 'https://qsphypdibcydipkhpkvs.supabase.co';
 export const SUPABASE_ANON_KEY = 'sb_publishable_UnjmoK4PWyCirK91VqnobQ_LRUyQrHc';

@@ -850,6 +850,7 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .rc-foot { margin-top: 14px; font-size: 14px; }
 .rc-foot p { margin: 4px 0; }
 .rc-sign { text-align: right; font-style: italic; font-family: 'Luckiest Guy', cursive; font-size: 18px; color: #9e2a1f; }
+.rc-foot .rc-link { margin-top: 10px; text-align: center; font-weight: 700; color: #1d3557; }
 @media (max-width: 640px) { .rc-meta { text-align: left; } }
 .grade-inc { color: #5e5744; font-size: 18px; }
 .rc-inc td, .rc-inc th { color: #5e5744; }

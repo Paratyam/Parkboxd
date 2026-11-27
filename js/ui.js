@@ -1,5 +1,5 @@
 // Small DOM helpers shared by every page.
-import { AVATAR_ICONS } from './avatars.js?v=20261127125716';
+import { AVATAR_ICONS } from './avatars.js?v=20261127130557';
 
 export const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -19,9 +19,15 @@ export function safeNext(fallback = 'profile.html') {
   return next && /^[a-z0-9_-]+\.html(\?[^#]*)?$/i.test(next) ? next : fallback;
 }
 
+// This page's file name. parkboxd.pages.dev drops the ".html" from addresses, so put it back.
+export function currentFile() {
+  const name = location.pathname.split('/').pop() || 'index.html';
+  return name.includes('.') ? name : `${name}.html`;
+}
+
 // The current page as a relative path, for ?next= links.
 export function currentPage() {
-  return (location.pathname.split('/').pop() || 'index.html') + location.search;
+  return currentFile() + location.search;
 }
 
 // Show a message in a .notice element. type: 'error' | 'ok' | 'info'

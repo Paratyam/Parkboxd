@@ -1,6 +1,6 @@
 // "Add to home screen". Chrome, Edge and Android give us a real install prompt; elsewhere
 // (iPhones especially) the best we can do is say where the button is.
-import { toast } from './ui.js?v=20261127125716';
+import { toast } from './ui.js?v=20261127130557';
 
 const AD_KEY = 'parkboxd-install-ad'; // set once the home page ad has been closed
 let promptEvent = null;
