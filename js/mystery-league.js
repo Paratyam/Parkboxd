@@ -1,9 +1,9 @@
 // Kenny's mystery: this week's leaderboard among the people you follow (and you).
 // A solved case is worth 6 points on the first try, down to 1 on the sixth. Weeks start Monday
 // (UTC, like the puzzles); cold cases never count.
-import { supabase } from './supabase.js?v=20261127172921';
-import { esc, avatarHTML } from './ui.js?v=20261127172921';
-import { followingIds } from './social.js?v=20261127172921';
+import { supabase } from './supabase.js?v=20261127173208';
+import { esc, avatarHTML } from './ui.js?v=20261127173208';
+import { followingIds } from './social.js?v=20261127173208';
 
 const MAX = 6;
 const DAY = 86400000;

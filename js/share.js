@@ -1,12 +1,12 @@
 // Shareable paper-cutout cards: one of your reviews, your Top 4 or your Cage Match top 10, drawn on
 // a canvas. Original art, plus the episode stills on the review and Top 4 cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
-import { supabase } from './supabase.js?v=20261127172921';
-import { epCode, stars, toast } from './ui.js?v=20261127172921';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127172921';
-import { SITE_LINK } from './config.js?v=20261127172921';
-import { beltSVG } from './art.js?v=20261127172921';
-import { reviewMessage, top4Message, top10Message, awardMessage } from './share-text.js?v=20261127172921';
+import { supabase } from './supabase.js?v=20261127173208';
+import { epCode, stars, toast } from './ui.js?v=20261127173208';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127173208';
+import { SITE_LINK } from './config.js?v=20261127173208';
+import { beltSVG } from './art.js?v=20261127173208';
+import { reviewMessage, top4Message, top10Message, awardMessage } from './share-text.js?v=20261127173208';
 
 const W = 1080;
 const H = 1350;

@@ -1,14 +1,14 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127172921';
-import { initPage, logEpisode } from '../layout.js?v=20261127172921';
-import { supabase } from '../supabase.js?v=20261127172921';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127172921';
-import { followingIds } from '../social.js?v=20261127172921';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127172921';
-import { mysterySVG } from '../art.js?v=20261127172921';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127172921';
-import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127172921';
+import { SITE_LINK } from '../config.js?v=20261127173208';
+import { initPage, logEpisode } from '../layout.js?v=20261127173208';
+import { supabase } from '../supabase.js?v=20261127173208';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127173208';
+import { followingIds } from '../social.js?v=20261127173208';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127173208';
+import { mysterySVG } from '../art.js?v=20261127173208';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127173208';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127173208';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -251,7 +251,7 @@ function render() {
             <p>${game.won ? '(Kenny says: nice job, dude.)' : cold ? 'He\'s used to it.' : 'He\'ll be back tomorrow. He always is.'} It was <a href="episode.html?id=${answer.id}">${esc(answer.title)}</a> · ${esc(epCode(answer))}.</p>
             <div class="mystery-squares" aria-label="Your guesses">${squares}</div>
             <div class="toolbar">
-              <button type="button" class="btn btn-green" id="m-share">${canSend() ? 'Share my result' : 'Copy my result'}</button>
+              <button type="button" class="btn btn-green share-bar" id="m-share">📤 Share my result</button>
               <button type="button" class="btn btn-ghost" id="m-log">Log ${esc(answer.title)}</button>
             </div>
           </div>
@@ -306,8 +306,7 @@ function guess(id) {
   if (!game.done && PHONE.matches) $('.mystery-new-clue')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-// Phones open the share sheet; computers copy to the clipboard.
-const canSend = () => !!navigator.share && window.matchMedia('(pointer: coarse)').matches;
+// The share bar opens the device's share menu. Browsers without one copy the result instead.
 
 // The message you send to friends: what the game is, how you did, and what the colours mean.
 function shareText() {
@@ -335,7 +334,7 @@ function shareText() {
 function wire() {
   $('#m-share')?.addEventListener('click', async () => {
     const text = shareText();
-    if (canSend()) {
+    if (navigator.share) {
       try { await navigator.share({ text }); return; } catch (e) { if (e?.name === 'AbortError') return; }
     }
     try { await navigator.clipboard.writeText(text); toast('Copied! Go brag about it.'); } catch { toast(text); }

@@ -1,10 +1,10 @@
 // The "log an episode" dialog, used by the header "+ Log" button, episode pages and the diary.
-import { supabase } from './supabase.js?v=20261127172921';
-import { esc, epCode } from './ui.js?v=20261127172921';
-import { line } from './jokes.js?v=20261127172921';
-import { celebrate, towelieRewatch } from './fx.js?v=20261127172921';
-import { starInput } from './stars.js?v=20261127172921';
-import { loadAllEpisodes, thumbHTML, todayISO } from './episodes.js?v=20261127172921';
+import { supabase } from './supabase.js?v=20261127173208';
+import { esc, epCode } from './ui.js?v=20261127173208';
+import { line } from './jokes.js?v=20261127173208';
+import { celebrate, towelieRewatch } from './fx.js?v=20261127173208';
+import { starInput } from './stars.js?v=20261127173208';
+import { loadAllEpisodes, thumbHTML, todayISO } from './episodes.js?v=20261127173208';
 
 let dialog;
 
