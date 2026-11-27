@@ -1,19 +1,19 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
-import { initPage, logEpisode } from '../layout.js?v=20261127181437';
-import { supabase } from '../supabase.js?v=20261127181437';
-import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127181437';
-import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127181437';
-import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127181437';
-import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127181437';
-import { booksSVG } from '../art.js?v=20261127181437';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127181437';
-import { BUTTERS_NOTES } from '../data/butters-notes.js?v=20261127181437';
-import { BUTTERS } from '../butters-profile.js?v=20261127181437';
-import { threadHTML, wireThread } from '../comments.js?v=20261127181437';
+import { initPage, logEpisode } from '../layout.js?v=20261127181643';
+import { supabase } from '../supabase.js?v=20261127181643';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127181643';
+import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127181643';
+import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127181643';
+import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127181643';
+import { booksSVG } from '../art.js?v=20261127181643';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127181643';
+import { BUTTERS_NOTES } from '../data/butters-notes.js?v=20261127181643';
+import { BUTTERS } from '../butters-profile.js?v=20261127181643';
+import { threadHTML, wireThread } from '../comments.js?v=20261127181643';
 
 const SHELF = 12; // past weeks on the shelf
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127181437';
-import { episodeAverages } from '../insights.js?v=20261127181437';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127181643';
+import { episodeAverages } from '../insights.js?v=20261127181643';
 
 const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');

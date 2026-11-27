@@ -839,6 +839,11 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .streak-num { display: flex; flex-direction: column; align-items: center; min-width: 70px; line-height: 1; }
 .streak-num b { font-family: 'Luckiest Guy', cursive; font-size: 44px; color: #fff; }
 .streak-num span { font-size: 12px; }
+.streak-card .streak-text { position: relative; flex: 1; }
+.rain-tip { cursor: help; border-bottom: 1px dotted currentColor; }
+.rain-help { position: absolute; left: 0; top: 0; z-index: 5; width: 100%; max-width: 360px; box-sizing: border-box;padding: 8px 10px; border: 2px solid #000; border-radius: 8px; background: #14181c; box-shadow: 3px 3px 0 #000; color: #eaf6e4; font-size: 12px; line-height: 1.45; text-align: left; visibility: hidden; pointer-events: none; }
+.rain-help b { color: #fff; }
+.rain-tip:hover .rain-help, .rain-tip:focus .rain-help { visibility: visible; }
 .streak-plant { flex: none; width: 80px; }
 .streak-plant svg { display: block; width: 100%; height: auto; }
 @media (max-width: 480px) { .streak-card { display: grid; grid-template-columns: 64px 1fr; gap: 0 12px; padding: 14px 12px; } .streak-plant { grid-area: 1 / 1; width: 64px; align-self: end; } .streak-num { grid-area: 2 / 1; min-width: 0; align-self: start; } .streak-text { grid-area: 1 / 2 / span 2; } }

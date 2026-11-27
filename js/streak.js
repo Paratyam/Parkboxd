@@ -2,8 +2,8 @@
 // finished that day's Mystery Episode, or judged 10 Cage Match fights ("watering"). Every 7 days
 // in a row earns a rain day (hold up to 2) that covers a missed day. Randy has feelings about it.
 // Everything is worked out in the browser from rows that already exist.
-import { esc, fetchAll } from './ui.js?v=20261127181437';
-import { supabase } from './supabase.js?v=20261127181437';
+import { esc, fetchAll } from './ui.js?v=20261127181643';
+import { supabase } from './supabase.js?v=20261127181643';
 
 export const WATER_FIGHTS = 10;
 export const RAIN_EVERY = 7;
@@ -121,6 +121,14 @@ export function plantSVG(days, { wilted = false } = {}) {
     <rect x="27" y="94" width="46" height="7" rx="2" fill="#e0824c" ${CUT}/></svg>`;
 }
 
+// Tapping "rain days" shows the explanation instead of following the card's link.
+globalThis.document?.addEventListener('click', (e) => {
+  const tip = e.target.closest?.('.rain-tip');
+  if (!tip) return;
+  e.preventDefault();
+  tip.focus();
+});
+
 const pick = (arr, n) => arr[n % arr.length];
 
 // What Randy says, for you (isMe) or about someone else.
@@ -159,7 +167,8 @@ export function streakHTML(s, { isMe = true, name = '' } = {}) {
   const notes = [
     `Longest: ${s.longest} day${s.longest === 1 ? '' : 's'}`,
     s.current >= FULL_GROWN ? 'Fully grown!' : s.current ? `${FULL_GROWN - s.current} days to fully grown` : '',
-    `🌧️ ${s.rain} rain day${s.rain === 1 ? '' : 's'} saved`,
+    // Hover (or tap) for the rules. title="" keeps the home page link's own tooltip out of the way.
+    `<span class="rain-tip" tabindex="0" title="">🌧️ ${s.rain} rain day${s.rain === 1 ? '' : 's'} saved<span class="rain-help" role="tooltip"><b>Rain days</b> cover a missed day so the streak survives. Earn one for every ${RAIN_EVERY} streak days in a row and hold up to ${RAIN_MAX}. They are used automatically and don't add to the count.</span></span>`,
     isMe && s.doneToday ? (s.loggedToday ? '✓ logged today' : '✓ watered today') : '',
   ].filter(Boolean).join(' · ');
   return `
@@ -169,7 +178,7 @@ export function streakHTML(s, { isMe = true, name = '' } = {}) {
       <div class="streak-text">
         <strong>${isMe ? 'Your' : `${esc(name)}'s`} Tegridy streak</strong>
         <p>“${esc(randyLine(s, isMe))}” <span class="who">— Randy</span></p>
-        <span class="streak-best">${notes}</span>
+        <span class="streak-best streak-notes">${notes}</span>
         ${isMe && !s.doneToday ? `<span class="streak-best">Water it today: log an episode, finish today's Mystery, or judge ${WATER_FIGHTS} Cage Match fights.</span>` : ''}
       </div>
     </div>`;
