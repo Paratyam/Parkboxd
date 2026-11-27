@@ -30,7 +30,7 @@ Then commit and push to `main` (that's the deploy). Docs-only changes don't need
 ## Content rules
 - Cartman calls his own mother "mem", never "mom".
 - Gender-neutral copy for users.
-- No copyrighted South Park art: only original paper-cutout style art (`js/art.js`).
+- No copyrighted South Park art: only original paper-cutout style art (`js/art.js`). Exception the owner chose: TMDB episode stills on the Top 4 share card.
 - Reserved character usernames: `is_reserved_username()` in the DB.
 - Home page layout is final: don't change it unless asked.
 

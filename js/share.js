@@ -1,9 +1,9 @@
 // Shareable paper-cutout cards: one of your reviews, or your Top 4, drawn on a canvas.
-// Original art only (no episode stills). Any button with data-share-review="<log id>" or
+// Original art, except the Top 4 tiles, which show the episode stills. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" opens the preview.
-import { supabase } from './supabase.js?v=20261127123741';
-import { epCode, stars, toast } from './ui.js?v=20261127123741';
-import { fallbackColour } from './episodes.js?v=20261127123741';
+import { supabase } from './supabase.js?v=20261127124031';
+import { epCode, stars, toast } from './ui.js?v=20261127124031';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127124031';
 
 const W = 1080;
 const H = 1350;
@@ -173,24 +173,59 @@ export async function drawReviewCard({ name, title, code, rating, liked, review 
   return canvas;
 }
 
-/** { name, picks: [{ id, title, code, rating }] } -> canvas */
+/** { name, picks: [{ id, title, code, rating, picture }] } -> canvas */
 export async function drawTop4Card({ name, picks }) {
   const { canvas, c } = await newCanvas();
   c.font = `400 62px ${DISPLAY}`;
   text(c, clamp(c, `${name}'s Top 4`, 960, 1)[0], W / 2, 240, { size: 62, font: DISPLAY, colour: '#fff', align: 'center' });
-  picks.slice(0, 4).forEach((p, i) => {
+  const four = picks.slice(0, 4);
+  const pictures = await Promise.all(four.map((p) => loadPicture(p.picture)));
+  four.forEach((p, i) => {
     const x = 70 + (i % 2) * 485;
     const y = 285 + Math.floor(i / 2) * 440;
     paper(c, x, y, 455, 405, fallbackColour(p), i % 3 ? 1.2 : -1.2);
-    text(c, String(i + 1), x + 34, y + 90, { size: 80, font: DISPLAY, colour: '#fff' });
-    paper(c, x + 24, y + 125, 407, 250, PAPER, 0);
-    c.font = `400 42px ${DISPLAY}`;
-    let ty = y + 183;
-    for (const line of clamp(c, p.title, 360, 3)) { text(c, line, x + 48, ty, { size: 42, font: DISPLAY, colour: NAVY }); ty += 46; }
-    text(c, p.code, x + 48, y + 322, { size: 28, colour: '#555' });
-    text(c, stars(p.rating), x + 48, y + 358, { size: 34, colour: '#b9770e' });
+    // The episode picture (16:9), or a big number on the coloured paper if there isn't one.
+    const img = pictures[i];
+    if (img) {
+      cover(c, img, x + 24, y + 22, 407, 229);
+      paper(c, x + 8, y + 8, 70, 70, fallbackColour(p), -5);
+      text(c, String(i + 1), x + 43, y + 64, { size: 52, font: DISPLAY, colour: '#fff', align: 'center' });
+    } else {
+      text(c, String(i + 1), x + 227, y + 190, { size: 150, font: DISPLAY, colour: '#fff', align: 'center' });
+    }
+    paper(c, x + 24, y + 262, 407, 126, PAPER, 0);
+    c.font = `400 32px ${DISPLAY}`;
+    const title = clamp(c, p.title, 365, 2);
+    title.forEach((line, n) => text(c, line, x + 44, y + (title.length > 1 ? 300 : 316) + n * 34, { size: 32, font: DISPLAY, colour: NAVY }));
+    text(c, p.code, x + 44, y + 372, { size: 24, colour: '#555' });
+    text(c, stars(p.rating), x + 411, y + 373, { size: 30, colour: '#b9770e', align: 'right' });
   });
   return canvas;
+}
+
+/** Resolves to the loaded image, or null. The extra query keeps the browser from reusing the
+ *  page's own (non-CORS) cached copy, which would stop the canvas being saved. */
+function loadPicture(src) {
+  if (!src) return null;
+  return new Promise((resolve) => {
+    const img = new Image();
+    const timer = setTimeout(() => resolve(null), 8000);
+    img.crossOrigin = 'anonymous';
+    img.onload = () => { clearTimeout(timer); resolve(img); };
+    img.onerror = () => { clearTimeout(timer); resolve(null); };
+    img.src = `${src}${src.includes('?') ? '&' : '?'}card=1`;
+  });
+}
+
+/** Fill the box with the image, cropping the overflow, with an ink outline. */
+function cover(c, img, x, y, w, h) {
+  const scale = Math.max(w / img.width, h / img.height);
+  const sw = w / scale;
+  const sh = h / scale;
+  c.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, x, y, w, h);
+  c.lineWidth = 4;
+  c.strokeStyle = INK;
+  c.strokeRect(x, y, w, h);
 }
 
 // ---- Preview dialog ----
@@ -254,12 +289,12 @@ async function top4Data(username) {
   const { data: p, error } = await supabase.from('profiles').select('id, username, display_name, top4').eq('username', username).maybeSingle();
   if (error || !p?.top4?.length) throw new Error(error?.message || 'Pick some favourites first.');
   const [{ data: eps }, { data: ratings }] = await Promise.all([
-    supabase.from('episodes').select('id, kind, season, number, title, air_date').in('id', p.top4),
+    supabase.from('episodes').select('id, kind, season, number, title, air_date, still_path').in('id', p.top4),
     supabase.from('latest_ratings').select('episode_id, rating').eq('user_id', p.id).in('episode_id', p.top4),
   ]);
   const picks = p.top4.map((id) => (eps || []).find((e) => e.id === id)).filter(Boolean).map((e) => {
     const r = (ratings || []).find((x) => x.episode_id === e.id)?.rating;
-    return { id: e.id, title: e.title, code: epCode(e), rating: r == null ? null : Number(r) };
+    return { id: e.id, title: e.title, code: epCode(e), rating: r == null ? null : Number(r), picture: stillUrl(e, 'w500') };
   });
   return { name: p.display_name || p.username, picks };
 }

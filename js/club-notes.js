@@ -2,9 +2,9 @@
 // week's book starts, and one telling you whether the episode you voted for won.
 // Also a note when Butters likes one of your reviews (buttersLikes in js/butters.js). Not for his
 // best friends: he likes all of theirs. "Read" is remembered per person in localStorage.
-import { supabase } from './supabase.js?v=20261127123741';
-import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261127123741';
-import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127123741';
+import { supabase } from './supabase.js?v=20261127124031';
+import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261127124031';
+import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127124031';
 
 const seenKey = (userId) => `parkboxd-club-seen-${userId}`;
 const seen = (userId) => new Set(JSON.parse(localStorage.getItem(seenKey(userId)) || '[]'));
@@ -31,7 +31,7 @@ async function buttersLikeNotes(userId) {
 
 async function bookNotes(userId) {
   if (weekKey(0) < CLUB_START) return [];
-  const { loadAllEpisodes } = await import('./episodes.js?v=20261127123741');
+  const { loadAllEpisodes } = await import('./episodes.js?v=20261127124031');
   const [pk] = await loadPicks(await loadAllEpisodes(), [0]);
   if (!pk?.pick) return [];
   const title = pk.pick.title;

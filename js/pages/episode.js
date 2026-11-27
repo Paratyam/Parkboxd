@@ -1,17 +1,17 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127123741';
-import { supabase } from '../supabase.js?v=20261127123741';
-import { SITE_NAME } from '../config.js?v=20261127123741';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127123741';
-import { line } from '../jokes.js?v=20261127123741';
-import { celebrate } from '../fx.js?v=20261127123741';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127123741';
-import { mackeyNoteHTML } from '../mackey.js?v=20261127123741';
-import { starInput } from '../stars.js?v=20261127123741';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127123741';
-import { pcButtonHTML } from '../pc.js?v=20261127123741';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261127123741';
-import { loadVotes, loadRatings, scoreVotes, ranking } from '../cage.js?v=20261127123741';
-import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127123741';
+import { initPage, logEpisode } from '../layout.js?v=20261127124031';
+import { supabase } from '../supabase.js?v=20261127124031';
+import { SITE_NAME } from '../config.js?v=20261127124031';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127124031';
+import { line } from '../jokes.js?v=20261127124031';
+import { celebrate } from '../fx.js?v=20261127124031';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127124031';
+import { mackeyNoteHTML } from '../mackey.js?v=20261127124031';
+import { starInput } from '../stars.js?v=20261127124031';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127124031';
+import { pcButtonHTML } from '../pc.js?v=20261127124031';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261127124031';
+import { loadVotes, loadRatings, scoreVotes, ranking } from '../cage.js?v=20261127124031';
+import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127124031';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -36,7 +36,7 @@ if (!ep) {
 } else {
   renderShell();
   $('#roll-again')?.addEventListener('click', async () => {
-    const r = await import('../random.js?v=20261127123741');
+    const r = await import('../random.js?v=20261127124031');
     if (params.get('rolled') === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
@@ -138,7 +138,7 @@ function renderPanel() {
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
       <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>
     </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127123741')).openAddToList(ep));
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127124031')).openAddToList(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 
   starInput($('#rate-stars'), { value: rating, size: 34, label: 'Your rating', onChange: setRating });
