@@ -63,7 +63,7 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - [x] Create a Supabase project and give Claude the Project URL and anon public key (in `js/config.js`)
 - [x] Run `supabase/setup.sql` in the Supabase SQL editor
 - [ ] Get a TMDB API key (themoviedb.org → Settings → API). Keep it private and paste it into the import page
-- [x] Create a public GitHub repo and enable Pages: repo `Paratyam/Parkboxd`, live at https://paratyam.github.io/Parkboxd/ (capital P matters)
+- [x] Create a public GitHub repo and enable Pages: repo `Paratyam/Parkboxd`, live at https://paratyam.github.io/Parkboxd/ (capital P matters). Main address is now https://parkboxd.pages.dev (Cloudflare Pages project `parkboxd`); both deploy from `main`, and Supabase Auth must allow both
 - [x] Add the GitHub Pages URL to the Supabase Auth URL settings (Site URL and redirect URLs)
 - [x] Sign up on the site, then make the account admin (`paratyam` is admin) (`update profiles set is_admin = true where username = '...'`)
 - [ ] Run the episode import

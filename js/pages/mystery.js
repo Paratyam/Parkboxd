@@ -1,10 +1,10 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture and Kenny gives a (muffled) hint. Six tries.
-import { initPage, logEpisode } from '../layout.js?v=20261127124259';
-import { supabase } from '../supabase.js?v=20261127124259';
-import { $, esc, epCode, toast } from '../ui.js?v=20261127124259';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127124259';
-import { mysterySVG } from '../art.js?v=20261127124259';
+import { initPage, logEpisode } from '../layout.js?v=20261127125716';
+import { supabase } from '../supabase.js?v=20261127125716';
+import { $, esc, epCode, toast } from '../ui.js?v=20261127125716';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127125716';
+import { mysterySVG } from '../art.js?v=20261127125716';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');

@@ -1,6 +1,6 @@
 # Parkboxd
 
-Letterboxd-style site for South Park episodes. Live at https://paratyam.github.io/Parkboxd (GitHub Pages from `main`).
+Letterboxd-style site for South Park episodes. Live at https://parkboxd.pages.dev (Cloudflare Pages, auto-deploys `main`; no build step). The old https://paratyam.github.io/Parkboxd (GitHub Pages, same branch) still works.
 The owner's username is **paratyam**. Claude writes all the code; keep explanations short.
 
 ## Stack

@@ -1,5 +1,5 @@
 // Cage Match: a personal head-to-head game. Votes are stored, scores (Elo) are worked out here.
-import { supabase } from './supabase.js?v=20261127124259';
+import { supabase } from './supabase.js?v=20261127125716';
 
 const K = 32;
 export const UNDEFEATED_MIN = 3; // wins needed before "undefeated" means anything
