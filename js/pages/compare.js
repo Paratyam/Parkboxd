@@ -1,10 +1,10 @@
 // compare.html?u=name: your ratings vs theirs.
-import { initPage } from '../layout.js?v=20261127071522';
-import { supabase } from '../supabase.js?v=20261127071522';
-import { SITE_NAME } from '../config.js?v=20261127071522';
-import { $, esc, params, epCode, stars, avatarHTML } from '../ui.js?v=20261127071522';
-import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127071522';
-import { allLatestRatings, tasteMatch, tasteLabel } from '../insights.js?v=20261127071522';
+import { initPage } from '../layout.js?v=20261127072042';
+import { supabase } from '../supabase.js?v=20261127072042';
+import { SITE_NAME } from '../config.js?v=20261127072042';
+import { $, esc, params, epCode, stars, avatarHTML } from '../ui.js?v=20261127072042';
+import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127072042';
+import { allLatestRatings, tasteMatch, tasteLabel } from '../insights.js?v=20261127072042';
 
 const { profile: me } = await initPage({ title: 'Taste match', auth: 'required' });
 const root = $('#compare');

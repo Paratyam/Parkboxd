@@ -2,9 +2,9 @@
 //   🏔️ Completionist  → gold ring around their avatar
 //   ✍️ Critic (25+ reviews) → "Critic" tag after their name
 //   🌶️ Hot Take Artist (5+ hot takes) → 🌶️ after their name
-import { supabase } from './supabase.js?v=20261127071522';
-import { loadAllEpisodes, todayISO } from './episodes.js?v=20261127071522';
-import { allLatestRatings, episodeAverages, isHotTake } from './insights.js?v=20261127071522';
+import { supabase } from './supabase.js?v=20261127072042';
+import { loadAllEpisodes, todayISO } from './episodes.js?v=20261127072042';
+import { allLatestRatings, episodeAverages, isHotTake } from './insights.js?v=20261127072042';
 
 const CACHE_KEY = 'parkboxd-flair';
 const CACHE_MS = 10 * 60 * 1000;
