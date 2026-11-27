@@ -2,14 +2,14 @@
 // The reviews live in code, not the database, so they never count toward averages. People can
 // still like and comment on them: guest_review_likes / guest_review_comments, keyed by
 // '<character>:<normalised episode title>'.
-import { supabase } from './supabase.js?v=20261127201216';
-import { esc, stars, avatarHTML, toast } from './ui.js?v=20261127201216';
-import { threadHTML, wireThread } from './comments.js?v=20261127201216';
-import { pcButtonHTML, installPC } from './pc.js?v=20261127201216';
-import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127201216';
-import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127201216';
-import { CARTMAN, RATED as C_RATED, REVIEWS as C_REVIEWS, cartmanCommentHTML } from './cartman-profile.js?v=20261127201216';
-import { KENNY, RATED as N_RATED, REVIEWS as N_REVIEWS } from './kenny-profile.js?v=20261127201216';
+import { supabase } from './supabase.js?v=20261127201535';
+import { esc, stars, avatarHTML, toast } from './ui.js?v=20261127201535';
+import { threadHTML, wireThread } from './comments.js?v=20261127201535';
+import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201535';
+import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127201535';
+import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127201535';
+import { CARTMAN, RATED as C_RATED, REVIEWS as C_REVIEWS, cartmanCommentHTML } from './cartman-profile.js?v=20261127201535';
+import { KENNY, RATED as N_RATED, REVIEWS as N_REVIEWS } from './kenny-profile.js?v=20261127201535';
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 
@@ -86,7 +86,7 @@ export function guestReviewHTML(g, extras, me) {
         <div class="review-foot">
           <button type="button" class="link-button review-like" data-guest-like aria-pressed="${!!liked}">${liked ? '♥ Liked' : '♡ Like review'}</button>
           <button type="button" class="link-button" data-guest-toggle aria-expanded="${open}">${plural(likes, 'like')} · ${plural(comments.length, 'comment')}</button>
-          ${pcButtonHTML(g.rating)}
+          ${pcTalkButtonHTML(g.who.username, g.text)}
         </div>
         <div class="butters-thread guest-thread" data-guest-thread ${open ? '' : 'hidden'}>
           ${comments.length ? threadHTML(comments, { me }) : ''}

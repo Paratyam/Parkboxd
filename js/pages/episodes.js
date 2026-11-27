@@ -1,10 +1,10 @@
-import { initPage } from '../layout.js?v=20261127201216';
-import { supabase } from '../supabase.js?v=20261127201216';
-import { $, esc, params, fetchAll } from '../ui.js?v=20261127201216';
-import { loadAllEpisodes, myLogMap, cardHTML, seasonCode, matchesCode } from '../episodes.js?v=20261127201216';
-import { FOCUS_CHARACTERS } from '../data/character-tags.js?v=20261127201216';
-import { line } from '../jokes.js?v=20261127201216';
-import { searchEpisodes } from '../search.js?v=20261127201216';
+import { initPage } from '../layout.js?v=20261127201535';
+import { supabase } from '../supabase.js?v=20261127201535';
+import { $, esc, params, fetchAll } from '../ui.js?v=20261127201535';
+import { loadAllEpisodes, myLogMap, cardHTML, seasonCode, matchesCode } from '../episodes.js?v=20261127201535';
+import { FOCUS_CHARACTERS } from '../data/character-tags.js?v=20261127201535';
+import { line } from '../jokes.js?v=20261127201535';
+import { searchEpisodes } from '../search.js?v=20261127201535';
 
 const { user } = await initPage({ title: 'Episodes', auth: 'required' });
 

@@ -1,19 +1,20 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127201216';
-import { supabase } from '../supabase.js?v=20261127201216';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127201216';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127201216';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127201216';
-import { line } from '../jokes.js?v=20261127201216';
-import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127201216';
-import { stanPicks, stanLine } from '../stan.js?v=20261127201216';
-import { loadPicks } from '../club.js?v=20261127201216';
-import { isChaos } from '../fx.js?v=20261127201216';
-import { loadStreaks, streakHTML } from '../streak.js?v=20261127201216';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127201216';
-import { gloveSVG, booksSVG, mysterySVG } from '../art.js?v=20261127201216';
-import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261127201216';
-import { guestReviewsFor } from '../guest-reviews.js?v=20261127201216';
-import { showInstallAd } from '../install.js?v=20261127201216';
+import { pcTalkButtonHTML } from '../pc.js?v=20261127201535';
+import { initPage, logEpisode } from '../layout.js?v=20261127201535';
+import { supabase } from '../supabase.js?v=20261127201535';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127201535';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127201535';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127201535';
+import { line } from '../jokes.js?v=20261127201535';
+import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127201535';
+import { stanPicks, stanLine } from '../stan.js?v=20261127201535';
+import { loadPicks } from '../club.js?v=20261127201535';
+import { isChaos } from '../fx.js?v=20261127201535';
+import { loadStreaks, streakHTML } from '../streak.js?v=20261127201535';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127201535';
+import { gloveSVG, booksSVG, mysterySVG } from '../art.js?v=20261127201535';
+import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261127201535';
+import { guestReviewsFor } from '../guest-reviews.js?v=20261127201535';
+import { showInstallAd } from '../install.js?v=20261127201535';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -32,7 +33,7 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">🎲 Random episode</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js?v=20261127201216');
+    const r = await import('../random.js?v=20261127201535');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -199,7 +200,7 @@ async function renderHome() {
           <span class="rating">${stars(kyle.rating)}</span>
           <p class="kyle-note-text">“${esc(kyle.text)}”</p>
           <p class="guest-note"><strong>What it's about:</strong> ${esc(kyle.note)}</p>
-          <div class="kyle-note-foot"><a href="episode.html?id=${kyleEp.id}">Like or comment →</a><a href="profile.html?u=kyle">All of Kyle's reviews</a></div>
+          <div class="kyle-note-foot"><a href="episode.html?id=${kyleEp.id}">Like or comment →</a><a href="profile.html?u=kyle">All of Kyle's reviews</a>${pcTalkButtonHTML('kyle', kyle.text)}</div>
         </section>` : '';
 
   // Tegridy streak (only once you've started one).
@@ -242,7 +243,7 @@ async function renderHome() {
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js?v=20261127201216');
+  const random = () => import('../random.js?v=20261127201535');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>

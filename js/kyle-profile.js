@@ -2,10 +2,11 @@
 // real member: nothing is in the database, so his ratings never touch site averages. He reviews
 // the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
 // also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201216';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201216';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127201216';
-import { cartmanCommentHTML } from './cartman-profile.js?v=20261127201216';
+import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201535';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201535';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201535';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127201535';
+import { cartmanCommentHTML } from './cartman-profile.js?v=20261127201535';
 
 export const KYLE_USERNAME = 'kyle';
 export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#3fb950', avatar_icon: 'earflaps' };
@@ -158,6 +159,7 @@ export async function renderKyleProfile(root) {
               <div style="font-size:14px"><a class="ep-link" href="episode.html?id=${x.ep.id}">${esc(x.ep.title)}</a> <span style="color:var(--muted)">${esc(epCode(x.ep))}</span></div>
               <div class="review-meta">${avatarHTML(KYLE, 22)}<span><strong>Kyle Broflovski</strong></span><span class="rating">${stars(x.r)}</span>${x.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}</div>
               <p>${esc(x.text)}</p>
+              ${pcTalkButtonHTML('kyle', x.text)}
               <p class="guest-note">📖 <strong>Kyle's note:</strong> ${esc(x.note)}</p>
               ${cartmanCommentHTML(x.ep.title)}
             </div>
@@ -188,6 +190,7 @@ export async function renderKyleProfile(root) {
         </section>
       </aside>
     </div>`;
+  installPC();
   root.removeAttribute('aria-busy');
 
   const follow = root.querySelector('#follow-kyle');

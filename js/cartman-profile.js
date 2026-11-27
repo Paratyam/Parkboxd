@@ -2,9 +2,10 @@
 // Kyle, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. He loves the episodes where he wins and hates nearly everything else, and he leaves a
 // comment under every one of Kyle's reviews. Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201216';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201216';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127201216';
+import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201535';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201535';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201535';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127201535';
 
 export const CARTMAN = { username: 'cartman', display_name: 'Eric Cartman', avatar_color: '#e5534b', avatar_icon: 'beanie' };
 
@@ -63,7 +64,7 @@ export function cartmanCommentHTML(title) {
   return found ? `
     <div class="cartman-comment">
       ${avatarHTML(CARTMAN, 26)}
-      <div><a href="profile.html?u=cartman"><strong>Eric Cartman</strong></a> <span class="guest-tag">Character</span><p>${esc(found[1])}</p></div>
+      <div><a href="profile.html?u=cartman"><strong>Eric Cartman</strong></a> <span class="guest-tag">Character</span><p>${esc(found[1])}</p>${pcTalkButtonHTML('cartman', found[1])}</div>
     </div>` : '';
 }
 
@@ -137,6 +138,7 @@ export async function renderCartmanProfile(root) {
               <div style="font-size:14px"><a class="ep-link" href="episode.html?id=${x.ep.id}">${esc(x.ep.title)}</a> <span style="color:var(--muted)">${esc(epCode(x.ep))}</span></div>
               <div class="review-meta">${avatarHTML(CARTMAN, 22)}<span><strong>Eric Cartman</strong></span><span class="rating">${stars(x.r)}</span>${x.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}</div>
               <p>${esc(x.text)}</p>
+              ${pcTalkButtonHTML('cartman', x.text)}
             </div>
           </article>`).join('')}</div>
 
@@ -165,6 +167,7 @@ export async function renderCartmanProfile(root) {
         </section>
       </aside>
     </div>`;
+  installPC();
   root.removeAttribute('aria-busy');
 
   const follow = root.querySelector('#follow-cartman');

@@ -1438,6 +1438,8 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .pc-by strong { display: block; font-family: 'Luckiest Guy', cursive; font-weight: 400; font-size: 15px; letter-spacing: .5px; color: #ffd23f; }
 .pc-badge { flex: 0 0 34px; height: 34px; display: grid; place-items: center; font-size: 20px; background: #ffd23f; border: 2px solid #000; border-radius: 50%; }
 .pc-by + p.pc-text { margin-top: 0; border-radius: 0 0 6px 6px; border-left-width: 3px; }
+.pc-talk { border-radius: 8px; margin-bottom: 4px; }
+button.pc-toggle[data-pc-talk] { align-self: flex-start; }
 
 /* Secret modes: the logo hold must not drag the link or open the long-press menu */
 .logo { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; touch-action: none; }

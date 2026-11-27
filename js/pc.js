@@ -1,7 +1,7 @@
 // PC Principal's "PC it" filter: rewrites a review in his voice with word swaps, plus an opener
 // and a closer. Browser only, never saved. Any review card with a [data-pc] button gets the
 // toggle (installPC() listens once for the whole page).
-import { esc } from './ui.js?v=20261127201216';
+import { esc } from './ui.js?v=20261127201535';
 
 // [pattern, replacement]. Order matters: phrases before single words. Each replacement is only
 // made of words no later rule matches, so nothing gets swapped twice. "$1" = a captured word.
@@ -205,6 +205,8 @@ export function installPC() {
   if (installed) return;
   installed = true;
   document.addEventListener('click', (e) => {
+    const talk = e.target.closest?.('[data-pc-talk]');
+    if (talk) return toggleTalk(talk);
     const b = e.target.closest?.('[data-pc]');
     if (!b) return;
     const p = b.closest('.review')?.querySelector('.review-body > p');
@@ -227,4 +229,46 @@ export function installPC() {
     b.setAttribute('aria-pressed', String(on));
     b.textContent = on ? '↩ Undo PC Principal' : '✊ Let PC Principal fix it';
   });
+}
+
+// Character accounts (their reviews and comments) aren't rewritten: PC Principal has a word with
+// that character instead.
+const TALKS = {
+  butters: [
+    "Butters, bro, I love the positivity. But you don't have to apologize for having an opinion. Your voice is valid.",
+    "Butters! Being this nice is totally progressive, bro. Now go be that nice to yourself.",
+    "Listen, Butters, if anybody grounds you for this, you send them to my office.",
+  ],
+  kyle: [
+    "Kyle, bro, great analysis. But not everything needs to end in a lesson. Let other people learn something too.",
+    "Kyle, I respect the passion. Now take a breath before you start another speech in my hallway.",
+    "Bro, the reading list is awesome. Just remember that disagreeing with you isn't a hate crime, Kyle.",
+  ],
+  cartman: [
+    "CARTMAN! My office. NOW. That language is not okay in my school, bro.",
+    "Eric, bro, I read this twice and got angrier both times. That's two weeks of detention.",
+    "Oh, HELL no, Cartman. You're going to apologize, and you're going to mean it, bro.",
+  ],
+  kenny: [
+    "Kenny, bro, I didn't catch a single word, and that's on me. Every voice deserves to be heard, even through a parka.",
+    "Mmph right back at you, Kenny. I'm proud of you for speaking your truth, bro.",
+    "Kenny, I'm getting you a microphone. Nobody gets muffled in a progressive school.",
+  ],
+};
+
+/** The same button, for a character's review or comment. `text` picks which message they get. */
+export const pcTalkButtonHTML = (who, text) => `<button type="button" class="link-button pc-toggle" data-pc-talk="${esc(who)}" data-pc-pick="${hash(String(text || '')) % TALKS[who].length}" aria-pressed="false">✊ Let PC Principal fix it</button>`;
+
+function toggleTalk(b) {
+  const on = b.getAttribute('aria-pressed') !== 'true';
+  if (on) {
+    const box = document.createElement('div');
+    box.className = 'pc-by pc-talk';
+    box.setAttribute('role', 'status');
+    box.innerHTML = `<span class="pc-badge" aria-hidden="true">✊</span><span><strong>PC Principal</strong> ${esc(TALKS[b.dataset.pcTalk][b.dataset.pcPick])}</span>`;
+    (b.closest('.review-foot, .kyle-note-foot') || b).after(box);
+    b.pcBox = box;
+  } else b.pcBox?.remove();
+  b.setAttribute('aria-pressed', String(on));
+  b.textContent = on ? '↩ Undo PC Principal' : '✊ Let PC Principal fix it';
 }

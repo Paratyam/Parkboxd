@@ -1,19 +1,20 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
-import { initPage, logEpisode } from '../layout.js?v=20261127201216';
-import { supabase } from '../supabase.js?v=20261127201216';
-import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127201216';
-import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127201216';
-import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127201216';
-import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127201216';
-import { booksSVG } from '../art.js?v=20261127201216';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127201216';
-import { BUTTERS_NOTES } from '../data/butters-notes.js?v=20261127201216';
-import { BUTTERS } from '../butters-profile.js?v=20261127201216';
-import { threadHTML, wireThread } from '../comments.js?v=20261127201216';
+import { pcTalkButtonHTML } from '../pc.js?v=20261127201535';
+import { initPage, logEpisode } from '../layout.js?v=20261127201535';
+import { supabase } from '../supabase.js?v=20261127201535';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127201535';
+import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127201535';
+import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127201535';
+import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127201535';
+import { booksSVG } from '../art.js?v=20261127201535';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127201535';
+import { BUTTERS_NOTES } from '../data/butters-notes.js?v=20261127201535';
+import { BUTTERS } from '../butters-profile.js?v=20261127201535';
+import { threadHTML, wireThread } from '../comments.js?v=20261127201535';
 
 const SHELF = 12; // past weeks on the shelf
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127201216';
-import { episodeAverages } from '../insights.js?v=20261127201216';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127201535';
+import { episodeAverages } from '../insights.js?v=20261127201535';
 
 const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');
@@ -29,7 +30,7 @@ function withButters(html, r) {
   const reply = `
         <div class="butters-reply">
           <a href="profile.html?u=butters" aria-hidden="true" tabindex="-1">${avatarHTML(BUTTERS, 24)}</a>
-          <div><span class="who"><a href="profile.html?u=butters" style="color:inherit">Butters Stotch</a> <span class="host-tag">📚 Host</span></span><p>${esc(c)}</p></div>
+          <div><span class="who"><a href="profile.html?u=butters" style="color:inherit">Butters Stotch</a> <span class="host-tag">📚 Host</span></span><p>${esc(c)}</p>${pcTalkButtonHTML('butters', c)}</div>
         </div>`;
   return html.replace(/<\/div>\s*<\/article>\s*$/, `${reply}</div></article>`);
 }
@@ -82,6 +83,7 @@ async function render() {
           <span class="heart" aria-label="Liked">♥</span>
         </div>
         <p>${esc(butters.text)}</p>
+        ${pcTalkButtonHTML('butters', butters.text)}
         <div class="review-foot">
           <button type="button" class="link-button review-like" id="butters-like" aria-pressed="${bLiked}">${bLiked ? '♥ Liked' : '♡ Like review'}</button>
           <span>${bCount} like${bCount === 1 ? '' : 's'} · ${(bComments || []).length} comment${(bComments || []).length === 1 ? '' : 's'}</span>

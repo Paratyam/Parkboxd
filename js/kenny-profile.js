@@ -2,9 +2,10 @@
 // accounts, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. His reviews are all muffled, and also show on those episode pages
 // (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201216';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201216';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127201216';
+import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201535';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201535';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201535';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127201535';
 
 export const KENNY = { username: 'kenny', display_name: 'Kenny McCormick', avatar_color: '#f2711c', avatar_icon: 'mittens' };
 
@@ -84,6 +85,7 @@ export async function renderKennyProfile(root) {
               <div style="font-size:14px"><a class="ep-link" href="episode.html?id=${x.ep.id}">${esc(x.ep.title)}</a> <span style="color:var(--muted)">${esc(epCode(x.ep))}</span></div>
               <div class="review-meta">${avatarHTML(KENNY, 22)}<span><strong>Kenny McCormick</strong></span><span class="rating">${stars(x.r)}</span>${x.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}</div>
               <p>${esc(x.text)}</p>
+              ${pcTalkButtonHTML('kenny', x.text)}
             </div>
           </article>`).join('')}</div>
 
@@ -112,6 +114,7 @@ export async function renderKennyProfile(root) {
         </section>
       </aside>
     </div>`;
+  installPC();
   root.removeAttribute('aria-busy');
 
   const follow = root.querySelector('#follow-kenny');
