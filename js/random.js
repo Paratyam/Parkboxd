@@ -1,7 +1,7 @@
 // Random episode picker: unwatched, ones you rated (with a minimum), or anything.
-import { supabase } from './supabase.js?v=20261127075902';
-import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261127075902';
-import { line } from './jokes.js?v=20261127075902';
+import { supabase } from './supabase.js?v=20261127080145';
+import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261127080145';
+import { line } from './jokes.js?v=20261127080145';
 
 const KEY = 'parkboxd-random';
 const DEFAULTS = { pool: 'unwatched', min: 0, kinds: ['episode'], season: '' };

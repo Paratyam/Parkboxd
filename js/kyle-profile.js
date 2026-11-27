@@ -2,9 +2,9 @@
 // real member: nothing is in the database, so his ratings never touch site averages. He reviews
 // the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
 // also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127075902';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127075902';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127075902';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127080145';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127080145';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127080145';
 
 export const KYLE_USERNAME = 'kyle';
 export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#3fb950', avatar_icon: 'earflaps' };
@@ -23,11 +23,13 @@ export const RATED = [
   ['Toilet Paper', 3.5, false], ['Free Hat', 4.5, true], ['Here Comes the Neighborhood', 3.5, false],
   ['The Hobbit', 4.5, true], ['Breast Cancer Show Ever', 5, true], ['Put It Down', 4, false], ['The Cissy', 4, false],
   ['South Park: The End of Obesity', 4.5, true], ['South Park (Not Suitable for Children)', 4, false],
+  ['Mr. Hankey, the Christmas Poo', 5, true], ["Ike's Wee Wee", 5, true],
 ];
 
 const WATCHED = 200; // he made sure it was a round number
 
-const TOP4 = ['Margaritaville', 'Douche and Turd', 'Cartoon Wars (2)', 'Trapped in the Closet'];
+// Kyle's own big ones: his Christmas episode, his little brother, Cartman finally losing a fight, and saving the economy.
+const TOP4 = ['Mr. Hankey, the Christmas Poo', "Ike's Wee Wee", 'Breast Cancer Show Ever', 'Margaritaville'];
 
 // [title, review, reading-list note on what the episode is spoofing].
 export const REVIEWS = [

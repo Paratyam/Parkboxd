@@ -1,8 +1,8 @@
 // notifications.html: who followed you, liked your reviews, or commented on them.
-import { initPage, refreshBell } from '../layout.js?v=20261127075902';
-import { supabase } from '../supabase.js?v=20261127075902';
-import { $, esc, avatarHTML } from '../ui.js?v=20261127075902';
-import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127075902';
+import { initPage, refreshBell } from '../layout.js?v=20261127080145';
+import { supabase } from '../supabase.js?v=20261127080145';
+import { $, esc, avatarHTML } from '../ui.js?v=20261127080145';
+import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127080145';
 
 const { user } = await initPage({ title: 'Notifications', auth: 'required' });
 const root = $('#notifs');
@@ -24,7 +24,7 @@ async function render() {
     .limit(60);
   // Book Club notes (new book, vote result) join the list, from Butters.
   const club = await clubNotes(user.id);
-  const BUTTERS = { display_name: 'Butters', avatar_color: '#f5c518', avatar_icon: 'burger' };
+  const BUTTERS = { display_name: 'Butters', avatar_color: '#f5c518', avatar_icon: 'books' };
   const items = [...(dbItems || []), ...club.map((n) => ({ ...n, type: 'club', actor: BUTTERS }))]
     .sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
 
