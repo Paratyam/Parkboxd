@@ -1457,4 +1457,4 @@ html.coon-takeover-on .histogram .end { font-size: 7px; }
 .install-ad-close { position: absolute; top: 6px; right: 10px; background: none; border: 0; padding: 4px; color: var(--bg-deep); font-size: 15px; cursor: pointer; }
 html.chaos .install-ad, html.mysterion .install-ad { bottom: 66px; }
 
-.badge .badge-share { align-self: center; margin-top: 4px; font-size: 11px; }
+.badge .badge-share { align-self: flex-start; margin-top: auto; padding-top: 8px; font-size: 11px; } /* always the bottom-left corner */

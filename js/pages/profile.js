@@ -1,27 +1,27 @@
-import { initPage } from '../layout.js?v=20261127132005';
-import { supabase } from '../supabase.js?v=20261127132005';
-import { SITE_NAME } from '../config.js?v=20261127132005';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127132005';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127132005';
-import { shareInvite } from '../invite.js?v=20261127132005';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127132005';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127132005';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127132005';
-import { line } from '../jokes.js?v=20261127132005';
-import { characterColours } from '../data/character-tags.js?v=20261127132005';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127132005';
-import { streakInfo } from '../streak.js?v=20261127132005';
-import { loadPicks } from '../club.js?v=20261127132005';
-import { beltSVG } from '../art.js?v=20261127132005';
-import { roastJokes } from '../jimmy.js?v=20261127132005';
+import { initPage } from '../layout.js?v=20261127132311';
+import { supabase } from '../supabase.js?v=20261127132311';
+import { SITE_NAME } from '../config.js?v=20261127132311';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127132311';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127132311';
+import { shareInvite } from '../invite.js?v=20261127132311';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127132311';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127132311';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127132311';
+import { line } from '../jokes.js?v=20261127132311';
+import { characterColours } from '../data/character-tags.js?v=20261127132311';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127132311';
+import { streakInfo } from '../streak.js?v=20261127132311';
+import { loadPicks } from '../club.js?v=20261127132311';
+import { beltSVG } from '../art.js?v=20261127132311';
+import { roastJokes } from '../jimmy.js?v=20261127132311';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' and Kyle's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127132005')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127132005')).renderKyleProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127132311')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127132311')).renderKyleProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {
@@ -158,8 +158,8 @@ async function render(p) {
       <strong>${esc(b.name)}</strong>
       <span>${esc(b.desc)}</span>
       ${b.earned ? '<span class="got">Unlocked</span>' : `<div class="bar" aria-label="${b.have} of ${b.need}"><div style="width:${b.need ? (b.have / b.need) * 100 : 0}%;background:var(--green)"></div></div>`}
-      ${b.earned && isMe ? `<button type="button" class="link-button badge-share" data-share-award data-kicker="Badge unlocked" data-emoji="${esc(b.emoji)}" data-heading="${esc(b.name)}" data-line="${esc(b.desc)}" data-name="${esc(name)}">Share</button>` : ''}
       ${secretLine(b)}
+      ${b.earned && isMe ? `<button type="button" class="link-button badge-share" data-share-award data-kicker="Badge unlocked" data-emoji="${esc(b.emoji)}" data-heading="${esc(b.name)}" data-line="${esc(b.desc)}" data-name="${esc(name)}">Share</button>` : ''}
     </div>`).join('')}</div>`;
 
   // The first time you see a secret badge you've earned, announce the secret.
