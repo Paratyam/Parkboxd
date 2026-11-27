@@ -3,13 +3,13 @@
 // one note per day they visit (or all at once with a speedrun), skipping features they've already
 // used, except the finale. Members who joined before the tour existed only get an invite. State is
 // remembered per person in localStorage.
-import { supabase } from './supabase.js?v=20261127133859';
+import { supabase } from './supabase.js?v=20261127134202';
 
 const LAUNCH = '2026-11-27T00:00:00Z'; // accounts older than this are invited, not enrolled
 
 const WELCOME = {
   id: 'welcome', href: 'notifications.html',
-  text: "Hey, I'm showing you around Parkboxd. One tip a day, tops, or hit “Speedrun the tour” on your notifications page to get it all now. If it gets annoying, hit “End the tour” on your notifications page. I won't take it personally, dude.",
+  text: "Hey, I'm showing you around Parkboxd. One tip a day, or hit “Speedrun the tour” up top to get it all now. Annoying? Hit “End the tour”. I won't take it personally, dude.",
 };
 
 // `used` lists the tables that show someone has already found the feature. The last stop is the
@@ -94,7 +94,7 @@ export async function tourNotes(userId) {
   if (!state) return [];
   if (state.status === 'invited') {
     return [{ id: 'tour-invite', from: 'stan', href: 'notifications.html?tour=start', created_at: state.at,
-      text: "Hey, want a quick tour of the site? A few tips, one a day. Tap here if you're in." }];
+      text: "Hey, want a tour of the site? One tip a day, or speedrun it all at once. Tap here if you're in." }];
   }
   return (state.sent || []).map((s) => {
     const note = s.id === WELCOME.id ? WELCOME : STEPS.find((x) => x.id === s.id);

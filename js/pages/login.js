@@ -1,8 +1,8 @@
-import { initPage } from '../layout.js?v=20261127133859';
-import { supabase } from '../supabase.js?v=20261127133859';
-import { $, params, safeNext, notify, setBusy, USERNAME_RE } from '../ui.js?v=20261127133859';
-import { line } from '../jokes.js?v=20261127133859';
-import { pendingInvite } from '../invite.js?v=20261127133859';
+import { initPage } from '../layout.js?v=20261127134202';
+import { supabase } from '../supabase.js?v=20261127134202';
+import { $, params, safeNext, notify, setBusy, USERNAME_RE } from '../ui.js?v=20261127134202';
+import { line } from '../jokes.js?v=20261127134202';
+import { pendingInvite } from '../invite.js?v=20261127134202';
 
 const msg = $('#msg');
 const { session, profile } = await initPage({ title: 'Log in', needsUsername: false });

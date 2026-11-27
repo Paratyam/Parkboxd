@@ -3,10 +3,10 @@
 // Also a note when Butters likes one of your reviews (buttersLikes in js/butters.js). Not for his
 // best friends: he likes all of theirs. "Read" is remembered per person in localStorage.
 // Stan's site tour (js/tour.js) travels the same way, so its notes are merged in here too.
-import { supabase } from './supabase.js?v=20261127133859';
-import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261127133859';
-import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127133859';
-import { tourNotes } from './tour.js?v=20261127133859';
+import { supabase } from './supabase.js?v=20261127134202';
+import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261127134202';
+import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127134202';
+import { tourNotes } from './tour.js?v=20261127134202';
 
 const seenKey = (userId) => `parkboxd-club-seen-${userId}`;
 const seen = (userId) => new Set(JSON.parse(localStorage.getItem(seenKey(userId)) || '[]'));
@@ -34,7 +34,7 @@ async function buttersLikeNotes(userId) {
 
 async function bookNotes(userId) {
   if (weekKey(0) < CLUB_START) return [];
-  const { loadAllEpisodes } = await import('./episodes.js?v=20261127133859');
+  const { loadAllEpisodes } = await import('./episodes.js?v=20261127134202');
   const [pk] = await loadPicks(await loadAllEpisodes(), [0]);
   if (!pk?.pick) return [];
   const title = pk.pick.title;
