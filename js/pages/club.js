@@ -1,21 +1,25 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
-import { initPage, logEpisode } from '../layout.js?v=20261127025509';
-import { supabase } from '../supabase.js?v=20261127025509';
-import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127025509';
-import { buttersReview, buttersComment } from '../butters.js?v=20261127025509';
-import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127025509';
-import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127025509';
-import { booksSVG } from '../art.js?v=20261127025509';
+import { initPage, logEpisode } from '../layout.js?v=20261127030332';
+import { supabase } from '../supabase.js?v=20261127030332';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127030332';
+import { buttersReview, buttersComment, BEST_FRIENDS } from '../butters.js?v=20261127030332';
+import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127030332';
+import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127030332';
+import { booksSVG } from '../art.js?v=20261127030332';
 
 const SHELF = 12; // past weeks on the shelf
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127025509';
-import { episodeAverages } from '../insights.js?v=20261127025509';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127030332';
+import { episodeAverages } from '../insights.js?v=20261127030332';
 
 const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');
 
 // About 1 in 5 reviews get a reply from Butters, tucked under the review text.
 function withButters(html, r) {
+  // Butters likes every review his best friend writes, and says so.
+  if (BEST_FRIENDS.includes(r.profiles?.username)) {
+    html = html.replace('<div class="review-foot">', '<div class="review-foot"><span class="butters-liked" title="Butters liked this review">♥ Liked by Butters</span>');
+  }
   const c = buttersComment(r);
   if (!c) return html;
   const reply = `

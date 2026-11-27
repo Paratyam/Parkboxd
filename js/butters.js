@@ -195,7 +195,7 @@ const MENTIONS = [
 ];
 
 // Butters' best friend always gets a reply, from a set of their own.
-const BEST_FRIENDS = ['paratyam'];
+export const BEST_FRIENDS = ['paratyam'];
 
 const BESTIE_OPENERS = [
   'Oh golly, it\'s my best friend!', 'Hey, buddy!', 'Everybody stop! {name} posted!', 'Wowee, a {name} review!',

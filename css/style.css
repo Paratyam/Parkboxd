@@ -1194,3 +1194,4 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
   .logo-letter { font-size: 13px !important; padding: 2px 2px 1px; }
   .header-right .btn-green { padding: 7px 9px; font-size: 12px; }
 }
+.butters-liked { display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px; border-radius: 999px; background: #fff3a6; color: #b23a2e; font-weight: 800; font-size: 11px; border: 1.5px solid #000; transform: rotate(-2deg); }
