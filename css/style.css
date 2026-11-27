@@ -1414,3 +1414,29 @@ html.coon-takeover-on .histogram .end { font-size: 7px; }
 .mackey-note > span { font-size: 22px; line-height: 1; }
 .mackey-note p { margin: 0; color: inherit; }
 .mackey-note strong { display: block; }
+
+/* Mr. Hankey's 12 Days of Christmas (hankey.html) */
+.advent-head { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; padding: 22px 26px; background-color: #1f5c38; color: #f4f8fb; }
+.advent-head > div { flex: 1; min-width: 220px; }
+.advent-head h1 { margin: 0 0 6px; font-size: clamp(28px, 5vw, 42px); line-height: 1.05; color: #fff; }
+.advent-head p { margin: 2px 0 0; font-size: 14px; }
+.advent-emoji { font-size: 56px; line-height: 1; }
+.advent { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+.advent li { display: flex; flex-direction: column; }
+.door { flex: 1; width: 100%; min-height: 170px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border: 0; font: inherit; color: #fff; }
+.advent .door.locked, .advent .door.ready { justify-content: center; align-items: center; }
+.door.locked { background-color: var(--surface); color: var(--muted); }
+.door.ready { background-color: #b3262e; cursor: pointer; transition: transform .12s; }
+.advent li:nth-child(even) .door.ready { background-color: #1f7a44; }
+.door.ready:hover, .door.ready:focus-visible { transform: rotate(-2deg) scale(1.03); }
+.door-num { font-size: 56px; line-height: 1; }
+.door-when { font-size: 13px; font-weight: 600; }
+.door.open { justify-content: flex-start; align-items: stretch; gap: 4px; color: var(--text-soft); font-size: 13px; }
+.door.open a { display: flex; flex-direction: column; gap: 8px; }
+.door.open p { margin: 0; line-height: 1.5; }
+.door.seen > span { color: var(--green); }
+.advent-cert { text-align: center; padding: 26px; background-color: #f3ead2; color: #2b2118; }
+.advent-cert > span { font-size: 44px; }
+.advent-cert h2 { margin: 6px 0; }
+.advent-cert p { margin: 0; }
+@media (prefers-reduced-motion: reduce) { .door.ready { transition: none; } }
