@@ -1,10 +1,10 @@
 // Follows, review likes and the shared review block.
-import { supabase } from './supabase.js?v=20261127073448';
-import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261127073448';
-import { thumbHTML } from './episodes.js?v=20261127073448';
-import { line } from './jokes.js?v=20261127073448';
-import { isHotTake } from './insights.js?v=20261127073448';
-import { buttersLikes } from './butters.js?v=20261127073448';
+import { supabase } from './supabase.js?v=20261127073742';
+import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261127073742';
+import { thumbHTML } from './episodes.js?v=20261127073742';
+import { line } from './jokes.js?v=20261127073742';
+import { isHotTake } from './insights.js?v=20261127073742';
+import { buttersLikes } from './butters.js?v=20261127073742';
 
 export async function followingIds(userId) {
   const { data } = await supabase.from('follows').select('followee_id').eq('follower_id', userId);
@@ -119,7 +119,7 @@ export function wireReviewLikes(root, onChange) {
       .select('*, episodes(id, kind, season, number, title, air_date, still_path)').eq('id', Number(b.dataset.editReview)).maybeSingle();
     b.disabled = false;
     if (error || !log) return alert(error?.message || "Couldn't find that review.");
-    const { logEpisode } = await import('./layout.js?v=20261127073448');
+    const { logEpisode } = await import('./layout.js?v=20261127073742');
     const changed = await logEpisode({ episode: log.episodes, log });
     if (changed) onChange?.();
   }));

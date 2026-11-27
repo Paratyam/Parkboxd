@@ -1364,3 +1364,9 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .guest-thread { margin: 10px 0 0; border-left-color: var(--green); background: rgba(63,185,80,.05); }
 .guest-thread[hidden] { display: none; }
 .search-pop-season { border-bottom: 1px solid var(--line); border-radius: 6px 6px 0 0; margin-bottom: 4px; }
+.kyle-note { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; background-color: var(--surface-2); border-left: 4px solid #3fb950; }
+.kyle-note .section-head { margin-bottom: 4px; }
+.kyle-note-ep { color: var(--white); } .kyle-note-ep span { color: var(--muted); font-size: 13px; }
+.kyle-note-text { margin: 4px 0 0; font-style: italic; color: var(--text-soft); }
+.kyle-note .guest-note { margin-top: 4px; }
+.kyle-note-foot { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 6px; font-size: 13px; }
