@@ -1,11 +1,11 @@
 // Shared header + footer, and the session/profile check every page runs first.
-import { supabase, isConfigured } from './supabase.js?v=20261127113501';
-import { SITE_NAME } from './config.js?v=20261127113501';
-import { esc, avatarHTML, currentPage, toast } from './ui.js?v=20261127113501';
-import { line } from './jokes.js?v=20261127113501';
-import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127113501';
-import { pineStripSVG, busStopSVG } from './art.js?v=20261127113501';
-import { VERSION } from './version.js?v=20261127113501';
+import { supabase, isConfigured } from './supabase.js?v=20261127113852';
+import { SITE_NAME } from './config.js?v=20261127113852';
+import { esc, avatarHTML, currentPage, toast } from './ui.js?v=20261127113852';
+import { line } from './jokes.js?v=20261127113852';
+import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127113852';
+import { pineStripSVG, busStopSVG } from './art.js?v=20261127113852';
+import { VERSION } from './version.js?v=20261127113852';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -71,7 +71,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   renderFooter(session);
   decorateBigMessages();
   // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
-  if (session) import('./flair.js?v=20261127113501').then((m) => m.startFlair()).catch(() => {});
+  if (session) import('./flair.js?v=20261127113852').then((m) => m.startFlair()).catch(() => {});
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
@@ -146,7 +146,7 @@ function renderHeader(profile, session) {
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
   el.querySelector('#header-random')?.addEventListener('click', async () => {
-    const r = await import('./random.js?v=20261127113501');
+    const r = await import('./random.js?v=20261127113852');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   });
   syncDice();
@@ -159,7 +159,7 @@ function renderHeader(profile, session) {
  * event on window so the current page can refresh itself.
  */
 export async function logEpisode(opts = {}) {
-  const { openLogModal } = await import('./log-modal.js?v=20261127113501');
+  const { openLogModal } = await import('./log-modal.js?v=20261127113852');
   const changed = await openLogModal(opts);
   if (changed) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
   return changed;
@@ -201,7 +201,7 @@ export async function refreshBell() {
     supabase.auth.getUser(),
   ]);
   // Plus unread Book Club notes (new book, vote result), worked out in the browser.
-  const club = await import('./club-notes.js?v=20261127113501').then((m) => m.clubNotes(user?.id)).catch(() => []);
+  const club = await import('./club-notes.js?v=20261127113852').then((m) => m.clubNotes(user?.id)).catch(() => []);
   const count = (dbCount || 0) + club.filter((n) => !n.read).length;
   const badge = bell.querySelector('.bell-count');
   badge.hidden = !count;
@@ -256,16 +256,42 @@ function wireSearch(form) {
   form.append(pop);
   let seq = 0;
   const close = () => { pop.hidden = true; };
+  // Nobody guesses you can search by plot, so say it: rotating "Try …" placeholders, and a
+  // hint with tappable examples when the box is focused but empty.
+  const TRY = ["theme park", "nascar", "kenny dies", "cartman eats chili", "weed farm", "jesus boxing", "world of warcraft"];
+  const basePlaceholder = input.placeholder;
+  let tick = 0;
+  setInterval(() => {
+    if (document.activeElement === input || input.value) return;
+    tick = (tick + 1) % (TRY.length + 1);
+    input.placeholder = tick ? `Try “${TRY[tick - 1]}”` : basePlaceholder;
+  }, 3000);
+  const showHint = () => {
+    seq++;
+    const picks = [...TRY].sort(() => Math.random() - 0.5).slice(0, 4);
+    pop.innerHTML = `<div class="search-pop-hint"><strong>Can't remember the title?</strong> Describe what happened.</div>
+      <div class="search-pop-try">${picks.map((t) => `<button type="button" class="chip" data-try="${esc(t)}">${esc(t)}</button>`).join('')}</div>`;
+    pop.hidden = false;
+  };
+  input.addEventListener('focus', () => { if (!input.value.trim()) showHint(); });
+  pop.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-try]');
+    if (!b) return;
+    input.value = b.dataset.try;
+    input.focus();
+    input.dispatchEvent(new Event('input'));
+  });
   input.addEventListener('input', async () => {
     const q = input.value.trim();
     const mine = ++seq;
+    if (!q) return showHint();
     if (q.length < 2) return close();
     const safe = q.replace(/[^\p{L}\p{N} _-]/gu, '');
     const [{ data: people }, { loadAllEpisodes, seasonCode, matchesCode }, { searchEpisodes, snippetHTML }] = await Promise.all([
       safe ? supabase.from('profiles').select('username, display_name, avatar_color, avatar_icon')
         .not('username', 'is', null).or(`username.ilike.%${safe}%,display_name.ilike.%${safe}%`).limit(5) : Promise.resolve({ data: [] }),
-      import('./episodes.js?v=20261127113501'),
-      import('./search.js?v=20261127113501'),
+      import('./episodes.js?v=20261127113852'),
+      import('./search.js?v=20261127113852'),
     ]);
     // "S15" lists the whole season (plus a link to its page), "S15E3" that one episode.
     // Anything else: title matches, then "what happened" matches from the plot summaries.
