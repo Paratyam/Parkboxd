@@ -68,7 +68,7 @@ async function render(p) {
   // Cage Match champion: #1 in their personal head-to-head ranking.
   const cageVotes = await loadVotes(p.id);
   // Book Club: this week and the 51 before it, for the Bookworm badge and the library card.
-  const clubPicks = await loadPicks(all, Array.from({ length: 52 }, (_, i) => -i));
+  const clubPicks = (await loadPicks(all, Array.from({ length: 52 }, (_, i) => -i))).filter((pk) => pk.real);
   const champ = champion(scoreVotes(cageVotes, theirRatings));
   const champEp = champ && all.find((e) => e.id === champ.top.id);
   const champHtml = champEp ? `
@@ -121,7 +121,7 @@ async function render(p) {
     <div class="library-card">
       <div class="lc-head"><span class="cut">South Park Elementary Library</span><span>Book Club card</span></div>
       <div class="lc-body">
-        <div class="lc-who"><span>Member</span><strong>${esc(name)}</strong><span class="lc-count">Read <b>${readCount}</b> of the last ${lastTen.length} picks</span></div>
+        <div class="lc-who"><span>Member</span><strong>${esc(name)}</strong><span class="lc-count">Read <b>${readCount}</b> of ${lastTen.length < 10 ? `${lastTen.length} pick${lastTen.length === 1 ? "" : "s"} so far` : "the last 10 picks"}</span></div>
         <div class="lc-stamps">${lastTen.map((pk, i) => {
           const done = readInWeek(pk);
           const current = i === lastTen.length - 1;

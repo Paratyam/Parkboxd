@@ -71,7 +71,7 @@ async function render() {
   const reviews = (logs || []).filter((l) => l.review && l.review.trim());
   const extras = await reviewExtras(reviews.map((r) => r.id), user.id);
   const iWatched = (logs || []).some((l) => l.user_id === user.id);
-  const past = picks.slice(1, 5).map((p) => ({ ep: p.pick, start: p.start, end: p.end })).filter((x) => x.ep);
+  const past = picks.slice(1, 5).filter((p) => p.real).map((p) => ({ ep: p.pick, start: p.start, end: p.end })).filter((x) => x.ep);
   // Club average: ratings members gave each past pick during its week.
   const { data: pastLogs } = past.length
     ? await supabase.from('logs').select('user_id, episode_id, rating, created_at')
@@ -157,7 +157,9 @@ async function render() {
     ${voteHTML}
     <section>
       <div class="section-head"><h2>📚 Past reads</h2></div>
-      <div class="club-shelf"><div class="ep-grid">${past.map((x) => cardHTML(x.ep, { mine: mine.get(x.ep.id), meta: pastMeta(x) })).join('')}</div></div>
+      ${past.length
+        ? `<div class="club-shelf"><div class="ep-grid">${past.map((x) => cardHTML(x.ep, { mine: mine.get(x.ep.id), meta: pastMeta(x) })).join('')}</div></div>`
+        : "<div class=\"club-shelf\"><p class=\"empty\" style=\"margin:0\">The shelf is empty! This is the club's very first week. Every book we read goes up here, so make it a good one.</p></div>"}
     </section>`;
   root.removeAttribute('aria-busy');
 

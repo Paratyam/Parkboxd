@@ -6,6 +6,9 @@ import { isAired } from './episodes.js';
 
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
+/** The club's first week (it launched Thursday 26 Nov 2026). Earlier weeks never had a book. */
+export const CLUB_START = '2026-11-23';
+
 /** Monday 00:00 UTC of the week `offset` weeks from now (0 = this week, -1 = last week). */
 export function weekStart(offset = 0) {
   const now = new Date();
@@ -69,6 +72,7 @@ export async function loadPicks(all, offsets) {
     const candidates = candidatesFor(all, offset);
     const votes = (data || []).filter((v) => v.week_start === key);
     const { counts, winner } = candidates.length ? tally(candidates, votes) : { counts: new Map(), winner: null };
-    return { offset, key, start: weekStart(offset), end: weekStart(offset + 1), candidates, votes, counts, pick: winner };
+    // real: the club existed that week (weeks before CLUB_START are hidden everywhere).
+    return { offset, key, real: key >= CLUB_START, start: weekStart(offset), end: weekStart(offset + 1), candidates, votes, counts, pick: winner };
   });
 }
