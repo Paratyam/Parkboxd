@@ -2,9 +2,9 @@
 // Kyle, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. He loves the episodes where he wins and hates nearly everything else, and he leaves a
 // comment under every one of Kyle's reviews. Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127194038';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127194038';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127194038';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127194752';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127194752';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127194752';
 
 export const CARTMAN = { username: 'cartman', display_name: 'Eric Cartman', avatar_color: '#e5534b', avatar_icon: 'beanie' };
 
@@ -16,41 +16,41 @@ const LOSSES = ['Breast Cancer Show Ever', 'AWESOM-O', 'Cartmanland', 'Cartoon W
 export const RATED = [...TOP4.map((t) => [t, 5, true]), ...LOSSES.map((t) => [t, 0.5, false])];
 
 export const REVIEWS = [
-  ['Scott Tenorman Must Die', "Best episode ever made, and if you disagree you can suck my balls. Some son of a bitch thought he could rip off ME. Nyah nyah nyah nyah nyah nyah. Five stars, and I'd do it all again, assholes."],
-  ['Make Love, Not Warcraft', "I carried every single one of you useless bastards. I trained you, I yelled at you, I saved the whole damn game, and did anybody say \"thank you, Eric\"? No. Because you're jealous little noobs. Five stars for me."],
-  ['Casa Bonita', "Cliff divers. Black Bart's Cave. Sopapillas. All I had to do was make one dumbass disappear for a while, and I'd call that a bargain. TOTALLY worth it. Sweeeet."],
-  ['Die Hippie, Die', "Seriously, you guys, I TOLD you. Hippies everywhere, stinking up the whole damn town, and you all laughed at me. Then who comes begging for help? That's right. Kiss my ass, then say thank you. Five stars."],
-  ['Breast Cancer Show Ever', "This is total bullcrap and whoever made it can bite me. I was NOT scared, I was being strategic, and I had a tummy ache. My mem wrote a note. Half a star, and that's me being generous."],
-  ['AWESOM-O', "LAME. Complete invasion of my privacy. Butters, if you show anybody that tape I will end you, and that was a totally different kid dancing anyway. Half a star. Delete this piece of crap."],
-  ['Cartmanland', "My park. MY rides. No lines, because you assholes weren't invited, ha ha. Then a bunch of greedy grown-ups ruined it with bills and Kyle suddenly got all happy about it. Son of a bitch. Half a star."],
-  ['Cartoon Wars (2)', "Goddammit, I was ONE hallway away! One! And then Kahl shows up with his stupid green hat and his stupid speech like anybody asked. Half a star. I hope your hat falls in the toilet, you bastard."],
-  ['Le Petit Tourette', "I had the greatest scam of all time: say whatever the hell I want and everybody has to be nice to me. Then my own damn mouth betrayed me on live TV. Sabotage. Half a star. I hate you guys."],
-  ['Dances With Smurfs', "I was the only honest voice at that school and that sneaky hippie Wendy ambushed me by AGREEING with me. Who the hell does that?! Cheating bitch move. Half a star. Screw you guys, I'm going home."],
+  ['Scott Tenorman Must Die', "Best epsiode ever made, and if you disagree you can suck my balls. Some son of a bitch thought he could rip off ME. Nyah nyah nyah nyah nyah nyah. Five stars, and Id do it all again, assholes."],
+  ['Make Love, Not Warcraft', "I carried every single one of you useless bastards. I trained you, I yelled at you, I saved teh hole damn game, and did anybody say \"thank u, Eric\"? No. Becuz your jelous little noobs. Five stars for me."],
+  ['Casa Bonita', "Cliff divers. Black Bart's Cave. Sopapillas. All I had to do was make one dumbass disappear for a while, and Id call that a bargain. TOTALY worth it. Sweeeet."],
+  ['Die Hippie, Die', "serisouly, you guys, I TOLD you. Hippies everywhere, stinking up teh hole damn town, and you all laughed at me. Then who comes begging for help? Thats right. Kiss my ass, then say thank u. Five stars."],
+  ['Breast Cancer Show Ever', "This is total bullcrapp and whoever made it can bite me. I was NOT scared, I was being strategic, and I had a tummy ache. My mem wrote a note. Half a star, and thats me being genorous."],
+  ['AWESOM-O', "LAME. Complete invasion of my privicy. Butters, if you show anybody that tape I will end you, and that was a totaly different kid dancing anyway. Half a star. Delete this piece of crap."],
+  ['Cartmanland', "My park. MY rides. No lines, becuz you assholes weren't invited, ha ha. Then a bunch of greedy grown-ups ruined it wiht bills and Kyle suddenly got all happy abuot it. Son of a bitch. Half a star."],
+  ['Cartoon Wars (2)', "Goddammit, I was ONE hallway away! One! And then Kahl shows up wiht his stupd green hat and his stupid speach like anybody asked. Half a star. I hope your hat falls in the toilet, you bastard."],
+  ['Le Petit Tourette', "I had the greatest scam of all time: say whatever the hell I want and everbody has to be nice to me. Then my own damn mouth betrayed me on live TV. Sabotage. Half a star. I hate you guys."],
+  ['Dances With Smurfs', "I was the only honest voice at that school and that sneaky hippie Wendy ambushed me by AGREEING wiht me. Who the hell does that?! Cheating bitch move. Half a star. Screw you guys, Im going home."],
 ];
 
 // One comment under each of Kyle's reviews: [the title Kyle used, comment].
 const KYLE_COMMENTS = [
-  ['Chinpokomon', "\"I'm not proud.\" You shouldn't be, Kahl. You showed up late with the crappiest one and everybody laughed. I'm STILL laughing, asshole."],
-  ['Something Wall-Mart This Way Comes', "\"Shop local,\" says the cheap bastard who has never bought me one single thing. Shut your stupid mouth."],
-  ['Trapped in the Closet', "Oh WOW, your boyfriend Stan gets to be the special one, and you're still his sidekick. I would've been a way better prophet. Suck it."],
-  ['Smug Alert!', "KYLE reviewing an episode about being smug. You ARE the smug cloud, you son of a bitch. Somebody get me a gas mask."],
-  ['Cartoon Wars (1)', "It WAS about principles. My principle is that I hate it and I hate you. Read a book, jackass."],
-  ['Cartoon Wars (2)', "Five stars for your own damn speech? Nobody was listening, Kahl. Nobody has EVER been listening. Even Stan was asleep."],
-  ['Douche and Turd', "\"I get both sides.\" Pick one, you spineless fence-sitting butthole."],
-  ['Goobacks', "A whole paragraph about jobs from a dumbass who's never had one. Go cry about it to somebody who gives a crap."],
+  ['Chinpokomon', "\"Im not proud.\" You shouldn't be, Kahl. You showed up late wiht the crappiest one and everbody laughed. I'm STILL laughing, asshole."],
+  ['Something Wall-Mart This Way Comes', "\"Shop local,\" says the cheap bastard who has never bought me one single thing. Shut your stupd mouth."],
+  ['Trapped in the Closet', "Oh WOW, your boyfriend Stan gets to be the special one, and your still his sidekick. I would've been a way better prophet. Suck it."],
+  ['Smug Alert!', "KYLE reviewing an epsiode abuot being smug. You ARE the smug cloud, you son of a bitch. Somebody get me a gas mask."],
+  ['Cartoon Wars (1)', "It WAS abuot principles. My principal is that I hate it and I hate you. Read a book, jackass."],
+  ['Cartoon Wars (2)', "Five stars for your own damn speach? Nobdy was lisening, Kahl. Nobody has EVER been lisening. Even Stan was asleep."],
+  ['Douche and Turd', "\"I get both sides.\" Pick one, you spineless fence-sitting buthole."],
+  ['Goobacks', "A whole paragraph abuot jobs from a dumbass who's never had one. Go cry about it to sombody who gives a crap."],
   ['Margaritaville', "You blew all that money on strangers and not ONE cent on your good buddy Eric? You selfish son of a bitch."],
-  ['Best Friends Forever', "That handheld fight was totally legit. I had paperwork. Don't ask who wrote it, you nosy bastard."],
+  ['Best Friends Forever', "That handheld fight was totaly legit. I had paperwork. Don't ask who wrote it, you nosy bastard."],
   ['Quest for Ratings', "Our show would've crushed Craig's if you dumbasses had just done exactly what I said."],
-  ['The Passion of the Jew', "A whole review about your stupid feelings. Boo hoo. Call a waaah-mbulance, crybaby."],
-  ['Go God Go XII (2)', "I froze my ass off for like five hundred years and you're just sitting there taking notes? Screw you, Kyle. Screw your notes."],
+  ['The Passion of the Jew', "A whole reveiw abuot your stupd feelings. Boo hoo. Call a waaah-mbulance, crybaby."],
+  ['Go God Go XII (2)', "I froze my ass off for like five hundred years and your just sitting there taking notes? Screw you, Kyle. Screw your notes."],
   ['Dances With Smurfs', "\"My favorite kind of ending.\" Of course it is. Go marry Wendy and be insufferable together, nerd."],
-  ['Safe Space', "From now on only nice comments about me are allowed, and yours can kiss my ass. Butters, delete this poophead."],
+  ['Safe Space', "From now on only nice commments abuot me are allowed, and yours can kiss my ass. Butters, delete this poophead."],
   ['Go God Go (1)', "\"Mostly setup.\" Excuse me, that was MY emotional journey, you insensitive prick."],
-  ['Stunning and Brave', "YOU got in trouble and for once it wasn't me? Haha! Hahahaha, you dumb bastard! Best day of my life."],
+  ['Stunning and Brave', "YOU got in trouble and for once it wasnt me? Haha! Hahahaha, you dumb bastard! Best day of my life."],
   ['The Hobbit', "Wendy is NOT usually right, you kiss-ass. Stop encouraging that hippie."],
-  ['Breast Cancer Show Ever', "You've watched it HOW many times? You sick son of a bitch. I'm telling your mom. And my mem. MEHHHM!"],
-  ['Put It Down', "Aww, what a sweet widdle episode about listening. I stopped reading, because shut up."],
-  ['The Cissy', "I had a very real need for a private bathroom and your smug ass is making it weird. I do what I want!"],
+  ['Breast Cancer Show Ever', "You've watched it HOW many times? You sick son of a bitch. Im telling your mom. And my mem. MEHHHM!"],
+  ['Put It Down', "Aww, what a sweet widdle epsiode abuot lisening. I stopped reading, becuz shut up."],
+  ['The Cissy', "I had a very real need for a privite bathroom and your smug ass is making it weird. I do what I want!"],
   ['South Park: The End of Obesity', "FINALLY you admit the villain is paperwork and not me. Screenshotting this. Suck my balls, Kahl."],
   ['South Park (Not Suitable for Children)', "You read that title and still reviewed it? Oh, you are SO busted, asshole. Respect my authoritah and log off."],
 ];
