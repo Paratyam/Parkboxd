@@ -2,8 +2,8 @@
 // finished that day's Mystery Episode, or judged 10 Cage Match fights ("watering"). Every 7 days
 // in a row earns a rain day (hold up to 2) that covers a missed day. Randy has feelings about it.
 // Everything is worked out in the browser from rows that already exist.
-import { esc, fetchAll } from './ui.js?v=20261127182557';
-import { supabase } from './supabase.js?v=20261127182557';
+import { esc, fetchAll } from './ui.js?v=20261127182952';
+import { supabase } from './supabase.js?v=20261127182952';
 
 export const WATER_FIGHTS = 10;
 export const RAIN_EVERY = 7;
@@ -81,42 +81,72 @@ export async function loadStreaks(userIds) {
 const CUT = 'stroke="#141414" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"';
 
 /**
- * An original paper-cutout plant that grows with the streak: a seed at 0, fully grown (with
- * flowers) at 100 days. wilted = the streak just died.
+ * An original paper-cutout cannabis plant that grows with the streak: a seed at 0, fully grown (with
+ * big buds) at 100 days. wilted = the streak just died.
  */
 export function plantSVG(days, { wilted = false } = {}) {
   const d = Math.max(0, Math.min(FULL_GROWN, days));
   const g = (d / FULL_GROWN) ** 0.55; // quick early growth, so every first week shows
-  const leaf = wilted ? '#a08a4a' : '#5ccf4a';
+  const leaf = wilted ? '#a08a4a' : '#4fbf3f';
+  const leaf2 = wilted ? '#8a763e' : '#3da536';
   const stem = wilted ? '#7a6636' : '#2f8f3a';
   const soil = 92; // where the stem leaves the pot
-  const height = d ? 10 + 62 * g : 0;
+  const height = d ? 10 + 58 * g : 0;
   const top = soil - height;
   const pairs = d ? Math.min(7, 1 + Math.floor(g * 6.5)) : 0;
+  const twig = (path, outer, inner) => `<path d="${path}" fill="none" stroke="#141414" stroke-width="${outer}" stroke-linecap="round"/><path d="${path}" fill="none" stroke="${stem}" stroke-width="${inner}" stroke-linecap="round"/>`;
+  // One serrated leaflet pointing up from 0,0: [width, length] fractions down its left edge.
+  const EDGE = [[0, 0], [0.45, 0.18], [0.32, 0.24], [0.85, 0.34], [0.62, 0.4], [1, 0.52], [0.68, 0.57], [0.72, 0.7], [0.42, 0.72], [0.36, 0.84], [0, 1]];
+  const blade = (len, angle, colour) => {
+    const at = (side, [x, y]) => `${(side * x * len * 0.17).toFixed(2)} ${(-y * len).toFixed(2)}`;
+    const path = `M${[...EDGE.map((p) => at(-1, p)), ...EDGE.slice(0, -1).reverse().map((p) => at(1, p))].join(' L')}Z`;
+    return `<g transform="rotate(${angle})"><path d="${path}" fill="${colour}" stroke="#141414" stroke-width="1.1" stroke-linejoin="round"/><path d="M0 -1 L0 ${(-len * 0.82).toFixed(2)}" stroke="#1f6b2a" stroke-width=".6" opacity=".7"/></g>`;
+  };
+  // A fan leaf of 3, 5 or 7 leaflets: [angle, size] each.
+  const FANS = {
+    3: [[-55, 0.7], [55, 0.7], [0, 1]],
+    5: [[-95, 0.45], [95, 0.45], [-48, 0.74], [48, 0.74], [0, 1]],
+    7: [[-118, 0.3], [118, 0.3], [-80, 0.52], [80, 0.52], [-40, 0.78], [40, 0.78], [0, 1]],
+  };
+  const fan = (x, y, size, tilt, n, colour) => `<g transform="translate(${x} ${y}) rotate(${tilt})">${FANS[n].map(([a, k]) => blade(size * k, wilted ? a * 0.55 : a, colour)).join('')}</g>`;
   let plant = '';
   if (d) {
-    const line = `M50 ${soil} Q46 ${soil - height / 2} 50 ${top}`;
-    plant += `<path d="${line}" fill="none" stroke="#141414" stroke-width="${4 + 4 * g}" stroke-linecap="round"/>`;
-    plant += `<path d="${line}" fill="none" stroke="${stem}" stroke-width="${1.5 + 3.5 * g}" stroke-linecap="round"/>`;
-    for (let i = 0; i < pairs; i++) {
-      const y = soil - height * ((i + 1) / (pairs + 0.4));
-      const len = (9 + 24 * g) * (1 - (i / pairs) * 0.45);
-      const droop = wilted ? len * 0.55 : -len * 0.35;
+    plant += twig(`M50 ${soil} Q47 ${soil - height / 2} 50 ${top}`, 4 + 3.5 * g, 1.5 + 3 * g);
+    const young = d < 12; // a seedling still has its two round first leaves
+    if (young) {
+      const y = soil - height * 0.3;
+      for (const side of [-1, 1]) plant += `<ellipse cx="${50 + side * 6}" cy="${y}" rx="5.5" ry="2.8" transform="rotate(${side * -18} ${50 + side * 6} ${y})" fill="${leaf}" stroke="#141414" stroke-width="1.2"/>`;
+    }
+    for (let i = young ? 1 : 0; i < pairs; i++) {
+      const y = soil - height * ((i + 1) / (pairs + 0.35));
+      const size = (11 + 19 * g) * (1 - (i / pairs) * 0.42);
+      const off = (3 + 9 * g) * (1 - (i / pairs) * 0.42);
+      const n = g > 0.55 && i < pairs - 2 ? 7 : g > 0.22 && i < pairs - 1 ? 5 : 3;
       for (const side of [-1, 1]) {
-        plant += `<path d="M49 ${y} Q${49 + side * len * 0.4} ${y + droop - len * 0.4} ${49 + side * len} ${y + droop} Q${49 + side * len * 0.55} ${y + droop + len * 0.35} 49 ${y} Z" fill="${leaf}" ${CUT}/>`;
+        const x = 49.5 + side * off;
+        const end = y + (wilted ? off * 0.5 : -off * 0.35);
+        plant += twig(`M49.5 ${y + 2} Q${49.5 + side * off * 0.5} ${y} ${x} ${end}`, 2.6, 1.2)
+          + fan(x, end, size, side * (wilted ? 128 : 72 - i * 5), n, i % 2 ? leaf : leaf2);
       }
     }
-    plant += `<path d="M50 ${top + 3} Q42 ${top - 6} 50 ${top - 10 - 4 * g} Q58 ${top - 6} 50 ${top + 3} Z" fill="${leaf}" ${CUT}/>`;
+    plant += fan(50, top + 2, 9 + 11 * g, wilted ? 150 : 0, g > 0.3 ? 5 : 3, leaf);
   }
-  const flower = (x, y, r) => [0, 72, 144, 216, 288].map((a) => `<circle cx="${x + r * Math.sin((a * Math.PI) / 180)}" cy="${y - r * Math.cos((a * Math.PI) / 180)}" r="${r * 0.75}" fill="#ff7eb6" ${CUT}/>`).join('')
-    + `<circle cx="${x}" cy="${y}" r="${r * 0.75}" fill="#f5c518" ${CUT}/>`;
-  let blooms = '';
-  if (!wilted && d >= FULL_GROWN) blooms = flower(50, top - 8, 6) + flower(27, top + 22, 4.5) + flower(73, top + 30, 4.5);
-  else if (!wilted && d >= 60) blooms = `<circle cx="50" cy="${top - 11}" r="${3 + (d - 60) / 14}" fill="#ff7eb6" ${CUT}/>`;
-  const sparkles = d >= FULL_GROWN ? '<path d="M14 14 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z M86 34 l1.5 4.5 4.5 1.5 -4.5 1.5 -1.5 4.5 -1.5 -4.5 -4.5 -1.5 4.5 -1.5z" fill="#f5c518" stroke="#141414" stroke-width="1"/>' : '';
+  // A bud: a cluster of green bumps with orange hairs and a little frost.
+  const bud = (x, y, r) => [[0, 1.5, 0.8], [-0.65, 0.7, 0.78], [0.65, 0.7, 0.78], [0, 0.1, 0.95], [-0.5, -0.75, 0.7], [0.5, -0.75, 0.7], [0, -1.35, 0.75], [0, -2.1, 0.48]]
+    .map(([dx, dy, k]) => `<circle cx="${x + dx * r}" cy="${y + dy * r}" r="${k * r}" fill="#9ad84a" stroke="#141414" stroke-width="1.1"/>`).join('')
+    + [[-0.7, 0.4, -1], [0.6, -0.2, 1], [-0.2, -1.1, -1], [0.4, 1.2, 1], [0, -2.2, 1], [0.1, 0.3, -1]]
+      .map(([dx, dy, side]) => `<path d="M${x + dx * r} ${y + dy * r} q${side * r * 0.55} ${-r * 0.15} ${side * r * 0.65} ${-r * 0.65}" fill="none" stroke="#f2711c" stroke-width="${Math.max(0.8, r * 0.2)}" stroke-linecap="round"/>`).join('')
+    + [[-0.3, 0.9], [0.35, -0.6], [-0.1, -1.6]].map(([dx, dy]) => `<circle cx="${x + dx * r}" cy="${y + dy * r}" r="${r * 0.13}" fill="#f4ffd8"/>`).join('');
+  let buds = '';
+  if (!wilted && d >= FULL_GROWN) buds = bud(50, top - 1, 6.5) + bud(34, top + 24, 4.2) + bud(66, top + 30, 4.2);
+  else if (!wilted && d >= 60) {
+    buds = bud(50, top, 2.6 + (d - 60) / 16);
+    if (d >= 87) buds += bud(36, top + 27, 2.8) + bud(64, top + 33, 2.8);
+  }
+  const sparkles = d >= FULL_GROWN ? '<path d="M12 12 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z M87 30 l1.5 4.5 4.5 1.5 -4.5 1.5 -1.5 4.5 -1.5 -4.5 -4.5 -1.5 4.5 -1.5z" fill="#f5c518" stroke="#141414" stroke-width="1"/>' : '';
   const seed = d ? '' : '<ellipse cx="50" cy="92" rx="5" ry="3.5" fill="#e0c188" stroke="#141414" stroke-width="2"/>';
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" aria-hidden="true" focusable="false">${sparkles}
-    <ellipse cx="50" cy="95" rx="20" ry="4" fill="#5b3a1e" ${CUT}/>${seed}${plant}${blooms}
+    <ellipse cx="50" cy="95" rx="20" ry="4" fill="#5b3a1e" ${CUT}/>${seed}${plant}${buds}
     <path d="M30 96 L70 96 L64 118 L36 118 Z" fill="#c8693a" ${CUT}/>
     <rect x="27" y="94" width="46" height="7" rx="2" fill="#e0824c" ${CUT}/></svg>`;
 }
