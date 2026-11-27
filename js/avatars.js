@@ -73,27 +73,37 @@ export const AVATAR_ICONS = {
     <path d="M14 13 Q17 10 21 10" stroke="#8fe39b" stroke-width="2" fill="none"/>`) },
 };
 
+// A seven-leaflet fan leaf, its stalk end at x,y (the same shape as the streak plant's).
+const EDGE = [[0, 0], [0.45, 0.18], [0.32, 0.24], [0.85, 0.34], [0.62, 0.4], [1, 0.52], [0.68, 0.57], [0.72, 0.7], [0.42, 0.72], [0.36, 0.84], [0, 1]];
+function fanLeaf(x, y, size, colour) {
+  const blades = [[-118, 0.3], [118, 0.3], [-80, 0.52], [80, 0.52], [-40, 0.78], [40, 0.78], [0, 1]].map(([angle, k]) => {
+    const at = (side, [w, h]) => `${(side * w * size * k * 0.17).toFixed(2)} ${(-h * size * k).toFixed(2)}`;
+    const path = `M${[...EDGE.map((p) => at(-1, p)), ...EDGE.slice(0, -1).reverse().map((p) => at(1, p))].join(' L')}Z`;
+    return `<path transform="rotate(${angle})" d="${path}" fill="${colour}" stroke="#141414" stroke-width="1.1" stroke-linejoin="round"/>`;
+  });
+  return `<g transform="translate(${x} ${y})">${blades.join('')}</g>`;
+}
+const sparkle = (x, y, k = 1) => `<path transform="translate(${x} ${y}) scale(${k})" d="M0 -5 L1.4 -1.4 L5 0 L1.4 1.4 L0 5 L-1.4 1.4 L-5 0 L-1.4 -1.4 Z" fill="#fff3a6" stroke="#141414" stroke-width="1"/>`;
+
 // Tegridy streak rewards: `streak` = the longest streak (in days) needed to pick it.
+// The keys "seedling" and "goldplant" stay so anyone who already picked one keeps a picture.
 Object.assign(AVATAR_ICONS, {
-  seedling: { label: 'Seedling', streak: 7, svg: svg(`
-    <path d="M20 29 L20 17" stroke="#141414" stroke-width="4" stroke-linecap="round"/>
-    <path d="M20 29 L20 17" stroke="#2f8f3a" stroke-width="2" stroke-linecap="round"/>
-    <path d="M20 19 Q9 21 7 10 Q18 8 20 19 Z" fill="#5ccf4a" ${S}/>
-    <path d="M20 17 Q22 5 33 7 Q32 18 20 17 Z" fill="#5ccf4a" ${S}/>
-    <path d="M8 31 Q20 23 32 31 L32 34 L8 34 Z" fill="#6b3d1f" ${S}/>`) },
-  wateringcan: { label: 'Watering can', streak: 30, svg: svg(`
-    <path d="M11 18 Q12 7 19 8 Q26 9 25 18" fill="none" stroke="#141414" stroke-width="5"/>
-    <path d="M11 18 Q12 7 19 8 Q26 9 25 18" fill="none" stroke="#9aa5b1" stroke-width="2"/>
-    <path d="M23 24 L32 14 L35 17 L25 31 Z" fill="#4a90e2" ${S}/>
-    <path d="M30 11 L37 19" stroke="#141414" stroke-width="4" stroke-linecap="round"/>
-    <rect x="7" y="17" width="20" height="17" rx="3" fill="#4a90e2" ${S}/>
-    <path d="M11 22 H19" stroke="#bfe3f2" stroke-width="2" stroke-linecap="round"/>
-    <path d="M36 24 L35 27 M32 26 L31 29" stroke="#bfe3f2" stroke-width="2" stroke-linecap="round"/>`) },
-  goldplant: { label: 'Golden plant', streak: 100, svg: svg(`
-    <path d="M20 29 L20 12" stroke="#141414" stroke-width="4" stroke-linecap="round"/>
-    <path d="M20 26 Q9 29 6 20 Q16 16 20 26 Z M20 26 Q31 29 34 20 Q24 16 20 26 Z M20 19 Q11 19 10 11 Q19 10 20 19 Z M20 19 Q29 19 30 11 Q21 10 20 19 Z" fill="#f5c518" ${S}/>
-    <path d="M20 2 L22.5 7 L28 8.5 L22.5 10.5 L20 15 L17.5 10.5 L12 8.5 L17.5 7 Z" fill="#fff3a6" ${S}/>
-    <path d="M11 28 L29 28 L26 37 L14 37 Z" fill="#c8693a" ${S}/>`) },
+  seedling: { label: 'Seed packet', streak: 7, svg: svg(`
+    <rect x="8" y="5" width="24" height="31" rx="2" fill="#f0dfae" ${S}/>
+    <path d="M8 12 H32" ${S}/>
+    ${fanLeaf(20, 31, 16, '#4fbf3f')}`) },
+  wateringcan: { label: 'Scarecrow', streak: 30, svg: svg(`
+    <path d="M20 22 V37 M6 26 H34" fill="none" stroke="#141414" stroke-width="6" stroke-linecap="round"/>
+    <path d="M20 22 V37 M6 26 H34" fill="none" stroke="#8a5a3b" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="20" cy="18" r="9" fill="#f0c878" ${S}/>
+    <path d="M8 13 H32 L26 11 L24 3 H16 L14 11 Z" fill="#8a5a3b" ${S}/>
+    <circle cx="16.5" cy="18" r="1.5" fill="${K}"/><circle cx="23.5" cy="18" r="1.5" fill="${K}"/>
+    <path d="M15 22 Q20 25 25 22" fill="none" ${S}/>`) },
+  goldplant: { label: 'Golden leaf', streak: 100, svg: svg(`
+    ${fanLeaf(20, 31, 28, '#f5c518')}
+    <path d="M20 31 V37" stroke="#141414" stroke-width="5" stroke-linecap="round"/>
+    <path d="M20 31 V37" stroke="#c9a227" stroke-width="2" stroke-linecap="round"/>
+    ${sparkle(33, 8)}${sparkle(7, 30, 0.8)}`) },
 });
 
 // Badge rewards: `badge` = the badge id (js/insights.js) needed to pick it.

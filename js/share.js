@@ -1,14 +1,14 @@
 // Shareable paper-cutout cards: one of your reviews, your Top 4 or your Cage Match top 10, drawn on
 // a canvas. Original art, plus the episode stills on the review and Top 4 cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
-import { supabase } from './supabase.js?v=20261127183114';
-import { epCode, stars, toast } from './ui.js?v=20261127183114';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127183114';
-import { SITE_LINK } from './config.js?v=20261127183114';
-import { plantSVG } from './streak.js?v=20261127183114';
-import { farmSceneSVG } from './farm-scene.js?v=20261127183114';
-import { beltSVG } from './art.js?v=20261127183114';
-import { reviewMessage, top4Message, top10Message, awardMessage, streakMessage } from './share-text.js?v=20261127183114';
+import { supabase } from './supabase.js?v=20261127183744';
+import { epCode, stars, toast } from './ui.js?v=20261127183744';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127183744';
+import { SITE_LINK } from './config.js?v=20261127183744';
+import { plantSVG } from './streak.js?v=20261127183744';
+import { farmSceneSVG } from './farm-scene.js?v=20261127183744';
+import { beltSVG } from './art.js?v=20261127183744';
+import { reviewMessage, top4Message, top10Message, awardMessage, streakMessage } from './share-text.js?v=20261127183744';
 
 const W = 1080;
 const H = 1350;
@@ -104,7 +104,7 @@ function pine(c, x, base, height, colour) {
 }
 
 /** Night sky, logo tiles, pines on the snow and the invitation at the bottom. */
-function backdrop(c) {
+function backdrop(c, invite) {
   c.fillStyle = '#14181c';
   c.fillRect(0, 0, W, H);
   c.fillStyle = 'rgba(255,255,255,.5)';
@@ -133,16 +133,16 @@ function backdrop(c) {
   c.lineTo(W + 5, H + 5);
   c.fill();
   c.stroke();
-  text(c, `Log your own at ${SITE_LINK}`, W / 2, 1305, { size: 34, weight: 700, colour: NAVY, align: 'center' });
+  text(c, `${invite} at ${SITE_LINK}`, W / 2, 1305, { size: 34, weight: 700, colour: NAVY, align: 'center' });
 }
 
-async function newCanvas() {
+async function newCanvas(invite = 'Log your own') {
   await Promise.all(['40px "Luckiest Guy"', '400 40px Inter', '700 40px Inter'].map((f) => document.fonts.load(f))).catch(() => {});
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
   const c = canvas.getContext('2d');
-  backdrop(c);
+  backdrop(c, invite);
   return { canvas, c };
 }
 
@@ -263,7 +263,7 @@ export async function drawAwardCard({ kicker, emoji, heading, line, name }) {
 
 /** { name, days } -> canvas: the plant at its current size, down on the farm. */
 export async function drawStreakCard({ name, days }) {
-  const { canvas, c } = await newCanvas();
+  const { canvas, c } = await newCanvas('Grow your own');
   const n = Number(days);
   paper(c, 110, 200, 860, 940, PAPER, 0.8);
   text(c, 'MY TEGRIDY STREAK', W / 2, 285, { size: 36, weight: 700, colour: '#c0392b', align: 'center' });
