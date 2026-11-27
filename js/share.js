@@ -1,12 +1,12 @@
 // Shareable paper-cutout cards: one of your reviews, your Top 4 or your Cage Match top 10, drawn on
 // a canvas. Original art, plus the episode stills on the review and Top 4 cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
-import { supabase } from './supabase.js?v=20261127172532';
-import { epCode, stars, toast } from './ui.js?v=20261127172532';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127172532';
-import { SITE_LINK } from './config.js?v=20261127172532';
-import { beltSVG } from './art.js?v=20261127172532';
-import { reviewMessage, top4Message, top10Message, awardMessage } from './share-text.js?v=20261127172532';
+import { supabase } from './supabase.js?v=20261127172719';
+import { epCode, stars, toast } from './ui.js?v=20261127172719';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127172719';
+import { SITE_LINK } from './config.js?v=20261127172719';
+import { beltSVG } from './art.js?v=20261127172719';
+import { reviewMessage, top4Message, top10Message, awardMessage } from './share-text.js?v=20261127172719';
 
 const W = 1080;
 const H = 1350;
@@ -300,7 +300,7 @@ function showPreview(canvas, filename, message) {
 }
 
 // On phones, Share sends the picture and its message together. The app receiving them decides
-// how to lay them out. Computers can't share, so they download the picture and copy the words.
+// how to lay them out. Computers can't share, so they download the picture.
 export function showPicture(blob, filename, message) {
     const url = URL.createObjectURL(blob);
     const file = new File([blob], filename, { type: 'image/png' });
@@ -312,19 +312,13 @@ export function showPicture(blob, filename, message) {
       <div class="sheet paper">
         <h2 class="cut">Your card</h2>
         <img alt="Preview of your share card">
-        <p class="share-how">${canShare ? 'Share sends your picture with this message:' : 'Download the picture, then copy this message to go with it.'}</p>
-        <p class="share-message" data-message></p>
         <div class="actions">
           <button type="button" class="btn btn-ghost" data-close>Close</button>
-          ${canShare ? '' : '<button type="button" class="btn btn-ghost" data-copy>Copy message</button>'}
           <a class="btn ${canShare ? 'btn-ghost' : 'btn-green'}" data-download>Download</a>
           ${canShare ? '<button type="button" class="btn btn-green" data-send>Share</button>' : ''}
         </div>
       </div>`;
     d.querySelector('img').src = url;
-    d.querySelector('[data-message]').textContent = message;
-    const copy = () => (navigator.clipboard ? navigator.clipboard.writeText(message).then(() => true, () => false) : Promise.resolve(false));
-    d.querySelector('[data-copy]')?.addEventListener('click', async () => toast(await copy() ? 'Message copied.' : "Couldn't copy it. Press and hold the message to select it."));
     const link = d.querySelector('[data-download]');
     link.href = url;
     link.download = filename;
