@@ -218,3 +218,9 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - **Phones** (`js/tabbar.js`): bottom bar (Home, Club, + Log, Cage, Mystery) under 900px when logged in, hidden while typing; profile tabs are one swipeable row under 640px
 - **Mystery leaderboard** (`js/mystery-league.js`): you + people you follow, Monday–Sunday UTC, 7 − guesses points, no cold cases; friends' games today hidden until yours is done; last week's top detective
 - **Messages** (`js/dm-cards.js`): episode links show as picture cards
+
+## Redesign of Book Club, Cage Match and Mystery (27 Nov 2026)
+- Styles are the last block of css/style.css, scoped by #club / #cage / #mystery (they win over the older rules for those pages)
+- Book Club: open-book spread, library card (streak, free life, stickers, next-sticker countdown) and corkboard vote beside the discussion, scrolling shelf; past weeks use .is-archive (full width)
+- Cage Match: ring with ropes, ringside control bar, champion posters side by side, top-three podium; fighter cards go horizontal on phones
+- Mystery: countdown in the header, corkboard with six guess slots, leaderboard under the clues, stats and cold-case folders underneath

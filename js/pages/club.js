@@ -1,19 +1,19 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
-import { initPage, logEpisode } from '../layout.js?v=20261127165656';
-import { supabase } from '../supabase.js?v=20261127165656';
-import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127165656';
-import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127165656';
-import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127165656';
-import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127165656';
-import { booksSVG } from '../art.js?v=20261127165656';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127165656';
-import { BUTTERS_NOTES } from '../data/butters-notes.js?v=20261127165656';
-import { BUTTERS } from '../butters-profile.js?v=20261127165656';
-import { threadHTML, wireThread } from '../comments.js?v=20261127165656';
+import { initPage, logEpisode } from '../layout.js?v=20261127170641';
+import { supabase } from '../supabase.js?v=20261127170641';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127170641';
+import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127170641';
+import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127170641';
+import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127170641';
+import { booksSVG } from '../art.js?v=20261127170641';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127170641';
+import { BUTTERS_NOTES } from '../data/butters-notes.js?v=20261127170641';
+import { BUTTERS } from '../butters-profile.js?v=20261127170641';
+import { threadHTML, wireThread } from '../comments.js?v=20261127170641';
 
 const SHELF = 12; // past weeks on the shelf
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127165656';
-import { episodeAverages } from '../insights.js?v=20261127165656';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127170641';
+import { episodeAverages } from '../insights.js?v=20261127170641';
 
 const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');
@@ -124,7 +124,7 @@ async function render() {
     const clubPicks = await loadPicks(all, clubOffsets());
     const { data: myLogs } = await supabase.from('logs').select('episode_id, created_at').eq('user_id', user.id)
       .in('episode_id', clubPicks.filter((p) => p.real && p.pick).map((p) => p.pick.id)).limit(2000);
-    attendHTML = attendanceHTML(attendance(clubPicks, myLogs || []), { mine: true });
+    attendHTML = attendanceHTML(attendance(clubPicks, myLogs || []), { mine: true, card: true });
   }
   // Next week's vote.
   const myVote = upcoming.votes.find((v) => v.user_id === user.id)?.episode_id ?? null;
@@ -181,7 +181,6 @@ async function render() {
           ${archive ? "<a class=\"btn btn-green\" href=\"club.html\">See this week's book</a>" : `<button type="button" class="btn btn-green" id="club-log">${iWatched ? 'Log it again' : "I read it! Let's talk"}</button>`}
           ${!archive && mine.has(ep.id) && !iWatched ? '<span class="result-count">You\'ve read it before, but not this week.</span>' : ''}
         </div>
-        ${attendHTML}
         <div class="club-members">
           <span class="club-members-label">Checked out ${archive ? 'that' : 'this'} week</span>
           <div>${watchers.length ? `${watchers.map((p) => `<a href="profile.html?u=${encodeURIComponent(p?.username || '')}" title="${esc(p?.display_name || p?.username)}">${avatarHTML(p, 30)}</a>`).join('')}
@@ -190,19 +189,21 @@ async function render() {
         </div>
       </div>
     </section>
-    <section>
-      <div class="section-head"><h2>📝 ${archive ? 'That' : 'This'} week's discussion</h2></div>
+    ${attendHTML ? `<section class="library-card"><h2 class="cut">Your library card</h2>${attendHTML}</section>` : ''}
+    <section class="area-talk">
+      <div class="section-head"><h2>📝${archive ? 'That' : 'This'} week's discussion</h2></div>
       <div class="reviews" id="club-reviews">${buttersHTML}${reviews.length
         ? reviews.map((r) => withButters(reviewHTML(r, { me: user.id, extras, friends, avgs }), r)).join('')
         : `<p class="empty">${archive ? 'Nobody else reviewed it that week. Butters had the whole discussion to himself.' : 'Nobody else has reviewed it yet. Don\'t leave Butters hanging!'}</p>`}</div>
     </section>
     ${archive ? "" : voteHTML}
-    <section>
+    <section class="area-shelf">
       <div class="section-head"><h2>📚 Past reads</h2></div>
       ${past.length
         ? `<div class="club-shelf"><div class="ep-grid">${past.map((x) => cardHTML(x.ep, { mine: mine.get(x.ep.id), meta: pastMeta(x), href: `club.html?week=${x.key}`, current: archive && x.key === weekKey })).join('')}</div></div>`
         : "<div class=\"club-shelf\"><p class=\"empty\" style=\"margin:0\">The shelf is empty! This is the club's very first week. Every book we read goes up here, so make it a good one.</p></div>"}
     </section>`;
+  root.classList.toggle('is-archive', archive);
   root.removeAttribute('aria-busy');
 
   $('#club-log')?.addEventListener('click', () => logEpisode({ episode: ep, rewatch: mine.has(ep.id) }));

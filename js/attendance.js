@@ -1,7 +1,7 @@
 // Book Club attendance: weeks in a row you logged that week's pick, with stickers along the way.
 // Worked out from your logs (by when they were made, so backdating doesn't count). No database.
-import { stickerSVG } from './art.js?v=20261127165656';
-import { CLUB_START, weekStart } from './club.js?v=20261127165656';
+import { stickerSVG } from './art.js?v=20261127170641';
+import { CLUB_START, weekStart } from './club.js?v=20261127170641';
 
 const SLIP_EVERY = 10; // one free life (a forgiven missed week) in any 10
 
@@ -49,16 +49,22 @@ export function attendance(picks, logs, now = new Date()) {
   return { streak, best, forgiven, lifeReady: !lifeIn, lifeIn, readThisWeek };
 }
 
-/** The streak line, stickers and Butters' words. mine: shows the nudge to log this week's book. */
-export function attendanceHTML(a, { mine = false } = {}) {
+/**
+ * The streak line, stickers and Butters' words. mine: shows the nudge to log this week's book.
+ * card: the Book Club page's library card, which stacks the lines and counts down to the next sticker.
+ */
+export function attendanceHTML(a, { mine = false, card = false } = {}) {
   const top = [...STICKERS].reverse().find((s) => a.best >= s.n);
   const nudge = mine && !a.readThisWeek ? `Log this week's book to make it ${a.streak + 1}!` : '';
+  const next = card && STICKERS.find((s) => a.best < s.n);
+  const need = next ? next.n - a.streak : 0;
   return `<div class="attend">
     <p class="attend-line" style="margin:0"><strong>🔥 ${a.streak} week${a.streak === 1 ? '' : 's'} in a row</strong>
-      <span>· Best: ${a.best}${nudge ? ` · ${nudge}` : ''}</span></p>
+      <span>${card ? '' : '· '}Best: ${a.best}${nudge ? ` · ${nudge}` : ''}</span></p>
     <p class="attend-life${a.lifeReady ? '' : ' used'}" title="${a.lifeReady ? 'Miss a week and the streak survives.' : 'Another miss before it returns resets the streak.'}"><i aria-hidden="true">${a.lifeReady ? '♥' : '♡'}</i>
       <span>${a.lifeReady ? '<b>1 free life</b> · miss a week, keep the streak' : `<b>Free life used</b> · back in ${a.lifeIn} week${a.lifeIn === 1 ? '' : 's'}`}</span></p>
     <ul class="attend-stickers">${STICKERS.map((s) => `<li class="${a.best >= s.n ? '' : 'locked'}" title="${s.name}: ${s.n} weeks in a row${a.best >= s.n ? ' (earned)' : ''}">${stickerSVG(s.key)}<span>${a.best >= s.n ? s.name : `${s.n} weeks`}</span></li>`).join('')}</ul>
+    ${next ? `<p class="attend-goal">Next sticker: ${need} more week${need === 1 ? '' : 's'}</p>` : ''}
     ${top ? `<p class="attend-butters">“${top.line}” — Butters</p>` : ''}
   </div>`;
 }

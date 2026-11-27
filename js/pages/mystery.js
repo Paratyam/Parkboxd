@@ -1,14 +1,14 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127165656';
-import { initPage, logEpisode } from '../layout.js?v=20261127165656';
-import { supabase } from '../supabase.js?v=20261127165656';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127165656';
-import { followingIds } from '../social.js?v=20261127165656';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127165656';
-import { mysterySVG } from '../art.js?v=20261127165656';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127165656';
-import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127165656';
+import { SITE_LINK } from '../config.js?v=20261127170641';
+import { initPage, logEpisode } from '../layout.js?v=20261127170641';
+import { supabase } from '../supabase.js?v=20261127170641';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127170641';
+import { followingIds } from '../social.js?v=20261127170641';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127170641';
+import { mysterySVG } from '../art.js?v=20261127170641';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127170641';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127170641';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -225,10 +225,10 @@ function render() {
           <h1 class="cut">Kenny's Mystery Episode</h1>
           <p>Somebody stole an episode and Kenny saw everything. Every wrong guess sharpens the evidence photo, tells you whether to look earlier or later, and gets you a clue from your witness. He's a little hard to understand. ${MAX} tries. New case every day.</p>
         </div>
+        <p class="mystery-next" id="m-next"></p>
       </div>
     </section>
     ${cold ? '<p class="mystery-coldnote">🧊 You\'re reopening a past case. It won\'t change your stats or streak. <a href="mystery.html">Back to today\'s case →</a></p>' : ''}
-    <p class="mystery-next" id="m-next"></p>
     <div class="mystery-layout">
       <div class="mystery-board">
         <div class="mystery-frame">
@@ -261,7 +261,7 @@ function render() {
             <div class="toolbar"><button type="button" class="btn btn-ghost" id="m-skip">Skip (show me more)</button></div>
           </form>
           <p class="result-count">Finish the case to see how your friends did.</p>`}
-        ${game.guesses.length ? `<ol class="mystery-guesses">${game.guesses.map((id) => `<li class="${id === answer.id ? 'right' : 'wrong'}">${id === answer.id ? '✓' : '✗'} ${id ? esc(byId.get(id)?.title || '?') : '<em>skipped</em>'}${id && id !== answer.id ? `<span class="mystery-warmth${sameSeason(id) ? ' warm' : ''}">${feedback(id)}</span>` : ''}</li>`).join('')}</ol>` : ''}
+        ${game.guesses.length || !game.done ? `<ol class="mystery-guesses">${game.guesses.map((id) => `<li class="${id === answer.id ? 'right' : 'wrong'}">${id === answer.id ? '✓' : '✗'} ${id ? esc(byId.get(id)?.title || '?') : '<em>skipped</em>'}${id && id !== answer.id ? `<span class="mystery-warmth${sameSeason(id) ? ' warm' : ''}">${feedback(id)}</span>` : ''}</li>`).join('')}${game.done ? '' : Array.from({ length: left }, (_, i) => `<li class="empty-slot">${i ? '' : 'Your next guess'}</li>`).join('')}</ol>` : ''}
       </div>
       <aside class="mystery-side">
         <div class="case-folder" id="m-clues">
@@ -270,15 +270,17 @@ function render() {
             <div class="kenny-hint${!game.done && i === hintsShown - 1 ? ' newest' : ''}"><span class="exhibit cut">Exhibit ${EXHIBITS[i]}</span>${clueHTML(h)}</div>`
             : `<div class="kenny-hint locked"><span class="exhibit cut">Exhibit ${EXHIBITS[i]}</span><span class="kenny-means">🔒 Unlocks after ${i + 1} wrong guess${i ? 'es' : ''}</span></div>`)).join('')}
         </div>
+        <div class="mystery-stats mystery-league paper" id="m-league"><p class="result-count">Counting this week's points…</p></div>
+      </aside>
+    </div>
+    <div class="mystery-records">
         <div class="mystery-stats paper">
           <h2 class="cut">Your stats</h2>
           <div class="mystery-nums"><div><b>${s.played}</b><span>Played</span></div><div><b>${s.played ? Math.round((s.won / s.played) * 100) : 0}%</b><span>Won</span></div><div><b>${s.streak}</b><span>Streak</span></div></div>
           <h3>Guesses it took to win</h3>
           <ol class="mystery-dist">${s.dist.map((n, i) => `<li><span>${i + 1}</span><div class="md-track"><div style="width:${(n / Math.max(1, ...s.dist)) * 100}%"></div></div><b>${n}</b></li>`).join('')}</ol>
         </div>
-        <div class="mystery-stats mystery-league paper" id="m-league"><p class="result-count">Counting this week's points…</p></div>
         ${coldCasesHTML()}
-      </aside>
     </div>`;
   root.removeAttribute('aria-busy');
   wire();

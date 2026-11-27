@@ -1,19 +1,19 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127165656';
-import { supabase } from '../supabase.js?v=20261127165656';
-import { SITE_NAME } from '../config.js?v=20261127165656';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127165656';
-import { line } from '../jokes.js?v=20261127165656';
-import { celebrate } from '../fx.js?v=20261127165656';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127165656';
-import { mackeyNoteHTML } from '../mackey.js?v=20261127165656';
-import { starInput } from '../stars.js?v=20261127165656';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127165656';
-import { pcButtonHTML } from '../pc.js?v=20261127165656';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261127165656';
-import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261127165656';
-import { peoplesCupSVG } from '../art.js?v=20261127165656';
-import { openRecommend, recommendationsFor } from '../recommend.js?v=20261127165656';
-import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127165656';
+import { initPage, logEpisode } from '../layout.js?v=20261127170641';
+import { supabase } from '../supabase.js?v=20261127170641';
+import { SITE_NAME } from '../config.js?v=20261127170641';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127170641';
+import { line } from '../jokes.js?v=20261127170641';
+import { celebrate } from '../fx.js?v=20261127170641';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127170641';
+import { mackeyNoteHTML } from '../mackey.js?v=20261127170641';
+import { starInput } from '../stars.js?v=20261127170641';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127170641';
+import { pcButtonHTML } from '../pc.js?v=20261127170641';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261127170641';
+import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261127170641';
+import { peoplesCupSVG } from '../art.js?v=20261127170641';
+import { openRecommend, recommendationsFor } from '../recommend.js?v=20261127170641';
+import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127170641';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -38,7 +38,7 @@ if (!ep) {
 } else {
   renderShell();
   $('#roll-again')?.addEventListener('click', async () => {
-    const r = await import('../random.js?v=20261127165656');
+    const r = await import('../random.js?v=20261127170641');
     if (params.get('rolled') === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
@@ -164,7 +164,7 @@ function renderPanel() {
       <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>
       <button type="button" class="link-button" id="btn-rec" style="color:var(--text-soft)">📨 You have to watch this…</button>
     </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127165656')).openAddToList(ep));
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127170641')).openAddToList(ep));
   $('#btn-rec').addEventListener('click', () => openRecommend(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 

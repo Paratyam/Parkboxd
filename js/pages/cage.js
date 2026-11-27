@@ -1,19 +1,19 @@
 // cage.html: Cartman's Cage Match, the game (pick the better of two episodes you've watched) plus your ranking.
 // cage.html?u=name&view=ranking: a profile's Rankings tab, just the ranking list.
 
-import { initPage } from '../layout.js?v=20261127165656';
-import { supabase } from '../supabase.js?v=20261127165656';
-import { SITE_NAME } from '../config.js?v=20261127165656';
-import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127165656';
-import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127165656';
-import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, peoplesChampion, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127165656';
+import { initPage } from '../layout.js?v=20261127170641';
+import { supabase } from '../supabase.js?v=20261127170641';
+import { SITE_NAME } from '../config.js?v=20261127170641';
+import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127170641';
+import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127170641';
+import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, peoplesChampion, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127170641';
 import {
   introLine, resultLine, crowd, hostPick,
   HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
-} from '../cage-host.js?v=20261127165656';
-import { burgerRain } from '../fx.js?v=20261127165656';
-import { beltSVG, peoplesCupSVG } from '../art.js?v=20261127165656';
-import { shareTop10 } from '../share.js?v=20261127165656';
+} from '../cage-host.js?v=20261127170641';
+import { burgerRain } from '../fx.js?v=20261127170641';
+import { beltSVG, peoplesCupSVG } from '../art.js?v=20261127170641';
+import { shareTop10 } from '../share.js?v=20261127170641';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
@@ -98,23 +98,27 @@ async function start() {
       </div>
       <div class="cage-arena" id="arena"></div>
       <div class="cage-crowd" id="crowd" aria-hidden="true"></div>
-      <div class="toolbar" style="justify-content:center">
-        <button type="button" class="btn btn-ghost" id="skip">Skip (can't decide)</button>
-        <button type="button" class="btn btn-ghost" id="undo">Undo last pick</button>
-      </div>
-      <div class="cage-controls">
+      <div class="ringside">
         <label class="cage-filter"><span>Fight within</span>
           <select id="cage-filter">${FILTERS.map(([k, label]) => `<option value="${k}"${k === filter ? ' selected' : ''}>${esc(label)}</option>`).join('')}</select>
         </label>
+        <div class="toolbar">
+          <button type="button" class="btn btn-ghost" id="skip">Skip (can't decide)</button>
+          <button type="button" class="btn btn-ghost" id="undo">Undo last pick</button>
+        </div>
         <span class="cage-keys">Keys: ← → pick · ↓ skip · Backspace undo</span>
       </div>
       <div class="cage-meter" id="meter"></div>
     </section>` : ''}
-    ${showGame ? '<section id="crowd-champ" hidden></section>' : ''}
+    <section class="title-holders">
+      <div class="mine-champ" hidden>
+        <div class="section-head"><h2 id="champ-title"></h2></div>
+        <div id="champ"></div>
+      </div>
+      ${showGame ? '<section id="crowd-champ" hidden></section>' : ''}
+    </section>
     <section>
-      <div class="section-head"><h2 id="rank-title"></h2></div>
-      <div id="champ"></div>
-      <div id="rank-share"></div>
+      <div class="section-head"><h2 id="rank-title"></h2><div id="rank-share"></div></div>
       <ol class="rank-table" id="ranking"></ol>
       <div id="rank-more"></div>
       ${showGame ? '<p style="margin:14px 0 0"><button type="button" class="link-button" id="reset" style="color:var(--muted)">Reset my Cage Match</button></p>' : ''}
@@ -133,6 +137,8 @@ async function start() {
           <strong>${esc(champEp.title)}</strong>
           <span>${esc(epCode(champEp))} · ${c.top.wins}–${c.top.losses}${c.undefeated ? ' · never lost a match' : ''}</span></div>
       </a>` : '';
+    $('.mine-champ').hidden = !champEp;
+    $('#champ-title').textContent = `🥇 ${isMe ? 'Your' : `${name}'s`} champion`;
     $('#rank-share').innerHTML = isMe && list.length >= 3
       ? `<p class="cage-share"><button type="button" class="btn btn-green" id="share-top">📤 Share my top ${Math.min(10, list.length)}</button></p>` : '';
     $('#share-top')?.addEventListener('click', async (e) => {

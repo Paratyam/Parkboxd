@@ -1627,3 +1627,253 @@ body:has(.site-header.menu-open) .install-ad, body:has(dialog[open]) .install-ad
 .rec-people input { width: 18px; height: 18px; flex: 0 0 18px; accent-color: var(--green); }
 .rec-from { margin: 4px 0 0; font-size: 12px; font-weight: 700; color: var(--orange); }
 #recs { display: flex; flex-direction: column; gap: 8px; }
+
+/* ########## 2026 redesign: Book Club, Cage Match, Mystery (scoped to each page) ########## */
+/* ============ BOOK CLUB ============ */
+#club { display: grid; grid-template-columns: minmax(0, 1fr) 350px; grid-template-areas: "hero hero" "book book" "talk card" "talk vote" "shelf shelf"; grid-template-rows: auto auto auto 1fr auto; column-gap: 28px; row-gap: 28px; align-items: start; }
+#club > * { margin: 0; min-width: 0; }
+#club .club-hero { grid-area: hero; padding: 18px 24px 16px 56px; flex-wrap: nowrap; }
+#club .club-hero::before { top: 18px; box-shadow: 0 30px 0 var(--bg), 0 60px 0 var(--bg); }
+#club .club-title { font-size: clamp(30px, 4.4vw, 44px); }
+#club .club-head { margin-right: auto; }
+#club .club-hero-art { position: static; width: 78px; flex: 0 0 78px; }
+#club .club-due { padding: 4px 14px; }
+#club .club-due b { font-size: 34px; }
+
+/* This week's book: one open book, cover on the left page, details on the right */
+#club .club-book { grid-area: book; grid-template-columns: 1.15fr 1fr; gap: 0; align-items: stretch; padding: 12px; border: 4px solid #000; border-radius: 12px; box-shadow: 6px 6px 0 #000; background: linear-gradient(90deg, #1d3557, #2f6db5 50%, #1d3557); position: relative; }
+#club .club-cover { padding: 22px; border-radius: 6px 0 0 6px; transform: none; box-shadow: none; display: flex; align-items: center; background: linear-gradient(90deg, #fffbe6 85%, #e6d99c); }
+#club .club-cover .ep-thumb { width: 100%; border-radius: 4px; transform: rotate(-1.2deg); box-shadow: 0 0 0 6px #fff, 4px 6px 0 6px rgba(0,0,0,.35); }
+#club .club-card { border: 0; box-shadow: none; border-radius: 0 6px 6px 0; justify-content: center; padding: 26px 28px 26px 36px; background: linear-gradient(90deg, #e6d99c, #fff3a6 12%); }
+#club .club-card h2 { font-size: 38px; }
+#club .club-card .btn-green { font-size: 14px; padding: 12px 20px; border: 3px solid #000; box-shadow: 3px 3px 0 #000; }
+#club .club-ribbon { top: -2px; left: -4px; }
+#club .club-cover .club-sticker { right: -26px; bottom: 14px; }
+
+/* Library card: streak, free life and sticker track */
+#club .library-card { grid-area: card; position: relative; padding: 18px 18px 16px; border: 3px solid #000; border-radius: 10px; box-shadow: 5px 5px 0 #000; color: var(--club-ink); background: linear-gradient(#b23a2e 0 52px, transparent 52px), repeating-linear-gradient(#f6ead0 0 25px, #dccb9f 25px 26px); }
+#club .library-card h2 { margin: -4px 0 20px; font-size: 21px; color: #fff; text-align: center; text-shadow: 2px 2px 0 #000; }
+#club .library-card .attend { gap: 12px; align-items: center; text-align: center; }
+#club .library-card .attend-line strong { display: block; font-size: 30px; line-height: 1.2; }
+#club .library-card .attend-life { align-self: center; background: #fff8e4; }
+#club .library-card .attend-stickers { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; width: 100%; padding-top: 4px; }
+#club .library-card .attend-stickers::before { content: ""; position: absolute; left: 10%; right: 10%; top: 28px; border-top: 4px dashed #8a6a3a; }
+#club .library-card .attend-stickers li { position: relative; width: auto; }
+#club .library-card .attend-stickers li.locked { opacity: 1; color: #7a6a4a; }
+#club .library-card .attend-stickers li.locked .art { filter: grayscale(1) brightness(1.15) contrast(.6); }
+#club .attend-goal { margin: 0; font-size: 12px; font-weight: 800; padding: 3px 12px; background: var(--club-blue); color: #fff; border: 2px solid #000; border-radius: 4px; transform: rotate(-1deg); }
+#club .library-card .attend-butters { border-top: 2px dashed #b9a77f; padding-top: 10px; width: 100%; }
+
+#club .area-talk { grid-area: talk; }
+
+/* Vote: compact ballot on a corkboard, beside the discussion */
+#club .club-vote { grid-area: vote; padding: 14px; border: 3px solid #000; border-radius: 10px; box-shadow: 5px 5px 0 #000; background: #6b4423 repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,.07) 0 2px, transparent 2px 9px); }
+#club .club-vote .section-head { display: block; border-color: rgba(255,255,255,.25); }
+#club .club-vote .section-head h2 { color: #fff; margin-bottom: 4px; }
+#club .club-vote .result-count, #club .club-vote-butters, #club .club-vote-butters span { color: #f3e3c8; }
+#club .club-vote-butters { font-size: 12px; }
+#club .club-vote-grid { grid-template-columns: 1fr; gap: 14px; }
+#club .club-vote-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); grid-template-areas: "pic title" "pic code" "bar bar" "btn btn"; column-gap: 10px; row-gap: 4px; padding: 10px; }
+#club .club-vote-card > a[aria-hidden] { grid-area: pic; align-self: center; }
+#club .club-vote-card .ep-card-code { display: none; }
+#club .club-vote-title { grid-area: title; align-self: end; line-height: 1.25; }
+#club .club-vote-code { grid-area: code; }
+#club .club-vote-bar { grid-area: bar; }
+#club .club-vote-card .btn { grid-area: btn; padding: 6px; }
+
+/* Past reads: one scrolling wooden shelf */
+#club .area-shelf { grid-area: shelf; }
+#club .area-shelf .club-shelf { padding: 16px 16px 34px; background: linear-gradient(#2b1d12, #4a321d); border: 3px solid #000; border-radius: 10px; }
+#club .area-shelf .ep-grid { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 190px; overflow-x: auto; padding: 4px 4px 8px; }
+#club .area-shelf .ep-thumb { border-left: 9px solid #2f6db5; border-radius: 2px 6px 6px 2px; box-shadow: 3px 3px 0 #000; }
+#club .area-shelf .ep-card-meta { flex-direction: column; align-items: flex-start; }
+#club .area-shelf .ep-card-meta span { color: #f3e3c8; }
+#club .area-shelf .ep-card-meta .rating { color: var(--green); }
+@media (max-width: 860px) {
+  #club { grid-template-columns: minmax(0, 1fr); grid-template-areas: "hero" "book" "card" "talk" "vote" "shelf"; grid-template-rows: none; row-gap: 22px; }
+  #club .club-hero { padding: 14px 14px 12px 46px; gap: 10px; }
+  #club .club-hero::before { left: 12px; }
+  #club .club-hero-art, #club .club-kicker { display: none; }
+  #club .club-due { padding: 4px 8px; font-size: 10px; text-align: center; }
+  #club .club-due b { font-size: 28px; }
+  #club .club-book { grid-template-columns: minmax(0, 1fr); padding: 8px; }
+  #club .club-cover { padding: 16px; border-radius: 6px 6px 0 0; }
+  #club .club-cover .club-sticker { right: 0; bottom: -20px; }
+  #club .club-card { padding: 20px 18px; border-radius: 0 0 6px 6px; background: #fff3a6; }
+  #club .club-card h2 { font-size: 30px; }
+  #club .area-shelf .ep-grid { grid-auto-columns: 150px; }
+}
+
+/* ============ CAGE MATCH ============ */
+#cage .cage-ring { padding: 26px 24px 18px; gap: 14px; }
+#cage .cage-banner { justify-content: center; position: relative; padding: 4px 0 12px; border-bottom: 6px dotted #ffe066; }
+#cage .cage-title { text-align: center; font-size: clamp(30px, 5.6vw, 54px); }
+#cage .cage-round { position: absolute; right: 0; top: 8px; }
+#cage .cage-host { max-width: 800px; width: 100%; margin: 0 auto; }
+/* The ring: mat, three ropes and two corner posts */
+#cage .cage-ring .cage-arena { gap: 0; grid-template-columns: minmax(0, 1fr) 100px minmax(0, 1fr); padding: 30px 44px 36px; border: 3px solid #000; border-radius: 8px;
+  background:
+    linear-gradient(transparent 22%, #d63a3a 22% 24%, transparent 24% 47%, #f4f4f4 47% 49%, transparent 49% 72%, #4a90e2 72% 74%, transparent 74%),
+    radial-gradient(ellipse at 50% 55%, #6d8296, #2c3a49 75%); }
+#cage .cage-arena::before, #cage .cage-arena::after { content: ""; position: absolute; top: 12px; bottom: 12px; width: 18px; border: 3px solid #000; border-radius: 9px; box-shadow: 3px 3px 0 #000; }
+#cage .cage-arena::before { left: 9px; background: linear-gradient(90deg, #ff6b6b, #a51d1d); }
+#cage .cage-arena::after { right: 9px; background: linear-gradient(90deg, #7ab4f5, #1f5ba8); }
+#cage .cage-arena > .empty { grid-column: 1 / -1; color: #fff; }
+#cage .cage-card { padding: 0 0 12px; gap: 4px; border-radius: 10px; background: #14171c; text-align: center; align-items: center; border: 5px solid #d63a3a; box-shadow: 0 0 0 3px #000, 6px 8px 0 3px rgba(0,0,0,.5); }
+#cage .cage-card.blue { border-color: #4a90e2; }
+#cage .cage-card.champ { border-color: #f5c518; }
+#cage .cage-card:hover, #cage .cage-card:focus-visible, #cage .cage-card.win { border-color: #ffe066; }
+#cage .cage-card .corner { align-self: stretch; text-align: center; border-radius: 0; transform: none; font-size: 18px; padding: 6px; }
+#cage .cage-card .ep-thumb { width: 100%; border-radius: 0; clip-path: none; }
+#cage .cage-card strong { font-family: 'Luckiest Guy', cursive; font-weight: 400; font-size: 23px; padding: 6px 10px 0; line-height: 1.15; }
+#cage .cage-ring .cage-vs { justify-self: center; position: relative; z-index: 2; width: 82px; height: 82px; display: grid; place-items: center; border-radius: 50%; background: #d63a3a; border: 4px solid #000; font-size: 36px; text-shadow: 3px 3px 0 #000; box-shadow: 0 0 0 4px #f5c518, 5px 6px 0 4px #000; }
+#cage .cage-crowd { margin: -6px 0; }
+#cage .ringside { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(0,0,0,.55); border: 3px solid #000; border-radius: 8px; font-size: 13px; }
+#cage .ringside .cage-keys { justify-self: end; font-size: 12px; }
+
+/* Title holders: two fight posters side by side */
+#cage .title-holders { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; align-items: start; }
+#cage .title-holders > * { margin: 0; min-width: 0; display: flex; flex-direction: column; }
+#cage .title-holders .section-head { margin-bottom: 14px; }
+#cage .title-holders .cage-champ { display: flex; flex-direction: column; align-items: stretch; gap: 0; margin: 0 3px; padding: 0; text-align: center; clip-path: none; border: 4px solid #000; border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 3px #f5c518, 6px 6px 0 3px #000; background: #15181d radial-gradient(ellipse at 50% 100%, rgba(245,197,24,.3), transparent 65%); }
+#cage .title-holders .cage-champ .ep-thumb { width: 100%; border-radius: 0; clip-path: none; }
+#cage .title-holders .cage-champ > div { align-items: center; padding: 14px 14px 18px; gap: 4px; }
+#cage .title-holders .cage-champ .cut { font-size: 24px; text-shadow: 2px 2px 0 #000; }
+#cage .title-holders .cage-champ .cage-champ-belt { position: absolute; left: auto; right: 10px; top: 10px; width: 130px; transform: rotate(7deg); }
+#cage .title-holders .cage-champ .cage-champ-belt.peoples { position: absolute; grid-column: auto; width: 96px; }
+#cage .title-holders .cage-crowd-champ { order: 3; margin: 18px 0 0; padding: 10px 14px; border: 3px solid #000; border-radius: 12px; background: #b92929; color: #fff; font-weight: 600; box-shadow: 4px 4px 0 #000; }
+#cage .title-holders .cage-crowd-champ span { color: #ffe066; }
+
+/* Ranking: podium for the top three, two columns after that */
+#cage #rank-title { margin-right: auto; }
+#cage #rank-share .cage-share { margin: 0; }
+#cage .rank-table { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+#cage .rank-table li { grid-column: span 3; margin: 0; border: 2px solid #000; border-radius: 8px; background: var(--surface); padding: 8px 12px; }
+#cage .rank-table li:nth-child(-n+3) { grid-column: span 2; display: flex; flex-direction: column; align-items: stretch; text-align: center; padding: 22px 12px 14px; position: relative; border: 3px solid #000; box-shadow: 0 0 0 2px var(--medal), 4px 4px 0 2px #000; margin: 14px 2px 10px; }
+#cage .rank-table li:nth-child(1) { --medal: #f5c518; }
+#cage .rank-table li:nth-child(2) { --medal: #c9d3dd; }
+#cage .rank-table li:nth-child(3) { --medal: #cd7f32; }
+#cage .rank-table li:nth-child(-n+3) .pos { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); z-index: 2; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--medal); color: #000; border: 2px solid #000; font-family: 'Luckiest Guy', cursive; }
+#cage .rank-table li:nth-child(-n+3) .thumb { flex: none; width: 100%; }
+#cage .rank-table li:nth-child(-n+3) .info { flex: none; }
+#cage .rank-table li:nth-child(-n+3) .score { text-align: center; }
+@media (max-width: 720px) {
+  #cage .cage-ring { padding: 18px 10px 12px; gap: 10px; }
+  #cage .cage-banner { flex-direction: column; gap: 6px; padding-bottom: 8px; }
+  #cage .cage-round { position: static; font-size: 14px; }
+  #cage .cage-title { font-size: 28px; }
+  #cage .cage-bubble .call { font-size: 15px; }
+  #cage .cage-bubble .next { font-size: 12px; }
+  /* Both fighters fit on one screen: picture left, name right */
+  #cage .cage-ring .cage-arena { grid-template-columns: minmax(0, 1fr); padding: 10px; }
+  #cage .cage-arena::before, #cage .cage-arena::after { display: none; }
+  #cage .cage-card { display: grid; grid-template-columns: 44% minmax(0, 1fr); grid-template-rows: auto auto auto auto; column-gap: 10px; padding: 0 0 6px; text-align: left; align-items: center; justify-items: start; overflow: hidden; }
+  #cage .cage-card .corner { grid-column: 1 / -1; justify-self: stretch; font-size: 13px; padding: 3px; }
+  #cage .cage-card .ep-thumb { grid-column: 1; grid-row: 2 / 5; margin-left: 6px; }
+  #cage .cage-card strong { grid-column: 2; font-size: 17px; padding: 4px 6px 0 0; }
+  #cage .cage-card > span:not(.corner) { grid-column: 2; }
+  #cage .cage-ring .cage-vs { width: 50px; height: 50px; font-size: 21px; margin: -6px 0; }
+  #cage .ringside { grid-template-columns: 1fr; justify-items: center; }
+  #cage .ringside .cage-keys { display: none; }
+  #cage .title-holders { grid-template-columns: minmax(0, 1fr); }
+  #cage .rank-table { grid-template-columns: minmax(0, 1fr); }
+  #cage .rank-table li, #cage .rank-table li:nth-child(-n+3) { grid-column: auto; }
+  #cage .rank-table li:nth-child(-n+3) { flex-direction: row; align-items: center; text-align: left; padding: 10px 12px; margin: 2px; }
+  #cage .rank-table li:nth-child(-n+3) .pos { position: static; transform: none; width: 28px; height: 28px; flex: 0 0 28px; }
+  #cage .rank-table li:nth-child(-n+3) .thumb { width: 72px; }
+  #cage .rank-table li:nth-child(-n+3) .info { flex: 1; }
+  #cage .rank-table li:nth-child(-n+3) .score { text-align: right; }
+}
+
+/* ============ MYSTERY ============ */
+#mystery .case-head { padding: 22px 24px 18px; }
+#mystery .case-head-row > div { flex: 1; }
+#mystery .case-head h1 { font-size: clamp(28px, 4vw, 42px); }
+#mystery .case-head p { font-size: 13px; max-width: 580px; }
+#mystery .case-stamp { right: auto; left: 200px; top: -16px; background: #2a1a40; font-size: 14px; }
+#mystery .case-head .mystery-next { display: flex; flex-direction: column; align-items: center; margin: 0; flex: 0 0 auto; padding: 10px 18px; border-radius: 10px; font-size: 11px; text-transform: uppercase; letter-spacing: .6px; transform: rotate(1.5deg); }
+#mystery .case-head .mystery-next b { font-size: 30px; }
+#mystery .mystery-layout { grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr); }
+/* Corkboard: pinned photo, then the six guess slots */
+#mystery .mystery-board { padding: 24px 22px 20px; background: #8a5a31 repeating-radial-gradient(circle at 25% 35%, rgba(255,255,255,.08) 0 2px, rgba(0,0,0,.08) 3px, transparent 4px 11px); }
+#mystery .mystery-board::before { content: ""; display: block; width: 130px; height: 24px; margin: -12px auto -12px; position: relative; z-index: 3; background: rgba(255,224,102,.9); transform: rotate(2deg); box-shadow: 0 2px 4px rgba(0,0,0,.3); }
+#mystery .mystery-frame { border: 10px solid #f4efe2; border-bottom-width: 16px; border-radius: 4px; box-shadow: 0 0 0 3px #000, 7px 9px 0 3px rgba(0,0,0,.4); transform: rotate(-.6deg); }
+#mystery .mystery-frame img { border-radius: 0; }
+#mystery .evidence-label { top: 14px; left: 14px; }
+#mystery .kenny-lives { justify-content: center; margin: 20px auto 0; width: fit-content; padding: 4px 18px; background: #1d1030; border: 3px solid #000; border-radius: 999px; }
+#mystery .mystery-guess { flex-direction: row; align-items: stretch; margin-top: 14px; }
+#mystery .mystery-guess input { flex: 1; min-width: 0; border: 3px solid #000; box-shadow: 3px 3px 0 #000; background: #fffdf5; color: #1a1a1a; }
+#mystery .mystery-guess .toolbar { margin: 0; flex-wrap: nowrap; }
+#mystery .mystery-guess .btn { height: 100%; background: #2a1a40; border: 3px solid #000; color: #fff; box-shadow: 3px 3px 0 #000; }
+#mystery .mystery-board > .result-count { color: #fff1da; text-align: center; font-size: 12px; }
+#mystery .mystery-guesses { counter-reset: slot; margin-top: 12px; gap: 7px; }
+#mystery .mystery-guesses li { counter-increment: slot; display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 6px 12px 6px 8px; border: 2px solid #000; background: #f4efe2; color: #8f2020; font-weight: 700; box-shadow: 2px 2px 0 rgba(0,0,0,.5); }
+#mystery .mystery-guesses li::before { content: counter(slot); flex: 0 0 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: #1d1030; color: #fff; font-family: 'Luckiest Guy', cursive; font-weight: 400; }
+#mystery .mystery-guesses li.right { color: #1b6b2c; background: #dff5d8; }
+#mystery .mystery-warmth { margin-left: auto; padding: 2px 10px; border-radius: 999px; background: #1d1030; color: #fff; white-space: nowrap; }
+#mystery .mystery-warmth.warm { background: #ffd23f; color: #2b1300; }
+#mystery .mystery-guesses li.empty-slot { background: rgba(0,0,0,.18); border: 2px dashed rgba(255,255,255,.45); box-shadow: none; color: #fff1da; font-weight: 500; }
+#mystery .mystery-guesses li.empty-slot::before { background: rgba(0,0,0,.35); }
+#mystery .mystery-result { text-align: center; }
+#mystery .mystery-result .toolbar { justify-content: center; }
+#mystery .mystery-squares { font-size: 30px; }
+#mystery .case-folder .kenny-hint { margin-bottom: 16px; }
+#mystery .case-folder .kenny-hint .kenny-says { font-size: 13px; opacity: .7; }
+#mystery .case-folder .kenny-hint .kenny-means { font-size: 15px; line-height: 1.35; }
+#mystery .case-folder .kenny-hint .kenny-evidence { font-size: 34px; }
+#mystery .case-folder .kenny-hint.locked { flex-direction: row; align-items: center; gap: 10px; padding: 9px 12px; margin-bottom: 8px; }
+#mystery .case-folder .kenny-hint.locked .exhibit { position: static; white-space: nowrap; }
+#mystery .case-folder .kenny-hint.locked .kenny-means { font-size: 12px; }
+/* Records: stats and cold cases side by side under the board */
+#mystery .mystery-records { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(0, 1.7fr); gap: 24px; align-items: stretch; }
+#mystery .mystery-records .mystery-stats { padding: 20px 22px; margin: 0; clip-path: none; }
+#mystery .mystery-records h2 { text-align: center; }
+#mystery .mystery-records .result-count { text-align: center; }
+#mystery .mystery-records .mc-grid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 12px 8px; max-height: 250px; padding: 10px 4px 4px; }
+#mystery .mc-case { position: relative; border-radius: 2px 8px 8px 8px; background: #6c4a8f; box-shadow: 2px 2px 0 #000; }
+#mystery .mc-case::before { content: ""; position: absolute; left: -2px; top: -8px; width: 34px; height: 8px; background: inherit; border: 2px solid #000; border-bottom: 0; border-radius: 5px 5px 0 0; }
+#mystery .mc-case.won { background: #2c7a3d; }
+#mystery .mc-case.lost { background: #8a2e2e; }
+@media (max-width: 760px) {
+  #mystery .case-head { padding: 20px 14px 14px; }
+  #mystery .case-head-row { flex-wrap: wrap; gap: 8px 12px; }
+  #mystery .case-head .mystery-logo { width: 50px; flex-basis: 50px; }
+  #mystery .case-head-row > div { display: contents; }
+  #mystery .case-head h1 { flex: 1 1 0; min-width: 0; margin: 0; font-size: 25px; }
+  #mystery .case-head p { order: 2; font-size: 12px; }
+  #mystery .case-head .mystery-next { order: 3; flex-direction: row; gap: 8px; width: 100%; justify-content: center; padding: 4px 10px; transform: none; }
+  #mystery .case-head .mystery-next b { font-size: 20px; }
+  #mystery .case-stamp { display: none; }
+  #mystery .mystery-layout { grid-template-columns: minmax(0, 1fr); }
+  #mystery .mystery-board { padding: 20px 12px 14px; }
+  #mystery .mystery-guess { flex-direction: column; }
+  #mystery .mystery-guess .btn { width: 100%; }
+  #mystery .mystery-guess .pick-results { top: 52px; }
+  #mystery .mystery-guesses li.empty-slot { min-height: 34px; }
+  #mystery .mystery-warmth { font-size: 11px; }
+  #mystery .mystery-records { grid-template-columns: minmax(0, 1fr); }
+}
+#club .club-title { margin-bottom: 10px; }
+#club .club-vote-card.leading { padding-top: 18px; }
+#mystery .case-folder .kenny-hint .kenny-says { opacity: .85; }
+#mystery .case-verdict { white-space: nowrap; }
+@media (max-width: 860px) { #club .club-due { flex: 0 0 84px; } }
+@media (max-width: 720px) { #cage .cage-ring .cage-vs { margin: 4px 0; width: 44px; height: 44px; font-size: 18px; } }
+@media (max-width: 760px) {
+  #mystery .mystery-guesses li { flex-wrap: wrap; row-gap: 4px; }
+  #mystery .mystery-warmth { margin-left: 36px; flex-basis: auto; width: calc(100% - 36px); text-align: center; }
+  #mystery .kenny-lives b { white-space: nowrap; }
+  #mystery .kenny-lives { gap: 4px; padding: 4px 14px; }
+}
+#cage .title-holders .section-head { min-height: 34px; }
+#club .club-cover .ep-card-code { display: none; }
+@media (max-width: 720px) {
+  #cage .ringside .toolbar { flex-wrap: nowrap; gap: 8px; }
+  #cage .ringside .toolbar .btn { padding-left: 10px; padding-right: 10px; font-size: 12px; }
+}
+/* Past weeks have no library card or vote: the discussion takes the full width */
+#club.is-archive { grid-template-areas: "hero" "book" "talk" "shelf"; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+#club > .empty { grid-column: 1 / -1; }
+#cage .title-holders:not(:has(> :not([hidden]))) { display: none; }
+#cage .rank-table > .empty { grid-column: 1 / -1; }
+#mystery .kenny-lives { flex-wrap: wrap; max-width: 100%; }
