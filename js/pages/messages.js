@@ -1,10 +1,10 @@
 // messages.html?u=name: direct messages. You can only message people who follow you back
 // (the database enforces it too). The open conversation checks for new messages every few seconds.
-import { initPage, refreshMail } from '../layout.js?v=20261127171127';
-import { supabase } from '../supabase.js?v=20261127171127';
-import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127171127';
-import { loadAllEpisodes } from '../episodes.js?v=20261127171127';
-import { messageHTML, previewText } from '../dm-cards.js?v=20261127171127';
+import { initPage, refreshMail } from '../layout.js?v=20261127171608';
+import { supabase } from '../supabase.js?v=20261127171608';
+import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127171608';
+import { loadAllEpisodes } from '../episodes.js?v=20261127171608';
+import { messageHTML, previewText } from '../dm-cards.js?v=20261127171608';
 
 const { user } = await initPage({ title: 'Messages', auth: 'required' });
 const root = $('#messages');

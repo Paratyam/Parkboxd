@@ -1,14 +1,14 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127171127';
-import { initPage, logEpisode } from '../layout.js?v=20261127171127';
-import { supabase } from '../supabase.js?v=20261127171127';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127171127';
-import { followingIds } from '../social.js?v=20261127171127';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127171127';
-import { mysterySVG } from '../art.js?v=20261127171127';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127171127';
-import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127171127';
+import { SITE_LINK } from '../config.js?v=20261127171608';
+import { initPage, logEpisode } from '../layout.js?v=20261127171608';
+import { supabase } from '../supabase.js?v=20261127171608';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127171608';
+import { followingIds } from '../social.js?v=20261127171608';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127171608';
+import { mysterySVG } from '../art.js?v=20261127171608';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127171608';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127171608';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -304,11 +304,32 @@ function guess(id) {
   if (!game.done && PHONE.matches) $('.mystery-new-clue')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
+// The message you paste to friends: what the game is, how you did, and what the colours mean.
+function shareText() {
+  const tries = game.guesses.length;
+  const squares = game.guesses.map(square).join('') + '⬜'.repeat(MAX - tries);
+  const legend = [['🟥', 'wrong season'], ['🟨', 'right season'], ['⬛', 'skipped'], ['🟩', 'got it'], ['⬜', 'not needed']]
+    .filter(([colour]) => squares.includes(colour)).map(([colour, means]) => `${colour} ${means}`).join(' · ');
+  const result = !game.won ? `I couldn't name the South Park episode in ${MAX} tries 💀`
+    : tries === 1 ? 'I named the South Park episode on my FIRST try! 🏆'
+      : `I named the South Park episode on try ${tries} of ${MAX}!`;
+  const { streak } = stats();
+  return [
+    `🔍 Kenny's Mystery Episode #${number}${cold ? ' (past case)' : ''}`,
+    result,
+    '',
+    squares,
+    legend,
+    ...(!cold && streak > 1 ? [`🔥 ${streak} days in a row`] : []),
+    '',
+    game.won ? 'Can you do better? Play here:' : 'Think you can get it? Play here:',
+    `https://${SITE_LINK}/mystery.html${cold ? `?case=${number}` : ''}`,
+  ].join('\n');
+}
+
 function wire() {
   $('#m-share')?.addEventListener('click', async () => {
-    const squares = game.guesses.map(square).join('');
-    const { streak } = stats();
-    const text = `Parkboxd Mystery Episode #${number}${cold ? ' (cold case)' : ''} ${game.won ? `${game.guesses.length}/${MAX}` : `X/${MAX}`}\n${squares}\n${!cold && streak > 1 ? `🔥 ${streak}-day streak. ` : ''}Can you beat me?\nhttps://${SITE_LINK}/mystery.html${cold ? `?case=${number}` : ''}`;
+    const text = shareText();
     try { await navigator.clipboard.writeText(text); toast('Copied! Go brag about it.'); } catch { toast(text); }
   });
   $('#m-log')?.addEventListener('click', () => logEpisode({ episode: answer }));

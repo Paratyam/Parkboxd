@@ -224,3 +224,4 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Book Club: open-book spread, library card (streak, free life, stickers, next-sticker countdown) and corkboard vote beside the discussion, scrolling shelf; past weeks use .is-archive (full width)
 - Cage Match: ring with ropes, ringside control bar, champion posters side by side, top-three podium; fighter cards go horizontal on phones
 - Mystery: countdown in the header, corkboard with six guess slots, leaderboard under the clues, stats and cold-case folders underneath
+- Mystery sharing: `mystery.html` has its own link preview (`og-mystery.png`, drawn by `tools/make-mystery-preview.ps1`); the copied result says what the game is, pads the squares to six and explains the colours (`shareText()`)
