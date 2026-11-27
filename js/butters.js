@@ -8,6 +8,22 @@ const OPENERS = [
   'Golly, I stayed up past my bedtime for this one.',
   'Oh boy oh boy, Book Club time!',
   "Hi everybody, it's me, your Book Club host!",
+  'Oh, geez, is it my turn already? Okay!',
+  "I've been rubbing my knuckles all week waiting to talk about this one.",
+  'Attention, Book Club! Please hold your applause.',
+  'Gosh, what a doozy!',
+  "I made a bookmark for this one, even though there's no book.",
+  'Hey, fellas! I saved you all a seat.',
+  "Holy smokes, did y'all see that?",
+  'I wrote this review in my very best handwriting.',
+  'Book Club is now in session! I banged a spoon and everything.',
+  "I'm not supposed to be on the computer, so I'll talk fast.",
+  'Oh, son of a biscuit, this was a good one!',
+  'Greetings, scholars!',
+  "This week's book had me on the edge of my beanbag.",
+  'I watched this one with my blankie, just in case.',
+  'Pull up a carpet square, everybody.',
+  "My review is ready, and it's only a little sticky.",
 ];
 
 const MIDDLES = [
