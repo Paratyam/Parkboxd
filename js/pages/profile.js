@@ -1,26 +1,27 @@
-import { initPage } from '../layout.js?v=20261127130557';
-import { supabase } from '../supabase.js?v=20261127130557';
-import { SITE_NAME } from '../config.js?v=20261127130557';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127130557';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127130557';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127130557';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127130557';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127130557';
-import { line } from '../jokes.js?v=20261127130557';
-import { characterColours } from '../data/character-tags.js?v=20261127130557';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127130557';
-import { streakInfo } from '../streak.js?v=20261127130557';
-import { loadPicks } from '../club.js?v=20261127130557';
-import { beltSVG } from '../art.js?v=20261127130557';
-import { roastJokes } from '../jimmy.js?v=20261127130557';
+import { initPage } from '../layout.js?v=20261127132005';
+import { supabase } from '../supabase.js?v=20261127132005';
+import { SITE_NAME } from '../config.js?v=20261127132005';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127132005';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127132005';
+import { shareInvite } from '../invite.js?v=20261127132005';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127132005';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127132005';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127132005';
+import { line } from '../jokes.js?v=20261127132005';
+import { characterColours } from '../data/character-tags.js?v=20261127132005';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127132005';
+import { streakInfo } from '../streak.js?v=20261127132005';
+import { loadPicks } from '../club.js?v=20261127132005';
+import { beltSVG } from '../art.js?v=20261127132005';
+import { roastJokes } from '../jimmy.js?v=20261127132005';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' and Kyle's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127130557')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127130557')).renderKyleProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127132005')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127132005')).renderKyleProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {
@@ -157,6 +158,7 @@ async function render(p) {
       <strong>${esc(b.name)}</strong>
       <span>${esc(b.desc)}</span>
       ${b.earned ? '<span class="got">Unlocked</span>' : `<div class="bar" aria-label="${b.have} of ${b.need}"><div style="width:${b.need ? (b.have / b.need) * 100 : 0}%;background:var(--green)"></div></div>`}
+      ${b.earned && isMe ? `<button type="button" class="link-button badge-share" data-share-award data-kicker="Badge unlocked" data-emoji="${esc(b.emoji)}" data-heading="${esc(b.name)}" data-line="${esc(b.desc)}" data-name="${esc(name)}">Share</button>` : ''}
       ${secretLine(b)}
     </div>`).join('')}</div>`;
 
@@ -181,6 +183,7 @@ async function render(p) {
         </div>
         <p style="margin:10px 0 0;color:var(--text-soft)">${esc(persona.line)}</p>
         <p style="margin:8px 0 0;font-size:12px;color:var(--muted)">Why: ${esc(persona.why)}</p>
+        ${isMe ? `<button type="button" class="link-button" style="margin-top:10px" data-share-award data-kicker="My South Park personality" data-emoji="${esc(persona.emoji)}" data-heading="I'm a ${esc(persona.name)}" data-line="${esc(persona.line)}" data-name="${esc(name)}">🖼️ Share my personality</button>` : ''}
       </div>`
     : `<p class="empty">Log and rate a few more episodes and we'll tell ${isMe ? 'you who you are' : 'you who they are'}. Hopefully not Cartman.</p>`;
 
@@ -267,6 +270,7 @@ async function render(p) {
         ${isMe ? '<a class="btn btn-ghost" href="settings.html">Edit profile</a>' : followButtonHTML(p.id, iFollow)}
         ${canMessage ? `<a class="btn btn-ghost" href="messages.html?u=${u}">💬 Message</a>` : ''}
         <button type="button" class="btn btn-ghost jimmy-btn" id="jimmy-roast">🎤 ${isMe ? 'Roast me, Jimmy' : 'Get Jimmy to roast them'}</button>
+        ${isMe ? '<button type="button" class="btn btn-ghost" id="invite-friends">📨 Invite friends</button>' : ''}
       </div>
     </section>
 
@@ -318,6 +322,7 @@ async function render(p) {
     </div>`;
   root.removeAttribute('aria-busy');
   wireFollowButtons(root, () => render(p));
+  $('#invite-friends')?.addEventListener('click', () => shareInvite(p.username));
 
   // Jimmy's Comedy Roast: one joke per click, from this person's real stats. Stat jokes come
   // first; when they run out the list reshuffles.

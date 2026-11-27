@@ -1,11 +1,11 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture and Kenny gives a (muffled) hint. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127130557';
-import { initPage, logEpisode } from '../layout.js?v=20261127130557';
-import { supabase } from '../supabase.js?v=20261127130557';
-import { $, esc, epCode, toast } from '../ui.js?v=20261127130557';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127130557';
-import { mysterySVG } from '../art.js?v=20261127130557';
+import { SITE_LINK } from '../config.js?v=20261127132005';
+import { initPage, logEpisode } from '../layout.js?v=20261127132005';
+import { supabase } from '../supabase.js?v=20261127132005';
+import { $, esc, epCode, toast } from '../ui.js?v=20261127132005';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127132005';
+import { mysterySVG } from '../art.js?v=20261127132005';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -182,7 +182,8 @@ function guess(id) {
 function wire() {
   $('#m-share')?.addEventListener('click', async () => {
     const squares = game.guesses.map((id) => (id === answer.id ? '🟩' : id ? '🟥' : '⬛')).join('');
-    const text = `Parkboxd Mystery Episode #${number} ${game.won ? `${game.guesses.length}/${MAX}` : `X/${MAX}`}\n${squares}\nhttps://${SITE_LINK}/mystery.html`;
+    const { streak } = stats();
+    const text = `Parkboxd Mystery Episode #${number} ${game.won ? `${game.guesses.length}/${MAX}` : `X/${MAX}`}\n${squares}\n${streak > 1 ? `🔥 ${streak}-day streak. ` : ''}Can you beat me?\nhttps://${SITE_LINK}/mystery.html`;
     try { await navigator.clipboard.writeText(text); toast('Copied! Go brag about it.'); } catch { toast(text); }
   });
   $('#m-log')?.addEventListener('click', () => logEpisode({ episode: answer }));

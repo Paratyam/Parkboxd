@@ -38,7 +38,7 @@ Then commit and push to `main` (that's the deploy). Docs-only changes don't need
 - Butters' Book Club: `js/club.js`, `js/butters.js`, `js/butters-profile.js`, `js/club-notes.js`, `club.html`
 - Cartman's Cage Match (Elo): `js/cage.js`, `js/cage-host.js`, `cage.html`
 - Garrison's Report Card: `js/report-card.js`; Tegridy streak: `js/streak.js`; badges: `js/insights.js`
-- Jimmy's roast: `js/jimmy.js`; Stan's Picks: `js/stan.js`; Mackey's content notes: `js/mackey.js`; Mr. Hankey's advent calendar: `js/pages/hankey.js`; share cards: `js/share.js`; Kenny's Daily Mystery: `js/pages/mystery.js`
+- Jimmy's roast: `js/jimmy.js`; Stan's Picks: `js/stan.js`; Mackey's content notes: `js/mackey.js`; Mr. Hankey's advent calendar: `js/pages/hankey.js`; share cards: `js/share.js`; invite links: `js/invite.js`; Kenny's Daily Mystery: `js/pages/mystery.js`
 - Comments/replies: `js/comments.js`; DMs: `js/pages/messages.js`; avatars: `js/avatars.js`
 
 ## Saving usage

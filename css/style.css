@@ -1456,3 +1456,5 @@ html.coon-takeover-on .histogram .end { font-size: 7px; }
 .install-ad .btn { margin-top: 5px; padding: 6px 12px; font-size: 12px; background: var(--bg-deep); color: #fff; }
 .install-ad-close { position: absolute; top: 6px; right: 10px; background: none; border: 0; padding: 4px; color: var(--bg-deep); font-size: 15px; cursor: pointer; }
 html.chaos .install-ad, html.mysterion .install-ad { bottom: 66px; }
+
+.badge .badge-share { align-self: center; margin-top: 4px; font-size: 11px; }

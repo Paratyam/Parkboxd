@@ -1,10 +1,10 @@
 // Shareable paper-cutout cards: one of your reviews, or your Top 4, drawn on a canvas.
 // Original art, plus the episode stills on both cards. Any button with data-share-review="<log id>" or
-// data-share-top4="<username>" opens the preview.
-import { supabase } from './supabase.js?v=20261127130557';
-import { epCode, stars, toast } from './ui.js?v=20261127130557';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127130557';
-import { SITE_LINK } from './config.js?v=20261127130557';
+// data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
+import { supabase } from './supabase.js?v=20261127132005';
+import { epCode, stars, toast } from './ui.js?v=20261127132005';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127132005';
+import { SITE_LINK } from './config.js?v=20261127132005';
 
 const W = 1080;
 const H = 1350;
@@ -239,6 +239,24 @@ function cover(c, img, x, y, w, h) {
   c.strokeRect(x, y, w, h);
 }
 
+/** A badge or personality: { kicker, emoji, heading, line, name } -> canvas */
+export async function drawAwardCard({ kicker, emoji, heading, line, name }) {
+  const { canvas, c } = await newCanvas();
+  paper(c, 110, 200, 860, 940, PAPER, 0.8);
+  text(c, kicker, W / 2, 292, { size: 36, weight: 700, colour: '#c0392b', align: 'center' });
+  paper(c, W / 2 - 150, 340, 300, 300, '#f5c518', -4);
+  text(c, emoji, W / 2, 550, { size: 170, align: 'center' });
+  c.font = `400 72px ${DISPLAY}`;
+  let y = 750;
+  for (const l of clamp(c, heading, 760, 2)) { text(c, l, W / 2, y, { size: 72, font: DISPLAY, colour: NAVY, align: 'center' }); y += 80; }
+  c.font = `400 36px ${BODY}`;
+  y += 5;
+  for (const l of clamp(c, line, 740, 4)) { text(c, l, W / 2, y, { size: 36, colour: '#2b2b2b', align: 'center' }); y += 50; }
+  c.font = `700 36px ${BODY}`;
+  text(c, clamp(c, `— ${name}`, 760, 1)[0], W / 2, 1100, { size: 36, weight: 700, colour: NAVY, align: 'center' });
+  return canvas;
+}
+
 // ---- Preview dialog ----
 
 function showPreview(canvas, filename) {
@@ -312,12 +330,13 @@ async function top4Data(username) {
 }
 
 document.addEventListener('click', async (e) => {
-  const b = e.target.closest?.('[data-share-review], [data-share-top4]');
+  const b = e.target.closest?.('[data-share-review], [data-share-top4], [data-share-award]');
   if (!b || b.disabled) return;
   b.disabled = true;
   try {
     const { shareReview, shareTop4 } = b.dataset;
-    if (shareReview) showPreview(await drawReviewCard(await reviewData(Number(shareReview))), `parkboxd-review-${shareReview}.png`);
+    if (b.hasAttribute('data-share-award')) showPreview(await drawAwardCard(b.dataset), 'parkboxd-card.png');
+    else if (shareReview) showPreview(await drawReviewCard(await reviewData(Number(shareReview))), `parkboxd-review-${shareReview}.png`);
     else showPreview(await drawTop4Card(await top4Data(shareTop4)), `parkboxd-top4-${shareTop4}.png`);
   } catch (err) {
     toast(`Couldn't make the card: ${err?.message || err}`);

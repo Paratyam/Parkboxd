@@ -1,12 +1,13 @@
 // Shared header + footer, and the session/profile check every page runs first.
-import { supabase, isConfigured } from './supabase.js?v=20261127130557';
-import { SITE_NAME } from './config.js?v=20261127130557';
-import { esc, avatarHTML, currentPage, currentFile, toast } from './ui.js?v=20261127130557';
-import { line } from './jokes.js?v=20261127130557';
-import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127130557';
-import { pineStripSVG, busStopSVG } from './art.js?v=20261127130557';
-import { addInstallButton } from './install.js?v=20261127130557';
-import { VERSION } from './version.js?v=20261127130557';
+import { supabase, isConfigured } from './supabase.js?v=20261127132005';
+import { SITE_NAME } from './config.js?v=20261127132005';
+import { esc, avatarHTML, currentPage, currentFile, toast } from './ui.js?v=20261127132005';
+import { line } from './jokes.js?v=20261127132005';
+import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127132005';
+import { pineStripSVG, busStopSVG } from './art.js?v=20261127132005';
+import { addInstallButton } from './install.js?v=20261127132005';
+import { captureInvite, redeemInvite } from './invite.js?v=20261127132005';
+import { VERSION } from './version.js?v=20261127132005';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -49,6 +50,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
     profile = data;
   }
 
+  captureInvite(session);
   if (auth === 'required' && !session) {
     location.replace(`login.html?next=${encodeURIComponent(currentPage())}`);
     return never();
@@ -59,6 +61,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   }
 
   renderHeader(profile, session);
+  redeemInvite(session, profile).catch(() => {}); // runs in the background
   // Mysterion mode masks everyone's identity except yours; Chaos mode gives you a tinfoil hat.
   if (profile?.username && /^[a-z0-9_]+$/.test(profile.username)) {
     const me = profile.username;
@@ -79,7 +82,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   renderFooter(session);
   decorateBigMessages();
   // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
-  if (session) import('./flair.js?v=20261127130557').then((m) => m.startFlair()).catch(() => {});
+  if (session) import('./flair.js?v=20261127132005').then((m) => m.startFlair()).catch(() => {});
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
@@ -154,7 +157,7 @@ function renderHeader(profile, session) {
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
   el.querySelector('#header-random')?.addEventListener('click', async () => {
-    const r = await import('./random.js?v=20261127130557');
+    const r = await import('./random.js?v=20261127132005');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   });
   syncDice();
@@ -167,7 +170,7 @@ function renderHeader(profile, session) {
  * event on window so the current page can refresh itself.
  */
 export async function logEpisode(opts = {}) {
-  const { openLogModal } = await import('./log-modal.js?v=20261127130557');
+  const { openLogModal } = await import('./log-modal.js?v=20261127132005');
   const changed = await openLogModal(opts);
   if (changed) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
   return changed;
@@ -210,7 +213,7 @@ export async function refreshBell() {
     supabase.auth.getUser(),
   ]);
   // Plus unread Book Club notes (new book, vote result), worked out in the browser.
-  const club = await import('./club-notes.js?v=20261127130557').then((m) => m.clubNotes(user?.id)).catch(() => []);
+  const club = await import('./club-notes.js?v=20261127132005').then((m) => m.clubNotes(user?.id)).catch(() => []);
   const count = (dbCount || 0) + club.filter((n) => !n.read).length;
   const badge = bell.querySelector('.bell-count');
   badge.hidden = !count;
@@ -299,8 +302,8 @@ function wireSearch(form) {
     const [{ data: people }, { loadAllEpisodes, seasonCode, matchesCode }, { searchEpisodes, snippetHTML }] = await Promise.all([
       safe ? supabase.from('profiles').select('username, display_name, avatar_color, avatar_icon')
         .not('username', 'is', null).or(`username.ilike.%${safe}%,display_name.ilike.%${safe}%`).limit(5) : Promise.resolve({ data: [] }),
-      import('./episodes.js?v=20261127130557'),
-      import('./search.js?v=20261127130557'),
+      import('./episodes.js?v=20261127132005'),
+      import('./search.js?v=20261127132005'),
     ]);
     // "S15" lists the whole season (plus a link to its page), "S15E3" that one episode.
     // Anything else: title matches, then "what happened" matches from the plot summaries.
