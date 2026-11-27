@@ -33,6 +33,22 @@ const MIDDLES = [
   'I watched "{t}" twice, once for fun and once for Book Club.',
   'My favourite part of "{t}" was all of it. Is that allowed?',
   'I tried explaining "{t}" to my dad and now I\'m grounded. Worth it!',
+  'I gave "{t}" my whole attention, and I only have a little.',
+  '"{t}" had me gasping so much I got the hiccups.',
+  'I\'m gonna be thinking about "{t}" all through math class.',
+  'I wrote "{t}" on my lunchbox so I wouldn\'t forget it.',
+  'If "{t}" was a real book, I\'d sleep with it under my pillow.',
+  'I told my hamster all about "{t}" and he seemed real interested.',
+  'I drew a picture of "{t}" and it\'s going on the fridge, if I\'m allowed.',
+  '"{t}" is the kind of episode that makes you say "oh, hamburgers."',
+  'I had to pause "{t}" twice to calm down.',
+  'I\'d recommend "{t}" to a friend, as soon as I check who\'s free.',
+  'I practiced saying "{t}" in my book report voice.',
+  'Boy, "{t}" sure gave me a lot to rub my knuckles about.',
+  'I give "{t}" my official Book Club stamp, which is a potato I carved.',
+  'I watched "{t}" so closely my nose touched the screen.',
+  '"{t}" taught me something, and I can\'t wait to find out what.',
+  'I laughed at "{t}" so hard that milk came out my nose, and I wasn\'t even drinking any.',
 ];
 
 const CLOSERS = [
