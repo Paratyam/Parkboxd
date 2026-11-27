@@ -1,9 +1,9 @@
 // Butters' own (pretend) Parkboxd account, shown at profile.html?u=butters. It isn't a real
 // member: nothing here is in the database, so his ratings never touch site averages, Stan's
 // Picks or taste matches. Episodes are matched by title; any title TMDB names differently is skipped.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127031416';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127031416';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127031416';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127031458';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127031458';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127031458';
 
 export const BUTTERS_USERNAME = 'butters';
 export const BUTTERS = { username: 'butters', display_name: 'Butters Stotch', avatar_color: '#f5c518', avatar_icon: 'books' };
@@ -13,14 +13,14 @@ const RATED = [
   ["Butters' Very Own Episode", 5, true], ['Professor Chaos', 5, true], ['Casa Bonita', 4.5, true], ['Marjorine', 5, true],
   ['Scott Tenorman Must Die', 5, true], ['Make Love, Not Warcraft', 5, true], ['Good Times with Weapons', 5, true],
   ['AWESOM-O', 4.5, true], ['Raisins', 4.5, false], ['The Coon', 5, true], ['Coon 2: Hindsight', 5, true], ['Mysterion Rises', 4.5, true],
-  ['Imaginationland Episode I', 4, false], ['Imaginationland Episode II', 4.5, false], ['Imaginationland Episode III', 4.5, true],
+  ['Imaginationland', 4, false], ['Imaginationland Episode II', 4.5, false], ['Imaginationland Episode III', 4.5, true],
   ['Woodland Critter Christmas', 3.5, false], ['Pandemic', 4, false], ['The Death Camp of Tolerance', 4.5, false],
   ['Chef Goes Nanners', 4.5, false], ['Trapper Keeper', 4.5, false], ['Pinkeye', 4, false], ['Christian Rock Hard', 5, true],
   ['Super Best Friends', 4.5, false], ["Lil' Crime Stoppers", 5, true], ["Butters' Bottom Bitch", 4.5, false],
   ['The Ungroundable', 5, true], ['Pre-School', 4, false], ['Tweek vs. Craig', 4.5, true], ['Cripple Fight', 4, false],
   ['Grounded Vindaloop', 5, true], ['Fishsticks', 5, true], ['Medicinal Fried Chicken', 4, false], ["You're Getting Old", 3.5, false],
   ['Stanley\'s Cup', 3.5, false], ['Major Boobage', 4, false], ['Mr. Hankey, the Christmas Poo', 5, true], ['Red Hot Catholic Love', 4, false],
-  ['The Return of Chef', 4, false], ['Kenny Dies', 3.5, false], ['Night of the Living Homeless', 4, false], ['Simpsons Already Did It', 4.5, true],
+  ['The Return of Chef', 4, false], ['Kenny Dies', 3.5, false], ['Night of the Living Homeless', 4, false], ['The Simpsons Already Did It', 4.5, true],
 ];
 
 const TOP4 = ["Butters' Very Own Episode", 'Professor Chaos', 'Marjorine', 'Grounded Vindaloop'];

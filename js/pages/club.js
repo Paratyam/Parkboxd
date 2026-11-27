@@ -1,16 +1,16 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
-import { initPage, logEpisode } from '../layout.js?v=20261127031416';
-import { supabase } from '../supabase.js?v=20261127031416';
-import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127031416';
-import { buttersReview, buttersComment, BEST_FRIENDS } from '../butters.js?v=20261127031416';
-import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127031416';
-import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127031416';
-import { booksSVG } from '../art.js?v=20261127031416';
-import { BUTTERS } from '../butters-profile.js?v=20261127031416';
+import { initPage, logEpisode } from '../layout.js?v=20261127031458';
+import { supabase } from '../supabase.js?v=20261127031458';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127031458';
+import { buttersReview, buttersComment, BEST_FRIENDS } from '../butters.js?v=20261127031458';
+import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127031458';
+import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127031458';
+import { booksSVG } from '../art.js?v=20261127031458';
+import { BUTTERS } from '../butters-profile.js?v=20261127031458';
 
 const SHELF = 12; // past weeks on the shelf
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127031416';
-import { episodeAverages } from '../insights.js?v=20261127031416';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127031458';
+import { episodeAverages } from '../insights.js?v=20261127031458';
 
 const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');
