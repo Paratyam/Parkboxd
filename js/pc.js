@@ -1,7 +1,7 @@
 // PC Principal's "PC it" filter: rewrites a review in his voice with word swaps, plus an opener
 // and a closer. Browser only, never saved. Any review card with a [data-pc] button gets the
 // toggle (installPC() listens once for the whole page).
-import { esc } from './ui.js?v=20261127082807';
+import { esc } from './ui.js?v=20261127083100';
 
 // [pattern, replacement]. Order matters: phrases before single words. Each replacement is only
 // made of words no later rule matches, so nothing gets swapped twice.
@@ -108,6 +108,14 @@ export function pcify(text) {
   if (out && !/[.!?)]$/.test(out)) out += '.';
   else if (out.endsWith(')') && !/[.!?]\)$/.test(out)) out += '.';
   const h = hash(text || '');
+  // Sprinkle in "bro": roughly every other sentence that doesn't have one yet, picked from the
+  // review's hash so it's the same every time. Always at least one.
+  let n = 0;
+  out = out.replace(/([^.!?]+?)([.!?]+)(?=\s|$)/g, (m, body, punct) => {
+    const i = n++;
+    if (/\bbro\b/i.test(body) || body.trim().endsWith(')') || body.trim().length < 12 || /\b(Mr|Mrs|Ms|Dr|St|vs)$/i.test(body)) return m;
+    return ((h >> (i % 16)) & 1) || i === 0 ? `${body}, bro${punct}` : m;
+  });
   return [OPENERS[h % OPENERS.length], out, CLOSERS[(h >> 3) % CLOSERS.length]].join(' ');
 }
 

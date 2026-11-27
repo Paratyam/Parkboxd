@@ -67,47 +67,47 @@ const GENERIC = [
 const PERSONA_JOKES = {
   Butters: [
     (n) => `${n} is a Butters. ${n} has never rated anything below four stars. If ${n} reviewed a parking ticket, it'd say "gee, real thorough work, officer."`,
-    (n) => `${n} got Butters. Somewhere, a pair of parents just grounded ${n} for being too n-n-nice to bad episodes.`,
+    (n) => `${n} got Butters' personality. Somewhere, a pair of parents just grounded ${n} for being too n-n-nice to bad episodes.`,
     (n) => `${n} is a Butters. Which means ${n} is one tinfoil hat away from becoming a supervillain. A very polite one.`,
   ],
   Jimmy: [
-    (n) => `${n} got Jimmy. Finally, someone with t-t-taste. I'm not biased. I'm completely biased.`,
+    (n) => `${n} got Jimmy's personality. Finally, someone with t-t-taste. I'm not biased. I'm completely biased.`,
     (n) => `${n} is a Jimmy. Generous with the stars, great with an audience. Now if only ${n} could do a tight five minutes.`,
     (n) => `The site says ${n} is a Jimmy. That's the nicest thing anyone's said about me all week, and it wasn't even about me.`,
   ],
   Cartman: [
     (n) => `${n} is a Cartman. ${n} gives out two-star ratings like Cartman gives out excuses: constantly, and with no evidence.`,
-    (n) => `${n} got Cartman. Somewhere, Cartman's mem is telling ${n} every rating is perfect, sweetie.`,
+    (n) => `${n} got Cartman's personality. Somewhere, Cartman's mem is telling ${n} every rating is perfect, sweetie.`,
     (n) => `${n} is so Cartman, ${n} rated an episode one star and then demanded everyone r-r-respect their authoritah.`,
   ],
   Randy: [
     (n) => `${n} is a Randy. Five stars one day, one star the next. ${n} doesn't rate episodes, ${n} has m-m-mood swings with a login.`,
-    (n) => `${n} got Randy. I'm not saying ${n} is dramatic, but ${n} once gave an episode five stars and then started a farm about it.`,
+    (n) => `${n} got Randy's personality. I'm not saying ${n} is dramatic, but ${n} once gave an episode five stars and then started a farm about it.`,
     (n) => `${n} is so Randy, every rating comes with a full m-m-midlife crisis attached.`,
   ],
   'Mr. Mackey': [
     (n) => `${n} is a Mr. Mackey. Three stars. Three and a half. Three stars. Rating everything in the middle is bad, m'kay?`,
-    (n) => `${n} got Mr. Mackey. ${n} has never had a strong opinion in their life. ${n} is the human version of beige, m'kay.`,
+    (n) => `${n} got Mr. Mackey's personality. ${n} has never had a strong opinion in their life. ${n} is the human version of beige, m'kay.`,
     (n) => `${n} is so Mr. Mackey, if you asked ${n} to pick a favourite episode, ${n} would schedule a counselling s-s-session first.`,
   ],
   Kyle: [
     (n) => `${n} is a Kyle. ${n}'s reviews are so long, Kyle himself told ${n} to w-w-wrap it up.`,
-    (n) => `${n} got Kyle. Every review ends with "you know, I learned something today." Buddy, so did we. We learned to scroll faster.`,
+    (n) => `${n} got Kyle's personality. Every review ends with "you know, I learned something today." Buddy, so did we. We learned to scroll faster.`,
     (n) => `${n} is so Kyle, ${n} wrote three paragraphs about a fart joke and called it "a commentary on s-s-society."`,
   ],
   Kenny: [
     (n) => `${n} is a Kenny. Logs everything, says nothing. I've had deeper conversations with a p-p-parka.`,
-    (n) => `${n} got Kenny. Hundreds of episodes, zero reviews. Mmph mmph. That's ${n}'s review. That's all of them.`,
+    (n) => `${n} got Kenny's personality. Hundreds of episodes, zero reviews. Mmph mmph. That's ${n}'s review. That's all of them.`,
     (n) => `${n} is so Kenny, the site keeps checking if ${n} is still a-a-alive.`,
   ],
   Towelie: [
     (n) => `${n} is a Towelie. ${n} has rewatched the same episodes so many times, ${n} forgot ${n} already saw them. Don't forget to bring a towel.`,
-    (n) => `${n} got Towelie. ${n} wanted to watch something new, but then ${n} got h-h-high on rewatches.`,
+    (n) => `${n} got Towelie's personality. ${n} wanted to watch something new, but then ${n} got h-h-high on rewatches.`,
     (n) => `${n} is so Towelie, ${n} has no idea what's going on, but ${n} is enjoying it again anyway.`,
   ],
   Stan: [
     (n) => `${n} is a Stan. No strong habits, no wild takes, just vibes. ${n} is the p-p-plain toast of South Park fans.`,
-    (n) => `${n} got Stan. Normal ratings, normal reviews. ${n} is so normal, it's honestly the weirdest thing about ${n}.`,
+    (n) => `${n} got Stan's personality. Normal ratings, normal reviews. ${n} is so normal, it's honestly the weirdest thing about ${n}.`,
     (n) => `${n} is so Stan, one look at a bad episode and ${n} throws up. On Wendy. Every time.`,
   ],
 };
