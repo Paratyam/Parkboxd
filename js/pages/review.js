@@ -1,11 +1,11 @@
 // review.html?id=LOG_ID: one review with its likes and comments.
-import { initPage } from '../layout.js?v=20261127025038';
-import { supabase } from '../supabase.js?v=20261127025038';
-import { SITE_NAME } from '../config.js?v=20261127025038';
-import { $, esc, params, avatarHTML, notify, toast } from '../ui.js?v=20261127025038';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127025038';
-import { line } from '../jokes.js?v=20261127025038';
-import { episodeAverages } from '../insights.js?v=20261127025038';
+import { initPage } from '../layout.js?v=20261127025509';
+import { supabase } from '../supabase.js?v=20261127025509';
+import { SITE_NAME } from '../config.js?v=20261127025509';
+import { $, esc, params, avatarHTML, notify, toast } from '../ui.js?v=20261127025509';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127025509';
+import { line } from '../jokes.js?v=20261127025509';
+import { episodeAverages } from '../insights.js?v=20261127025509';
 
 const { user } = await initPage({ title: 'Review', auth: 'required' });
 const root = $('#review');
