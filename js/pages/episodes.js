@@ -1,9 +1,10 @@
-import { initPage } from '../layout.js?v=20261127112000';
-import { supabase } from '../supabase.js?v=20261127112000';
-import { $, esc, params } from '../ui.js?v=20261127112000';
-import { loadAllEpisodes, myLogMap, cardHTML, seasonCode, matchesCode } from '../episodes.js?v=20261127112000';
-import { FOCUS_CHARACTERS } from '../data/character-tags.js?v=20261127112000';
-import { line } from '../jokes.js?v=20261127112000';
+import { initPage } from '../layout.js?v=20261127113501';
+import { supabase } from '../supabase.js?v=20261127113501';
+import { $, esc, params } from '../ui.js?v=20261127113501';
+import { loadAllEpisodes, myLogMap, cardHTML, seasonCode, matchesCode } from '../episodes.js?v=20261127113501';
+import { FOCUS_CHARACTERS } from '../data/character-tags.js?v=20261127113501';
+import { line } from '../jokes.js?v=20261127113501';
+import { searchEpisodes } from '../search.js?v=20261127113501';
 
 const { user } = await initPage({ title: 'Episodes', auth: 'required' });
 
@@ -74,16 +75,20 @@ async function load() {
 function render() {
   const text = q.value.trim().toLowerCase();
   const code = seasonCode(text); // S15 = the whole season, S15E3 = one episode
+  // Anything else matches titles and plot summaries ("theme park" finds Cartmanland).
+  const hits = text && !code ? searchEpisodes(all, text) : null;
+  const rank = hits ? new Map(hits.map((h, i) => [h.ep.id, i])) : null;
   const tagSet = tagSelect.value ? tagged.get(Number(tagSelect.value)) || new Set() : null;
   let list = all.filter((e) => {
     if (tagSet && !tagSet.has(e.id)) return false;
     if (filter === 'unwatched' && mine.has(e.id)) return false;
     if (['episode', 'special', 'movie'].includes(filter) && e.kind !== filter) return false;
     if (code) return matchesCode(e, code);
-    return !text || e.title.toLowerCase().includes(text);
+    return !rank || rank.has(e.id);
   });
 
   const avg = (e) => Number(community.get(e.id)?.avg_rating ?? -1);
+  if (rank && sort.value === 'match') list = [...list].sort((a, b) => rank.get(a.id) - rank.get(b.id));
   if (sort.value === 'newest') list = [...list].sort((a, b) => (b.air_date || '').localeCompare(a.air_date || ''));
   if (sort.value === 'title') list = [...list].sort((a, b) => a.title.localeCompare(b.title));
   if (sort.value === 'rating') list = [...list].sort((a, b) => avg(b) - avg(a));

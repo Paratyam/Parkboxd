@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261127112000">
-<script type="module" src="js/pages/episodes.js?v=20261127112000"></script>
+<link rel="stylesheet" href="css/style.css?v=20261127113501">
+<script type="module" src="js/pages/episodes.js?v=20261127113501"></script>
 </head>
 <body>
 <header id="site-header" class="site-header"></header>
@@ -19,8 +19,8 @@
     <section>
       <div class="section-head"><h2>Episodes</h2><span class="result-count" id="count" aria-live="polite"></span></div>
       <div class="toolbar" style="margin-bottom:20px">
-        <label class="visually-hidden" for="q">Search by title</label>
-        <input type="search" id="q" placeholder="Search by title or S5E4" autocomplete="off">
+        <label class="visually-hidden" for="q">Search by title or plot</label>
+        <input type="search" id="q" placeholder="Title, S5E4, or what happened (&quot;theme park&quot;)" autocomplete="off">
         <div class="chips" role="group" aria-label="Show">
           <button type="button" class="chip" data-filter="all" aria-pressed="true">All</button>
           <button type="button" class="chip" data-filter="episode" aria-pressed="false">Episodes</button>
@@ -32,6 +32,7 @@
         <select id="tag"><option value="">Any tag</option></select>
         <label class="visually-hidden" for="sort">Sort by</label>
         <select id="sort">
+          <option value="match">Best match</option>
           <option value="air">Air order</option>
           <option value="newest">Newest first</option>
           <option value="rating">Highest rated</option>

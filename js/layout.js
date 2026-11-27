@@ -1,11 +1,11 @@
 // Shared header + footer, and the session/profile check every page runs first.
-import { supabase, isConfigured } from './supabase.js?v=20261127112000';
-import { SITE_NAME } from './config.js?v=20261127112000';
-import { esc, avatarHTML, currentPage, toast } from './ui.js?v=20261127112000';
-import { line } from './jokes.js?v=20261127112000';
-import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127112000';
-import { pineStripSVG, busStopSVG } from './art.js?v=20261127112000';
-import { VERSION } from './version.js?v=20261127112000';
+import { supabase, isConfigured } from './supabase.js?v=20261127113501';
+import { SITE_NAME } from './config.js?v=20261127113501';
+import { esc, avatarHTML, currentPage, toast } from './ui.js?v=20261127113501';
+import { line } from './jokes.js?v=20261127113501';
+import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127113501';
+import { pineStripSVG, busStopSVG } from './art.js?v=20261127113501';
+import { VERSION } from './version.js?v=20261127113501';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -71,7 +71,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   renderFooter(session);
   decorateBigMessages();
   // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
-  if (session) import('./flair.js?v=20261127112000').then((m) => m.startFlair()).catch(() => {});
+  if (session) import('./flair.js?v=20261127113501').then((m) => m.startFlair()).catch(() => {});
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
@@ -102,7 +102,7 @@ function renderHeader(profile, session) {
       <form class="header-search" role="search" action="episodes.html">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
         <label class="visually-hidden" for="header-q">Search episodes</label>
-        <input type="search" id="header-q" name="q" placeholder="Search episodes, people" autocomplete="off">
+        <input type="search" id="header-q" name="q" placeholder="Search episodes, plots, people" autocomplete="off">
       </form>
       <a class="icon-btn bell" id="header-bell" href="notifications.html" aria-label="Notifications" title="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="bell-count" hidden></span></a>
       <a class="icon-btn bell mail-btn" id="header-mail" href="messages.html" aria-label="Messages" title="Messages"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span class="bell-count" hidden></span></a>
@@ -121,7 +121,7 @@ function renderHeader(profile, session) {
     <form class="header-search nav-mobile-only" role="search" action="episodes.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
       <label class="visually-hidden" for="menu-q">Search</label>
-      <input type="search" id="menu-q" name="q" placeholder="Search episodes and people" autocomplete="off">
+      <input type="search" id="menu-q" name="q" placeholder="Search episodes, plots, people" autocomplete="off">
     </form>` : '';
   const mobileLinks = session && profile ? `
     <button type="button" class="nav-mobile-only link-button nav-random">🎲 Random episode</button>
@@ -146,7 +146,7 @@ function renderHeader(profile, session) {
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
   el.querySelector('#header-random')?.addEventListener('click', async () => {
-    const r = await import('./random.js?v=20261127112000');
+    const r = await import('./random.js?v=20261127113501');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   });
   syncDice();
@@ -159,7 +159,7 @@ function renderHeader(profile, session) {
  * event on window so the current page can refresh itself.
  */
 export async function logEpisode(opts = {}) {
-  const { openLogModal } = await import('./log-modal.js?v=20261127112000');
+  const { openLogModal } = await import('./log-modal.js?v=20261127113501');
   const changed = await openLogModal(opts);
   if (changed) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
   return changed;
@@ -201,7 +201,7 @@ export async function refreshBell() {
     supabase.auth.getUser(),
   ]);
   // Plus unread Book Club notes (new book, vote result), worked out in the browser.
-  const club = await import('./club-notes.js?v=20261127112000').then((m) => m.clubNotes(user?.id)).catch(() => []);
+  const club = await import('./club-notes.js?v=20261127113501').then((m) => m.clubNotes(user?.id)).catch(() => []);
   const count = (dbCount || 0) + club.filter((n) => !n.read).length;
   const badge = bell.querySelector('.bell-count');
   badge.hidden = !count;
@@ -261,24 +261,30 @@ function wireSearch(form) {
     const mine = ++seq;
     if (q.length < 2) return close();
     const safe = q.replace(/[^\p{L}\p{N} _-]/gu, '');
-    const [{ data: people }, { loadAllEpisodes, seasonCode, matchesCode }] = await Promise.all([
+    const [{ data: people }, { loadAllEpisodes, seasonCode, matchesCode }, { searchEpisodes, snippetHTML }] = await Promise.all([
       safe ? supabase.from('profiles').select('username, display_name, avatar_color, avatar_icon')
         .not('username', 'is', null).or(`username.ilike.%${safe}%,display_name.ilike.%${safe}%`).limit(5) : Promise.resolve({ data: [] }),
-      import('./episodes.js?v=20261127112000'),
+      import('./episodes.js?v=20261127113501'),
+      import('./search.js?v=20261127113501'),
     ]);
-    const lower = q.toLowerCase();
     // "S15" lists the whole season (plus a link to its page), "S15E3" that one episode.
+    // Anything else: title matches, then "what happened" matches from the plot summaries.
     const code = seasonCode(q);
     const all = await loadAllEpisodes();
-    const eps = code ? all.filter((e) => matchesCode(e, code)) : all.filter((e) => e.title.toLowerCase().includes(lower)).slice(0, 6);
+    const hits = code ? [] : searchEpisodes(all, q);
+    const titleHits = hits.filter((h) => h.inTitle).slice(0, 5);
+    const plotHits = hits.filter((h) => !h.inTitle).slice(0, titleHits.length ? 4 : 6);
+    const eps = code ? all.filter((e) => matchesCode(e, code)) : titleHits.map((h) => h.ep);
+    const epItem = (e, extra = '') => `
+        <a class="search-pop-item" href="episode.html?id=${e.id}"><span class="search-pop-code">${esc(e.kind === 'episode' ? `S${e.season} E${e.number}` : e.kind)}</span><span>${esc(e.title)}${extra}</span></a>`;
     if (mine !== seq) return; // a newer keystroke won
     pop.innerHTML = `
       ${code && code.number == null && eps.length ? `<a class="search-pop-item search-pop-season" href="seasons.html?s=${code.season}"><span class="search-pop-code">📺</span><span><strong>Season ${code.season}</strong> <small>${eps.length} episodes · open the season page</small></span></a>` : ''}
       ${people?.length ? `<div class="search-pop-head">People</div>${people.map((p) => `
         <a class="search-pop-item" href="profile.html?u=${encodeURIComponent(p.username)}">${avatarHTML(p, 26)}<span><strong>${esc(p.display_name || p.username)}</strong> <small>@${esc(p.username)}</small></span></a>`).join('')}` : ''}
-      ${eps.length ? `<div class="search-pop-head">Episodes</div>${eps.map((e) => `
-        <a class="search-pop-item" href="episode.html?id=${e.id}"><span class="search-pop-code">${esc(e.kind === 'episode' ? `S${e.season} E${e.number}` : e.kind)}</span><span>${esc(e.title)}</span></a>`).join('')}` : ''}
-      ${!people?.length && !eps.length ? '<div class="search-pop-empty">Nothing found. Not even Kenny.</div>' : ''}
+      ${eps.length ? `<div class="search-pop-head">Episodes</div>${eps.map((e) => epItem(e)).join('')}` : ''}
+      ${plotHits.length ? `<div class="search-pop-head">What happened</div>${plotHits.map((h) => epItem(h.ep, `<small class="search-pop-snippet">${snippetHTML(h, 110)}</small>`)).join('')}` : ''}
+      ${!people?.length && !eps.length && !plotHits.length ? '<div class="search-pop-empty">Nothing found. Not even Kenny.</div>' : ''}
       <button type="submit" class="search-pop-all">See all episode results for “${esc(q)}”</button>`;
     pop.hidden = false;
   });
