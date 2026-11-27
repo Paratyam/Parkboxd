@@ -1231,6 +1231,9 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .mystery-guesses { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-direction: column; gap: 6px; }
 .mystery-guesses li { padding: 6px 12px; border-radius: 6px; background: var(--surface); font-size: 14px; }
 .mystery-guesses li.wrong { color: #ff8a8a; } .mystery-guesses li.right { color: var(--green); font-weight: 700; }
+.mystery-warmth { display: block; font-size: 12px; font-weight: 700; color: var(--white); }
+.mystery-warmth.warm { color: #ffd23f; }
+.kenny-evidence { font-size: 28px; letter-spacing: 6px; }
 .mystery-result { margin-top: 16px; padding: 16px 18px; border: 3px solid #000; border-radius: 8px; box-shadow: 4px 4px 0 #000; }
 .mystery-result.won { background: #1f4d2a; } .mystery-result.lost { background: #4d1f1f; }
 .mystery-result strong { font-size: 24px; color: #fff; }

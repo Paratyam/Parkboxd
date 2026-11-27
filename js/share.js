@@ -1,10 +1,10 @@
 // Shareable paper-cutout cards: one of your reviews, or your Top 4, drawn on a canvas.
 // Original art, plus the episode stills on both cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
-import { supabase } from './supabase.js?v=20261127140208';
-import { epCode, stars, toast } from './ui.js?v=20261127140208';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127140208';
-import { SITE_LINK } from './config.js?v=20261127140208';
+import { supabase } from './supabase.js?v=20261127142419';
+import { epCode, stars, toast } from './ui.js?v=20261127142419';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127142419';
+import { SITE_LINK } from './config.js?v=20261127142419';
 
 const W = 1080;
 const H = 1350;

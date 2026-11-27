@@ -1,11 +1,12 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
-// Each wrong guess sharpens the picture and Kenny gives a (muffled) hint. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127140208';
-import { initPage, logEpisode } from '../layout.js?v=20261127140208';
-import { supabase } from '../supabase.js?v=20261127140208';
-import { $, esc, epCode, toast } from '../ui.js?v=20261127140208';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127140208';
-import { mysterySVG } from '../art.js?v=20261127140208';
+// Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
+import { SITE_LINK } from '../config.js?v=20261127142419';
+import { initPage, logEpisode } from '../layout.js?v=20261127142419';
+import { supabase } from '../supabase.js?v=20261127142419';
+import { $, esc, epCode, toast } from '../ui.js?v=20261127142419';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127142419';
+import { mysterySVG } from '../art.js?v=20261127142419';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127142419';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -35,28 +36,44 @@ if (!pool.length) {
   throw new Error('no episodes');
 }
 const answer = pool[seededIndex(today * 7 + 13, pool.length)];
-const { data: tagRows } = await supabase.from('episode_tags').select('tags(name, kind)').eq('episode_id', answer.id);
+const [{ data: tagRows }, { data: rated }] = await Promise.all([
+  supabase.from('episode_tags').select('tags(name, kind)').eq('episode_id', answer.id),
+  supabase.from('episode_ratings').select('avg_rating, rating_count').eq('episode_id', answer.id).maybeSingle(),
+]);
 const character = (tagRows || []).map((t) => t.tags).filter((t) => t?.kind === 'character').map((t) => t.name)[0];
 
-// Hints, clearest last. Kenny says them muffled; the translation sits underneath.
-// 1 season · 2 a main character (or the title's word count) · 3 the episode number
-// · 4 the title's first letter · 5 a whole sentence from the plot summary
-const words = answer.title.split(/\s+/).length;
-// Title words are blanked out of the plot sentence so it doesn't just give the answer away.
+// Clues, clearest last: A does Kenny make it · B the Parkboxd rating · C the main character
+// · D the evidence bag (emojis) · E Kenny's own comment. Kenny says them muffled, with the
+// translation underneath. The season and episode number come from the warmer/colder arrows.
+const [fate, evidence, comment] = MYSTERY_CLUES[`${answer.season}.${answer.number}`] || ['?'];
+const FATES = {
+  d: "I don't survive this one. Typical.",
+  s: 'I make it out alive! Dude, write that down.',
+  a: "I'm not really around for this one. Long story.",
+  '?': "My memory's fuzzy on whether I make it, dude.",
+};
+const ratingCount = rated?.rating_count || 0;
+const verdict = !ratingCount ? "Nobody on Parkboxd has rated this one yet. I know how that feels."
+  : `${ratingCount === 1 ? '1 Parkboxd member gave' : 'Parkboxd members give'} it ${Number(rated.avg_rating).toFixed(1)} stars.`;
+// Title words are blanked out of Kenny's comment so it doesn't just give the answer away.
 const COMMON = new Set(['the', 'and', 'for', 'with', 'are', 'you', 'not', 'but', 'his', 'her', 'its', 'all', 'from', 'one', 'two']);
 const titleWords = new Set((answer.title.toLowerCase().match(/[a-z]+/g) || []).filter((w) => w.length >= 3 && !COMMON.has(w)));
-const sentences = (answer.overview || '').match(/[^.!?]+[.!?]+/g) || (answer.overview ? [answer.overview] : []);
-const plotSentence = sentences.map((s) => s.trim()).find((s) => s.split(/\s+/).length >= 6) || sentences[0]?.trim();
-const blanked = plotSentence && plotSentence.replace(/[A-Za-z']+/g, (w) => (titleWords.has(w.toLowerCase().replace(/'s$/, '')) ? '____' : w));
+const blank = (text) => text.replace(/[A-Za-z']+/g, (w) => (titleWords.has(w.toLowerCase().replace(/'s$/, '')) ? '____' : w));
+// A new episode with no line in js/data/mystery-clues.js yet falls back to the title's shape.
+const words = answer.title.split(/\s+/).length;
+const letters = answer.title.replace(/[^A-Za-z]/g, '').length;
 const HINTS = [
-  `It's from Season ${answer.season}.`,
-  character ? `${character} is in it. A lot.` : `The title has ${words} word${words === 1 ? '' : 's'}.`,
-  `It's episode ${answer.number} of the season.`,
-  `The title starts with “${answer.title[0]}”.`,
-  blanked ? `From the plot: “${blanked}”` : `The title has ${answer.title.replace(/[^A-Za-z]/g, '').length} letters.`,
+  { text: FATES[fate] },
+  { text: verdict },
+  { text: !character ? "Nobody hogs this one, dude. It's a group thing." : character === 'Kenny' ? 'Keep an eye on me, dude.' : `Keep an eye on ${character}.` },
+  evidence ? { evidence, text: 'Three things from the evidence bag.' } : { text: `The title has ${words} word${words === 1 ? '' : 's'}.` },
+  { text: comment ? blank(comment) : `The title has ${letters} letters.` },
 ];
 const EXHIBITS = ['A', 'B', 'C', 'D', 'E'];
 const muffle = (text) => text.split(/\s+/).map((w, i) => ['Mmph', 'mmrph', 'mph', 'mmmph', 'rmph'][(w.length + i) % 5]).join(' ') + '!';
+const clueHTML = (h) => (h.evidence
+  ? `<span class="kenny-evidence">${esc(h.evidence)}</span><span class="kenny-means">${esc(h.text)}</span>`
+  : `<span class="kenny-says">“${esc(muffle(h.text))}”</span><span class="kenny-means">Kenny means: ${esc(h.text)}</span>`);
 
 // ---- Saved progress and stats: one database row per day, so they follow you between devices ----
 const { data: rows } = await supabase.from('mystery_plays').select('day, guesses, done, won')
@@ -97,11 +114,21 @@ function stats() {
 const byId = new Map(all.map((e) => [e.id, e]));
 const wrong = () => game.guesses.filter((id) => id !== answer.id).length;
 
+// Warmer or colder: where the answer is, compared with a wrong guess.
+const sameSeason = (id) => byId.get(id)?.season === answer.season;
+function feedback(id) {
+  const g = byId.get(id);
+  if (!g) return '';
+  if (g.season !== answer.season) return answer.season > g.season ? 'Later season ⬆️' : 'Earlier season ⬇️';
+  return `Right season! ${answer.number > g.number ? 'Later episode ⬆️' : 'Earlier episode ⬇️'}`;
+}
+const square = (id) => (id === answer.id ? '🟩' : !id ? '⬛' : sameSeason(id) ? '🟨' : '🟥');
+
 function render() {
   const blur = game.done ? 0 : BLUR[Math.min(wrong(), BLUR.length - 2)];
   const hintsShown = game.done ? HINTS.length : Math.min(wrong(), HINTS.length);
   const s = stats();
-  const squares = game.guesses.map((id) => (id === answer.id ? '🟩' : id ? '🟥' : '⬛')).join('');
+  const squares = game.guesses.map(square).join('');
   const left = MAX - game.guesses.length;
   root.innerHTML = `
     <section class="case-head">
@@ -111,7 +138,7 @@ function render() {
         <span class="mystery-logo">${mysterySVG()}</span>
         <div>
           <h1 class="cut">Kenny's Mystery Episode</h1>
-          <p>Somebody stole an episode and Kenny saw everything. Every wrong guess sharpens the evidence photo and gets you a clue from your witness. He's a little hard to understand. ${MAX} tries. New case every day.</p>
+          <p>Somebody stole an episode and Kenny saw everything. Every wrong guess sharpens the evidence photo, tells you whether to look earlier or later, and gets you a clue from your witness. He's a little hard to understand. ${MAX} tries. New case every day.</p>
         </div>
       </div>
     </section>
@@ -125,8 +152,7 @@ function render() {
         ${!game.done && hintsShown ? `
           <div class="mystery-new-clue" role="status">
             <span class="exhibit cut">🆕 New clue · Exhibit ${EXHIBITS[hintsShown - 1]}</span>
-            <span class="kenny-says">“${esc(muffle(HINTS[hintsShown - 1]))}”</span>
-            <span class="kenny-means">Kenny means: ${esc(HINTS[hintsShown - 1])}</span>
+            ${clueHTML(HINTS[hintsShown - 1])}
             ${hintsShown > 1 ? `<a href="#m-clues" class="mystery-all-clues">See all ${hintsShown} clues ↓</a>` : ''}
           </div>` : ''}
         ${game.done ? '' : `<div class="kenny-lives" aria-label="${left} ${left === 1 ? 'try' : 'tries'} left">${Array.from({ length: MAX }, (_, i) => `<span class="${i < left ? '' : 'used'}" aria-hidden="true">🧥</span>`).join('')}<b>${left} ${left === 1 ? 'life' : 'lives'} left</b></div>`}
@@ -146,13 +172,13 @@ function render() {
             <ul class="pick-results" id="m-results"></ul>
             <div class="toolbar"><button type="button" class="btn btn-ghost" id="m-skip">Skip (show me more)</button></div>
           </form>`}
-        ${game.guesses.length ? `<ol class="mystery-guesses">${game.guesses.map((id) => `<li class="${id === answer.id ? 'right' : 'wrong'}">${id === answer.id ? '✓' : '✗'} ${id ? esc(byId.get(id)?.title || '?') : '<em>skipped</em>'}</li>`).join('')}</ol>` : ''}
+        ${game.guesses.length ? `<ol class="mystery-guesses">${game.guesses.map((id) => `<li class="${id === answer.id ? 'right' : 'wrong'}">${id === answer.id ? '✓' : '✗'} ${id ? esc(byId.get(id)?.title || '?') : '<em>skipped</em>'}${id && id !== answer.id ? `<span class="mystery-warmth${sameSeason(id) ? ' warm' : ''}">${feedback(id)}</span>` : ''}</li>`).join('')}</ol>` : ''}
       </div>
       <aside class="mystery-side">
         <div class="case-folder" id="m-clues">
           <h2 class="cut">Witness statements</h2>
           ${HINTS.map((h, i) => (i < hintsShown ? `
-            <div class="kenny-hint${!game.done && i === hintsShown - 1 ? ' newest' : ''}"><span class="exhibit cut">Exhibit ${EXHIBITS[i]}</span><span class="kenny-says">“${esc(muffle(h))}”</span><span class="kenny-means">Kenny means: ${esc(h)}</span></div>`
+            <div class="kenny-hint${!game.done && i === hintsShown - 1 ? ' newest' : ''}"><span class="exhibit cut">Exhibit ${EXHIBITS[i]}</span>${clueHTML(h)}</div>`
             : `<div class="kenny-hint locked"><span class="exhibit cut">Exhibit ${EXHIBITS[i]}</span><span class="kenny-means">🔒 Unlocks after ${i + 1} wrong guess${i ? 'es' : ''}</span></div>`)).join('')}
         </div>
         <div class="mystery-stats paper">
@@ -174,14 +200,14 @@ function guess(id) {
   else if (game.guesses.length >= MAX) { game.done = true; game.won = false; }
   save();
   render();
-  if (!game.done && id) toast(`${['Mmph! (Nope.)', 'Mmmph mph! (Not that one.)', 'Mph. (Try again.)'][game.guesses.length % 3]}${wrong() <= HINTS.length ? ' New clue unlocked!' : ''}`);
+  if (!game.done && id) toast(`${feedback(id)}${wrong() <= HINTS.length ? ' · New clue unlocked!' : ''}`);
   // On phones the clue box sits under the photo: bring it into view.
   if (!game.done && PHONE.matches) $('.mystery-new-clue')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function wire() {
   $('#m-share')?.addEventListener('click', async () => {
-    const squares = game.guesses.map((id) => (id === answer.id ? '🟩' : id ? '🟥' : '⬛')).join('');
+    const squares = game.guesses.map(square).join('');
     const { streak } = stats();
     const text = `Parkboxd Mystery Episode #${number} ${game.won ? `${game.guesses.length}/${MAX}` : `X/${MAX}`}\n${squares}\n${streak > 1 ? `🔥 ${streak}-day streak. ` : ''}Can you beat me?\nhttps://${SITE_LINK}/mystery.html`;
     try { await navigator.clipboard.writeText(text); toast('Copied! Go brag about it.'); } catch { toast(text); }
