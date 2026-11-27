@@ -1,11 +1,11 @@
 // stats.html?u=name: totals, monthly activity, season progress and season rankings.
-import { initPage } from '../layout.js?v=20261127173514';
-import { supabase } from '../supabase.js?v=20261127173514';
-import { SITE_NAME } from '../config.js?v=20261127173514';
-import { $, esc, params, profileTabsHTML, fetchAll } from '../ui.js?v=20261127173514';
-import { loadAllEpisodes, cardHTML } from '../episodes.js?v=20261127173514';
-import { mountReportCard } from '../report-card.js?v=20261127173514';
-import { streakInfo, streakHTML } from '../streak.js?v=20261127173514';
+import { initPage } from '../layout.js?v=20261127175533';
+import { supabase } from '../supabase.js?v=20261127175533';
+import { SITE_NAME } from '../config.js?v=20261127175533';
+import { $, esc, params, profileTabsHTML, fetchAll } from '../ui.js?v=20261127175533';
+import { loadAllEpisodes, cardHTML } from '../episodes.js?v=20261127175533';
+import { mountReportCard } from '../report-card.js?v=20261127175533';
+import { loadStreaks, streakHTML } from '../streak.js?v=20261127175533';
 
 const { profile: me } = await initPage({ title: 'Stats', auth: 'required' });
 const root = $('#stats');
@@ -35,6 +35,7 @@ async function render() {
   ]);
   const byId = new Map(all.map((e) => [e.id, e]));
   const L = logs || [];
+  const streak = (await loadStreaks([person.id])).get(person.id);
   const seen = new Set(L.map((l) => l.episode_id));
 
   // ---- Tiles ----
@@ -117,7 +118,7 @@ async function render() {
     <div class="stat-tiles">${tiles.map(([n, label]) => `<div class="stat-tile paper"><b>${esc(String(n))}</b><span>${esc(label)}</span></div>`).join('')}</div>
     <section>
       <div class="section-head"><h2>Tegridy streak</h2></div>
-      ${streakHTML(streakInfo(L), { isMe, name })}
+      ${streakHTML(streak, { isMe, name })}
     </section>
     <section>
       <div class="section-head"><h2>Mr. Garrison's Report Card</h2></div>

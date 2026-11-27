@@ -73,4 +73,27 @@ export const AVATAR_ICONS = {
     <path d="M14 13 Q17 10 21 10" stroke="#8fe39b" stroke-width="2" fill="none"/>`) },
 };
 
+// Tegridy streak rewards: `streak` = the longest streak (in days) needed to pick it.
+Object.assign(AVATAR_ICONS, {
+  seedling: { label: 'Seedling', streak: 7, svg: svg(`
+    <path d="M20 29 L20 17" stroke="#141414" stroke-width="4" stroke-linecap="round"/>
+    <path d="M20 29 L20 17" stroke="#2f8f3a" stroke-width="2" stroke-linecap="round"/>
+    <path d="M20 19 Q9 21 7 10 Q18 8 20 19 Z" fill="#5ccf4a" ${S}/>
+    <path d="M20 17 Q22 5 33 7 Q32 18 20 17 Z" fill="#5ccf4a" ${S}/>
+    <path d="M8 31 Q20 23 32 31 L32 34 L8 34 Z" fill="#6b3d1f" ${S}/>`) },
+  wateringcan: { label: 'Watering can', streak: 30, svg: svg(`
+    <path d="M11 18 Q12 7 19 8 Q26 9 25 18" fill="none" stroke="#141414" stroke-width="5"/>
+    <path d="M11 18 Q12 7 19 8 Q26 9 25 18" fill="none" stroke="#9aa5b1" stroke-width="2"/>
+    <path d="M23 24 L32 14 L35 17 L25 31 Z" fill="#4a90e2" ${S}/>
+    <path d="M30 11 L37 19" stroke="#141414" stroke-width="4" stroke-linecap="round"/>
+    <rect x="7" y="17" width="20" height="17" rx="3" fill="#4a90e2" ${S}/>
+    <path d="M11 22 H19" stroke="#bfe3f2" stroke-width="2" stroke-linecap="round"/>
+    <path d="M36 24 L35 27 M32 26 L31 29" stroke="#bfe3f2" stroke-width="2" stroke-linecap="round"/>`) },
+  goldplant: { label: 'Golden plant', streak: 100, svg: svg(`
+    <path d="M20 29 L20 12" stroke="#141414" stroke-width="4" stroke-linecap="round"/>
+    <path d="M20 26 Q9 29 6 20 Q16 16 20 26 Z M20 26 Q31 29 34 20 Q24 16 20 26 Z M20 19 Q11 19 10 11 Q19 10 20 19 Z M20 19 Q29 19 30 11 Q21 10 20 19 Z" fill="#f5c518" ${S}/>
+    <path d="M20 2 L22.5 7 L28 8.5 L22.5 10.5 L20 15 L17.5 10.5 L12 8.5 L17.5 7 Z" fill="#fff3a6" ${S}/>
+    <path d="M11 28 L29 28 L26 37 L14 37 Z" fill="#c8693a" ${S}/>`) },
+});
+
 export const AVATAR_KEYS = Object.keys(AVATAR_ICONS);

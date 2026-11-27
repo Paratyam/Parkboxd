@@ -1,14 +1,14 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127173514';
-import { initPage, logEpisode } from '../layout.js?v=20261127173514';
-import { supabase } from '../supabase.js?v=20261127173514';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127173514';
-import { followingIds } from '../social.js?v=20261127173514';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127173514';
-import { mysterySVG } from '../art.js?v=20261127173514';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127173514';
-import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127173514';
+import { SITE_LINK } from '../config.js?v=20261127175533';
+import { initPage, logEpisode } from '../layout.js?v=20261127175533';
+import { supabase } from '../supabase.js?v=20261127175533';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127175533';
+import { followingIds } from '../social.js?v=20261127175533';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127175533';
+import { mysterySVG } from '../art.js?v=20261127175533';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127175533';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127175533';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');

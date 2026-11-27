@@ -1,7 +1,7 @@
 // The words that go with everything you share. One shape: what it is first, the invitation
 // after it, and the link last.
-import { SITE_LINK } from './config.js?v=20261127173514';
-import { stars } from './ui.js?v=20261127173514';
+import { SITE_LINK } from './config.js?v=20261127175533';
+import { stars } from './ui.js?v=20261127175533';
 
 const compose = (about, invite, path = '') => `${about}\n\n${invite} 👇\nhttps://${SITE_LINK}/${path}`;
 
@@ -27,6 +27,11 @@ export const top10Message = (picks) => compose(
 export const awardMessage = ({ kicker, emoji, heading, line }) => (kicker === 'Badge unlocked'
   ? compose(`${emoji} I unlocked the “${heading}” badge on Parkboxd! (${line})`, 'Come and earn your own')
   : compose(`${emoji} My South Park personality: ${heading.replace(/^I'm an? /, '')}.`, 'Find out yours on Parkboxd'));
+
+export const streakMessage = ({ days }) => compose(
+  `🌱 My Tegridy streak on Parkboxd: ${days} day${Number(days) === 1 ? '' : 's'}.`,
+  'Grow your own',
+);
 
 export const reportCardMessage = ({ isMe, name }) => compose(
   `🍎 ${isMe ? 'Mr. Garrison graded my South Park watching.' : `Mr. Garrison's report card for ${name}.`}`,

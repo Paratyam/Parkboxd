@@ -1,10 +1,11 @@
 // messages.html?u=name: direct messages. You can only message people who follow you back
 // (the database enforces it too). The open conversation checks for new messages every few seconds.
-import { initPage, refreshMail } from '../layout.js?v=20261127173514';
-import { supabase } from '../supabase.js?v=20261127173514';
-import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127173514';
-import { loadAllEpisodes } from '../episodes.js?v=20261127173514';
-import { messageHTML, previewText } from '../dm-cards.js?v=20261127173514';
+import { initPage, refreshMail } from '../layout.js?v=20261127175533';
+import { supabase } from '../supabase.js?v=20261127175533';
+import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127175533';
+import { loadAllEpisodes } from '../episodes.js?v=20261127175533';
+import { loadStreaks, plantSVG } from '../streak.js?v=20261127175533';
+import { messageHTML, previewText }from '../dm-cards.js?v=20261127175533';
 
 const { user } = await initPage({ title: 'Messages', auth: 'required' });
 const root = $('#messages');
@@ -13,6 +14,14 @@ let withName = (params.get('u') || '').toLowerCase();
 let poll = null;
 let shown = false;
 const byId = new Map((await loadAllEpisodes()).map((e) => [e.id, e]));
+
+let streaks = null; // friends' Tegridy streaks, loaded once per visit
+const streakBadge = (id) => {
+  const s = streaks?.get(id);
+  if (!s) return '';
+  const label = `Tegridy streak: ${s.current} day${s.current === 1 ? '' : 's'}`;
+  return `<span class="dm-streak" title="${label}" aria-label="${label}" role="img">${plantSVG(s.current)}<b>${s.current}</b></span>`;
+};
 
 const CARTMAN_LINES = [
   'Heard that through the grapevine, did you?',
@@ -44,6 +53,8 @@ async function load() {
 
 async function render() {
   const { following, followers, people, msgs } = await load();
+  // Streaks are decoration: a failure must not stop the messages showing.
+  streaks ||= await loadStreaks(people.map((p) => p.id)).catch(() => null);
   const other = (m) => (m.sender_id === me ? m.recipient_id : m.sender_id);
   const convos = people.map((p) => {
     const mine = msgs.filter((m) => other(m) === p.id);
@@ -73,6 +84,7 @@ async function render() {
             ${avatarHTML(c.p, 38)}
             <span class="dm-who"><strong>${esc(c.p.display_name || c.p.username)}</strong>
               <small>${c.last ? `${c.last.sender_id === me ? 'You: ' : ''}${esc(previewText(c.last.body, byId))}` : 'Say hi!'}</small></span>
+            ${streakBadge(c.p.id)}
             ${c.unread ? `<span class="dm-unread">${c.unread}</span>` : c.last ? `<time>${ago(c.last.created_at)}</time>` : ''}
           </a>`).join('')
           : `<p class="empty">Nobody to message yet. You need people who follow you <em>and</em> who you follow back. <a href="friends.html?tab=everyone">Find people</a></p>`}
@@ -100,7 +112,7 @@ async function render() {
 
 function threadHTML(p, list) {
   return `
-    <div class="dm-thread-head"><a href="profile.html?u=${encodeURIComponent(p.username)}">${avatarHTML(p, 32)} <strong>${esc(p.display_name || p.username)}</strong></a></div>
+    <div class="dm-thread-head"><a href="profile.html?u=${encodeURIComponent(p.username)}">${avatarHTML(p, 32)} <strong>${esc(p.display_name || p.username)}</strong></a>${streakBadge(p.id)}</div>
     <ol class="dm-bubbles" id="dm-bubbles">${list.length ? list.map((m) => `
       <li class="${m.sender_id === me ? 'mine' : 'theirs'}">${messageHTML(m.body, byId)}<time datetime="${esc(m.created_at)}">${ago(m.created_at)}</time></li>`).join('')
       : `<li class="dm-start">This is the start of your conversation with ${esc(p.display_name || p.username)}. Don't make it weird.</li>`}</ol>

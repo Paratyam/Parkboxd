@@ -1,12 +1,13 @@
 // Shareable paper-cutout cards: one of your reviews, your Top 4 or your Cage Match top 10, drawn on
 // a canvas. Original art, plus the episode stills on the review and Top 4 cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
-import { supabase } from './supabase.js?v=20261127173514';
-import { epCode, stars, toast } from './ui.js?v=20261127173514';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127173514';
-import { SITE_LINK } from './config.js?v=20261127173514';
-import { beltSVG } from './art.js?v=20261127173514';
-import { reviewMessage, top4Message, top10Message, awardMessage } from './share-text.js?v=20261127173514';
+import { supabase } from './supabase.js?v=20261127175533';
+import { epCode, stars, toast } from './ui.js?v=20261127175533';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127175533';
+import { SITE_LINK } from './config.js?v=20261127175533';
+import { plantSVG, FULL_GROWN } from './streak.js?v=20261127175533';
+import { beltSVG }from './art.js?v=20261127175533';
+import { reviewMessage, top4Message, top10Message, awardMessage, streakMessage }from './share-text.js?v=20261127175533';
 
 const W = 1080;
 const H = 1350;
@@ -259,6 +260,22 @@ export async function drawAwardCard({ kicker, emoji, heading, line, name }) {
   return canvas;
 }
 
+/** { name, days, longest } -> canvas: the plant at its current size. */
+export async function drawStreakCard({ name, days, longest }) {
+  const { canvas, c } = await newCanvas();
+  const n = Number(days);
+  paper(c, 110, 200, 860, 940, PAPER, 0.8);
+  text(c, 'MY TEGRIDY STREAK', W / 2, 285, { size: 36, weight: 700, colour: '#c0392b', align: 'center' });
+  const plant = plantSVG(n).replace('<svg ', '<svg width="500" height="600" ');
+  const img = await loadPicture(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(plant)}`, false);
+  if (img) c.drawImage(img, W / 2 - 245, 305, 490, 588);
+  text(c, `${n} day${n === 1 ? '' : 's'}`, W / 2, 985, { size: 90, font: DISPLAY, colour: NAVY, align: 'center' });
+  text(c, `${n >= FULL_GROWN ? 'Fully grown!' : `Fully grown at ${FULL_GROWN}`} · Longest: ${longest}`, W / 2, 1040, { size: 32, colour: '#2b2b2b', align: 'center' });
+  c.font = `700 36px ${BODY}`;
+  text(c, clamp(c, `— ${name}`, 760, 1)[0], W / 2, 1100, { size: 36, weight: 700, colour: NAVY, align: 'center' });
+  return canvas;
+}
+
 /** { name, picks: [{ title, code, record }] } best first -> canvas. Original art only. */
 export async function drawTop10Card({ name, picks }) {
   const { canvas, c } = await newCanvas();
@@ -370,12 +387,13 @@ async function top4Data(username) {
 }
 
 document.addEventListener('click', async (e) => {
-  const b = e.target.closest?.('[data-share-review], [data-share-top4], [data-share-award]');
+  const b = e.target.closest?.('[data-share-review], [data-share-top4], [data-share-award], [data-share-streak]');
   if (!b || b.disabled) return;
   b.disabled = true;
   try {
     const { shareReview, shareTop4 } = b.dataset;
     if (b.hasAttribute('data-share-award')) showPreview(await drawAwardCard(b.dataset), 'parkboxd-card.png', awardMessage(b.dataset));
+    else if (b.hasAttribute('data-share-streak')) showPreview(await drawStreakCard(b.dataset), 'parkboxd-streak.png', streakMessage(b.dataset));
     else if (shareReview) {
       const data = await reviewData(Number(shareReview));
       showPreview(await drawReviewCard(data), `parkboxd-review-${shareReview}.png`, reviewMessage(data));

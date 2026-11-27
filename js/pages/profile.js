@@ -1,28 +1,29 @@
-import { initPage } from '../layout.js?v=20261127173514';
-import { supabase } from '../supabase.js?v=20261127173514';
-import { SITE_NAME } from '../config.js?v=20261127173514';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127173514';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127173514';
-import { shareInvite } from '../invite.js?v=20261127173514';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast, fetchAll } from '../ui.js?v=20261127173514';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127173514';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127173514';
-import { line } from '../jokes.js?v=20261127173514';
-import { characterColours } from '../data/character-tags.js?v=20261127173514';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127173514';
-import { streakInfo } from '../streak.js?v=20261127173514';
-import { loadPicks } from '../club.js?v=20261127173514';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127173514';
-import { beltSVG } from '../art.js?v=20261127173514';
-import { roastJokes } from '../jimmy.js?v=20261127173514';
+import { initPage } from '../layout.js?v=20261127175533';
+import { supabase } from '../supabase.js?v=20261127175533';
+import { SITE_NAME } from '../config.js?v=20261127175533';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127175533';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127175533';
+import { shareInvite } from '../invite.js?v=20261127175533';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast, fetchAll } from '../ui.js?v=20261127175533';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127175533';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127175533';
+import { line } from '../jokes.js?v=20261127175533';
+import { characterColours } from '../data/character-tags.js?v=20261127175533';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127175533';
+import { loadStreaks, streakHTML }from '../streak.js?v=20261127175533';
+import { loadPicks } from '../club.js?v=20261127175533';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127175533';
+import { AVATAR_ICONS } from '../avatars.js?v=20261127175533';
+import { beltSVG }from '../art.js?v=20261127175533';
+import { roastJokes } from '../jimmy.js?v=20261127175533';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' and Kyle's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127173514')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127173514')).renderKyleProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127175533')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127175533')).renderKyleProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {
@@ -67,7 +68,7 @@ async function render(p) {
     fetchAll(() => supabase.from('logs').select('episode_id, rating, review, is_rewatch, watched_on, created_at').eq('user_id', p.id).order('id')),
   ]);
   const theirRatings = everyone.get(p.id) || new Map();
-  const streak = streakInfo(allLogs || []);
+  const streak = (await loadStreaks([p.id])).get(p.id);
   const { data: recentReviews } = await supabase.from('logs')
     .select(`${REVIEW_SELECT}, episodes(id, kind, season, number, title, air_date, still_path)`)
     .eq('user_id', p.id).not('review', 'is', null).neq('review', '')
@@ -221,6 +222,15 @@ async function render(p) {
     ['Following', s.following ?? 0, `friends.html?u=${u}&tab=following`],
     ['🌱 Streak', streak.current, `stats.html?u=${u}`],
   ];
+  // Streak rewards: profile pictures unlocked by the longest streak so far.
+  const rewardsHtml = `<div class="streak-rewards">${Object.values(AVATAR_ICONS).filter((a) => a.streak).map((a) => {
+    const got = streak.longest >= a.streak;
+    return `<div class="streak-reward paper${got ? ' earned' : ''}">
+      <span class="avatar has-icon" style="--c:${esc(p.avatar_color)};--size:44px" aria-hidden="true">${a.svg}</span>
+      <span><strong>${esc(a.label)}</strong><small>${got ? (isMe ? '<a href="settings.html">Unlocked: use it</a>' : 'Unlocked') : `${a.streak}-day streak`}</small></span>
+    </div>`;
+  }).join('')}</div>`;
+
   const iFollow = isMe ? false : (await followingIds(me.id)).has(p.id);
   const { count: followsMeCount } = isMe ? { count: 0 } : await supabase.from('follows').select('follower_id', { count: 'exact', head: true }).eq('follower_id', p.id).eq('followee_id', me.id);
   const canMessage = !isMe && iFollow && followsMeCount > 0; // messages are for people who follow each other
@@ -281,6 +291,12 @@ async function render(p) {
     <section>
       <div class="section-head"><h2>Favourite episodes</h2>${isMe && top4Eps?.length ? `<button type="button" class="link-button" data-share-top4="${esc(p.username)}">🖼️ Share my Top 4</button>` : ''}</div>
       <div class="top4">${top4Html}</div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Tegridy streak</h2>${isMe && streak.longest ? `<button type="button" class="link-button" data-share-streak data-days="${streak.current}" data-longest="${streak.longest}" data-name="${esc(name)}">🖼️ Share my streak</button>` : ''}</div>
+      ${streakHTML(streak, { isMe, name })}
+      ${rewardsHtml}
     </section>
 
     ${champHtml}

@@ -1,10 +1,11 @@
-import { initPage, refreshBell } from '../layout.js?v=20261127173514';
-import { supabase } from '../supabase.js?v=20261127173514';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127173514';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127173514';
-import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127173514';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127173514';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127173514';
+import { initPage, refreshBell } from '../layout.js?v=20261127175533';
+import { supabase } from '../supabase.js?v=20261127175533';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127175533';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127175533';
+import { loadStreaks } from '../streak.js?v=20261127175533';
+import { loadAllEpisodes, thumbHTML }from '../episodes.js?v=20261127175533';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127175533';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127175533';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -38,15 +39,23 @@ $('#swatches').addEventListener('change', (e) => { colour = e.target.value; draw
 
 // ---- Profile picture: a paper cut-out icon, or the first letter ----
 let icon = AVATAR_ICONS[profile.avatar_icon] ? profile.avatar_icon : null;
+let longest = 0; // longest Tegridy streak, which unlocks the reward pictures
 function drawIcons() {
-  $('#icon-picker').innerHTML = [null, ...AVATAR_KEYS].map((key) => `
-    <label class="swatch" title="${esc(key ? AVATAR_ICONS[key].label : 'First letter')}">
-      <input type="radio" name="avatar-icon" value="${key || ''}"${key === icon ? ' checked' : ''}>
+  $('#icon-picker').innerHTML = [null, ...AVATAR_KEYS].map((key) => {
+    const need = AVATAR_ICONS[key]?.streak || 0;
+    const locked = need > longest && key !== profile.avatar_icon;
+    const label = `${key ? AVATAR_ICONS[key].label : 'First letter'}${locked ? ` (locked: reach a ${need}-day streak)` : ''}`;
+    return `
+    <label class="swatch${locked ? ' locked' : ''}" title="${esc(label)}">
+      <input type="radio" name="avatar-icon" value="${key || ''}"${key === icon ? ' checked' : ''}${locked ? ' disabled' : ''}>
       ${avatarHTML({ display_name: profile.display_name || profile.username, avatar_color: colour, avatar_icon: key }, 52)}
-      <span class="visually-hidden">${esc(key ? AVATAR_ICONS[key].label : 'First letter')}</span>
-    </label>`).join('');
+      ${locked ? `<span class="lock-days" aria-hidden="true">🔒${need}</span>` : ''}
+      <span class="visually-hidden">${esc(label)}</span>
+    </label>`;
+  }).join('');
 }
 drawIcons();
+loadStreaks([user.id]).then((m) => { longest = m.get(user.id).longest; drawIcons(); });
 $('#icon-picker').addEventListener('change', (e) => { icon = e.target.value || null; });
 
 // ---- Favourite character ----
