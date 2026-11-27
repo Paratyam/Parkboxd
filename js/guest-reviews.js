@@ -2,11 +2,12 @@
 // The reviews live in code, not the database, so they never count toward averages. People can
 // still like and comment on them: guest_review_likes / guest_review_comments, keyed by
 // '<character>:<normalised episode title>'.
-import { supabase } from './supabase.js?v=20261127080145';
-import { esc, stars, avatarHTML, toast } from './ui.js?v=20261127080145';
-import { threadHTML, wireThread } from './comments.js?v=20261127080145';
-import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127080145';
-import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127080145';
+import { supabase } from './supabase.js?v=20261127081050';
+import { esc, stars, avatarHTML, toast } from './ui.js?v=20261127081050';
+import { threadHTML, wireThread } from './comments.js?v=20261127081050';
+import { pcButtonHTML, installPC } from './pc.js?v=20261127081050';
+import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127081050';
+import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127081050';
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 
@@ -18,6 +19,8 @@ const GUESTS = [
     thanks: ['Thanks, dude. Finally, someone gets it.', 'Wow. Okay. Cartman put you up to this, right?'],
     placeholder: 'Agree with Kyle? Argue with Kyle? He can take it.' },
 ];
+
+installPC(); // "PC it" toggle (also installed by social.js; installing twice is a no-op)
 
 // Threads stay open across re-renders (a new comment re-renders the whole list).
 const openThreads = new Set();
@@ -74,6 +77,7 @@ export function guestReviewHTML(g, extras, me) {
         <div class="review-foot">
           <button type="button" class="link-button review-like" data-guest-like aria-pressed="${!!liked}">${liked ? '♥ Liked' : '♡ Like review'}</button>
           <button type="button" class="link-button" data-guest-toggle aria-expanded="${open}">${plural(likes, 'like')} · ${plural(comments.length, 'comment')}</button>
+          ${pcButtonHTML(g.rating)}
         </div>
         <div class="butters-thread guest-thread" data-guest-thread ${open ? '' : 'hidden'}>
           ${comments.length ? threadHTML(comments, { me }) : ''}
