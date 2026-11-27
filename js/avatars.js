@@ -98,10 +98,13 @@ Object.assign(AVATAR_ICONS, {
 
 // Badge rewards: `badge` = the badge id (js/insights.js) needed to pick it.
 Object.assign(AVATAR_ICONS, {
-  bracelet: { label: 'Friendship bracelet', badge: 'friends', svg: svg(`
-    <circle cx="20" cy="21" r="12" fill="none" stroke="#141414" stroke-width="9"/>
-    <circle cx="20" cy="21" r="12" fill="none" stroke="#ff7eb6" stroke-width="5"/>
-    <circle cx="20" cy="9" r="3.5" fill="#f5c518" ${S}/><circle cx="31" cy="26" r="3.5" fill="#4fc3d9" ${S}/><circle cx="9" cy="26" r="3.5" fill="#5ccf4a" ${S}/>`) },
+  // The key stays "bracelet" (and "door" below) so anyone who already picked it keeps a picture.
+  bracelet: { label: 'Fist bump', badge: 'friends', svg: svg(`
+    <rect x="2" y="17" width="7" height="12" fill="#4a90e2" ${S}/>
+    <path d="M9 15 H15 Q19 15 19 19 V26 Q19 30 15 30 H9 Z" fill="#f5c9a0" ${S}/>
+    <rect x="31" y="17" width="7" height="12" fill="#3fb950" ${S}/>
+    <path d="M31 15 H25 Q21 15 21 19 V26 Q21 30 25 30 H31 Z" fill="#c8935f" ${S}/>
+    <path d="M20 4 V10 M13 7 L16 11 M27 7 L24 11" ${S}/>`) },
   tierchart: { label: 'Tier chart', badge: 'tierlord', svg: svg(`
     <rect x="6" y="7" width="28" height="8" rx="1.5" fill="#d63a3a" ${S}/>
     <rect x="6" y="16" width="22" height="8" rx="1.5" fill="#f2711c" ${S}/>
@@ -126,11 +129,12 @@ Object.assign(AVATAR_ICONS, {
     <path d="M25 13 Q35 16 31 26 Q25 37 8 35 Q19 30 18 20 Q18 12 25 13 Z" fill="#d63a3a" ${S}/>
     <path d="M18 15 Q20 9 26 11 Q31 10 30 17 Q24 13 18 15 Z M25 11 Q24 5 30 4" fill="#3fb950" ${S}/>
     <path d="M27 20 Q28 25 23 29" stroke="#ff9a8a" stroke-width="2" fill="none"/>`) },
-  door: { label: 'Slammed door', badge: 'screwyou', svg: svg(`
-    <rect x="11" y="5" width="19" height="30" rx="1.5" fill="#8a5a3b" ${S}/>
-    <rect x="15" y="9" width="11" height="9" fill="#a8744c" ${S}/><rect x="15" y="22" width="11" height="9" fill="#a8744c" ${S}/>
-    <circle cx="27" cy="20" r="1.8" fill="#f5c518" ${S}/>
-    <path d="M3 12 L8 15 M2 20 L8 20 M3 28 L8 25" ${S}/>`) },
+  door: { label: 'Raspberry', badge: 'screwyou', svg: svg(`
+    <circle cx="20" cy="20" r="16" fill="#f5c518" ${S}/>
+    <path d="M10 13 L16 16 L10 19 M30 13 L24 16 L30 19" fill="none" ${S}/>
+    <path d="M11 24 H29" fill="none" ${S}/>
+    <path d="M15 24 V30 Q15 36 20 36 Q25 36 25 30 V24 Z" fill="#ff7eb6" ${S}/>
+    <path d="M20 25 V31" stroke="#141414" stroke-width="1.5"/>`) },
   police: { label: 'Police cap', badge: 'authoritah', svg: svg(`
     <path d="M7 22 Q4 9 20 8 Q36 9 33 22 Z" fill="#2f4f8f" ${S}/>
     <rect x="8" y="21" width="24" height="6" fill="#1d2f57" ${S}/>
