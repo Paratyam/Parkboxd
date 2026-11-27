@@ -66,6 +66,25 @@ export function stickerSVG(key) {
   </svg>`;
 }
 
+/** The undefeated champion's prize: a crowned gold cup in front of paper flames, with a banner. */
+export function unbeatenSVG() {
+  const cut = `stroke="${INK}" stroke-width="3" stroke-linejoin="round"`;
+  return `<svg class="art art-unbeaten" viewBox="0 0 120 128" aria-hidden="true" focusable="false">
+    <path d="M60 4 L72 26 L90 12 L90 36 L113 31 L101 53 L118 66 L98 76 L106 96 L82 92 L60 106 L38 92 L14 96 L22 76 L2 66 L19 53 L7 31 L30 36 L30 12 L48 26 Z" fill="#d63a3a" ${cut}/>
+    <path d="M60 20 L70 40 L86 31 L84 50 L101 52 L88 65 L98 78 L78 80 L60 94 L42 80 L22 78 L32 65 L19 52 L36 50 L34 31 L50 40 Z" fill="#f2711c"/>
+    <path d="M37 52 Q18 52 24 67 Q29 76 43 73 M83 52 Q102 52 96 67 Q91 76 77 73" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round"/>
+    <path d="M37 52 Q18 52 24 67 Q29 76 43 73 M83 52 Q102 52 96 67 Q91 76 77 73" fill="none" stroke="#f5c518" stroke-width="4" stroke-linecap="round"/>
+    <path d="M35 46 L85 46 Q85 80 60 86 Q35 80 35 46 Z" fill="#f5c518" ${cut}/>
+    <path d="M43 52 Q44 70 53 77" fill="none" stroke="#fff3b0" stroke-width="5" stroke-linecap="round"/>
+    <path d="M55 85 L65 85 L67 96 L77 99 L78 108 L42 108 L43 99 L53 96 Z" fill="#b8860b" ${cut}/>
+    <path d="M40 43 L36 20 L49 30 L60 14 L71 30 L84 20 L80 43 Z" fill="#ffdf5e" ${cut}/>
+    <circle cx="60" cy="34" r="4" fill="#4a90e2" stroke="${INK}" stroke-width="2"/>
+    <path d="M60 53 L63.5 61 L72 62 L65.5 67.500 L68 76 L60 71 L52 76 L54.500 67.500 L48 62 L56.500 61 Z" fill="#fff" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M6 104 L22 108 L98 108 L114 104 L107 115 L114 126 L96 123 L24 123 L6 126 L13 115 Z" fill="#fff" ${cut}/>
+    <text x="60" y="120" text-anchor="middle" font-family="'Luckiest Guy', cursive" font-size="13" fill="#d63a3a">UNBEATEN</text>
+  </svg>`;
+}
+
 /** Paper championship belt: gold plate with a star on a black strap. */
 export function beltSVG() {
   return `<svg class="art art-belt" viewBox="0 0 140 64" aria-hidden="true" focusable="false">

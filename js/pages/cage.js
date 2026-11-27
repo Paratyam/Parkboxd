@@ -1,19 +1,19 @@
 // cage.html: Cartman's Cage Match, the game (pick the better of two episodes you've watched) plus your ranking.
 // cage.html?u=name&view=ranking: a profile's Rankings tab, just the ranking list.
 
-import { initPage } from '../layout.js?v=20261127150451';
-import { supabase } from '../supabase.js?v=20261127150451';
-import { SITE_NAME } from '../config.js?v=20261127150451';
-import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127150451';
-import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127150451';
-import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127150451';
+import { initPage } from '../layout.js?v=20261127150743';
+import { supabase } from '../supabase.js?v=20261127150743';
+import { SITE_NAME } from '../config.js?v=20261127150743';
+import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127150743';
+import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127150743';
+import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127150743';
 import {
   introLine, resultLine, crowd, hostPick,
   HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
-} from '../cage-host.js?v=20261127150451';
-import { burgerRain } from '../fx.js?v=20261127150451';
-import { beltSVG } from '../art.js?v=20261127150451';
-import { shareTop10 } from '../share.js?v=20261127150451';
+} from '../cage-host.js?v=20261127150743';
+import { burgerRain } from '../fx.js?v=20261127150743';
+import { beltSVG, unbeatenSVG } from '../art.js?v=20261127150743';
+import { shareTop10 } from '../share.js?v=20261127150743';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
@@ -127,7 +127,7 @@ async function start() {
     const c = champion(scores);
     const champEp = c && byId.get(c.top.id);
     $('#champ').innerHTML = champEp ? `
-      <a class="cage-champ paper" href="episode.html?id=${champEp.id}"><span class="cage-champ-belt">${beltSVG()}</span>
+      <a class="cage-champ paper" href="episode.html?id=${champEp.id}"><span class="cage-champ-belt${c.undefeated ? ' unbeaten' : ''}">${c.undefeated ? unbeatenSVG() : beltSVG()}</span>
         ${thumbHTML(champEp, { showTitle: false, size: 'w780' })}
         <div><span class="cut">${c.undefeated ? '🏆 Undefeated champion' : '👑 Champion'}</span>
           <strong>${esc(champEp.title)}</strong>
