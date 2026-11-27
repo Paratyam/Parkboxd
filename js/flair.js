@@ -1,64 +1,55 @@
 // Show-off flair earned from badges, shown next to people everywhere on the site:
-//   🏔️ Completionist  → gold ring around their avatar
+//   5 / 10 / 15 badges  → bronze / silver / gold ring around their avatar
+//   🏔️ Completionist    → a crown on their avatar
 //   ✍️ Critic (25+ reviews) → "Critic" tag after their name
 //   🌶️ Hot Take Artist (5+ hot takes) → 🌶️ after their name
-import { fetchAll } from './ui.js?v=20261127175533';
-import { supabase } from './supabase.js?v=20261127175533';
-import { loadAllEpisodes, todayISO } from './episodes.js?v=20261127175533';
-import { allLatestRatings, episodeAverages, isHotTake } from './insights.js?v=20261127175533';
+import { loadBadges, rankFor } from './badges.js?v=20261127175826';
 
-const CACHE_KEY = 'parkboxd-flair';
+const CACHE_KEY = 'parkboxd-flair-2';
 const CACHE_MS = 10 * 60 * 1000;
 
-/** { username: { gold, critic, spicy } } — cached for 10 minutes per tab. */
+const CROWN = '<svg viewBox="0 0 40 28" aria-hidden="true" focusable="false"><path d="M4 24 L2 6 L12 14 L20 2 L28 14 L38 6 L36 24 Z" fill="#f5c518" stroke="#141414" stroke-width="3" stroke-linejoin="round"/><circle cx="20" cy="17" r="3.5" fill="#d63a3a" stroke="#141414" stroke-width="2"/></svg>';
+
+/** { username: { rank, count, crown, critic, spicy } } — cached for 10 minutes per tab. */
 async function loadFlair() {
   try {
     const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
     if (cached && Date.now() - cached.t < CACHE_MS) return cached.data;
   } catch { /* ignore a broken cache */ }
 
-  const [all, { data: stats }, { data: logs }, everyone, avgs] = await Promise.all([
-    loadAllEpisodes(),
-    supabase.from('user_stats').select('user_id, username, review_count'),
-    fetchAll(() => supabase.from('logs').select('user_id, episode_id').order('id')),
-    allLatestRatings(),
-    episodeAverages(),
-  ]);
-
-  // Completionist: every aired regular episode logged.
-  const today = todayISO();
-  const aired = all.filter((e) => e.kind === 'episode' && e.air_date && e.air_date <= today).map((e) => e.id);
-  const seenBy = new Map();
-  for (const l of logs || []) {
-    if (!seenBy.has(l.user_id)) seenBy.set(l.user_id, new Set());
-    seenBy.get(l.user_id).add(l.episode_id);
-  }
-
   const data = {};
-  for (const s of stats || []) {
-    if (!s.username) continue;
-    const seen = seenBy.get(s.user_id) || new Set();
-    const ratings = everyone.get(s.user_id) || new Map();
-    const hot = [...ratings].filter(([epId, r]) => isHotTake(r, avgs.get(epId))).length;
+  for (const { username, badges } of (await loadBadges()).values()) {
+    const earned = new Set(badges.filter((b) => b.earned).map((b) => b.id));
     const f = {
-      gold: aired.length > 0 && aired.every((id) => seen.has(id)),
-      critic: (s.review_count || 0) >= 25,
-      spicy: hot >= 5,
+      rank: rankFor(earned.size),
+      count: earned.size,
+      crown: earned.has('completionist'),
+      critic: earned.has('critic'),
+      spicy: earned.has('hottake'),
     };
-    if (f.gold || f.critic || f.spicy) data[s.username] = f;
+    if (f.rank || f.crown || f.critic || f.spicy) data[username] = f;
   }
   sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data }));
   return data;
 }
 
 function decorate(root, flair) {
-  // Gold ring on avatars (avatars carry data-u="username").
+  // Rings and crowns on avatars (avatars carry data-u="username").
   root.querySelectorAll('.avatar[data-u]:not([data-flair])').forEach((a) => {
     a.dataset.flair = '1';
-    if (flair[a.dataset.u]?.gold) {
-      a.classList.add('gold-ring');
-      a.title = 'Completionist: has watched every episode';
+    const f = flair[a.dataset.u];
+    if (!f) return;
+    const titles = [];
+    if (f.rank) {
+      a.classList.add(`rank-${f.rank.id}`);
+      titles.push(`${f.rank.name} rank: ${f.count} badges`);
     }
+    if (f.crown) {
+      a.classList.add('crowned');
+      a.insertAdjacentHTML('beforeend', `<span class="flair-crown">${CROWN}</span>`);
+      titles.push('Completionist: has watched every episode');
+    }
+    if (titles.length) a.title = titles.join(' · ');
   });
   // Tags after names: text links to a profile (not links wrapping an avatar).
   root.querySelectorAll('a[href^="profile.html?u="]:not([data-flair])').forEach((link) => {

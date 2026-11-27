@@ -104,7 +104,17 @@ h1, h2, h3 { font-weight: 400; }
 .avatar-link { display: inline-flex; border-radius: 50%; }
 
 /* Badge flair */
-.avatar.gold-ring { border-color: #f5c518; box-shadow: 0 0 0 2px #14181c, 0 0 0 4px #f5c518, 0 0 12px rgba(245,197,24,.55); }
+.avatar.rank-bronze, .avatar.rank-silver, .avatar.rank-gold { border-color: var(--ring); box-shadow: 0 0 0 2px #14181c, 0 0 0 4px var(--ring); }
+.avatar.rank-bronze { --ring: #c0773c; }
+.avatar.rank-silver { --ring: #cfd8e3; }
+.avatar.rank-gold { --ring: #f5c518; box-shadow: 0 0 0 2px #14181c, 0 0 0 4px var(--ring), 0 0 12px rgba(245,197,24,.55); }
+.avatar.crowned { position: relative; }
+.flair-crown { position: absolute; top: calc(var(--size) * -.24); right: calc(var(--size) * -.16); width: calc(var(--size) * .55); transform: rotate(22deg); pointer-events: none; z-index: 3; }
+.avatar .flair-crown svg { display: block; width: 100%; height: auto; }
+html.mysterion .avatar:not(.is-me) .flair-crown { display: none; }
+.badge .badge-reward { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.badge .badge-reward .avatar { filter: grayscale(1); opacity: .6; }
+.badge.earned .badge-reward .avatar { filter: none; opacity: 1; }
 .flair-critic {
   display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 3px; vertical-align: 1px;
   background: rgba(106,168,240,.18); color: #b9d6fa; font: 700 10px var(--font-body); text-transform: uppercase; letter-spacing: .06em;

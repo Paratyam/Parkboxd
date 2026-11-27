@@ -1,29 +1,30 @@
-import { initPage } from '../layout.js?v=20261127175533';
-import { supabase } from '../supabase.js?v=20261127175533';
-import { SITE_NAME } from '../config.js?v=20261127175533';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127175533';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127175533';
-import { shareInvite } from '../invite.js?v=20261127175533';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast, fetchAll } from '../ui.js?v=20261127175533';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127175533';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127175533';
-import { line } from '../jokes.js?v=20261127175533';
-import { characterColours } from '../data/character-tags.js?v=20261127175533';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127175533';
-import { loadStreaks, streakHTML }from '../streak.js?v=20261127175533';
-import { loadPicks } from '../club.js?v=20261127175533';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127175533';
-import { AVATAR_ICONS } from '../avatars.js?v=20261127175533';
-import { beltSVG }from '../art.js?v=20261127175533';
-import { roastJokes } from '../jimmy.js?v=20261127175533';
+import { initPage } from '../layout.js?v=20261127175826';
+import { supabase } from '../supabase.js?v=20261127175826';
+import { SITE_NAME } from '../config.js?v=20261127175826';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127175826';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127175826';
+import { shareInvite } from '../invite.js?v=20261127175826';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast, fetchAll } from '../ui.js?v=20261127175826';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127175826';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127175826';
+import { line } from '../jokes.js?v=20261127175826';
+import { characterColours } from '../data/character-tags.js?v=20261127175826';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127175826';
+import { rankFor, nextRank } from '../badges.js?v=20261127175826';
+import { loadStreaks, streakHTML } from'../streak.js?v=20261127175826';
+import { loadPicks } from '../club.js?v=20261127175826';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127175826';
+import { AVATAR_ICONS } from '../avatars.js?v=20261127175826';
+import { beltSVG } from'../art.js?v=20261127175826';
+import { roastJokes } from '../jimmy.js?v=20261127175826';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' and Kyle's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127175533')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127175533')).renderKyleProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127175826')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127175826')).renderKyleProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {
@@ -155,12 +156,23 @@ async function render(p) {
       ? `<span class="secret-hint">🔓 ${esc(SECRETS[b.id])}</span>`
       : ''; // no teaser: nobody should know there's a secret until they've earned it
   };
+  // Every badge unlocks a profile picture; the badge count earns a ring around the avatar.
+  const rewardLine = (b) => {
+    const a = Object.values(AVATAR_ICONS).find((x) => x.badge === b.id);
+    if (!a) return '';
+    const text = b.earned && isMe ? `<a href="settings.html">Use the ${esc(a.label)} picture</a>` : `Picture: ${esc(a.label)}`;
+    return `<span class="badge-reward"><span class="avatar has-icon" style="--c:${esc(p.avatar_color)};--size:30px" aria-hidden="true">${a.svg}</span><span>${text}${b.id === 'completionist' ? ' and a crown' : ''}</span></span>`;
+  };
+  const rank = rankFor(earned);
+  const next = nextRank(earned);
+  const rankText = [rank ? `${rank.name} ring` : '', next ? `${next.min - earned} more for the ${next.name.toLowerCase()} ring` : ''].filter(Boolean).join(' · ');
   const badgesHtml = `<div class="badges">${badges.map((b) => `
     <div class="badge paper${b.earned ? ' earned' : ''}" title="${esc(b.desc)}${b.earned ? '' : ` (${b.have} / ${b.need})`}">
       <span class="emoji" aria-hidden="true">${b.emoji}</span>
       <strong>${esc(b.name)}</strong>
       <span>${esc(b.desc)}</span>
       ${b.earned ? '<span class="got">Unlocked</span>' : `<div class="bar" aria-label="${b.have} of ${b.need}"><div style="width:${b.need ? (b.have / b.need) * 100 : 0}%;background:var(--green)"></div></div>`}
+      ${rewardLine(b)}
       ${secretLine(b)}
       ${b.earned && isMe ? `<button type="button" class="link-button badge-share" data-share-award data-kicker="Badge unlocked" data-emoji="${esc(b.emoji)}" data-heading="${esc(b.name)}" data-line="${esc(b.desc)}" data-name="${esc(name)}">Share</button>` : ''}
     </div>`).join('')}</div>`;
@@ -302,7 +314,7 @@ async function render(p) {
     ${champHtml}
 
     <section>
-      <div class="section-head"><h2>Badges</h2><span class="result-count">${earned} of ${badges.length} unlocked</span></div>
+      <div class="section-head"><h2>Badges</h2><span class="result-count">${earned} of ${badges.length} unlocked · ${rankText}</span></div>
       ${badgesHtml}
     </section>
 

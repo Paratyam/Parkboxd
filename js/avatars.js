@@ -96,4 +96,93 @@ Object.assign(AVATAR_ICONS, {
     <path d="M11 28 L29 28 L26 37 L14 37 Z" fill="#c8693a" ${S}/>`) },
 });
 
+// Badge rewards: `badge` = the badge id (js/insights.js) needed to pick it.
+Object.assign(AVATAR_ICONS, {
+  bracelet: { label: 'Friendship bracelet', badge: 'friends', svg: svg(`
+    <circle cx="20" cy="21" r="12" fill="none" stroke="#141414" stroke-width="9"/>
+    <circle cx="20" cy="21" r="12" fill="none" stroke="#ff7eb6" stroke-width="5"/>
+    <circle cx="20" cy="9" r="3.5" fill="#f5c518" ${S}/><circle cx="31" cy="26" r="3.5" fill="#4fc3d9" ${S}/><circle cx="9" cy="26" r="3.5" fill="#5ccf4a" ${S}/>`) },
+  tierchart: { label: 'Tier chart', badge: 'tierlord', svg: svg(`
+    <rect x="6" y="7" width="28" height="8" rx="1.5" fill="#d63a3a" ${S}/>
+    <rect x="6" y="16" width="22" height="8" rx="1.5" fill="#f2711c" ${S}/>
+    <rect x="6" y="25" width="15" height="8" rx="1.5" fill="#f5c518" ${S}/>`) },
+  glasses: { label: 'Reading glasses', badge: 'bookworm', svg: svg(`
+    <circle cx="12" cy="22" r="7.5" fill="#bfe3f2" stroke="#141414" stroke-width="3"/>
+    <circle cx="28" cy="22" r="7.5" fill="#bfe3f2" stroke="#141414" stroke-width="3"/>
+    <path d="M18 20 Q20 17 22 20 M5 20 L3 13 M35 20 L37 13" fill="none" ${S}/>
+    <path d="M8.5 20 Q10 17.5 13 17.5 M24.5 20 Q26 17.5 29 17.5" stroke="#fff" stroke-width="2" fill="none"/>`) },
+  magnifier: { label: 'Magnifying glass', badge: 'detective', svg: svg(`
+    <path d="M25 25 L35 35" stroke="#141414" stroke-width="8" stroke-linecap="round"/>
+    <path d="M25 25 L35 35" stroke="#8a5a3b" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="17" cy="17" r="12" fill="#c9a227" ${S}/>
+    <circle cx="17" cy="17" r="8.5" fill="#bfe3f2" ${S}/>
+    <path d="M12 15 Q13.5 12 17 11.5" stroke="#fff" stroke-width="2" fill="none"/>`) },
+  ringbell: { label: 'Ring bell', badge: 'ringmaster', svg: svg(`
+    <path d="M9 28 Q9 9 20 9 Q31 9 31 28 Z" fill="#f5c518" ${S}/>
+    <circle cx="20" cy="7" r="2.5" fill="#9aa5b1" ${S}/>
+    <rect x="6" y="28" width="28" height="6" rx="2" fill="#8a5a3b" ${S}/>
+    <path d="M14 24 Q14 15 18 13" stroke="#fff3a6" stroke-width="2" fill="none"/>`) },
+  pepper: { label: 'Hot pepper', badge: 'hottake', svg: svg(`
+    <path d="M25 13 Q35 16 31 26 Q25 37 8 35 Q19 30 18 20 Q18 12 25 13 Z" fill="#d63a3a" ${S}/>
+    <path d="M18 15 Q20 9 26 11 Q31 10 30 17 Q24 13 18 15 Z M25 11 Q24 5 30 4" fill="#3fb950" ${S}/>
+    <path d="M27 20 Q28 25 23 29" stroke="#ff9a8a" stroke-width="2" fill="none"/>`) },
+  door: { label: 'Slammed door', badge: 'screwyou', svg: svg(`
+    <rect x="11" y="5" width="19" height="30" rx="1.5" fill="#8a5a3b" ${S}/>
+    <rect x="15" y="9" width="11" height="9" fill="#a8744c" ${S}/><rect x="15" y="22" width="11" height="9" fill="#a8744c" ${S}/>
+    <circle cx="27" cy="20" r="1.8" fill="#f5c518" ${S}/>
+    <path d="M3 12 L8 15 M2 20 L8 20 M3 28 L8 25" ${S}/>`) },
+  police: { label: 'Police cap', badge: 'authoritah', svg: svg(`
+    <path d="M7 22 Q4 9 20 8 Q36 9 33 22 Z" fill="#2f4f8f" ${S}/>
+    <rect x="8" y="21" width="24" height="6" fill="#1d2f57" ${S}/>
+    <path d="M9 27 Q20 38 31 27 Z" fill="#2b2b2b" ${S}/>
+    <path d="M20 11 L22 15 L26 15.5 L23 18 L24 21 L20 19.5 L16 21 L17 18 L14 15.5 L18 15 Z" fill="#f5c518" ${S}/>`) },
+  towel: { label: 'Towel', badge: 'rewatch', svg: svg(`
+    <path d="M10 7 Q20 4 30 7 L32 34 Q26 31 20 34 Q14 37 8 34 Z" fill="#a78bda" ${S}/>
+    <path d="M10 12 L30 12 M9 29 L31 29" stroke="#f4f8fb" stroke-width="2.5"/>
+    <circle cx="16" cy="19" r="2.6" fill="#fff" ${S}/><circle cx="24" cy="19" r="2.6" fill="#fff" ${S}/>
+    <circle cx="16" cy="19.5" r="1" fill="${K}"/><circle cx="24" cy="19.5" r="1" fill="${K}"/>`) },
+  quill: { label: 'Quill', badge: 'critic', svg: svg(`
+    <path d="M12 28 Q10 10 34 4 Q34 22 16 27 Z" fill="#f4f8fb" ${S}/>
+    <path d="M8 35 L27 12" ${S}/>
+    <rect x="22" y="27" width="12" height="9" rx="2" fill="#2f6db5" ${S}/><rect x="25" y="24" width="6" height="4" fill="#2b2b2b" ${S}/>`) },
+  clipboard: { label: 'Clipboard', badge: 'mmkay', svg: svg(`
+    <rect x="8" y="7" width="24" height="29" rx="2.5" fill="#8a5a3b" ${S}/>
+    <rect x="11" y="11" width="18" height="22" fill="#f6f1e1" ${S}/>
+    <rect x="15" y="4" width="10" height="7" rx="2" fill="#9aa5b1" ${S}/>
+    <path d="M15 18 H25 M15 23 H25 M15 28 H21" ${S}/>`) },
+  ticket: { label: 'Premiere ticket', badge: 'dayone', svg: svg(`
+    <g transform="rotate(-14 20 20)"><path d="M5 12 H35 V17 Q31 20 35 23 V28 H5 V23 Q9 20 5 17 Z" fill="#f5c518" ${S}/>
+    <path d="M26 13 V27" stroke="#141414" stroke-width="1.5" stroke-dasharray="2 2"/>
+    <path d="M15 15 L17 18.5 L20.5 19 L18 21.5 L18.5 25 L15 23.5 L11.5 25 L12 21.5 L9.5 19 L13 18.5 Z" fill="#d63a3a" ${S}/></g>`) },
+  raccoon: { label: 'Raccoon', badge: 'coon', svg: svg(`
+    <path d="M7 18 L6 6 L16 11 Q20 10 24 11 L34 6 L33 18 Q37 24 30 29 Q20 40 10 29 Q3 24 7 18 Z" fill="#9aa5b1" ${S}/>
+    <path d="M7 20 Q13 14 18 20 Q20 22 22 20 Q27 14 33 20 Q31 27 25 25 Q20 23 15 25 Q9 27 7 20 Z" fill="#2b2b2b"/>
+    <circle cx="14" cy="21" r="2" fill="#fff"/><circle cx="26" cy="21" r="2" fill="#fff"/>
+    <path d="M17 29 Q20 27 23 29 Q20 33 17 29 Z" fill="${K}"/>`) },
+  foilhat: { label: 'Tinfoil hat', badge: 'chaos', svg: svg(`
+    <path d="M5 31 L11 18 L15 21 L20 5 L24 17 L29 14 L35 31 Q20 37 5 31 Z" fill="#cfd8e3" ${S}/>
+    <path d="M11 18 L17 29 M20 5 L19 22 L26 30 M29 14 L27 23" stroke="#7d8a99" stroke-width="1.5" fill="none"/>`) },
+  question: { label: 'Mystery mark', badge: 'kenny', svg: svg(`
+    <circle cx="20" cy="20" r="16" fill="#4b2a7a" ${S}/>
+    <path d="M13 15 Q13 8 20 8 Q27 8 27 14 Q27 18 22 20 Q20 21 20 25" fill="none" stroke="#141414" stroke-width="7" stroke-linecap="round"/>
+    <path d="M13 15 Q13 8 20 8 Q27 8 27 14 Q27 18 22 20 Q20 21 20 25" fill="none" stroke="#79e06a" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="20" cy="31.5" r="2.8" fill="#79e06a" ${S}/>`) },
+  barn: { label: 'Farm barn', badge: 'tegridy', svg: svg(`
+    <path d="M7 35 V18 L12 9 L20 5 L28 9 L33 18 V35 Z" fill="#c0392b" ${S}/>
+    <path d="M5 19 L11 8 L20 4 L29 8 L35 19" fill="none" ${S}/>
+    <rect x="14" y="22" width="12" height="13" fill="#f6f1e1" ${S}/>
+    <path d="M14 22 L26 35 M26 22 L14 35" stroke="#c0392b" stroke-width="2"/>
+    <circle cx="20" cy="14" r="3" fill="#f5c518" ${S}/>`) },
+  popcorn: { label: 'Popcorn', badge: 'movies', svg: svg(`
+    <path d="M9 18 Q5 11 12 11 Q12 4 19 7 Q24 2 28 8 Q36 8 31 18 Z" fill="#fff3a6" ${S}/>
+    <path d="M8 17 H32 L28 36 H12 Z" fill="#f4f8fb" ${S}/>
+    <path d="M13 18 L15.5 35 M20 18 V35 M27 18 L24.5 35" stroke="#d63a3a" stroke-width="3.5"/>`) },
+  trophy: { label: 'Summit trophy', badge: 'completionist', svg: svg(`
+    <path d="M11 10 Q3 10 6 17 Q8 21 14 21 M29 10 Q37 10 34 17 Q32 21 26 21" fill="none" ${S}/>
+    <path d="M11 6 H29 Q29 24 20 25 Q11 24 11 6 Z" fill="#f5c518" ${S}/>
+    <path d="M18 25 H22 L23 30 H17 Z" fill="#c9a227" ${S}/>
+    <rect x="11" y="30" width="18" height="6" rx="1.5" fill="#8a5a3b" ${S}/>
+    <path d="M14 18 L19 11 L22 15 L24 13 L26 18 Z" fill="#f4f8fb" ${S}/>`) },
+});
+
 export const AVATAR_KEYS = Object.keys(AVATAR_ICONS);
