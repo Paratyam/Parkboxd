@@ -1,12 +1,12 @@
 // Shareable paper-cutout cards: one of your reviews, your Top 4 or your Cage Match top 10, drawn on
 // a canvas. Original art, plus the episode stills on the review and Top 4 cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
-import { supabase } from './supabase.js?v=20261127172227';
-import { epCode, stars, toast } from './ui.js?v=20261127172227';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127172227';
-import { SITE_LINK } from './config.js?v=20261127172227';
-import { beltSVG } from './art.js?v=20261127172227';
-import { reviewMessage, top4Message, top10Message, awardMessage } from './share-text.js?v=20261127172227';
+import { supabase } from './supabase.js?v=20261127172353';
+import { epCode, stars, toast } from './ui.js?v=20261127172353';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127172353';
+import { SITE_LINK } from './config.js?v=20261127172353';
+import { beltSVG } from './art.js?v=20261127172353';
+import { reviewMessage, top4Message, top10Message, awardMessage } from './share-text.js?v=20261127172353';
 
 const W = 1080;
 const H = 1350;
@@ -299,9 +299,8 @@ function showPreview(canvas, filename, message) {
   }, 'image/png');
 }
 
-// A picture and its words travel separately: sent together, some apps post the words as their
-// own message ahead of the picture. So Share sends the picture and copies the message, ready to
-// paste as the caption underneath.
+// On phones, Share sends the picture and its message together. The app receiving them decides
+// how to lay them out. Computers can't share, so they download the picture and copy the words.
 export function showPicture(blob, filename, message) {
     const url = URL.createObjectURL(blob);
     const file = new File([blob], filename, { type: 'image/png' });
@@ -313,11 +312,11 @@ export function showPicture(blob, filename, message) {
       <div class="sheet paper">
         <h2 class="cut">Your card</h2>
         <img alt="Preview of your share card">
-        <p class="share-how">${canShare ? '<b>Share</b> sends the picture and copies this message. Paste it as the caption, so it sits under your picture.' : 'Download the picture, then copy this message to go with it.'}</p>
+        <p class="share-how">${canShare ? 'Share sends your picture with this message:' : 'Download the picture, then copy this message to go with it.'}</p>
         <p class="share-message" data-message></p>
         <div class="actions">
           <button type="button" class="btn btn-ghost" data-close>Close</button>
-          <button type="button" class="btn btn-ghost" data-copy>Copy message</button>
+          ${canShare ? '' : '<button type="button" class="btn btn-ghost" data-copy>Copy message</button>'}
           <a class="btn ${canShare ? 'btn-ghost' : 'btn-green'}" data-download>Download</a>
           ${canShare ? '<button type="button" class="btn btn-green" data-send>Share</button>' : ''}
         </div>
@@ -325,16 +324,14 @@ export function showPicture(blob, filename, message) {
     d.querySelector('img').src = url;
     d.querySelector('[data-message]').textContent = message;
     const copy = () => (navigator.clipboard ? navigator.clipboard.writeText(message).then(() => true, () => false) : Promise.resolve(false));
-    d.querySelector('[data-copy]').onclick = async () => toast(await copy() ? 'Message copied.' : "Couldn't copy it. Press and hold the message to select it.");
+    d.querySelector('[data-copy]')?.addEventListener('click', async () => toast(await copy() ? 'Message copied.' : "Couldn't copy it. Press and hold the message to select it."));
     const link = d.querySelector('[data-download]');
     link.href = url;
     link.download = filename;
     d.querySelector('[data-close]').onclick = () => d.close();
     d.querySelector('[data-send]')?.addEventListener('click', async () => {
       try {
-        const copied = copy(); // started first: both need this tap
-        await navigator.share({ files: [file] });
-        if (await copied) toast('Message copied. Paste it under your picture.', 7000);
+        await navigator.share({ files: [file], text: message });
       } catch (e) {
         if (e?.name !== 'AbortError') toast("Sharing didn't work. Download it instead.");
       }

@@ -1,9 +1,9 @@
 // hottakes.html: the ratings furthest from each episode's average, plus who makes the most of them.
-import { initPage } from '../layout.js?v=20261127172227';
-import { supabase } from '../supabase.js?v=20261127172227';
-import { $, esc, epCode, stars, avatarHTML } from '../ui.js?v=20261127172227';
-import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127172227';
-import { allLatestRatings, episodeAverages, isHotTake, HOT_GAP, HOT_MIN_RATINGS } from '../insights.js?v=20261127172227';
+import { initPage } from '../layout.js?v=20261127172353';
+import { supabase } from '../supabase.js?v=20261127172353';
+import { $, esc, epCode, stars, avatarHTML } from '../ui.js?v=20261127172353';
+import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127172353';
+import { allLatestRatings, episodeAverages, isHotTake, HOT_GAP, HOT_MIN_RATINGS } from '../insights.js?v=20261127172353';
 
 await initPage({ title: 'Hot takes', auth: 'required' });
 const root = $('#hot');

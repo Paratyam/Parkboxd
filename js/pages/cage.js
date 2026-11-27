@@ -1,19 +1,19 @@
 // cage.html: Cartman's Cage Match, the game (pick the better of two episodes you've watched) plus your ranking.
 // cage.html?u=name&view=ranking: a profile's Rankings tab, just the ranking list.
 
-import { initPage } from '../layout.js?v=20261127172227';
-import { supabase } from '../supabase.js?v=20261127172227';
-import { SITE_NAME } from '../config.js?v=20261127172227';
-import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127172227';
-import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127172227';
-import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, peoplesChampion, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127172227';
+import { initPage } from '../layout.js?v=20261127172353';
+import { supabase } from '../supabase.js?v=20261127172353';
+import { SITE_NAME } from '../config.js?v=20261127172353';
+import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127172353';
+import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127172353';
+import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, peoplesChampion, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127172353';
 import {
   introLine, resultLine, crowd, hostPick,
   HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
-} from '../cage-host.js?v=20261127172227';
-import { burgerRain } from '../fx.js?v=20261127172227';
-import { beltSVG, peoplesCupSVG } from '../art.js?v=20261127172227';
-import { shareTop10 } from '../share.js?v=20261127172227';
+} from '../cage-host.js?v=20261127172353';
+import { burgerRain } from '../fx.js?v=20261127172353';
+import { beltSVG, peoplesCupSVG } from '../art.js?v=20261127172353';
+import { shareTop10 } from '../share.js?v=20261127172353';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
