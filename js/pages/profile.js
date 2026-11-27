@@ -11,6 +11,7 @@ import { characterColours } from '../data/character-tags.js';
 import { loadVotes, scoreVotes, champion } from '../cage.js';
 import { streakInfo } from '../streak.js';
 import { loadPicks } from '../club.js';
+import { beltSVG } from '../art.js';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -74,7 +75,7 @@ async function render(p) {
   const champHtml = champEp ? `
     <section>
       <div class="section-head"><h2>Cage Match champion</h2><a href="cage.html?u=${u}&view=ranking">Full ranking</a></div>
-      <a class="cage-champ paper" href="episode.html?id=${champEp.id}">
+      <a class="cage-champ paper" href="episode.html?id=${champEp.id}"><span class="cage-champ-belt">${beltSVG()}</span>
         ${thumbHTML(champEp, { showTitle: false, size: 'w780' })}
         <div><span class="cut">${champ.undefeated ? '🏆 Undefeated champion' : '👑 Reigning champion'}</span>
           <strong>${esc(champEp.title)}</strong>

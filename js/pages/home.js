@@ -9,9 +9,15 @@ import { loadPicks } from '../club.js';
 import { isChaos } from '../fx.js';
 import { streakInfo, streakHTML } from '../streak.js';
 import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js';
+import { housesSVG, heroPinesSVG, gloveSVG, booksSVG } from '../art.js';
 
 const { user, profile } = await initPage();
 const root = $('#home');
+
+// Hero art: a little paper mountain town in front of the mountains, plus falling snow.
+document.querySelector('.hero-mountains')?.insertAdjacentHTML('afterend', `
+  <div class="hero-snow" aria-hidden="true"></div>
+  <svg class="hero-town" viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">${housesSVG()}${heroPinesSVG()}</svg>`);
 
 if (profile?.username) {
   const name = profile.display_name || profile.username;
@@ -133,7 +139,7 @@ async function renderHome() {
   const weeklyHTML = weekly ? `
     <a class="club-ad" href="club.html">
       <span class="club-tape" aria-hidden="true"></span>
-      <span class="club-ad-head"><span class="club-ad-books" aria-hidden="true">📚</span><span class="club-ad-title cut">Butters' Book Club</span></span>
+      <span class="club-ad-head"><span class="club-ad-books">${booksSVG()}</span><span class="club-ad-title cut">Butters' Book Club</span></span>
       <span class="club-ad-text">This week's book: <strong>${esc(weekly.title)}</strong> · ${esc(epCode(weekly))}. Butters already wrote a review, and it's real nice.</span>
       <span class="club-ad-cta cut">${mine.has(weekly.id) ? 'See the reviews' : 'Join the club'} →</span>
       <span class="club-sticker" aria-hidden="true">⭐<small>Butters' pick</small></span>
@@ -145,7 +151,7 @@ async function renderHome() {
   const champEp = champ && byId.get(champ.top.id);
   const cageAd = `
     <a class="cage-ad" href="cage.html">
-      <span class="cage-ad-head"><span class="cage-ad-glove" aria-hidden="true">🥊</span><span class="cage-ad-title cut">Cartman's Cage Match</span></span>
+      <span class="cage-ad-head"><span class="cage-ad-glove">${gloveSVG()}</span><span class="cage-ad-title cut">Cartman's Cage Match</span></span>
       <span class="cage-ad-text">${champEp
         ? `Your champion: <strong>${esc(champEp.title)}</strong>${champ.undefeated ? ' (undefeated!)' : ''}. Think anything can take it down? Step into the cage.`
         : "Two episodes enter. One leaves. Pick winners until your true favourite episode is crowned. Hosted by Eric Cartman, who is very humble about it."}</span>

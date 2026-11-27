@@ -1,0 +1,111 @@
+// Original paper-cutout art for Parkboxd (no show characters): flat shapes, dark outlines,
+// a little wonk, like everything was cut out of construction paper. Each export is an SVG string.
+
+const INK = '#141414';
+const SNOW = '#eef3f7';
+
+// One pine tree with a snow cap, its base centred at (x, y), h tall.
+function pine(x, y, h, fill = '#2e6b3f') {
+  const w = h * 0.62;
+  const tier = (top, bottom, half) => `M${x} ${top} L${x + half} ${bottom} L${x - half} ${bottom} Z`;
+  return `
+    <rect x="${x - h * 0.05}" y="${y - h * 0.16}" width="${h * 0.1}" height="${h * 0.16}" fill="#5b3a1e" stroke="${INK}" stroke-width="2"/>
+    <path d="${tier(y - h, y - h * 0.55, w * 0.32)} ${tier(y - h * 0.78, y - h * 0.33, w * 0.42)} ${tier(y - h * 0.56, y - h * 0.14, w * 0.5)}" fill="${fill}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M${x} ${y - h} L${x + w * 0.12} ${y - h * 0.83} L${x + w * 0.03} ${y - h * 0.86} L${x - w * 0.06} ${y - h * 0.82} L${x - w * 0.12} ${y - h * 0.84} Z" fill="${SNOW}"/>`;
+}
+
+/** A row of snowy pines along a snow bank: sits on top of the footer on every page. */
+export function pineStripSVG() {
+  const trees = [];
+  const xs = [30, 95, 150, 260, 330, 470, 560, 640, 790, 880, 960, 1100, 1180, 1290, 1370, 1420];
+  xs.forEach((x, i) => trees.push(pine(x, 74, 46 + ((i * 37) % 30), i % 3 ? '#2e6b3f' : '#24573a')));
+  return `<svg class="art-pines" viewBox="0 0 1440 90" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+    ${trees.join('')}
+    <path d="M0 90 L0 72 C120 62 220 80 360 70 C520 60 640 80 800 70 C960 60 1080 80 1220 68 C1320 62 1390 72 1440 70 L1440 90 Z" fill="${SNOW}" stroke="${INK}" stroke-width="2.5"/>
+  </svg>`;
+}
+
+/** Paper microphone: Cartman's hosting mic in the Cage Match. */
+export function micSVG() {
+  return `<svg class="art art-mic" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <path d="M30 40 L34 40 L36 58 L28 58 Z" fill="#2b2b2b" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M22 41 Q32 46 42 41 L40 47 Q32 50 24 47 Z" fill="#d63a3a" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle cx="32" cy="24" r="16" fill="#c9ced6" stroke="${INK}" stroke-width="3"/>
+    <path d="M20 18 H44 M18 24 H46 M20 30 H44 M26 10 V38 M32 8 V40 M38 10 V38" stroke="#6b7480" stroke-width="2"/>
+    <path d="M22 15 Q26 11 31 10" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+
+/** Paper boxing glove. */
+export function gloveSVG() {
+  return `<svg class="art art-glove" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <path d="M14 38 Q8 20 22 12 Q34 6 46 12 Q58 20 54 34 Q52 44 42 46 L22 46 Q16 44 14 38 Z" fill="#d63a3a" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M16 30 Q12 22 20 20 Q26 19 26 26 Q26 32 20 33 Z" fill="#b52a2a" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M30 16 Q40 13 47 19" stroke="#ff8a8a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M20 46 L44 46 L46 58 L18 58 Z" fill="#fff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M22 52 H42" stroke="#d63a3a" stroke-width="2.5"/>
+  </svg>`;
+}
+
+/** Paper championship belt: gold plate with a star on a black strap. */
+export function beltSVG() {
+  return `<svg class="art art-belt" viewBox="0 0 140 64" aria-hidden="true" focusable="false">
+    <path d="M4 22 Q70 14 136 22 L136 42 Q70 50 4 42 Z" fill="#1d1d1d" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="22" cy="32" r="6" fill="#f5c518" stroke="${INK}" stroke-width="2"/>
+    <circle cx="118" cy="32" r="6" fill="#f5c518" stroke="${INK}" stroke-width="2"/>
+    <path d="M44 10 Q70 2 96 10 L102 32 L96 54 Q70 62 44 54 L38 32 Z" fill="#f5c518" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M50 16 Q70 10 90 16 L95 32 L90 48 Q70 54 50 48 L45 32 Z" fill="#ffdf5e" stroke="#b8860b" stroke-width="2"/>
+    <path d="M70 20 L74 29 L84 30 L76 36 L79 46 L70 40 L61 46 L64 36 L56 30 L66 29 Z" fill="#d63a3a" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+/** Paper stack of library books with an apple on top. */
+export function booksSVG() {
+  return `<svg class="art art-books" viewBox="0 0 84 76" aria-hidden="true" focusable="false">
+    <path d="M8 58 L74 56 L76 70 L10 72 Z" fill="#2f6db5" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M14 61 L68 60" stroke="#fff3a6" stroke-width="2"/>
+    <path d="M14 44 L70 46 L68 58 L12 57 Z" fill="#d63a3a" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M60 46 L59 57" stroke="#f5c518" stroke-width="3"/>
+    <path d="M10 32 L72 30 L74 44 L12 45 Z" fill="#3fb950" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M18 37 L40 36.5" stroke="#fff" stroke-width="2"/>
+    <path d="M42 14 Q34 10 30 18 Q27 26 34 30 Q38 32 42 30 Q46 32 50 30 Q57 26 54 18 Q50 10 42 14 Z" fill="#e8372f" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M42 14 Q42 8 46 5" stroke="#5b3a1e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M44 9 Q50 4 54 8 Q50 12 44 9 Z" fill="#3fb950" stroke="${INK}" stroke-width="1.5"/>
+    <path d="M35 18 Q36 15 39 15" stroke="#ff9c96" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+
+/** Paper bus stop sign on a snowy post, for "nothing here" moments. */
+export function busStopSVG() {
+  return `<svg class="art art-busstop" viewBox="0 0 90 170" aria-hidden="true" focusable="false">
+    <path d="M10 160 Q45 148 80 160 L80 168 L10 168 Z" fill="${SNOW}" stroke="${INK}" stroke-width="2.5"/>
+    <rect x="41" y="44" width="8" height="114" fill="#8a96a3" stroke="${INK}" stroke-width="2.5"/>
+    <circle cx="45" cy="34" r="28" fill="#2f6db5" stroke="${INK}" stroke-width="3"/>
+    <circle cx="45" cy="34" r="22" fill="none" stroke="#fff" stroke-width="2.5"/>
+    <text x="45" y="31" text-anchor="middle" font-family="Luckiest Guy, sans-serif" font-size="11" fill="#fff">BUS</text>
+    <text x="45" y="44" text-anchor="middle" font-family="Luckiest Guy, sans-serif" font-size="11" fill="#fff">STOP</text>
+    <path d="M24 12 Q45 2 66 12 Q60 8 45 8 Q30 8 24 12 Z" fill="${SNOW}" stroke="${INK}" stroke-width="1.5"/>
+  </svg>`;
+}
+
+/** A row of little paper houses with lit windows and smoking chimneys, for the hero town. */
+export function housesSVG() {
+  const house = (x, w, h, wall, roof) => `
+    <rect x="${x + w * 0.62}" y="${222 - h - 26}" width="${w * 0.12}" height="22" fill="#6b4a2e" stroke="${INK}" stroke-width="2"/>
+    <path d="M${x + w * 0.68} ${222 - h - 30} q-6 -10 2 -16 q8 -6 2 -14" stroke="#c9d3dc" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
+    <rect x="${x}" y="${222 - h}" width="${w}" height="${h}" fill="${wall}" stroke="${INK}" stroke-width="2.5"/>
+    <path d="M${x - 8} ${222 - h} L${x + w / 2} ${222 - h - w * 0.45} L${x + w + 8} ${222 - h} Z" fill="${roof}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M${x - 8} ${222 - h} L${x + w / 2} ${222 - h - w * 0.45} L${x + w + 8} ${222 - h} L${x + w} ${222 - h + 5} L${x + w / 2} ${222 - h - w * 0.45 + 8} L${x} ${222 - h + 5} Z" fill="${SNOW}" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>
+    <rect x="${x + w * 0.15}" y="${222 - h * 0.7}" width="${w * 0.22}" height="${h * 0.26}" fill="#ffd95e" stroke="${INK}" stroke-width="2"/>
+    <rect x="${x + w * 0.6}" y="${222 - h * 0.55}" width="${w * 0.24}" height="${h * 0.55}" fill="#5b3a1e" stroke="${INK}" stroke-width="2"/>`;
+  return [
+    house(980, 70, 52, '#d6a25c', '#a93226'),
+    house(1080, 56, 44, '#7fa7c9', '#2c3e52'),
+    house(1160, 78, 58, '#c98a8a', '#5b3a1e'),
+  ].join('');
+}
+
+/** Pines for the hero foreground (in the hero's 1440×320 coordinates). */
+export function heroPinesSVG() {
+  return [pine(70, 268, 120, '#24573a'), pine(150, 262, 90), pine(1300, 262, 100), pine(1385, 270, 130, '#24573a'), pine(880, 238, 70)].join('');
+}

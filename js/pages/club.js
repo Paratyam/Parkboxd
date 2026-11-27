@@ -5,6 +5,7 @@ import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '..
 import { buttersReview, buttersComment } from '../butters.js';
 import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js';
 import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js';
+import { booksSVG } from '../art.js';
 
 const SHELF = 12; // past weeks on the shelf
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
@@ -124,6 +125,7 @@ async function render() {
   root.innerHTML = `
     <section class="club-hero">
       <span class="club-tape" aria-hidden="true"></span>
+      <span class="club-hero-art">${booksSVG()}</span>
       <div class="club-head">
         <span class="club-kicker">${archive ? 'From the Book Club archives' : 'South Park Elementary Library presents'}</span>
         <h1 class="club-title cut">Butters' Book Club</h1>

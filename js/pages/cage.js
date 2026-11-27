@@ -12,6 +12,7 @@ import {
   HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
 } from '../cage-host.js';
 import { burgerRain } from '../fx.js';
+import { micSVG, beltSVG } from '../art.js';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
@@ -87,7 +88,7 @@ async function start() {
         <span class="cage-round cut" id="round"></span>
       </div>
       <div class="cage-host">
-        <div class="cage-mic" aria-hidden="true">🎤</div>
+        <div class="cage-mic" aria-hidden="true">${micSVG()}</div>
         <div class="cage-bubble" id="host" aria-live="polite">
           <span class="who">Eric Cartman · Your host</span>
           <p class="call" id="call"></p>
@@ -123,7 +124,7 @@ async function start() {
     const c = champion(scores);
     const champEp = c && byId.get(c.top.id);
     $('#champ').innerHTML = champEp ? `
-      <a class="cage-champ paper" href="episode.html?id=${champEp.id}">
+      <a class="cage-champ paper" href="episode.html?id=${champEp.id}"><span class="cage-champ-belt">${beltSVG()}</span>
         ${thumbHTML(champEp, { showTitle: false, size: 'w780' })}
         <div><span class="cut">${c.undefeated ? '🏆 Undefeated champion' : '👑 Champion'}</span>
           <strong>${esc(champEp.title)}</strong>

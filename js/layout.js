@@ -4,6 +4,7 @@ import { SITE_NAME } from './config.js';
 import { esc, avatarHTML, currentPage, toast } from './ui.js';
 import { line } from './jokes.js';
 import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js';
+import { pineStripSVG, busStopSVG } from './art.js';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -65,6 +66,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
     showCoonTakeover((text) => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(22, text); });
   }
   renderFooter(session);
+  decorateBigMessages();
   // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
   if (session) import('./flair.js').then((m) => m.startFlair()).catch(() => {});
   if (!isConfigured) showConfigWarning();
@@ -141,6 +143,7 @@ function renderFooter(session) {
   const el = document.getElementById('site-footer');
   if (!el) return;
   el.innerHTML = `
+    <div class="footer-art">${pineStripSVG()}</div>
     <div class="wrap footer-inner">
       <span>Episode data from <a href="https://www.themoviedb.org/" rel="noopener">TMDB</a>.
         This product uses the TMDB API but is not endorsed or certified by TMDB.
@@ -182,4 +185,14 @@ function syncDice() {
   b.textContent = evil ? '😈' : '🎲';
   b.title = evil ? 'Unleash chaos: rewatch one of your worst-rated episodes' : 'Random episode';
   b.setAttribute('aria-label', evil ? 'Unleash chaos' : 'Random episode');
+}
+
+// "Nothing here" pages (.big-message) get a little paper bus stop sign, whenever they appear.
+function decorateBigMessages() {
+  const add = () => document.querySelectorAll('.big-message:not([data-art])').forEach((el) => {
+    el.dataset.art = '1';
+    el.insertAdjacentHTML('afterbegin', `<div class="big-message-art">${busStopSVG()}</div>`);
+  });
+  add();
+  new MutationObserver(add).observe(document.body, { childList: true, subtree: true });
 }
