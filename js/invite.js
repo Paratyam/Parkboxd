@@ -1,8 +1,9 @@
 // Invite links (?invite=<username>): someone who joins through one follows the inviter.
 // Only new accounts follow automatically, so clicking a link never changes an existing one.
-import { supabase } from './supabase.js?v=20261127171608';
-import { USERNAME_RE, params, toast } from './ui.js?v=20261127171608';
-import { SITE_LINK } from './config.js?v=20261127171608';
+import { supabase } from './supabase.js?v=20261127172100';
+import { USERNAME_RE, params, toast } from './ui.js?v=20261127172100';
+import { SITE_LINK } from './config.js?v=20261127172100';
+import { inviteMessage } from './share-text.js?v=20261127172100';
 
 const KEY = 'parkboxd-invite';
 const NEW_ACCOUNT_MS = 7 * 24 * 60 * 60 * 1000;
@@ -47,12 +48,12 @@ export async function redeemInvite(session, profile) {
 /** Share (or copy) your own invite link. */
 export async function shareInvite(username) {
   const url = `https://${SITE_LINK}/?invite=${encodeURIComponent(username)}`;
-  const text = 'Follow me on Parkboxd and rate South Park episodes with me.';
+  const text = inviteMessage(username); // the link is inside, so it always comes last
   try {
     if (navigator.share && matchMedia('(pointer: coarse)').matches) {
-      await navigator.share({ title: 'Parkboxd', text, url });
+      await navigator.share({ text });
     } else {
-      await navigator.clipboard.writeText(`${text} ${url}`);
+      await navigator.clipboard.writeText(text);
       toast('Invite link copied. Paste it to a friend.');
     }
   } catch (e) {

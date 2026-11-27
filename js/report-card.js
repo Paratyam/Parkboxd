@@ -1,6 +1,8 @@
 // Mr. Garrison's Report Card: every season gets a letter grade from your ratings.
-import { SITE_LINK } from './config.js?v=20261127171608';
-import { esc, stars, toast } from './ui.js?v=20261127171608';
+import { SITE_LINK } from './config.js?v=20261127172100';
+import { showPicture } from './share.js?v=20261127172100';
+import { reportCardMessage } from './share-text.js?v=20261127172100';
+import { esc, stars, toast } from './ui.js?v=20261127172100';
 
 // Season averages bunch up between 3 and 4, so the scale is set around that: 4.2+ is
 // already exceptional across a whole season, and 3.0 is a perfectly fine season.
@@ -210,8 +212,8 @@ export function reportCardHTML({ seasonAvgs, all, seen, ratings = new Map(), isM
     </div>`;
 }
 
-// Turn the card into a PNG: share it on phones that can, download it everywhere else.
-async function saveImage(card, name, button) {
+// Turn the card into a PNG and open the share preview.
+async function saveImage(card, who, button) {
   const label = button.textContent;
   button.disabled = true;
   button.textContent = 'Taking the photo…';
@@ -222,17 +224,7 @@ async function saveImage(card, name, button) {
       backgroundColor: getComputedStyle(card).backgroundColor,
       filter: (node) => !(node.classList && node.classList.contains('rc-actions')),
     });
-    const file = new File([blob], `report-card-${name}.png`, { type: 'image/png' });
-    if (navigator.canShare?.({ files: [file] }) && matchMedia('(pointer: coarse)').matches) {
-      await navigator.share({ files: [file], title: "Mr. Garrison's Report Card", text: `Get your own at https://${SITE_LINK}` });
-    } else {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = file.name;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-      toast("Report card saved. Go show your parents. Or don't.");
-    }
+    showPicture(blob, `report-card-${who.name}.png`, reportCardMessage(who));
   } catch (e) {
     if (e?.name !== 'AbortError') toast(`Couldn't save the image: ${e?.message || e}`);
   } finally {
@@ -250,7 +242,7 @@ export function mountReportCard(el, opts) {
       localStorage.setItem(CURVE_KEY, b.dataset.curve);
       draw();
     }));
-    el.querySelector('.rc-save')?.addEventListener('click', (e) => saveImage(el.querySelector('.report-card'), opts.name, e.currentTarget));
+    el.querySelector('.rc-save')?.addEventListener('click', (e) => saveImage(el.querySelector('.report-card'), opts, e.currentTarget));
   };
   draw();
 }

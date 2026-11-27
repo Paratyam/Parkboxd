@@ -1,14 +1,14 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127171608';
-import { initPage, logEpisode } from '../layout.js?v=20261127171608';
-import { supabase } from '../supabase.js?v=20261127171608';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127171608';
-import { followingIds } from '../social.js?v=20261127171608';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127171608';
-import { mysterySVG } from '../art.js?v=20261127171608';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127171608';
-import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127171608';
+import { SITE_LINK } from '../config.js?v=20261127172100';
+import { initPage, logEpisode } from '../layout.js?v=20261127172100';
+import { supabase } from '../supabase.js?v=20261127172100';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127172100';
+import { followingIds } from '../social.js?v=20261127172100';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127172100';
+import { mysterySVG } from '../art.js?v=20261127172100';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127172100';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127172100';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -200,12 +200,12 @@ function coldCasesHTML() {
   const cases = Array.from({ length: Math.max(0, todayNumber - 1) }, (_, i) => todayNumber - 1 - i);
   return `<div class="mystery-stats mystery-cold paper">
     <h2 class="cut">Cold cases</h2>
-    ${cases.length ? `<p class="result-count">Past days. They don't change your stats or streak.</p><div class="mc-grid">${cases.map((n) => {
+    ${cases.length ? `<p class="result-count">These are the mystery episodes from earlier days. You can still play them, and they don't change your stats or streak.</p><div class="mc-grid">${cases.map((n) => {
       const g = store.days[launchDay + n - 1];
       const state = g?.done ? (g.won ? 'won' : 'lost') : g?.guesses?.length ? 'open' : 'new';
       const label = { won: `✓ ${g?.guesses.length}/${MAX}`, lost: `✗ X/${MAX}`, open: 'in progress', new: 'unsolved' }[state];
       return `<a class="mc-case ${state}${cold && n === number ? ' now' : ''}" href="mystery.html?case=${n}"><b>#${n}</b><span>${label}</span></a>`;
-    }).join('')}</div>` : '<p class="result-count">No cold cases yet. Today\'s becomes the first one tomorrow.</p>'}
+    }).join('')}</div>` : '<p class="result-count">Cold cases are the mystery episodes from earlier days. None yet: today\'s becomes the first one tomorrow.</p>'}
   </div>`;
 }
 
@@ -249,7 +249,7 @@ function render() {
             <p>${game.won ? '(Kenny says: nice job, dude.)' : cold ? 'He\'s used to it.' : 'He\'ll be back tomorrow. He always is.'} It was <a href="episode.html?id=${answer.id}">${esc(answer.title)}</a> · ${esc(epCode(answer))}.</p>
             <div class="mystery-squares" aria-label="Your guesses">${squares}</div>
             <div class="toolbar">
-              <button type="button" class="btn btn-green" id="m-share">Copy my result</button>
+              <button type="button" class="btn btn-green" id="m-share">${canSend() ? 'Share my result' : 'Copy my result'}</button>
               <button type="button" class="btn btn-ghost" id="m-log">Log ${esc(answer.title)}</button>
             </div>
           </div>
@@ -304,7 +304,10 @@ function guess(id) {
   if (!game.done && PHONE.matches) $('.mystery-new-clue')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-// The message you paste to friends: what the game is, how you did, and what the colours mean.
+// Phones open the share sheet; computers copy to the clipboard.
+const canSend = () => !!navigator.share && window.matchMedia('(pointer: coarse)').matches;
+
+// The message you send to friends: what the game is, how you did, and what the colours mean.
 function shareText() {
   const tries = game.guesses.length;
   const squares = game.guesses.map(square).join('') + '⬜'.repeat(MAX - tries);
@@ -330,6 +333,9 @@ function shareText() {
 function wire() {
   $('#m-share')?.addEventListener('click', async () => {
     const text = shareText();
+    if (canSend()) {
+      try { await navigator.share({ text }); return; } catch (e) { if (e?.name === 'AbortError') return; }
+    }
     try { await navigator.clipboard.writeText(text); toast('Copied! Go brag about it.'); } catch { toast(text); }
   });
   $('#m-log')?.addEventListener('click', () => logEpisode({ episode: answer }));

@@ -1,11 +1,12 @@
 // Shareable paper-cutout cards: one of your reviews, your Top 4 or your Cage Match top 10, drawn on
 // a canvas. Original art, plus the episode stills on the review and Top 4 cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
-import { supabase } from './supabase.js?v=20261127171608';
-import { epCode, stars, toast } from './ui.js?v=20261127171608';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127171608';
-import { SITE_LINK } from './config.js?v=20261127171608';
-import { beltSVG } from './art.js?v=20261127171608';
+import { supabase } from './supabase.js?v=20261127172100';
+import { epCode, stars, toast } from './ui.js?v=20261127172100';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127172100';
+import { SITE_LINK } from './config.js?v=20261127172100';
+import { beltSVG } from './art.js?v=20261127172100';
+import { reviewMessage, top4Message, top10Message, awardMessage } from './share-text.js?v=20261127172100';
 
 const W = 1080;
 const H = 1350;
@@ -286,14 +287,22 @@ export async function drawTop10Card({ name, picks }) {
 
 /** Draw the top 10 card and open the preview. */
 export async function shareTop10(data) {
-  showPreview(await drawTop10Card(data), 'parkboxd-cage-top10.png');
+  showPreview(await drawTop10Card(data), 'parkboxd-cage-top10.png', top10Message(data.picks));
 }
 
 // ---- Preview dialog ----
 
-function showPreview(canvas, filename) {
+function showPreview(canvas, filename, message) {
   canvas.toBlob((blob) => {
     if (!blob) return toast("Couldn't make the image.");
+    showPicture(blob, filename, message);
+  }, 'image/png');
+}
+
+// A picture and its words travel separately: sent together, some apps post the words as their
+// own message ahead of the picture. So Share sends the picture and copies the message, ready to
+// paste as the caption underneath.
+export function showPicture(blob, filename, message) {
     const url = URL.createObjectURL(blob);
     const file = new File([blob], filename, { type: 'image/png' });
     const canShare = !!navigator.canShare?.({ files: [file] });
@@ -304,20 +313,28 @@ function showPreview(canvas, filename) {
       <div class="sheet paper">
         <h2 class="cut">Your card</h2>
         <img alt="Preview of your share card">
+        <p class="share-how">${canShare ? '<b>Share</b> sends the picture and copies this message. Paste it as the caption, so it sits under your picture.' : 'Download the picture, then copy this message to go with it.'}</p>
+        <p class="share-message" data-message></p>
         <div class="actions">
           <button type="button" class="btn btn-ghost" data-close>Close</button>
+          <button type="button" class="btn btn-ghost" data-copy>Copy message</button>
           <a class="btn ${canShare ? 'btn-ghost' : 'btn-green'}" data-download>Download</a>
           ${canShare ? '<button type="button" class="btn btn-green" data-send>Share</button>' : ''}
         </div>
       </div>`;
     d.querySelector('img').src = url;
+    d.querySelector('[data-message]').textContent = message;
+    const copy = () => (navigator.clipboard ? navigator.clipboard.writeText(message).then(() => true, () => false) : Promise.resolve(false));
+    d.querySelector('[data-copy]').onclick = async () => toast(await copy() ? 'Message copied.' : "Couldn't copy it. Press and hold the message to select it.");
     const link = d.querySelector('[data-download]');
     link.href = url;
     link.download = filename;
     d.querySelector('[data-close]').onclick = () => d.close();
     d.querySelector('[data-send]')?.addEventListener('click', async () => {
       try {
-        await navigator.share({ files: [file], text: `Log your own at https://${SITE_LINK}` });
+        const copied = copy(); // started first: both need this tap
+        await navigator.share({ files: [file] });
+        if (await copied) toast('Message copied. Paste it under your picture.', 7000);
       } catch (e) {
         if (e?.name !== 'AbortError') toast("Sharing didn't work. Download it instead.");
       }
@@ -326,7 +343,6 @@ function showPreview(canvas, filename) {
     d.addEventListener('close', () => { d.remove(); URL.revokeObjectURL(url); });
     document.body.append(d);
     d.showModal();
-  }, 'image/png');
 }
 
 // ---- Loading what goes on the card ----
@@ -337,6 +353,7 @@ async function reviewData(id) {
     .eq('id', id).maybeSingle();
   if (error || !r?.review) throw new Error(error?.message || "Couldn't find that review.");
   return {
+    episodeId: r.episodes.id,
     name: r.profiles?.display_name || r.profiles?.username,
     title: r.episodes.title,
     code: epCode(r.episodes),
@@ -367,9 +384,14 @@ document.addEventListener('click', async (e) => {
   b.disabled = true;
   try {
     const { shareReview, shareTop4 } = b.dataset;
-    if (b.hasAttribute('data-share-award')) showPreview(await drawAwardCard(b.dataset), 'parkboxd-card.png');
-    else if (shareReview) showPreview(await drawReviewCard(await reviewData(Number(shareReview))), `parkboxd-review-${shareReview}.png`);
-    else showPreview(await drawTop4Card(await top4Data(shareTop4)), `parkboxd-top4-${shareTop4}.png`);
+    if (b.hasAttribute('data-share-award')) showPreview(await drawAwardCard(b.dataset), 'parkboxd-card.png', awardMessage(b.dataset));
+    else if (shareReview) {
+      const data = await reviewData(Number(shareReview));
+      showPreview(await drawReviewCard(data), `parkboxd-review-${shareReview}.png`, reviewMessage(data));
+    } else {
+      const data = await top4Data(shareTop4);
+      showPreview(await drawTop4Card(data), `parkboxd-top4-${shareTop4}.png`, top4Message(data.picks));
+    }
   } catch (err) {
     toast(`Couldn't make the card: ${err?.message || err}`);
   } finally {

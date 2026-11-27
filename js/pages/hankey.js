@@ -1,8 +1,8 @@
 // hankey.html: Mr. Hankey's 12 Days of Christmas. One door a day, December 13 to 24.
 // Doors stay open for the rest of December. Which ones you've opened is remembered per year.
-import { initPage } from '../layout.js?v=20261127171608';
-import { $, esc, epCode } from '../ui.js?v=20261127171608';
-import { loadAllEpisodes, myLogMap, thumbHTML } from '../episodes.js?v=20261127171608';
+import { initPage } from '../layout.js?v=20261127172100';
+import { $, esc, epCode } from '../ui.js?v=20261127172100';
+import { loadAllEpisodes, myLogMap, thumbHTML } from '../episodes.js?v=20261127172100';
 
 const FIRST_DAY = 13;
 const DOORS = [
