@@ -726,3 +726,41 @@ create policy "send to mutuals" on public.messages for insert to authenticated w
   and exists (select 1 from public.follows b where b.follower_id = recipient_id and b.followee_id = (select auth.uid())));
 create policy "mark read" on public.messages for update to authenticated using (recipient_id = (select auth.uid())) with check (recipient_id = (select auth.uid()));
 grant usage, select on all sequences in schema public to authenticated;
+
+-- Likes and comments on the built-in character reviews (Butters, Kyle: js/guest-reviews.js).
+-- Those reviews live in code, so they're keyed by text: '<character>:<normalised episode title>'.
+create table if not exists public.guest_review_likes (
+  user_id     uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  review_key  text not null check (review_key ~ '^[a-z]+:[a-z0-9]{1,120}$'),
+  created_at  timestamptz not null default now(),
+  primary key (user_id, review_key)
+);
+create index if not exists guest_review_likes_key_idx on public.guest_review_likes (review_key);
+alter table public.guest_review_likes enable row level security;
+grant select, insert, delete on public.guest_review_likes to authenticated;
+drop policy if exists "read" on public.guest_review_likes;
+drop policy if exists "insert own" on public.guest_review_likes;
+drop policy if exists "delete own" on public.guest_review_likes;
+create policy "read" on public.guest_review_likes for select to authenticated using (true);
+create policy "insert own" on public.guest_review_likes for insert to authenticated with check (user_id = (select auth.uid()));
+create policy "delete own" on public.guest_review_likes for delete to authenticated using (user_id = (select auth.uid()));
+
+create table if not exists public.guest_review_comments (
+  id          bigint generated always as identity primary key,
+  review_key  text not null check (review_key ~ '^[a-z]+:[a-z0-9]{1,120}$'),
+  user_id     uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  parent_id   bigint references public.guest_review_comments (id) on delete cascade,
+  body        text not null check (char_length(body) between 1 and 2000),
+  created_at  timestamptz not null default now()
+);
+create index if not exists guest_review_comments_key_idx on public.guest_review_comments (review_key, created_at);
+alter table public.guest_review_comments enable row level security;
+grant select, insert, update, delete on public.guest_review_comments to authenticated;
+drop policy if exists "read" on public.guest_review_comments;
+drop policy if exists "insert own" on public.guest_review_comments;
+drop policy if exists "update own" on public.guest_review_comments;
+drop policy if exists "delete own" on public.guest_review_comments;
+create policy "read" on public.guest_review_comments for select to authenticated using (true);
+create policy "insert own" on public.guest_review_comments for insert to authenticated with check (user_id = (select auth.uid()));
+create policy "update own" on public.guest_review_comments for update to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+create policy "delete own" on public.guest_review_comments for delete to authenticated using (user_id = (select auth.uid()));
