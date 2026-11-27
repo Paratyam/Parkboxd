@@ -1,11 +1,11 @@
 // ratings.html?u=name: everything a user rated. &r=4 narrows to one star value.
-import { initPage } from '../layout.js?v=20261127083100';
-import { supabase } from '../supabase.js?v=20261127083100';
-import { SITE_NAME } from '../config.js?v=20261127083100';
-import { $, esc, params, stars, profileTabsHTML } from '../ui.js?v=20261127083100';
-import { loadAllEpisodes, cardHTML, compareEpisodes } from '../episodes.js?v=20261127083100';
-import { BUCKETS, countRatings, histogramHTML } from '../histogram.js?v=20261127083100';
-import { line } from '../jokes.js?v=20261127083100';
+import { initPage } from '../layout.js?v=20261127083153';
+import { supabase } from '../supabase.js?v=20261127083153';
+import { SITE_NAME } from '../config.js?v=20261127083153';
+import { $, esc, params, stars, profileTabsHTML } from '../ui.js?v=20261127083153';
+import { loadAllEpisodes, cardHTML, compareEpisodes } from '../episodes.js?v=20261127083153';
+import { BUCKETS, countRatings, histogramHTML } from '../histogram.js?v=20261127083153';
+import { line } from '../jokes.js?v=20261127083153';
 
 const { profile: me } = await initPage({ title: 'Ratings', auth: 'required' });
 const root = $('#ratings');
