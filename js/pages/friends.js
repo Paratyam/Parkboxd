@@ -1,10 +1,11 @@
 // friends.html?u=name&tab=following|followers|everyone
-import { initPage } from '../layout.js?v=20261127183744';
-import { supabase } from '../supabase.js?v=20261127183744';
-import { SITE_NAME } from '../config.js?v=20261127183744';
-import { $, esc, params, avatarHTML } from '../ui.js?v=20261127183744';
-import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261127183744';
-import { line } from '../jokes.js?v=20261127183744';
+import { initPage } from '../layout.js?v=20261127185014';
+import { supabase } from '../supabase.js?v=20261127185014';
+import { SITE_NAME } from '../config.js?v=20261127185014';
+import { $, esc, params, avatarHTML } from '../ui.js?v=20261127185014';
+import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261127185014';
+import { line } from '../jokes.js?v=20261127185014';
+import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261127185014';
 
 const { profile: me } = await initPage({ title: 'Friends', auth: 'required' });
 const root = $('#friends');
@@ -62,10 +63,11 @@ async function render() {
     ${list.length ? `<ul class="people">${list.map((p) => {
       const s = statsBy.get(p.id);
       return `<li data-q="${esc(`${p.display_name || ''} ${p.username}`.toLowerCase())}">
-        <a href="profile.html?u=${encodeURIComponent(p.username)}" aria-hidden="true" tabindex="-1">${avatarHTML(p, 48)}</a>
+        ${presenceAvatar(p.id, `<a href="profile.html?u=${encodeURIComponent(p.username)}" aria-hidden="true" tabindex="-1">${avatarHTML(p, 48)}</a>`)}
         <div class="who">
           <a href="profile.html?u=${encodeURIComponent(p.username)}">${esc(p.display_name || p.username)}</a>
           <span>@${esc(p.username)} · ${s?.episodes_watched ?? 0} watched · ${s?.review_count ?? 0} reviews</span>
+          ${presenceText(p.id)}
         </div>
         ${p.id === me.id ? '<span class="result-count">You</span>' : followButtonHTML(p.id, mine.has(p.id))}
       </li>`;
@@ -74,6 +76,7 @@ async function render() {
       : tab === 'followers' ? 'No followers yet. Even Kenny has followers, and he can barely talk.' : 'Nobody else has signed up yet. Send your friends the link! Or don\'t, and keep the whole town to yourself.'}</p>`}`;
   root.removeAttribute('aria-busy');
   wireFollowButtons(root);
+  showPresence(root);
 
   const q = $('#people-q');
   if (!q) return;

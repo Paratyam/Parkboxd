@@ -859,6 +859,16 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .dm-streak { display: inline-flex; align-items: flex-end; gap: 2px; flex: none; font-size: 12px; font-weight: 700; }
 .dm-streak svg { width: 32px; height: 38px; }
 .dm-thread-head .dm-streak { margin-left: 10px; vertical-align: middle; }
+/* Online status (js/presence.js): friends list and messages. */
+.presence-wrap { position: relative; display: inline-flex; flex: none; }
+.presence-dot { position: absolute; right: -2px; bottom: -2px; width: 12px; height: 12px; border-radius: 50%; background: #8a939c; border: 2px solid #000; z-index: 3; pointer-events: none; }
+.presence-dot.online { width: 15px; height: 15px; background: #3ee66b; box-shadow: 0 0 6px rgba(62,230,107,.8); }
+.dm-who .presence-text, .people .who .presence-text, .presence-text { font-size: 12px; color: var(--muted); }
+.dm-who .presence-text.online, .people .who .presence-text.online, .presence-text.online { color: #5ce67f; font-weight: 700; }
+.presence-dot[hidden], .presence-text[hidden] { display: none; }
+.dm-person.active .presence-text { color: #b9e7c1; }
+.dm-person.active .presence-text.online { color: #7dff9c; }
+.dm-head-who { display: flex; flex-direction: column; line-height: 1.3; }
 .streak-text { display: flex; flex-direction: column; gap: 4px; }
 .streak-text strong { color: #fff; font-size: 16px; }
 .streak-text p { margin: 0; font-size: 14px; }

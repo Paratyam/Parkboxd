@@ -855,3 +855,33 @@ end;
 $$;
 drop trigger if exists notify_rec_rated on public.logs;
 create trigger notify_rec_rated after insert or update of rating on public.logs for each row execute function public.notify_rec_rated();
+
+-- Online status (27 Nov 2026): when each person was last on the site. Nobody reads or writes the
+-- table directly: you can only stamp yourself, and only read people you follow who follow you back.
+create table if not exists public.presence (
+  user_id   uuid primary key references public.profiles (id) on delete cascade,
+  last_seen timestamptz not null default now()
+);
+alter table public.presence enable row level security;
+revoke all on public.presence from anon, authenticated;
+
+create or replace function public.touch_presence() returns void
+language sql security definer set search_path = public as $$
+  insert into presence (user_id, last_seen)
+  select id, now() from profiles where id = auth.uid()
+  on conflict (user_id) do update set last_seen = now()
+  where presence.last_seen < now() - interval '30 seconds';
+$$;
+revoke execute on function public.touch_presence() from public, anon;
+grant execute on function public.touch_presence() to authenticated;
+
+create or replace function public.friends_presence()
+returns table (user_id uuid, seconds_ago int)
+language sql stable security definer set search_path = public as $$
+  select p.user_id, greatest(0, extract(epoch from now() - p.last_seen))::int
+  from presence p
+  join follows mine on mine.follower_id = auth.uid() and mine.followee_id = p.user_id
+  join follows theirs on theirs.follower_id = p.user_id and theirs.followee_id = auth.uid();
+$$;
+revoke execute on function public.friends_presence() from public, anon;
+grant execute on function public.friends_presence() to authenticated;

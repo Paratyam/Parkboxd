@@ -228,3 +228,9 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Mystery: countdown in the header, corkboard with six guess slots, leaderboard under the clues, stats and cold-case folders underneath
 - Mystery sharing: `mystery.html` has its own link preview (`og-mystery.png`, drawn by `tools/make-mystery-preview.ps1`); the copied result says what the game is, pads the squares to six and explains the colours (`shareText()`)
 - Share messages live in `js/share-text.js` (what it is, then the invitation, link last). Picture cards (review, Top 4, Top 10, badge, personality, report card) all use `showPicture()`: Share sends the picture and message together (the receiving app decides the order; the owner prefers this over pasting). Invite and Mystery results are one text; Mystery has one full-width share bar (share menu, or copy where the browser has none). Cold cases explain they are earlier days' episodes
+
+## Online status (27 Nov 2026)
+- Friends and Messages show a dot plus "Online now" or "Active 5m ago" (up to 7 days, then nothing); also in the open chat header (`js/presence.js`)
+- Every page sends a heartbeat for signed-in users (started in `js/layout.js`): at most once a minute, paused while the tab is hidden. Online = seen in the last 150 seconds; the pages re-check every 30 seconds
+- Privacy: the `presence` table has no direct access. `touch_presence()` stamps only yourself; `friends_presence()` returns only people who follow each other with you. No setting to hide it
+- Until the SQL at the end of `supabase/setup.sql` is applied, the site works and shows no status. Mock harness: `?nodb` imitates that

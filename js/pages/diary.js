@@ -1,8 +1,8 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127183744';
-import { supabase } from '../supabase.js?v=20261127183744';
-import { SITE_NAME } from '../config.js?v=20261127183744';
-import { $, esc, params, epCode, stars, profileTabsHTML } from '../ui.js?v=20261127183744';
-import { line } from '../jokes.js?v=20261127183744';
+import { initPage, logEpisode } from '../layout.js?v=20261127185014';
+import { supabase } from '../supabase.js?v=20261127185014';
+import { SITE_NAME } from '../config.js?v=20261127185014';
+import { $, esc, params, epCode, stars, profileTabsHTML } from '../ui.js?v=20261127185014';
+import { line } from '../jokes.js?v=20261127185014';
 
 const { profile: me } = await initPage({ title: 'Diary', auth: 'required' });
 const root = $('#diary');

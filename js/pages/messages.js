@@ -1,11 +1,12 @@
 // messages.html?u=name: direct messages. You can only message people who follow you back
 // (the database enforces it too). The open conversation checks for new messages every few seconds.
-import { initPage, refreshMail } from '../layout.js?v=20261127183744';
-import { supabase } from '../supabase.js?v=20261127183744';
-import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127183744';
-import { loadAllEpisodes } from '../episodes.js?v=20261127183744';
-import { loadStreaks, plantSVG } from '../streak.js?v=20261127183744';
-import { messageHTML, previewText } from '../dm-cards.js?v=20261127183744';
+import { initPage, refreshMail } from '../layout.js?v=20261127185014';
+import { supabase } from '../supabase.js?v=20261127185014';
+import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127185014';
+import { loadAllEpisodes } from '../episodes.js?v=20261127185014';
+import { loadStreaks, plantSVG } from '../streak.js?v=20261127185014';
+import { messageHTML, previewText } from '../dm-cards.js?v=20261127185014';
+import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261127185014';
 
 const { user } = await initPage({ title: 'Messages', auth: 'required' });
 const root = $('#messages');
@@ -81,9 +82,10 @@ async function render() {
       <aside class="dm-list" aria-label="Conversations">
         ${convos.length ? convos.map((c) => `
           <a class="dm-person${current?.id === c.p.id ? ' active' : ''}" href="messages.html?u=${encodeURIComponent(c.p.username)}">
-            ${avatarHTML(c.p, 38)}
+            ${presenceAvatar(c.p.id, avatarHTML(c.p, 38))}
             <span class="dm-who"><strong>${esc(c.p.display_name || c.p.username)}</strong>
-              <small>${c.last ? `${c.last.sender_id === me ? 'You: ' : ''}${esc(previewText(c.last.body, byId))}` : 'Say hi!'}</small></span>
+              <small>${c.last ? `${c.last.sender_id === me ? 'You: ' : ''}${esc(previewText(c.last.body, byId))}` : 'Say hi!'}</small>
+              ${presenceText(c.p.id)}</span>
             ${streakBadge(c.p.id)}
             ${c.unread ? `<span class="dm-unread">${c.unread}</span>` : c.last ? `<time>${ago(c.last.created_at)}</time>` : ''}
           </a>`).join('')
@@ -101,6 +103,7 @@ async function render() {
       </section>
     </div>`;
   root.removeAttribute('aria-busy');
+  showPresence(root);
   if (current) {
     current.newestId = msgs.find((m) => other(m) === current.id)?.id; // msgs are newest first
     wireThread(current);
@@ -112,7 +115,7 @@ async function render() {
 
 function threadHTML(p, list) {
   return `
-    <div class="dm-thread-head"><a href="profile.html?u=${encodeURIComponent(p.username)}">${avatarHTML(p, 32)} <strong>${esc(p.display_name || p.username)}</strong></a>${streakBadge(p.id)}</div>
+    <div class="dm-thread-head"><a href="profile.html?u=${encodeURIComponent(p.username)}">${presenceAvatar(p.id, avatarHTML(p, 32))} <span class="dm-head-who"><strong>${esc(p.display_name || p.username)}</strong>${presenceText(p.id)}</span></a>${streakBadge(p.id)}</div>
     <ol class="dm-bubbles" id="dm-bubbles">${list.length ? list.map((m) => `
       <li class="${m.sender_id === me ? 'mine' : 'theirs'}">${messageHTML(m.body, byId)}<time datetime="${esc(m.created_at)}">${ago(m.created_at)}</time></li>`).join('')
       : `<li class="dm-start">This is the start of your conversation with ${esc(p.display_name || p.username)}. Don't make it weird.</li>`}</ol>
