@@ -1,26 +1,26 @@
-import { initPage } from '../layout.js?v=20261127073742';
-import { supabase } from '../supabase.js?v=20261127073742';
-import { SITE_NAME } from '../config.js?v=20261127073742';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127073742';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127073742';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127073742';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127073742';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127073742';
-import { line } from '../jokes.js?v=20261127073742';
-import { characterColours } from '../data/character-tags.js?v=20261127073742';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127073742';
-import { streakInfo } from '../streak.js?v=20261127073742';
-import { loadPicks } from '../club.js?v=20261127073742';
-import { beltSVG } from '../art.js?v=20261127073742';
-import { roastJokes } from '../jimmy.js?v=20261127073742';
+import { initPage } from '../layout.js?v=20261127074052';
+import { supabase } from '../supabase.js?v=20261127074052';
+import { SITE_NAME } from '../config.js?v=20261127074052';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127074052';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127074052';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127074052';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127074052';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127074052';
+import { line } from '../jokes.js?v=20261127074052';
+import { characterColours } from '../data/character-tags.js?v=20261127074052';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127074052';
+import { streakInfo } from '../streak.js?v=20261127074052';
+import { loadPicks } from '../club.js?v=20261127074052';
+import { beltSVG } from '../art.js?v=20261127074052';
+import { roastJokes } from '../jimmy.js?v=20261127074052';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' and Kyle's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127073742')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127073742')).renderKyleProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127074052')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127074052')).renderKyleProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {
