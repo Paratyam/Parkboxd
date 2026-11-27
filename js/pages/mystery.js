@@ -1,10 +1,10 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture and Kenny gives a (muffled) hint. Six tries.
-import { initPage, logEpisode } from '../layout.js?v=20261127063307';
-import { supabase } from '../supabase.js?v=20261127063307';
-import { $, esc, epCode, toast } from '../ui.js?v=20261127063307';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127063307';
-import { mysterySVG } from '../art.js?v=20261127063307';
+import { initPage, logEpisode } from '../layout.js?v=20261127063458';
+import { supabase } from '../supabase.js?v=20261127063458';
+import { $, esc, epCode, toast } from '../ui.js?v=20261127063458';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127063458';
+import { mysterySVG } from '../art.js?v=20261127063458';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -37,19 +37,21 @@ const { data: tagRows } = await supabase.from('episode_tags').select('tags(name,
 const character = (tagRows || []).map((t) => t.tags).filter((t) => t?.kind === 'character').map((t) => t.name)[0];
 
 // Hints, clearest last. Kenny says them muffled; the translation sits underneath.
-// 1 season · 2 a main character (or the title's word count) · 3 a word from the plot
-// · 4 the episode number · 5 the title's first letter
+// 1 season · 2 a main character (or the title's word count) · 3 the episode number
+// · 4 the title's first letter · 5 a whole sentence from the plot summary
 const words = answer.title.split(/\s+/).length;
-const titleWords = new Set(answer.title.toLowerCase().match(/[a-z]+/g) || []);
-const plotWord = ((answer.overview || '').match(/[A-Za-z][a-z]{5,}/g) || [])
-  .filter((w) => !titleWords.has(w.toLowerCase()))
-  .sort((a, b) => b.length - a.length)[0];
+// Title words are blanked out of the plot sentence so it doesn't just give the answer away.
+const COMMON = new Set(['the', 'and', 'for', 'with', 'are', 'you', 'not', 'but', 'his', 'her', 'its', 'all', 'from', 'one', 'two']);
+const titleWords = new Set((answer.title.toLowerCase().match(/[a-z]+/g) || []).filter((w) => w.length >= 3 && !COMMON.has(w)));
+const sentences = (answer.overview || '').match(/[^.!?]+[.!?]+/g) || (answer.overview ? [answer.overview] : []);
+const plotSentence = sentences.map((s) => s.trim()).find((s) => s.split(/\s+/).length >= 6) || sentences[0]?.trim();
+const blanked = plotSentence && plotSentence.replace(/[A-Za-z']+/g, (w) => (titleWords.has(w.toLowerCase().replace(/'s$/, '')) ? '____' : w));
 const HINTS = [
   `It's from Season ${answer.season}.`,
   character ? `${character} is in it. A lot.` : `The title has ${words} word${words === 1 ? '' : 's'}.`,
-  plotWord ? `A word from the plot: “${plotWord.toLowerCase()}”.` : (character ? `The title has ${words} word${words === 1 ? '' : 's'}.` : `The title has ${answer.title.replace(/[^A-Za-z]/g, '').length} letters.`),
   `It's episode ${answer.number} of the season.`,
   `The title starts with “${answer.title[0]}”.`,
+  blanked ? `From the plot: “${blanked}”` : `The title has ${answer.title.replace(/[^A-Za-z]/g, '').length} letters.`,
 ];
 const EXHIBITS = ['A', 'B', 'C', 'D', 'E'];
 const muffle = (text) => text.split(/\s+/).map((w, i) => ['Mmph', 'mmrph', 'mph', 'mmmph', 'rmph'][(w.length + i) % 5]).join(' ') + '!';

@@ -1,14 +1,14 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127063307';
-import { supabase } from '../supabase.js?v=20261127063307';
-import { SITE_NAME } from '../config.js?v=20261127063307';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127063307';
-import { line } from '../jokes.js?v=20261127063307';
-import { celebrate } from '../fx.js?v=20261127063307';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127063307';
-import { starInput } from '../stars.js?v=20261127063307';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127063307';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261127063307';
-import { loadVotes, loadRatings, scoreVotes, ranking } from '../cage.js?v=20261127063307';
+import { initPage, logEpisode } from '../layout.js?v=20261127063458';
+import { supabase } from '../supabase.js?v=20261127063458';
+import { SITE_NAME } from '../config.js?v=20261127063458';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127063458';
+import { line } from '../jokes.js?v=20261127063458';
+import { celebrate } from '../fx.js?v=20261127063458';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127063458';
+import { starInput } from '../stars.js?v=20261127063458';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127063458';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261127063458';
+import { loadVotes, loadRatings, scoreVotes, ranking } from '../cage.js?v=20261127063458';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -33,7 +33,7 @@ if (!ep) {
 } else {
   renderShell();
   $('#roll-again')?.addEventListener('click', async () => {
-    const r = await import('../random.js?v=20261127063307');
+    const r = await import('../random.js?v=20261127063458');
     if (params.get('rolled') === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
@@ -134,7 +134,7 @@ function renderPanel() {
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
       <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>
     </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127063307')).openAddToList(ep));
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127063458')).openAddToList(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 
   starInput($('#rate-stars'), { value: rating, size: 34, label: 'Your rating', onChange: setRating });

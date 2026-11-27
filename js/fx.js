@@ -1,6 +1,6 @@
 // Little effects: rating reactions, hamburger rain, Professor Chaos mode.
-import { toast } from './ui.js?v=20261127063307';
-import { ratingReaction } from './jokes.js?v=20261127063307';
+import { toast } from './ui.js?v=20261127063458';
+import { ratingReaction } from './jokes.js?v=20261127063458';
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -189,7 +189,7 @@ export function showCoonTakeover(setLogo) {
   });
 
   // Members of Coon & Friends (badge holders) get VIP treatment.
-  import('./coon-member.js?v=20261127063307').then(({ coonMember }) => coonMember()).then((member) => {
+  import('./coon-member.js?v=20261127063458').then(({ coonMember }) => coonMember()).then((member) => {
     if (!member || !banner.isConnected) return;
     banner.querySelector('.coon-title').textContent = `Welcome back, ${member.name}. Member of Coon & Friends.`;
     banner.querySelector('.coon-sub').innerHTML = 'You may stay. Everyone else: respect his authoritah. <a href="franchise.html" style="color:#fff;text-decoration:underline">Your spin-off is in the franchise plan</a>';
@@ -200,7 +200,7 @@ export function showCoonTakeover(setLogo) {
 // The Coon goes in at #1; a Coon & Friends member gets #2 as his Official Sidekick.
 export async function rigRankings(root) {
   if (!document.documentElement.classList.contains('coon-takeover-on') || !root) return;
-  const member = await import('./coon-member.js?v=20261127063307').then(({ coonMember }) => coonMember()).catch(() => null);
+  const member = await import('./coon-member.js?v=20261127063458').then(({ coonMember }) => coonMember()).catch(() => null);
   if (!document.documentElement.classList.contains('coon-takeover-on')) return; // dismissed meanwhile
 
   let list = root.querySelector('.rank-table');
