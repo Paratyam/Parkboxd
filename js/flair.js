@@ -3,7 +3,7 @@
 //   🏔️ Completionist    → a crown on their avatar
 //   ✍️ Critic (25+ reviews) → "Critic" tag after their name
 //   🌶️ Hot Take Artist (5+ hot takes) → 🌶️ after their name
-import { loadBadges, rankFor } from './badges.js?v=20261127180848';
+import { loadBadges, rankFor } from './badges.js?v=20261127181158';
 
 const CACHE_KEY = 'parkboxd-flair-2';
 const CACHE_MS = 10 * 60 * 1000;

@@ -105,26 +105,24 @@ Object.assign(AVATAR_ICONS, {
     <rect x="31" y="17" width="7" height="12" fill="#3fb950" ${S}/>
     <path d="M31 15 H25 Q21 15 21 19 V26 Q21 30 25 30 H31 Z" fill="#c8935f" ${S}/>
     <path d="M20 4 V10 M13 7 L16 11 M27 7 L24 11" ${S}/>`) },
-  tierchart: { label: 'Tier chart', badge: 'tierlord', svg: svg(`
-    <rect x="6" y="7" width="28" height="8" rx="1.5" fill="#d63a3a" ${S}/>
-    <rect x="6" y="16" width="22" height="8" rx="1.5" fill="#f2711c" ${S}/>
-    <rect x="6" y="25" width="15" height="8" rx="1.5" fill="#f5c518" ${S}/>`) },
+  tierchart: { label: 'S tier stamp', badge: 'tierlord', svg: svg(`
+    <path d="M20 3 L25 8 L32 7 L33 15 L38 20 L33 25 L32 33 L25 32 L20 37 L15 32 L8 33 L7 25 L2 20 L7 15 L8 7 L15 8 Z" fill="#d63a3a" ${S}/>
+    <path d="M25.5 14 Q20 10.5 15.5 14 Q13.5 18 20 20 Q26.5 22 24.5 26 Q20 29.5 14.5 26" fill="none" stroke="#141414" stroke-width="6" stroke-linecap="round"/>
+    <path d="M25.5 14 Q20 10.5 15.5 14 Q13.5 18 20 20 Q26.5 22 24.5 26 Q20 29.5 14.5 26" fill="none" stroke="#fff3a6" stroke-width="3" stroke-linecap="round"/>`) },
   glasses: { label: 'Reading glasses', badge: 'bookworm', svg: svg(`
     <circle cx="12" cy="22" r="7.5" fill="#bfe3f2" stroke="#141414" stroke-width="3"/>
     <circle cx="28" cy="22" r="7.5" fill="#bfe3f2" stroke="#141414" stroke-width="3"/>
     <path d="M18 20 Q20 17 22 20 M5 20 L3 13 M35 20 L37 13" fill="none" ${S}/>
     <path d="M8.5 20 Q10 17.5 13 17.5 M24.5 20 Q26 17.5 29 17.5" stroke="#fff" stroke-width="2" fill="none"/>`) },
-  magnifier: { label: 'Magnifying glass', badge: 'detective', svg: svg(`
-    <path d="M25 25 L35 35" stroke="#141414" stroke-width="8" stroke-linecap="round"/>
-    <path d="M25 25 L35 35" stroke="#8a5a3b" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="17" cy="17" r="12" fill="#c9a227" ${S}/>
-    <circle cx="17" cy="17" r="8.5" fill="#bfe3f2" ${S}/>
-    <path d="M12 15 Q13.5 12 17 11.5" stroke="#fff" stroke-width="2" fill="none"/>`) },
-  ringbell: { label: 'Ring bell', badge: 'ringmaster', svg: svg(`
-    <path d="M9 28 Q9 9 20 9 Q31 9 31 28 Z" fill="#f5c518" ${S}/>
-    <circle cx="20" cy="7" r="2.5" fill="#9aa5b1" ${S}/>
-    <rect x="6" y="28" width="28" height="6" rx="2" fill="#8a5a3b" ${S}/>
-    <path d="M14 24 Q14 15 18 13" stroke="#fff3a6" stroke-width="2" fill="none"/>`) },
+  magnifier: { label: 'Detective hat', badge: 'detective', svg: svg(`
+    <path d="M16 9 L20 5 L24 9" fill="#8a5a3b" ${S}/>
+    <path d="M9 26 Q9 8 20 8 Q31 8 31 26 Z" fill="#a8744c" ${S}/>
+    <path d="M3 29 Q8 21 14 26 H26 Q32 21 37 29 Q28 34 20 30 Q12 34 3 29 Z" fill="#8a5a3b" ${S}/>
+    <path d="M9.5 21 Q20 25 30.5 21" fill="none" ${S}/>`) },
+  ringbell: { label: 'Champion belt', badge: 'ringmaster', svg: svg(`
+    <path d="M2 15 H38 V26 H2 Z" fill="#2b2b2b" ${S}/>
+    <circle cx="20" cy="20.5" r="12" fill="#f5c518" ${S}/>
+    <path d="M20 13 L22 18 L27 18.5 L23 22 L24.5 27 L20 24.5 L15.5 27 L17 22 L13 18.5 L18 18 Z" fill="#d63a3a" ${S}/>`) },
   pepper: { label: 'Hot pepper', badge: 'hottake', svg: svg(`
     <path d="M25 13 Q35 16 31 26 Q25 37 8 35 Q19 30 18 20 Q18 12 25 13 Z" fill="#d63a3a" ${S}/>
     <path d="M18 15 Q20 9 26 11 Q31 10 30 17 Q24 13 18 15 Z M25 11 Q24 5 30 4" fill="#3fb950" ${S}/>
