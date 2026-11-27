@@ -62,13 +62,13 @@ const GENERIC = [
   "Okay, okay, a classic. Do you like fishsticks? Do you like putting fishsticks in your mouth? ...You all know how this ends. What a t-t-terrific audience!",
 ];
 
-// Jokes about the South Park personality someone got (personality() in js/insights.js).
+// Jokes about the South Park personality someone got (personality() in js/insights.js): three each,
+// all told every round, so the character jokes are always written for that character.
 const PERSONA_JOKES = {
   Butters: [
     (n) => `${n} is a Butters. ${n} has never rated anything below four stars. If ${n} reviewed a parking ticket, it'd say "gee, real thorough work, officer."`,
     (n) => `${n} got Butters. Somewhere, a pair of parents just grounded ${n} for being too n-n-nice to bad episodes.`,
     (n) => `${n} is a Butters. Which means ${n} is one tinfoil hat away from becoming a supervillain. A very polite one.`,
-    (n) => `${n} is so Butters, every review ends with "but that's just my opinion, fellas, please don't be m-m-mad."`,
   ],
   Jimmy: [
     (n) => `${n} got Jimmy. Finally, someone with t-t-taste. I'm not biased. I'm completely biased.`,
@@ -78,7 +78,6 @@ const PERSONA_JOKES = {
   Cartman: [
     (n) => `${n} is a Cartman. ${n} gives out two-star ratings like Cartman gives out excuses: constantly, and with no evidence.`,
     (n) => `${n} got Cartman. Somewhere, Cartman's mem is telling ${n} every rating is perfect, sweetie.`,
-    (n) => `${n} is a Cartman. If an episode doesn't go ${n}'s way, ${n} doesn't rate it, ${n} starts a s-s-scheme.`,
     (n) => `${n} is so Cartman, ${n} rated an episode one star and then demanded everyone r-r-respect their authoritah.`,
   ],
   Randy: [
@@ -95,7 +94,6 @@ const PERSONA_JOKES = {
     (n) => `${n} is a Kyle. ${n}'s reviews are so long, Kyle himself told ${n} to w-w-wrap it up.`,
     (n) => `${n} got Kyle. Every review ends with "you know, I learned something today." Buddy, so did we. We learned to scroll faster.`,
     (n) => `${n} is so Kyle, ${n} wrote three paragraphs about a fart joke and called it "a commentary on s-s-society."`,
-    (n) => `${n} is a Kyle. ${n} doesn't read reviews, ${n} fact-checks them.`,
   ],
   Kenny: [
     (n) => `${n} is a Kenny. Logs everything, says nothing. I've had deeper conversations with a p-p-parka.`,
@@ -112,6 +110,22 @@ const PERSONA_JOKES = {
     (n) => `${n} got Stan. Normal ratings, normal reviews. ${n} is so normal, it's honestly the weirdest thing about ${n}.`,
     (n) => `${n} is so Stan, one look at a bad episode and ${n} throws up. On Wendy. Every time.`,
   ],
+};
+
+// Favourite character ("Team ..." on the profile): one line per character. No line, no joke.
+const FAV_JOKES = {
+  Cartman: (n) => `${n}'s favourite character is Cartman. Of all the people to look up to. ${n} has a lot of explaining to do. Respect ${n}'s authoritah? Never.`,
+  Stan: (n) => `${n}'s favourite character is Stan. The safest pick in the whole show. ${n} orders plain vanilla at the ice cream place too, don't you, b-b-buddy.`,
+  Kyle: (n) => `${n}'s favourite character is Kyle. ${n} probably also has a favourite closing speech. ${n} definitely does. Don't ask, it's twenty minutes long.`,
+  Kenny: (n) => `${n}'s favourite character is Kenny. Picking the guy who dies every week. ${n} likes a character with no c-c-commitment issues. Or a pulse.`,
+  Butters: (n) => `${n}'s favourite character is Butters. Aw. ${n} is too sweet for this website. Somebody protect ${n} from the c-c-comment section.`,
+  Randy: (n) => `${n}'s favourite character is Randy. ${n} saw a grown man lose his mind every single week and thought: that's my guy.`,
+  'Mr. Mackey': (n) => `${n}'s favourite character is Mr. Mackey. Bold. ${n} watched a show with talking poop and picked the school counsellor, m'kay.`,
+  'PC Principal': (n) => `${n}'s favourite character is PC Principal. ${n} is going to chest-bump me after this joke, isn't ${n}? Please don't, b-b-bro.`,
+  'Mr. Garrison': (n) => `${n}'s favourite character is Mr. Garrison. ${n} likes a teacher who teaches absolutely n-n-nothing. Respect.`,
+  Jimmy: (n) => `${n}'s favourite character is me. Folks, this roast is over. ${n} has incredible t-t-taste. Give it up for ${n}!`,
+  Towelie: (n) => `${n}'s favourite character is Towelie. A towel. ${n}'s favourite character is a t-t-towel. I have nothing to add.`,
+  Ike: (n) => `${n}'s favourite character is Ike. The little brother who gets kicked like a football. ${n} relates to that a little too much.`,
 };
 
 /**
@@ -148,11 +162,10 @@ export function roastJokes(ctx) {
   if (ctx.champTitle) jokes.push(`${name}'s Cage Match champion is ${ctx.champTitle}. Of all the episodes in the world. I'm not saying it's wrong, I'm just saying Cartman l-l-laughed.`);
   if (ctx.streak?.current >= 3) jokes.push(`${name} is on a ${ctx.streak.current}-day streak. ${ctx.streak.current} days in a row of South Park. Somebody check on this p-p-person.`);
   else if (ctx.streak?.longest >= 3) jokes.push(`${name} once had a ${ctx.streak.longest}-day streak. Once. Then they discovered s-s-sunlight.`);
-  // Two jokes about the South Park personality they got, written for that character.
-  const personaJokes = PERSONA_JOKES[ctx.persona];
-  if (personaJokes) jokes.push(...shuffle(personaJokes.map((j) => j(name))).slice(0, 2));
-  else if (ctx.persona) jokes.push(`The site says ${name} is a ${ctx.persona}. The site has never been more r-r-right about anything.`);
-  if (ctx.fav) jokes.push(`${name}'s favourite character is ${ctx.fav}. That tells you everything. That tells you way too m-m-much.`);
+  // All three jokes written for the South Park personality they got, and a line for their
+  // favourite character. No generic character lines: no written joke, no joke.
+  jokes.push(...(PERSONA_JOKES[ctx.persona] || []).map((j) => j(name)));
+  if (FAV_JOKES[ctx.fav]) jokes.push(FAV_JOKES[ctx.fav](name));
   const top4Low = (ctx.top4 || []).map((id) => ({ id, a: avgs.get(id)?.avg })).filter((x) => x.a != null && x.a < 3.3)[0];
   if (top4Low) jokes.push(`${title(top4Low.id)} is in ${name}'s Top 4. Everyone else gave it ${top4Low.a.toFixed(1)}. That's not a favourite, that's a h-h-hostage situation.`);
 
