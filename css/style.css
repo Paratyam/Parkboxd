@@ -1877,3 +1877,9 @@ body:has(.site-header.menu-open) .install-ad, body:has(dialog[open]) .install-ad
 #cage .title-holders:not(:has(> :not([hidden]))) { display: none; }
 #cage .rank-table > .empty { grid-column: 1 / -1; }
 #mystery .kenny-lives { flex-wrap: wrap; max-width: 100%; }
+/* Episode page: the send-to-a-friend button says what it does */
+.rec-btn { display: flex; gap: 12px; align-items: center; width: 100%; padding: 12px 14px; text-align: left; font: inherit; color: var(--white); background: rgba(242,113,28,.14); border: 2px solid var(--orange); border-radius: 8px; cursor: pointer; }
+.rec-btn:hover { background: rgba(242,113,28,.26); }
+.rec-btn-icon { font-size: 26px; line-height: 1; }
+.rec-btn strong { display: block; font-size: 15px; }
+.rec-btn small { display: block; margin-top: 2px; font-size: 12px; line-height: 1.4; color: var(--text-soft); }

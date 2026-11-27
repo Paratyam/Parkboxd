@@ -1,19 +1,19 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127170641';
-import { supabase } from '../supabase.js?v=20261127170641';
-import { SITE_NAME } from '../config.js?v=20261127170641';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127170641';
-import { line } from '../jokes.js?v=20261127170641';
-import { celebrate } from '../fx.js?v=20261127170641';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127170641';
-import { mackeyNoteHTML } from '../mackey.js?v=20261127170641';
-import { starInput } from '../stars.js?v=20261127170641';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127170641';
-import { pcButtonHTML } from '../pc.js?v=20261127170641';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261127170641';
-import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261127170641';
-import { peoplesCupSVG } from '../art.js?v=20261127170641';
-import { openRecommend, recommendationsFor } from '../recommend.js?v=20261127170641';
-import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127170641';
+import { initPage, logEpisode } from '../layout.js?v=20261127171127';
+import { supabase } from '../supabase.js?v=20261127171127';
+import { SITE_NAME } from '../config.js?v=20261127171127';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127171127';
+import { line } from '../jokes.js?v=20261127171127';
+import { celebrate } from '../fx.js?v=20261127171127';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127171127';
+import { mackeyNoteHTML } from '../mackey.js?v=20261127171127';
+import { starInput } from '../stars.js?v=20261127171127';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127171127';
+import { pcButtonHTML } from '../pc.js?v=20261127171127';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261127171127';
+import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261127171127';
+import { peoplesCupSVG } from '../art.js?v=20261127171127';
+import { openRecommend, recommendationsFor } from '../recommend.js?v=20261127171127';
+import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127171127';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -38,7 +38,7 @@ if (!ep) {
 } else {
   renderShell();
   $('#roll-again')?.addEventListener('click', async () => {
-    const r = await import('../random.js?v=20261127170641');
+    const r = await import('../random.js?v=20261127171127');
     if (params.get('rolled') === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
@@ -155,16 +155,19 @@ function renderPanel() {
       <div id="rate-stars"></div>
     </div>
     <button type="button" class="btn btn-green" id="btn-log">${watched ? 'Review or log again' : 'Review or log'}</button>
+    <button type="button" class="rec-btn" id="btn-rec">
+      <span class="rec-btn-icon" aria-hidden="true">📨</span>
+      <span><strong>Send to a friend</strong>
+        <small>Tell them “you have to watch this!” You'll hear when they rate it.</small></span>
+    </button>
     <div class="panel-links">
       ${top4.includes(ep.id)
         ? '<button type="button" class="link-button" id="btn-top4" style="color:var(--text-soft)">★ In your Top 4 · Remove</button>'
         : top4.length < 4
           ? '<button type="button" class="link-button" id="btn-top4" style="color:var(--text-soft)">Add to your Top 4</button>'
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
-      <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>
-      <button type="button" class="link-button" id="btn-rec" style="color:var(--text-soft)">📨 You have to watch this…</button>
-    </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127170641')).openAddToList(ep));
+      <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>    </div>`;
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127171127')).openAddToList(ep));
   $('#btn-rec').addEventListener('click', () => openRecommend(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 
