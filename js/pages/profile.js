@@ -1,30 +1,30 @@
-import { initPage } from '../layout.js?v=20261127185014';
-import { supabase } from '../supabase.js?v=20261127185014';
-import { SITE_NAME } from '../config.js?v=20261127185014';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127185014';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127185014';
-import { shareInvite } from '../invite.js?v=20261127185014';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast, fetchAll } from '../ui.js?v=20261127185014';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127185014';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127185014';
-import { line } from '../jokes.js?v=20261127185014';
-import { characterColours } from '../data/character-tags.js?v=20261127185014';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127185014';
-import { rankFor, nextRank } from '../badges.js?v=20261127185014';
-import { loadStreaks, streakHTML } from'../streak.js?v=20261127185014';
-import { loadPicks } from '../club.js?v=20261127185014';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127185014';
-import { AVATAR_ICONS } from '../avatars.js?v=20261127185014';
-import { beltSVG } from'../art.js?v=20261127185014';
-import { roastJokes } from '../jimmy.js?v=20261127185014';
+import { initPage } from '../layout.js?v=20261127190142';
+import { supabase } from '../supabase.js?v=20261127190142';
+import { SITE_NAME } from '../config.js?v=20261127190142';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127190142';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127190142';
+import { shareInvite } from '../invite.js?v=20261127190142';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, fetchAll } from '../ui.js?v=20261127190142';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127190142';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127190142';
+import { line } from '../jokes.js?v=20261127190142';
+import { characterColours } from '../data/character-tags.js?v=20261127190142';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127190142';
+import { rankFor, nextRank } from '../badges.js?v=20261127190142';
+import { loadStreaks, streakHTML } from'../streak.js?v=20261127190142';
+import { loadPicks } from '../club.js?v=20261127190142';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127190142';
+import { AVATAR_ICONS } from '../avatars.js?v=20261127190142';
+import { beltSVG } from'../art.js?v=20261127190142';
+import { roastJokes } from '../jimmy.js?v=20261127190142';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' and Kyle's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127185014')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127185014')).renderKyleProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127190142')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127190142')).renderKyleProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {
@@ -180,17 +180,6 @@ async function render(p) {
         ${!isMe ? '' : b.earned ? `<button type="button" class="link-button badge-share" data-share-award data-kicker="Badge unlocked" data-emoji="${esc(b.emoji)}" data-heading="${esc(b.name)}" data-line="${esc(b.desc)}" data-name="${esc(name)}">Share</button>` : '<span class="badge-share" style="visibility:hidden" aria-hidden="true">Share</span>'}
       </div>
     </div>`).join('')}</div>`;
-
-  // The first time you see a secret badge you've earned, announce the secret.
-  if (isMe) {
-    const seenKey = 'parkboxd-secrets-seen';
-    const seen = new Set(JSON.parse(localStorage.getItem(seenKey) || '[]'));
-    for (const b of badges.filter((x) => x.earned && SECRETS[x.id] && !seen.has(x.id))) {
-      setTimeout(() => toast(`${b.emoji} You earned the ${b.name} badge! ${SECRETS[b.id]}`, 9000), 600);
-      seen.add(b.id);
-    }
-    localStorage.setItem(seenKey, JSON.stringify([...seen]));
-  }
 
   // South Park personality, from how they rate, review and rewatch.
   const persona = personality({ username: p.username, logs: allLogs || [], ratings: theirRatings, avgs });

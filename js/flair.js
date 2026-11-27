@@ -3,9 +3,10 @@
 //   🏔️ Completionist    → a crown on their avatar
 //   ✍️ Critic (25+ reviews) → "Critic" tag after their name
 //   🌶️ Hot Take Artist (5+ hot takes) → 🌶️ after their name
-import { loadBadges, rankFor } from './badges.js?v=20261127185014';
+// Each person can switch theirs off in Edit profile (profiles.flair_off).
+import { loadBadges, rankFor } from './badges.js?v=20261127190142';
 
-const CACHE_KEY = 'parkboxd-flair-2';
+export const CACHE_KEY = 'parkboxd-flair-3';
 const CACHE_MS = 10 * 60 * 1000;
 
 const CROWN = '<svg viewBox="0 0 40 28" aria-hidden="true" focusable="false"><path d="M4 24 L2 6 L12 14 L20 2 L28 14 L38 6 L36 24 Z" fill="#f5c518" stroke="#141414" stroke-width="3" stroke-linejoin="round"/><circle cx="20" cy="17" r="3.5" fill="#d63a3a" stroke="#141414" stroke-width="2"/></svg>';
@@ -18,14 +19,14 @@ async function loadFlair() {
   } catch { /* ignore a broken cache */ }
 
   const data = {};
-  for (const { username, badges } of (await loadBadges()).values()) {
+  for (const { username, flairOff, badges } of (await loadBadges()).values()) {
     const earned = new Set(badges.filter((b) => b.earned).map((b) => b.id));
     const f = {
-      rank: rankFor(earned.size),
+      rank: flairOff.includes('ring') ? null : rankFor(earned.size),
       count: earned.size,
-      crown: earned.has('completionist'),
-      critic: earned.has('critic'),
-      spicy: earned.has('hottake'),
+      crown: earned.has('completionist') && !flairOff.includes('crown'),
+      critic: earned.has('critic') && !flairOff.includes('critic'),
+      spicy: earned.has('hottake') && !flairOff.includes('spicy'),
     };
     if (f.rank || f.crown || f.critic || f.spicy) data[username] = f;
   }

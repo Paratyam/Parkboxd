@@ -1,11 +1,11 @@
 // Badges for several people at once (computeBadges in insights.js does the maths), plus the
 // rank their badge count earns. Used by the flair around avatars and the picture picker.
-import { fetchAll } from './ui.js?v=20261127185014';
-import { supabase } from './supabase.js?v=20261127185014';
-import { loadAllEpisodes } from './episodes.js?v=20261127185014';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges } from './insights.js?v=20261127185014';
-import { loadPicks } from './club.js?v=20261127185014';
-import { clubOffsets } from './attendance.js?v=20261127185014';
+import { fetchAll } from './ui.js?v=20261127190142';
+import { supabase } from './supabase.js?v=20261127190142';
+import { loadAllEpisodes } from './episodes.js?v=20261127190142';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges } from './insights.js?v=20261127190142';
+import { loadPicks } from './club.js?v=20261127190142';
+import { clubOffsets } from './attendance.js?v=20261127190142';
 
 // Best first.
 export const RANKS = [
@@ -16,11 +16,11 @@ export const RANKS = [
 export const rankFor = (count) => RANKS.find((r) => count >= r.min) || null;
 export const nextRank = (count) => [...RANKS].reverse().find((r) => count < r.min) || null;
 
-/** Map(userId -> { username, badges }) for the given people, or for everyone. */
+/** Map(userId -> { username, flairOff, badges }) for the given people, or for everyone. */
 export async function loadBadges(userIds = null) {
   const only = (q) => (userIds ? q.in('user_id', userIds) : q);
   const profiles = () => {
-    const q = supabase.from('profiles').select('id, username, season_tiers').not('username', 'is', null);
+    const q = supabase.from('profiles').select('id, username, season_tiers, flair_off').not('username', 'is', null);
     return userIds ? q.in('id', userIds) : q;
   };
   const [all, { data: people }, { data: stats }, { data: logs }, { data: votes }, { data: wins }, everyone, avgs, chars] = await Promise.all([
@@ -49,6 +49,7 @@ export async function loadBadges(userIds = null) {
 
   return new Map((people || []).map((p) => [p.id, {
     username: p.username,
+    flairOff: p.flair_off || [],
     badges: computeBadges({
       username: p.username, logs: logsBy.get(p.id) || [], ratings: everyone.get(p.id) || new Map(), all, byName: chars.byName, avgs,
       following: following.get(p.id) ?? 0, clubPicks, cageMatches: votesBy.get(p.id)?.length || 0,

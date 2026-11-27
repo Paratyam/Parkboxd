@@ -234,3 +234,7 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Every page sends a heartbeat for signed-in users (started in `js/layout.js`): at most once a minute, paused while the tab is hidden. Online = seen in the last 150 seconds; the pages re-check every 30 seconds
 - Privacy: the `presence` table has no direct access. `touch_presence()` stamps only yourself; `friends_presence()` returns only people who follow each other with you. No setting to hide it
 - Until the SQL at the end of `supabase/setup.sql` is applied, the site works and shows no status. Mock harness: `?nodb` imitates that
+
+## Badge extras switches and unlock message (27 Nov 2026)
+- Edit profile > Badge extras: show or hide the rank ring, Completionist crown, Critic tag and Hot Take pepper (`profiles.flair_off`; others see a change once their 10-minute flair cache expires)
+- `js/unlocks.js`: a "Congratulations!" dialog listing each newly earned badge, its avatar and perks, and a new ring if reached. Checked after logging, Cage Match picks, Mystery, follows and tier list saves (`parkboxd:progress`, fired in `js/supabase.js`) and on page load at most every 5 minutes. `profiles.badges_seen` stops repeats across devices; the first check only records what someone already has. Replaces the old secret-mode toast

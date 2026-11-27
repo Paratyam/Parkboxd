@@ -1,9 +1,9 @@
 // list.html?id=N: view a list; its owner can edit it here.
-import { initPage } from '../layout.js?v=20261127185014';
-import { supabase } from '../supabase.js?v=20261127185014';
-import { SITE_NAME } from '../config.js?v=20261127185014';
-import { $, esc, params, epCode, avatarHTML, notify } from '../ui.js?v=20261127185014';
-import { loadAllEpisodes, cardHTML, myLogMap } from '../episodes.js?v=20261127185014';
+import { initPage } from '../layout.js?v=20261127190142';
+import { supabase } from '../supabase.js?v=20261127190142';
+import { SITE_NAME } from '../config.js?v=20261127190142';
+import { $, esc, params, epCode, avatarHTML, notify } from '../ui.js?v=20261127190142';
+import { loadAllEpisodes, cardHTML, myLogMap } from '../episodes.js?v=20261127190142';
 
 const { user } = await initPage({ title: 'List', auth: 'required' });
 const root = $('#list');

@@ -1,12 +1,13 @@
-import { initPage, refreshBell } from '../layout.js?v=20261127185014';
-import { supabase } from '../supabase.js?v=20261127185014';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127185014';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127185014';
-import { loadStreaks } from '../streak.js?v=20261127185014';
-import { loadBadges } from '../badges.js?v=20261127185014';
-import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127185014';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127185014';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127185014';
+import { initPage, refreshBell } from '../layout.js?v=20261127190142';
+import { supabase } from '../supabase.js?v=20261127190142';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127190142';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127190142';
+import { loadStreaks } from '../streak.js?v=20261127190142';
+import { loadBadges, rankFor } from '../badges.js?v=20261127190142';
+import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261127190142';
+import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127190142';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127190142';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127190142';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -67,8 +68,27 @@ function drawIcons() {
 }
 drawIcons();
 loadStreaks([user.id]).then((m) => { longest = m.get(user.id).longest; drawIcons(); });
-loadBadges([user.id]).then((m) => { badges = new Map(m.get(user.id).badges.map((b) => [b.id, b])); drawIcons(); });
+loadBadges([user.id]).then((m) => { badges = new Map(m.get(user.id).badges.map((b) => [b.id, b])); drawIcons(); drawSwitches(); });
 $('#icon-picker').addEventListener('change', (e) => { icon = e.target.value || null; });
+
+// ---- Badge extras: show or hide each one you've earned ----
+const flairOff = new Set(profile.flair_off || []);
+function drawSwitches() {
+  const count = [...badges.values()].filter((b) => b.earned).length;
+  const rows = [
+    ['ring', 'Rank ring around your picture', !!rankFor(count), 'unlock 5 badges'],
+    ['crown', '👑 Completionist crown', badges.get('completionist')?.earned, 'earn the Completionist badge'],
+    ['critic', '✍️ “Critic” tag after your name', badges.get('critic')?.earned, 'earn the Critic badge'],
+    ['spicy', '🌶️ Hot Take Artist pepper', badges.get('hottake')?.earned, 'earn the Hot Take Artist badge'],
+  ];
+  $('#flair-switches').innerHTML = rows.map(([key, label, earned, how]) => `
+    <label class="checkbox"${earned ? '' : ' style="opacity:.55;cursor:default"'}>
+      <input type="checkbox" value="${key}"${earned && !flairOff.has(key) ? ' checked' : ''}${earned ? '' : ' disabled'}>
+      <span>${label}${earned || !badges.size ? '' : ` (🔒 ${how})`}</span>
+    </label>`).join('');
+}
+drawSwitches();
+$('#flair-switches').addEventListener('change', (e) => { flairOff[e.target.checked ? 'delete' : 'add'](e.target.value); });
 
 // ---- Favourite character ----
 // Only the curated list (plus whatever you already picked, so it isn't lost).
@@ -147,9 +167,11 @@ $('#profile-form').addEventListener('submit', async (e) => {
     avatar_icon: icon,
     favourite_character: $('#fav-char').value || null,
     top4,
+    flair_off: [...flairOff],
   }).eq('id', user.id);
   setBusy(btn, false);
   if (error) return notify($('#msg'), error.message, 'error');
+  sessionStorage.removeItem(FLAIR_CACHE);
   location.href = `profile.html?u=${encodeURIComponent(profile.username)}`;
 });
 
