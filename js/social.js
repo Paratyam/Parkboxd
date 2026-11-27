@@ -1,12 +1,12 @@
 // Follows, review likes and the shared review block.
-import { supabase } from './supabase.js?v=20261127172353';
-import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261127172353';
-import { thumbHTML } from './episodes.js?v=20261127172353';
-import { line } from './jokes.js?v=20261127172353';
-import { isHotTake } from './insights.js?v=20261127172353';
-import { buttersLikes } from './butters.js?v=20261127172353';
-import './share.js?v=20261127172353';
-import { pcButtonHTML, installPC } from './pc.js?v=20261127172353';
+import { supabase } from './supabase.js?v=20261127172532';
+import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261127172532';
+import { thumbHTML } from './episodes.js?v=20261127172532';
+import { line } from './jokes.js?v=20261127172532';
+import { isHotTake } from './insights.js?v=20261127172532';
+import { buttersLikes } from './butters.js?v=20261127172532';
+import './share.js?v=20261127172532';
+import { pcButtonHTML, installPC } from './pc.js?v=20261127172532';
 
 installPC(); // PC Principal's "PC it" toggle on review cards
 
@@ -125,7 +125,7 @@ export function wireReviewLikes(root, onChange) {
       .select('*, episodes(id, kind, season, number, title, air_date, still_path)').eq('id', Number(b.dataset.editReview)).maybeSingle();
     b.disabled = false;
     if (error || !log) return alert(error?.message || "Couldn't find that review.");
-    const { logEpisode } = await import('./layout.js?v=20261127172353');
+    const { logEpisode } = await import('./layout.js?v=20261127172532');
     const changed = await logEpisode({ episode: log.episodes, log });
     if (changed) onChange?.();
   }));

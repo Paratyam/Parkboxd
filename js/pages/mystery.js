@@ -1,14 +1,14 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127172353';
-import { initPage, logEpisode } from '../layout.js?v=20261127172353';
-import { supabase } from '../supabase.js?v=20261127172353';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127172353';
-import { followingIds } from '../social.js?v=20261127172353';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127172353';
-import { mysterySVG } from '../art.js?v=20261127172353';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127172353';
-import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127172353';
+import { SITE_LINK } from '../config.js?v=20261127172532';
+import { initPage, logEpisode } from '../layout.js?v=20261127172532';
+import { supabase } from '../supabase.js?v=20261127172532';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127172532';
+import { followingIds } from '../social.js?v=20261127172532';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127172532';
+import { mysterySVG } from '../art.js?v=20261127172532';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127172532';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127172532';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -75,10 +75,12 @@ const words = answer.title.split(/\s+/).length;
 const letters = answer.title.replace(/[^A-Za-z]/g, '').length;
 const HINTS = [
   { topic: '💀 Does Kenny die in this episode?', text: FATES[fate] },
-  { text: verdict },
-  { text: !character ? "Nobody hogs this one, dude. It's a group thing." : character === 'Kenny' ? 'Keep an eye on me, dude.' : `Keep an eye on ${character}.` },
-  evidence ? { evidence, text: 'Three things from the evidence bag.' } : { text: `The title has ${words} word${words === 1 ? '' : 's'}.` },
-  { text: comment ? blank(comment) : `The title has ${letters} letters.` },
+  { topic: '⭐ How does Parkboxd rate this episode?', text: verdict },
+  { topic: '👀 Which character should you watch?', text: !character ? "Nobody hogs this one, dude. It's a group thing." : character === 'Kenny' ? 'Keep an eye on me, dude.' : `Keep an eye on ${character}.` },
+  evidence ? { topic: "🧾 What shows up in this episode?", evidence, text: 'Three things from the evidence bag.' }
+    : { topic: '🔤 How long is the title?', text: `The title has ${words} word${words === 1 ? '' : 's'}.` },
+  comment ? { topic: '💬 What happens in this episode?', text: blank(comment) }
+    : { topic: '🔤 How many letters are in the title?', text: `The title has ${letters} letters.` },
 ];
 const EXHIBITS = ['A', 'B', 'C', 'D', 'E'];
 const muffle = (text) => text.split(/\s+/).map((w, i) => ['Mmph', 'mmrph', 'mph', 'mmmph', 'rmph'][(w.length + i) % 5]).join(' ') + '!';
