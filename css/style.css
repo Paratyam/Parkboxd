@@ -1446,3 +1446,12 @@ html.coon-takeover-on .histogram .end { font-size: 7px; }
 /* Share cards: preview dialog */
 .share-dialog img { display: block; max-width: 100%; max-height: 58vh; margin: 0 auto; border-radius: 6px; }
 .share-dialog .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+
+/* "Get the app" corner ad on the home page */
+.install-ad { position: fixed; right: 14px; bottom: 14px; z-index: 55; display: flex; gap: 12px; align-items: center; width: min(300px, calc(100vw - 28px)); padding: 14px 36px 14px 14px; background-color: var(--yellow); color: var(--bg-deep); }
+.install-ad img { border-radius: 10px; flex: 0 0 52px; }
+.install-ad > div { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; font-size: 13px; }
+.install-ad strong { font-size: 17px; line-height: 1.1; color: var(--bg-deep); text-shadow: none; }
+.install-ad .btn { margin-top: 5px; padding: 6px 12px; font-size: 12px; background: var(--bg-deep); color: #fff; }
+.install-ad-close { position: absolute; top: 6px; right: 10px; background: none; border: 0; padding: 4px; color: var(--bg-deep); font-size: 15px; cursor: pointer; }
+html.chaos .install-ad, html.mysterion .install-ad { bottom: 66px; }
