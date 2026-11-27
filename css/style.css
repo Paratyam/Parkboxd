@@ -1107,8 +1107,8 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .big-message-art { width: 120px; margin: 0 auto 10px; transform: rotate(-4deg); }
 
 /* Cage Match pieces */
-.cage-mic { padding: 6px; }
-.cage-mic .art { filter: none; }
+
+
 .cage-ad-glove { width: 42px; flex: 0 0 42px; transform: rotate(-12deg); }
 .cage-champ { position: relative; }
 .cage-champ-belt { position: absolute; right: 18px; top: 14px; width: 120px; transform: rotate(6deg); z-index: 2; }
@@ -1129,3 +1129,9 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .ep-card:hover .ep-thumb { transform: rotate(-1.2deg) translateY(-3px); box-shadow: 4px 6px 0 rgba(0,0,0,.45); }
 .ep-grid .ep-card:nth-child(even):hover .ep-thumb { transform: rotate(1.2deg) translateY(-3px); }
 @media (prefers-reduced-motion: reduce) { .ep-card:hover .ep-thumb { transform: none; } }
+
+/* Paper-cutout profile pictures */
+.avatar.has-icon { padding: 10%; }
+.avatar.has-icon svg { width: 100%; height: 100%; display: block; filter: drop-shadow(1px 1px 0 rgba(0,0,0,.4)); }
+html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
+.icon-picker .avatar.has-icon, .icon-picker .avatar { transition: transform .12s; } .icon-picker .swatch:hover .avatar { transform: rotate(-6deg) scale(1.06); }

@@ -17,7 +17,7 @@ const ago = (iso) => {
 
 async function render() {
   const { data: items } = await supabase.from('notifications')
-    .select('id, type, read, created_at, log_id, actor:profiles!notifications_actor_id_fkey(username, display_name, avatar_color), logs(id, episodes(id, title)), comments(body)')
+    .select('id, type, read, created_at, log_id, actor:profiles!notifications_actor_id_fkey(username, display_name, avatar_color, avatar_icon), logs(id, episodes(id, title)), comments(body)')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(60);

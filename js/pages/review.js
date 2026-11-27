@@ -14,7 +14,7 @@ const id = Number(params.get('id'));
 async function render() {
   const [{ data: r }, { data: comments }, friends] = await Promise.all([
     supabase.from('logs').select(`${REVIEW_SELECT}, episodes(id, kind, season, number, title, air_date, still_path)`).eq('id', id).maybeSingle(),
-    supabase.from('comments').select('id, user_id, body, created_at, profiles(username, display_name, avatar_color)').eq('log_id', id).order('created_at'),
+    supabase.from('comments').select('id, user_id, body, created_at, profiles(username, display_name, avatar_color, avatar_icon)').eq('log_id', id).order('created_at'),
     followingIds(user.id),
   ]);
   if (!r) {

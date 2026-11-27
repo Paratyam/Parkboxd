@@ -12,7 +12,7 @@ import {
   HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
 } from '../cage-host.js';
 import { burgerRain } from '../fx.js';
-import { micSVG, beltSVG } from '../art.js';
+import { beltSVG } from '../art.js';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
@@ -88,7 +88,7 @@ async function start() {
         <span class="cage-round cut" id="round"></span>
       </div>
       <div class="cage-host">
-        <div class="cage-mic" aria-hidden="true">${micSVG()}</div>
+        <div class="cage-mic" aria-hidden="true">🎤</div>
         <div class="cage-bubble" id="host" aria-live="polite">
           <span class="who">Eric Cartman · Your host</span>
           <p class="call" id="call"></p>

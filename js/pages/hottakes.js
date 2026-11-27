@@ -10,7 +10,7 @@ const root = $('#hot');
 
 const [everyone, avgs, all, { data: people }] = await Promise.all([
   allLatestRatings(), episodeAverages(), loadAllEpisodes(),
-  supabase.from('profiles').select('id, username, display_name, avatar_color'),
+  supabase.from('profiles').select('id, username, display_name, avatar_color, avatar_icon'),
 ]);
 const byId = new Map(all.map((e) => [e.id, e]));
 const who = new Map((people || []).map((p) => [p.id, p]));

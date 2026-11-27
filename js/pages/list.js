@@ -12,7 +12,7 @@ let editing = params.get('edit') === '1';
 
 async function render() {
   const [{ data: list }, { data: items }, all, mine] = await Promise.all([
-    supabase.from('lists').select('id, user_id, title, description, created_at, profiles(username, display_name, avatar_color)').eq('id', id).maybeSingle(),
+    supabase.from('lists').select('id, user_id, title, description, created_at, profiles(username, display_name, avatar_color, avatar_icon)').eq('id', id).maybeSingle(),
     supabase.from('list_items').select('episode_id, position, note').eq('list_id', id).order('position'),
     loadAllEpisodes(),
     myLogMap(user.id),

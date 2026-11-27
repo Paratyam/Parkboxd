@@ -15,7 +15,7 @@ let query = ''; // kept across re-renders (e.g. after a follow click)
 
 async function render() {
   const [{ data: people }, { data: follows }, { data: stats }, mine] = await Promise.all([
-    supabase.from('profiles').select('id, username, display_name, avatar_color, bio').not('username', 'is', null),
+    supabase.from('profiles').select('id, username, display_name, avatar_color, avatar_icon, bio').not('username', 'is', null),
     supabase.from('follows').select('follower_id, followee_id'),
     supabase.from('user_stats').select('user_id, episodes_watched, review_count'),
     followingIds(me.id),

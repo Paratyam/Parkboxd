@@ -9,7 +9,7 @@ import { allLatestRatings, tasteMatch, tasteLabel } from '../insights.js';
 const { profile: me } = await initPage({ title: 'Taste match', auth: 'required' });
 const root = $('#compare');
 const wanted = (params.get('u') || '').toLowerCase();
-const { data: them } = await supabase.from('profiles').select('id, username, display_name, avatar_color').eq('username', wanted).maybeSingle();
+const { data: them } = await supabase.from('profiles').select('id, username, display_name, avatar_color, avatar_icon').eq('username', wanted).maybeSingle();
 
 if (!them || them.id === me.id) {
   root.innerHTML = `<div class="big-message"><h1 class="cut">${them ? 'You agree with yourself 100%' : 'Nobody by that name'}</h1>

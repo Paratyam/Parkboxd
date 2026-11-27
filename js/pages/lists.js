@@ -11,7 +11,7 @@ const root = $('#lists');
 const tab = params.get('tab') === 'mine' ? 'mine' : 'all';
 
 let q = supabase.from('lists')
-  .select('id, user_id, title, description, created_at, profiles(username, display_name, avatar_color), list_items(position, episodes(id, kind, season, number, title, still_path))')
+  .select('id, user_id, title, description, created_at, profiles(username, display_name, avatar_color, avatar_icon), list_items(position, episodes(id, kind, season, number, title, still_path))')
   .order('created_at', { ascending: false }).limit(200);
 if (tab === 'mine') q = q.eq('user_id', user.id);
 const { data: lists } = await q;

@@ -9,15 +9,14 @@ import { loadPicks } from '../club.js';
 import { isChaos } from '../fx.js';
 import { streakInfo, streakHTML } from '../streak.js';
 import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js';
-import { housesSVG, heroPinesSVG, gloveSVG, booksSVG } from '../art.js';
+import { gloveSVG, booksSVG } from '../art.js';
 
 const { user, profile } = await initPage();
 const root = $('#home');
 
-// Hero art: a little paper mountain town in front of the mountains, plus falling snow.
+// Hero: gentle falling snow over the mountains.
 document.querySelector('.hero-mountains')?.insertAdjacentHTML('afterend', `
-  <div class="hero-snow" aria-hidden="true"></div>
-  <svg class="hero-town" viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">${housesSVG()}${heroPinesSVG()}</svg>`);
+  <div class="hero-snow" aria-hidden="true"></div>`);
 
 if (profile?.username) {
   const name = profile.display_name || profile.username;
@@ -55,7 +54,7 @@ async function renderHome() {
     supabase.rpc('popular_episodes', { p_days: 7, p_limit: 12 }),
     reviewsQ,
     hasFriends
-      ? supabase.from('logs').select(`id, user_id, rating, liked, review, is_rewatch, created_at, profiles!logs_user_id_fkey(username, display_name, avatar_color), ${EP}`)
+      ? supabase.from('logs').select(`id, user_id, rating, liked, review, is_rewatch, created_at, profiles!logs_user_id_fkey(username, display_name, avatar_color, avatar_icon), ${EP}`)
         .in('user_id', friendIds).order('created_at', { ascending: false }).limit(12)
       : Promise.resolve({ data: [] }),
   ]);

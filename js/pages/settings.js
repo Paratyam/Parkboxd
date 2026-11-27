@@ -1,6 +1,7 @@
 import { initPage } from '../layout.js';
 import { supabase } from '../supabase.js';
-import { $, esc, epCode, notify, setBusy } from '../ui.js';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js';
 import { loadAllEpisodes, thumbHTML } from '../episodes.js';
 import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js';
 
@@ -32,7 +33,20 @@ $('#swatches').innerHTML = COLOURS.map(([hex, name]) => `
     <span class="avatar" style="--c:${hex};--size:44px" aria-hidden="true">${esc((profile.display_name || profile.username)[0].toUpperCase())}</span>
     <span class="visually-hidden">${name}</span>
   </label>`).join('');
-$('#swatches').addEventListener('change', (e) => { colour = e.target.value; });
+$('#swatches').addEventListener('change', (e) => { colour = e.target.value; drawIcons(); });
+
+// ---- Profile picture: a paper cut-out icon, or the first letter ----
+let icon = AVATAR_ICONS[profile.avatar_icon] ? profile.avatar_icon : null;
+function drawIcons() {
+  $('#icon-picker').innerHTML = [null, ...AVATAR_KEYS].map((key) => `
+    <label class="swatch" title="${esc(key ? AVATAR_ICONS[key].label : 'First letter')}">
+      <input type="radio" name="avatar-icon" value="${key || ''}"${key === icon ? ' checked' : ''}>
+      ${avatarHTML({ display_name: profile.display_name || profile.username, avatar_color: colour, avatar_icon: key }, 52)}
+      <span class="visually-hidden">${esc(key ? AVATAR_ICONS[key].label : 'First letter')}</span>
+    </label>`).join('');
+}
+drawIcons();
+$('#icon-picker').addEventListener('change', (e) => { icon = e.target.value || null; });
 
 // ---- Favourite character ----
 // Only the curated list (plus whatever you already picked, so it isn't lost).
@@ -108,6 +122,7 @@ $('#profile-form').addEventListener('submit', async (e) => {
     display_name: $('#display-name').value.trim() || null,
     bio: $('#bio').value.trim() || null,
     avatar_color: colour,
+    avatar_icon: icon,
     favourite_character: $('#fav-char').value || null,
     top4,
   }).eq('id', user.id);

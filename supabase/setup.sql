@@ -574,3 +574,7 @@ create policy "read" on public.club_votes for select to authenticated using (tru
 create policy "insert own" on public.club_votes for insert to authenticated with check (user_id = (select auth.uid()));
 create policy "update own" on public.club_votes for update to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 create policy "delete own" on public.club_votes for delete to authenticated using (user_id = (select auth.uid()));
+
+-- Profile pictures: an optional paper-cutout icon (see js/art.js AVATAR_ICONS); null = first letter.
+alter table public.profiles add column if not exists avatar_icon text check (avatar_icon is null or avatar_icon ~ '^[a-z]{2,20}$');
+grant update (avatar_icon) on public.profiles to authenticated;

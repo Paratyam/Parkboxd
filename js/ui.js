@@ -1,4 +1,5 @@
 // Small DOM helpers shared by every page.
+import { AVATAR_ICONS } from './avatars.js';
 
 export const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -63,7 +64,8 @@ export function avatarHTML(profile, size = 40) {
   const name = profile?.display_name || profile?.username || '?';
   const colour = profile?.avatar_color || '#f2711c';
   const who = profile?.username ? ` data-u="${esc(profile.username)}"` : '';
-  return `<span class="avatar"${who} style="--c:${esc(colour)};--size:${size}px" aria-hidden="true">${esc(name[0].toUpperCase())}</span>`;
+  const icon = profile?.avatar_icon && AVATAR_ICONS[profile.avatar_icon];
+  return `<span class="avatar${icon ? ' has-icon' : ''}"${who} style="--c:${esc(colour)};--size:${size}px" aria-hidden="true">${icon ? icon.svg : esc(name[0].toUpperCase())}</span>`;
 }
 
 export function formatDate(value, opts = { year: 'numeric', month: 'long', day: 'numeric' }) {
