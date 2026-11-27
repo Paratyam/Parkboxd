@@ -1,14 +1,14 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127172719';
-import { initPage, logEpisode } from '../layout.js?v=20261127172719';
-import { supabase } from '../supabase.js?v=20261127172719';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127172719';
-import { followingIds } from '../social.js?v=20261127172719';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127172719';
-import { mysterySVG } from '../art.js?v=20261127172719';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127172719';
-import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127172719';
+import { SITE_LINK } from '../config.js?v=20261127172921';
+import { initPage, logEpisode } from '../layout.js?v=20261127172921';
+import { supabase } from '../supabase.js?v=20261127172921';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127172921';
+import { followingIds } from '../social.js?v=20261127172921';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127172921';
+import { mysterySVG } from '../art.js?v=20261127172921';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127172921';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127172921';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -76,10 +76,10 @@ const letters = answer.title.replace(/[^A-Za-z]/g, '').length;
 const HINTS = [
   { topic: '💀 Does Kenny die in this episode?', text: FATES[fate] },
   { topic: '⭐ How does Parkboxd rate this episode?', text: verdict },
-  { topic: '👀 Which character should you watch?', text: !character ? "Nobody hogs this one, dude. It's a group thing." : character === 'Kenny' ? 'Keep an eye on me, dude.' : `Keep an eye on ${character}.` },
-  evidence ? { topic: "🧾 What shows up in this episode?", evidence, text: 'Three things from the evidence bag.' }
+  { topic: '👀 Who is the main character of this episode?', text: !character ? "Nobody hogs this one, dude. It's a group thing." : character === 'Kenny' ? 'Keep an eye on me, dude.' : `Keep an eye on ${character}.` },
+  evidence ? { topic: '🧾 The evidence bag:', evidence, text: 'Three things from this episode.' }
     : { topic: '🔤 How long is the title?', text: `The title has ${words} word${words === 1 ? '' : 's'}.` },
-  comment ? { topic: '💬 What happens in this episode?', text: blank(comment) }
+  comment ? { topic: '💬 What Kenny thinks happens in this episode', text: blank(comment) }
     : { topic: '🔤 How many letters are in the title?', text: `The title has ${letters} letters.` },
 ];
 const EXHIBITS = ['A', 'B', 'C', 'D', 'E'];
