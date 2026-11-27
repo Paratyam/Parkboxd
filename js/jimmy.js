@@ -7,11 +7,12 @@ const stars = (r) => `${r}★`;
 // Stutter on a couple more words: "terrific" -> "t-t-terrific". Skips names, numbers and
 // words that already stutter.
 const SKIP = /^(the|and|that|this|with|they|them|their|what|your|have|from|were|just)$/i;
-function stutter(text, extra = 2) {
+function stutter(text, extra = 2, name = "") {
+  const skipName = (w) => name && w.toLowerCase().replace(/[^a-z0-9_]/g, "").startsWith(name.toLowerCase().replace(/[^a-z0-9_]/g, ""));
   const words = text.split(' ');
   const spots = shuffle(words.map((w, i) => i).filter((i) => {
     const w = words[i];
-    return /^[a-z]{4,}[,.!?]?$/.test(w) && !SKIP.test(w.replace(/[,.!?]/g, '')); // lowercase words only: no names
+    return /^[a-z]{4,}[,.!?]?$/.test(w) && !SKIP.test(w.replace(/[,.!?]/g, '')) && !skipName(w); // lowercase words only, never the username
   })).slice(0, extra);
   for (const i of spots) {
     const w = words[i];
@@ -111,5 +112,5 @@ export function roastJokes(ctx) {
     if (stat.length) mixed.push(stat.shift());
     if (general.length) mixed.push(general.shift());
   }
-  return mixed.map((j) => stutter(j));
+  return mixed.map((j) => stutter(j, 2, name));
 }

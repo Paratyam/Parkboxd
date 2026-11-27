@@ -1,8 +1,8 @@
 // messages.html?u=name: direct messages. You can only message people who follow you back
 // (the database enforces it too). The open conversation checks for new messages every few seconds.
-import { initPage, refreshMail } from '../layout.js?v=20261127060855';
-import { supabase } from '../supabase.js?v=20261127060855';
-import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127060855';
+import { initPage, refreshMail } from '../layout.js?v=20261127061203';
+import { supabase } from '../supabase.js?v=20261127061203';
+import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127061203';
 
 const { user } = await initPage({ title: 'Messages', auth: 'required' });
 const root = $('#messages');
@@ -119,7 +119,7 @@ async function wireThread(p) {
     btn.disabled = false;
     if (error) return toast(error.message.includes('row-level security') ? 'You can only message people who follow you back.' : error.message);
     withName = p.username;
-    history.replaceState(null, '', `messages.html?u=${encodeURIComponent(p.username)}`);
+    try { history.replaceState(null, '', `messages.html?u=${encodeURIComponent(p.username)}`); } catch { /* address bar only */ }
     render();
   });
   // Check for new messages while the page is open.
