@@ -1,7 +1,7 @@
 // PC Principal's "PC it" filter: rewrites a review in his voice with word swaps, plus an opener
 // and a closer. Browser only, never saved. Any review card with a [data-pc] button gets the
 // toggle (installPC() listens once for the whole page).
-import { esc } from './ui.js?v=20261127082653';
+import { esc } from './ui.js?v=20261127082807';
 
 // [pattern, replacement]. Order matters: phrases before single words. Each replacement is only
 // made of words no later rule matches, so nothing gets swapped twice.
@@ -49,7 +49,10 @@ const SWAPS = [
   [/\bpoor\b/gi, 'economically marginalized'],
   [/\brich\b/gi, 'economically privileged'],
   [/\bmoney\b/gi, 'privilege'],
-  [/\b(fights?|fighting)\b/gi, 'respectful dialogue'],
+  [/\b(a|the|big|final) fight\b/gi, '$1 respectful dialogue'],
+  [/\bfighting\b/gi, 'respectfully disagreeing'],
+  [/\bfights\b/gi, 'respectfully disagrees with'],
+  [/\bfight\b/gi, 'respectfully disagree with'],
   [/\bwar\b/gi, 'respectful disagreement'],
   [/\b(mid|meh|mediocre)\b/gi, 'not fully inclusive yet'],
   [/\bdisappointing\b/gi, 'a missed opportunity for growth'],
@@ -64,6 +67,7 @@ const SWAPS = [
   [/\b(funny|hilarious)\b/gi, 'problematic but valid'],
   [/\b(amazing|awesome|great|incredible)\b/gi, 'totally woke'],
   [/\b(perfect|masterpiece)\b/gi, 'fully woke-certified'],
+  [/\b(a|an absolute|such a) classic\b/gi, '$1 historically significant work'],
   [/\bclassic\b/gi, 'historically significant'],
   [/\b(smart|clever|genius)\b/gi, 'enlightened'],
   [/\bcool\b/gi, 'inclusive'],
@@ -96,7 +100,8 @@ export function pcify(text) {
     out = out.replace(re, (m, ...rest) => {
       const at = rest[rest.length - 2];
       const start = /(^|[.!?]\s+)$/.test(out.slice(0, at));
-      return start ? to[0].toUpperCase() + to.slice(1) : to;
+      const rep = to.replace(/\$(\d)/g, (_, k) => (rest[k - 1] || '').toLowerCase()); // "$1" = a captured word
+      return start ? rep[0].toUpperCase() + rep.slice(1) : rep;
     });
   }
   out = out.trim();
