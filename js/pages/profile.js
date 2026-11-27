@@ -1,17 +1,18 @@
-import { initPage } from '../layout.js?v=20261127030332';
-import { supabase } from '../supabase.js?v=20261127030332';
-import { SITE_NAME } from '../config.js?v=20261127030332';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127030332';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127030332';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127030332';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127030332';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127030332';
-import { line } from '../jokes.js?v=20261127030332';
-import { characterColours } from '../data/character-tags.js?v=20261127030332';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127030332';
-import { streakInfo } from '../streak.js?v=20261127030332';
-import { loadPicks } from '../club.js?v=20261127030332';
-import { beltSVG } from '../art.js?v=20261127030332';
+import { initPage } from '../layout.js?v=20261127030850';
+import { supabase } from '../supabase.js?v=20261127030850';
+import { SITE_NAME } from '../config.js?v=20261127030850';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127030850';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127030850';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127030850';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127030850';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127030850';
+import { line } from '../jokes.js?v=20261127030850';
+import { characterColours } from '../data/character-tags.js?v=20261127030850';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127030850';
+import { streakInfo } from '../streak.js?v=20261127030850';
+import { loadPicks } from '../club.js?v=20261127030850';
+import { beltSVG } from '../art.js?v=20261127030850';
+import { roastSet } from '../jimmy.js?v=20261127030850';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
@@ -256,6 +257,7 @@ async function render(p) {
         : `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join('')}</div>
       <div class="profile-actions" style="width:100%">
         ${isMe ? '<a class="btn btn-ghost" href="settings.html">Edit profile</a>' : followButtonHTML(p.id, iFollow)}
+        <button type="button" class="btn btn-ghost jimmy-btn" id="jimmy-roast">🎤 ${isMe ? 'Roast me, Jimmy' : 'Get Jimmy to roast them'}</button>
       </div>
     </section>
 
@@ -307,5 +309,37 @@ async function render(p) {
     </div>`;
   root.removeAttribute('aria-busy');
   wireFollowButtons(root, () => render(p));
+
+  // Jimmy's Comedy Roast: a stand-up set from this person's real stats.
+  $('#jimmy-roast')?.addEventListener('click', () => {
+    const ctx = {
+      name, logs: allLogs || [], ratings: theirRatings, avgs, byId: new Map(all.map((e) => [e.id, e])),
+      hours: Math.round((s.minutes_watched ?? 0) / 60), reviewCount: s.review_count ?? 0,
+      champTitle: champEp?.title, streak, persona: persona?.name, fav: p.favourite_character, top4: p.top4,
+    };
+    const d = document.createElement('dialog');
+    d.className = 'log-dialog';
+    d.setAttribute('aria-labelledby', 'roast-title');
+    document.body.append(d);
+    const draw = () => {
+      d.innerHTML = `
+        <div class="sheet paper jimmy-sheet">
+          <div class="jimmy-stage" aria-hidden="true">🎤</div>
+          <h2 class="cut" id="roast-title">Jimmy's Comedy Roast of ${esc(name)}</h2>
+          <ol class="jimmy-set">${roastSet(ctx).map((j, i) => `<li style="animation-delay:${i * 0.25}s">${esc(j)}</li>`).join('')}</ol>
+          <p class="jimmy-crowd" aria-hidden="true">👏 *rimshot* 🥁</p>
+          <div class="actions">
+            <button type="button" class="btn btn-ghost" data-close>Close</button>
+            <button type="button" class="btn btn-green" data-again>Another set</button>
+          </div>
+        </div>`;
+      d.querySelector('[data-close]').onclick = () => d.close();
+      d.querySelector('[data-again]').onclick = draw;
+    };
+    draw();
+    d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+    d.addEventListener('close', () => d.remove());
+    d.showModal();
+  });
   wireReviewLikes($('#profile-reviews'), () => render(p));
 }

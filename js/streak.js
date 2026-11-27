@@ -1,5 +1,5 @@
 // Tegridy streak: days in a row with at least one log. Randy has feelings about it.
-import { esc } from './ui.js?v=20261127030332';
+import { esc } from './ui.js?v=20261127030850';
 
 const dayKey = (d) => d.toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
 const shift = (key, days) => {

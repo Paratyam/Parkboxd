@@ -1,15 +1,16 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127030332';
-import { supabase } from '../supabase.js?v=20261127030332';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127030332';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127030332';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127030332';
-import { line } from '../jokes.js?v=20261127030332';
-import { episodeAverages } from '../insights.js?v=20261127030332';
-import { loadPicks } from '../club.js?v=20261127030332';
-import { isChaos } from '../fx.js?v=20261127030332';
-import { streakInfo, streakHTML } from '../streak.js?v=20261127030332';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127030332';
-import { gloveSVG, booksSVG } from '../art.js?v=20261127030332';
+import { initPage, logEpisode } from '../layout.js?v=20261127030850';
+import { supabase } from '../supabase.js?v=20261127030850';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127030850';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127030850';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127030850';
+import { line } from '../jokes.js?v=20261127030850';
+import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127030850';
+import { stanPicks, stanLine } from '../stan.js?v=20261127030850';
+import { loadPicks } from '../club.js?v=20261127030850';
+import { isChaos } from '../fx.js?v=20261127030850';
+import { streakInfo, streakHTML } from '../streak.js?v=20261127030850';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127030850';
+import { gloveSVG, booksSVG } from '../art.js?v=20261127030850';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -27,7 +28,7 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">🎲 Random episode</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js?v=20261127030332');
+    const r = await import('../random.js?v=20261127030850');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -144,6 +145,32 @@ async function renderHome() {
       <span class="club-sticker" aria-hidden="true">⭐<small>Butters' pick</small></span>
     </a>` : '';
 
+  // Kenny's Daily Mystery Episode card: today's puzzle number and whether you've solved it.
+  const dayNo = Math.floor(Date.now() / 86400000);
+  const puzzleNo = dayNo - Math.floor(Date.UTC(2026, 10, 27) / 86400000) + 1;
+  let todayGame = null;
+  try { todayGame = JSON.parse(localStorage.getItem(`parkboxd-mystery-${user.id}`))?.days?.[dayNo] || null; } catch { /* ignore */ }
+  const kennyAd = `
+    <a class="kenny-ad" href="mystery.html">
+      <span class="kenny-ad-head"><span aria-hidden="true">🧥</span><span class="kenny-ad-title cut">Kenny's Mystery Episode</span></span>
+      <span class="kenny-ad-text">Daily puzzle #${puzzleNo}. Guess the episode from a blurry picture. Kenny gives hints. They're muffled.</span>
+      <span class="kenny-ad-cta cut">${todayGame?.done ? (todayGame.won ? `Solved in ${todayGame.guesses.length}! ✓` : 'Kenny didn\'t make it. See you tomorrow') : todayGame?.guesses?.length ? 'Keep guessing →' : "Play today's puzzle →"}</span>
+    </a>`;
+
+  // Stan's Picks: unseen episodes that people with your taste loved.
+  const [everyone, { data: people }] = await Promise.all([
+    allLatestRatings(),
+    supabase.from('profiles').select('id, username, display_name').not('username', 'is', null),
+  ]);
+  const names = new Map((people || []).map((p) => [p.id, p.display_name || p.username]));
+  const picks = stanPicks({ meId: user.id, everyone, seen: new Set(mine.keys()), all, avgs, names });
+  const stanHTML = picks.length ? `
+    <section class="stan-picks">
+      <div class="section-head"><h2>👦 Stan's Picks</h2><span class="result-count">Unseen episodes that people with your taste loved</span></div>
+      <p class="stan-quote">“${esc(stanLine())}” <span>— Stan</span></p>
+      <div class="ep-grid">${picks.map((p) => cardHTML(p.ep, { meta: p.reason })).join('')}</div>
+    </section>` : '';
+
   // Cartman's Cage Match ad, with your current champion if you have one.
   const [cageVotes, cageRatings] = await Promise.all([loadVotes(user.id), loadRatings(user.id)]);
   const champ = champion(scoreVotes(cageVotes, cageRatings));
@@ -163,8 +190,9 @@ async function renderHome() {
 
   root.innerHTML = `
     ${anniversaryHTML}
-    <div class="home-promos">${weeklyHTML}${cageAd}</div>
+    <div class="home-promos">${weeklyHTML}${cageAd}${kennyAd}</div>
     ${streakBox}
+    ${stanHTML}
     <section>
       <div class="section-head"><h2>${popTitle}</h2><a href="episodes.html">More</a></div>
       <div class="ep-grid">${popCards.join('')}</div>
@@ -195,7 +223,7 @@ async function renderHome() {
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js?v=20261127030332');
+  const random = () => import('../random.js?v=20261127030850');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>

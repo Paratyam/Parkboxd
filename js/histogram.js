@@ -1,5 +1,5 @@
 // Letterboxd-style rating bar chart: ten half-star buckets, ½ on the left, 5 on the right.
-import { esc, stars } from './ui.js?v=20261127030332';
+import { esc, stars } from './ui.js?v=20261127030850';
 
 export const BUCKETS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 

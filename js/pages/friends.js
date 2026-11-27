@@ -1,10 +1,10 @@
 // friends.html?u=name&tab=following|followers|everyone
-import { initPage } from '../layout.js?v=20261127030332';
-import { supabase } from '../supabase.js?v=20261127030332';
-import { SITE_NAME } from '../config.js?v=20261127030332';
-import { $, esc, params, avatarHTML } from '../ui.js?v=20261127030332';
-import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261127030332';
-import { line } from '../jokes.js?v=20261127030332';
+import { initPage } from '../layout.js?v=20261127030850';
+import { supabase } from '../supabase.js?v=20261127030850';
+import { SITE_NAME } from '../config.js?v=20261127030850';
+import { $, esc, params, avatarHTML } from '../ui.js?v=20261127030850';
+import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261127030850';
+import { line } from '../jokes.js?v=20261127030850';
 
 const { profile: me } = await initPage({ title: 'Friends', auth: 'required' });
 const root = $('#friends');

@@ -170,3 +170,8 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Header search shows a live dropdown with matching people and episodes; Enter still opens the episode search
 - Book Club notifications (`js/club-notes.js`, worked out in the browser): a note when a new book starts and whether your vote won; count in the bell, read/cleared state in localStorage
 - Comments: edit your own (inline), delete your own or any on your review
+
+### Characters
+- 🎤 Jimmy's Comedy Roast (`js/jimmy.js`): a button on every profile ("Roast me, Jimmy" / "Get Jimmy to roast them") opens a stand-up set built from that person's real stats (harshest and softest takes vs the site average, average rating, hours, log and review counts, rewatches, Cage Match champion, streak, personality, favourite character, a low-rated Top 4 pick), with Jimmy's stutter; "Another set" rerolls
+- 👦 Stan's Picks (`js/stan.js`, home page): unseen aired episodes ranked by how much people with your taste loved them (each member weighted by taste match squared, strangers lightly; someone must have rated it 4★+), falling back to the site's best-rated
+- 🧥 Kenny's Daily Mystery Episode (`mystery.html`): one blurred still a day (same for everyone), 6 tries, each wrong guess or skip sharpens it and unlocks a muffled Kenny hint (season, year, a character, episode number, first letter); win/lose result, copyable 🟩🟥 share text, stats (played, win %, streak, guess distribution) in localStorage. Home card shows today's puzzle and your status
