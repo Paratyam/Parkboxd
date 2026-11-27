@@ -1387,3 +1387,7 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 /* PC Principal's "PC it" filter */
 .pc-toggle { margin-left: auto; font-size: 12px; color: #c48cff; }
 .review-body > p.pc-text { color: #e6d8fb; background: rgba(123,69,184,.14); border-left: 3px solid #7b45b8; padding: 6px 10px; border-radius: 0 6px 6px 0; }
+.pc-by { display: flex; gap: 10px; align-items: center; margin: 6px 0 0; padding: 8px 12px; background: #7b45b8; color: #fff; border: 2px solid #000; border-radius: 8px 8px 0 0; box-shadow: 3px 3px 0 #000; font-size: 13px; }
+.pc-by strong { display: block; font-family: 'Luckiest Guy', cursive; font-weight: 400; font-size: 15px; letter-spacing: .5px; color: #ffd23f; }
+.pc-badge { flex: 0 0 34px; height: 34px; display: grid; place-items: center; font-size: 20px; background: #ffd23f; border: 2px solid #000; border-radius: 50%; }
+.pc-by + p.pc-text { margin-top: 0; border-radius: 0 0 6px 6px; border-left-width: 3px; }

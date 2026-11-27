@@ -1,7 +1,7 @@
 // PC Principal's "PC it" filter: rewrites a review in his voice with word swaps, plus an opener,
 // a closer and a verdict from the star rating. Browser only, never saved. Any review card with a
 // [data-pc] button gets the toggle (installPC() listens once for the whole page).
-import { esc } from './ui.js?v=20261127081456';
+import { esc } from './ui.js?v=20261127081655';
 
 // [pattern, replacement]. Order matters: longer phrases first.
 const SWAPS = [
@@ -65,7 +65,9 @@ export function pcify(text, rating) {
 }
 
 /** The toggle button for a review card's footer. */
-export const pcButtonHTML = (rating) => `<button type="button" class="link-button pc-toggle" data-pc${rating != null ? ` data-pc-rating="${esc(String(rating))}"` : ''} aria-pressed="false" title="Rewrite this review in PC Principal's voice">✊ PC it</button>`;
+export const pcButtonHTML = (rating) => `<button type="button" class="link-button pc-toggle" data-pc${rating != null ? ` data-pc-rating="${esc(String(rating))}"` : ''} aria-pressed="false" title="Let PC Principal rewrite this review in his own words">✊ Let PC Principal fix it</button>`;
+
+const PC_BY = ["PC Principal rewrote this review. You're welcome, bro.", 'PC Principal has made this review a safe space.', 'This review has been through sensitivity training with PC Principal.', 'PC Principal checked this review\'s privilege for you.'];
 
 let installed = false;
 export function installPC() {
@@ -81,11 +83,17 @@ export function installPC() {
       if (p.dataset.original == null) p.dataset.original = p.textContent;
       p.textContent = pcify(p.dataset.original, b.dataset.pcRating);
       p.classList.add('pc-text');
+      // A signed header so it's obvious who did this.
+      const by = document.createElement('div');
+      by.className = 'pc-by';
+      by.innerHTML = `<span class="pc-badge" aria-hidden="true">✊</span><span><strong>PC Principal's version</strong> ${esc(PC_BY[hash(p.dataset.original) % PC_BY.length])}</span>`;
+      p.before(by);
     } else {
       p.textContent = p.dataset.original ?? p.textContent;
       p.classList.remove('pc-text');
+      if (p.previousElementSibling?.classList.contains('pc-by')) p.previousElementSibling.remove();
     }
     b.setAttribute('aria-pressed', String(on));
-    b.textContent = on ? '↩ Original' : '✊ PC it';
+    b.textContent = on ? '↩ Undo PC Principal' : '✊ Let PC Principal fix it';
   });
 }
