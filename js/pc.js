@@ -1,7 +1,7 @@
 // PC Principal's "PC it" filter: rewrites a review in his voice with word swaps, plus an opener
 // and a closer. Browser only, never saved. Any review card with a [data-pc] button gets the
 // toggle (installPC() listens once for the whole page).
-import { esc } from './ui.js?v=20261127201633';
+import { esc } from './ui.js?v=20261127201827';
 
 // [pattern, replacement]. Order matters: phrases before single words. Each replacement is only
 // made of words no later rule matches, so nothing gets swapped twice. "$1" = a captured word.
@@ -257,7 +257,7 @@ const TALKS = {
 };
 
 /** The same button, for a character's review or comment. `text` picks which message they get. */
-export const pcTalkButtonHTML = (who, text) => `<button type="button" class="link-button pc-toggle" data-pc-talk="${esc(who)}" data-pc-pick="${hash(String(text || '')) % TALKS[who].length}" aria-pressed="false">✊ Let PC Principal fix it</button>`;
+export const pcTalkButtonHTML = (who, text) => `<button type="button" class="link-button pc-toggle" data-pc-talk="${esc(who)}" data-pc-pick="${hash(String(text || '')) % TALKS[who].length}" aria-pressed="false">✊ Hear what PC Principal has to say</button>`;
 
 function toggleTalk(b) {
   const on = b.getAttribute('aria-pressed') !== 'true';
@@ -270,5 +270,5 @@ function toggleTalk(b) {
     b.pcBox = box;
   } else b.pcBox?.remove();
   b.setAttribute('aria-pressed', String(on));
-  b.textContent = on ? '↩ Undo PC Principal' : '✊ Let PC Principal fix it';
+  b.textContent = on ? '↩ Hide PC Principal' : '✊ Hear what PC Principal has to say';
 }

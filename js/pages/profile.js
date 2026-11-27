@@ -1,33 +1,33 @@
-import { sfx } from '../sfx.js?v=20261127201633';
-import { initPage } from '../layout.js?v=20261127201633';
-import { supabase } from '../supabase.js?v=20261127201633';
-import { SITE_NAME } from '../config.js?v=20261127201633';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127201633';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127201633';
-import { shareInvite } from '../invite.js?v=20261127201633';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, fetchAll } from '../ui.js?v=20261127201633';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127201633';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127201633';
-import { line } from '../jokes.js?v=20261127201633';
-import { characterColours } from '../data/character-tags.js?v=20261127201633';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127201633';
-import { rankFor, nextRank } from '../badges.js?v=20261127201633';
-import { loadStreaks, streakHTML } from'../streak.js?v=20261127201633';
-import { loadPicks } from '../club.js?v=20261127201633';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127201633';
-import { AVATAR_ICONS } from '../avatars.js?v=20261127201633';
-import { beltSVG } from'../art.js?v=20261127201633';
-import { roastJokes } from '../jimmy.js?v=20261127201633';
+import { sfx } from '../sfx.js?v=20261127201827';
+import { initPage } from '../layout.js?v=20261127201827';
+import { supabase } from '../supabase.js?v=20261127201827';
+import { SITE_NAME } from '../config.js?v=20261127201827';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127201827';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127201827';
+import { shareInvite } from '../invite.js?v=20261127201827';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, fetchAll } from '../ui.js?v=20261127201827';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127201827';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127201827';
+import { line } from '../jokes.js?v=20261127201827';
+import { characterColours } from '../data/character-tags.js?v=20261127201827';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127201827';
+import { rankFor, nextRank } from '../badges.js?v=20261127201827';
+import { loadStreaks, streakHTML } from'../streak.js?v=20261127201827';
+import { loadPicks } from '../club.js?v=20261127201827';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127201827';
+import { AVATAR_ICONS } from '../avatars.js?v=20261127201827';
+import { beltSVG } from'../art.js?v=20261127201827';
+import { roastJokes } from '../jimmy.js?v=20261127201827';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters', Kyle's, Cartman's and Kenny's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127201633')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127201633')).renderKyleProfile
-  : wanted === 'cartman' ? (await import('../cartman-profile.js?v=20261127201633')).renderCartmanProfile
-  : wanted === 'kenny' ? (await import('../kenny-profile.js?v=20261127201633')).renderKennyProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127201827')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127201827')).renderKyleProfile
+  : wanted === 'cartman' ? (await import('../cartman-profile.js?v=20261127201827')).renderCartmanProfile
+  : wanted === 'kenny' ? (await import('../kenny-profile.js?v=20261127201827')).renderKennyProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {

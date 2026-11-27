@@ -2,10 +2,10 @@
 // accounts, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. His reviews are all muffled, and also show on those episode pages
 // (js/guest-reviews.js). Episodes are matched by title.
-import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201633';
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201633';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201633';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127201633';
+import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201827';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201827';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201827';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127201827';
 
 export const KENNY = { username: 'kenny', display_name: 'Kenny McCormick', avatar_color: '#f2711c', avatar_icon: 'mittens' };
 
