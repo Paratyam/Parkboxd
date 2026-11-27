@@ -1,8 +1,10 @@
 // messages.html?u=name: direct messages. You can only message people who follow you back
 // (the database enforces it too). The open conversation checks for new messages every few seconds.
-import { initPage, refreshMail } from '../layout.js?v=20261127164324';
-import { supabase } from '../supabase.js?v=20261127164324';
-import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127164324';
+import { initPage, refreshMail } from '../layout.js?v=20261127165656';
+import { supabase } from '../supabase.js?v=20261127165656';
+import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261127165656';
+import { loadAllEpisodes } from '../episodes.js?v=20261127165656';
+import { messageHTML, previewText } from '../dm-cards.js?v=20261127165656';
 
 const { user } = await initPage({ title: 'Messages', auth: 'required' });
 const root = $('#messages');
@@ -10,6 +12,7 @@ const me = user.id;
 let withName = (params.get('u') || '').toLowerCase();
 let poll = null;
 let shown = false;
+const byId = new Map((await loadAllEpisodes()).map((e) => [e.id, e]));
 
 const CARTMAN_LINES = [
   'Heard that through the grapevine, did you?',
@@ -69,7 +72,7 @@ async function render() {
           <a class="dm-person${current?.id === c.p.id ? ' active' : ''}" href="messages.html?u=${encodeURIComponent(c.p.username)}">
             ${avatarHTML(c.p, 38)}
             <span class="dm-who"><strong>${esc(c.p.display_name || c.p.username)}</strong>
-              <small>${c.last ? `${c.last.sender_id === me ? 'You: ' : ''}${esc(c.last.body.slice(0, 40))}${c.last.body.length > 40 ? '…' : ''}` : 'Say hi!'}</small></span>
+              <small>${c.last ? `${c.last.sender_id === me ? 'You: ' : ''}${esc(previewText(c.last.body, byId))}` : 'Say hi!'}</small></span>
             ${c.unread ? `<span class="dm-unread">${c.unread}</span>` : c.last ? `<time>${ago(c.last.created_at)}</time>` : ''}
           </a>`).join('')
           : `<p class="empty">Nobody to message yet. You need people who follow you <em>and</em> who you follow back. <a href="friends.html?tab=everyone">Find people</a></p>`}
@@ -99,7 +102,7 @@ function threadHTML(p, list) {
   return `
     <div class="dm-thread-head"><a href="profile.html?u=${encodeURIComponent(p.username)}">${avatarHTML(p, 32)} <strong>${esc(p.display_name || p.username)}</strong></a></div>
     <ol class="dm-bubbles" id="dm-bubbles">${list.length ? list.map((m) => `
-      <li class="${m.sender_id === me ? 'mine' : 'theirs'}"><p>${esc(m.body)}</p><time datetime="${esc(m.created_at)}">${ago(m.created_at)}</time></li>`).join('')
+      <li class="${m.sender_id === me ? 'mine' : 'theirs'}">${messageHTML(m.body, byId)}<time datetime="${esc(m.created_at)}">${ago(m.created_at)}</time></li>`).join('')
       : `<li class="dm-start">This is the start of your conversation with ${esc(p.display_name || p.username)}. Don't make it weird.</li>`}</ol>
     <form class="dm-compose" id="dm-compose" autocomplete="off">
       <label class="visually-hidden" for="dm-text">Message ${esc(p.display_name || p.username)}</label>

@@ -1,18 +1,19 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127164324';
-import { supabase } from '../supabase.js?v=20261127164324';
-import { SITE_NAME } from '../config.js?v=20261127164324';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127164324';
-import { line } from '../jokes.js?v=20261127164324';
-import { celebrate } from '../fx.js?v=20261127164324';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127164324';
-import { mackeyNoteHTML } from '../mackey.js?v=20261127164324';
-import { starInput } from '../stars.js?v=20261127164324';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127164324';
-import { pcButtonHTML } from '../pc.js?v=20261127164324';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261127164324';
-import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261127164324';
-import { peoplesCupSVG } from '../art.js?v=20261127164324';
-import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127164324';
+import { initPage, logEpisode } from '../layout.js?v=20261127165656';
+import { supabase } from '../supabase.js?v=20261127165656';
+import { SITE_NAME } from '../config.js?v=20261127165656';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127165656';
+import { line } from '../jokes.js?v=20261127165656';
+import { celebrate } from '../fx.js?v=20261127165656';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127165656';
+import { mackeyNoteHTML } from '../mackey.js?v=20261127165656';
+import { starInput } from '../stars.js?v=20261127165656';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127165656';
+import { pcButtonHTML } from '../pc.js?v=20261127165656';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261127165656';
+import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261127165656';
+import { peoplesCupSVG } from '../art.js?v=20261127165656';
+import { openRecommend, recommendationsFor } from '../recommend.js?v=20261127165656';
+import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127165656';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -37,13 +38,13 @@ if (!ep) {
 } else {
   renderShell();
   $('#roll-again')?.addEventListener('click', async () => {
-    const r = await import('../random.js?v=20261127164324');
+    const r = await import('../random.js?v=20261127165656');
     if (params.get('rolled') === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
-  await Promise.all([refreshMine(), refreshCommunity(), renderNeighbours(), renderTags(), renderArc(), renderPeoplesChamp().catch(() => {})]);
+  await Promise.all([refreshMine(), refreshCommunity(), renderNeighbours(), renderTags(), renderArc(), renderPeoplesChamp().catch(() => {}), renderRecs().catch(() => {})]);
   root.removeAttribute('aria-busy');
-  window.addEventListener('parkboxd:logged', () => { refreshMine(); refreshCommunity(); renderArc(); });
+  window.addEventListener('parkboxd:logged', () => { refreshMine(); refreshCommunity(); renderArc(); renderRecs().catch(() => {}); });
 }
 
 function renderShell() {
@@ -70,6 +71,7 @@ function renderShell() {
           <h1 class="cut">${esc(ep.title)}</h1>
         </div>
         <div id="peoples-champ" hidden></div>
+        <div id="recs" hidden></div>
         ${ep.overview ? `<p class="overview">${esc(ep.overview)}</p>` : ''}
         ${mackeyNoteHTML(ep)}
         <div class="tag-chips" id="tags"></div>
@@ -106,6 +108,16 @@ async function renderPeoplesChamp() {
     <span><strong class="cut">The people's champion</strong>
       <span>Number one in Cartman's Cage Match across everyone's picks · ${champ.wins}–${champ.losses} from ${champ.judges} judge${champ.judges === 1 ? '' : 's'}</span></span></a>`;
   box.hidden = false;
+}
+
+// Friends who told you that you have to watch this one (until you rate it).
+async function renderRecs() {
+  const recs = await recommendationsFor(user.id, ep.id);
+  const box = $('#recs');
+  if (!box) return;
+  box.hidden = !recs.length;
+  box.innerHTML = recs.map((r) => `<div class="rec-note">${avatarHTML(r.from, 34)}
+    <p><strong>${esc(r.from?.display_name || r.from?.username || 'Someone')}</strong> says you have to watch this.${r.note ? `<q>${esc(r.note)}</q>` : ''}</p></div>`).join('');
 }
 
 // ---- Your actions ----
@@ -150,8 +162,10 @@ function renderPanel() {
           ? '<button type="button" class="link-button" id="btn-top4" style="color:var(--text-soft)">Add to your Top 4</button>'
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
       <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>
+      <button type="button" class="link-button" id="btn-rec" style="color:var(--text-soft)">📨 You have to watch this…</button>
     </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127164324')).openAddToList(ep));
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127165656')).openAddToList(ep));
+  $('#btn-rec').addEventListener('click', () => openRecommend(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 
   starInput($('#rate-stars'), { value: rating, size: 34, label: 'Your rating', onChange: setRating });

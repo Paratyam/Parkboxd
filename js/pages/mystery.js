@@ -1,13 +1,14 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127164324';
-import { initPage, logEpisode } from '../layout.js?v=20261127164324';
-import { supabase } from '../supabase.js?v=20261127164324';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127164324';
-import { followingIds } from '../social.js?v=20261127164324';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127164324';
-import { mysterySVG } from '../art.js?v=20261127164324';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127164324';
+import { SITE_LINK } from '../config.js?v=20261127165656';
+import { initPage, logEpisode } from '../layout.js?v=20261127165656';
+import { supabase } from '../supabase.js?v=20261127165656';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127165656';
+import { followingIds } from '../social.js?v=20261127165656';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127165656';
+import { mysterySVG } from '../art.js?v=20261127165656';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127165656';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127165656';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -170,6 +171,15 @@ async function showFriends() {
   }).join('')}</ol>` : `<p class="result-count">${following ? 'Nobody you follow has played this one yet. Send them your result!' : 'Follow some people to compare results.'}</p>`}`;
 }
 
+// This week's leaderboard among friends. Fetched once; your own games are always current.
+let leagueData = null;
+async function showLeague() {
+  leagueData ||= loadLeague(user.id, today);
+  const data = await leagueData;
+  const box = $('#m-league');
+  if (box) box.innerHTML = leagueHTML(data, { userId: user.id, today, mine: store.days });
+}
+
 // Time left until the next puzzle (midnight UTC).
 let ticking = null;
 function countdown() {
@@ -266,12 +276,14 @@ function render() {
           <h3>Guesses it took to win</h3>
           <ol class="mystery-dist">${s.dist.map((n, i) => `<li><span>${i + 1}</span><div class="md-track"><div style="width:${(n / Math.max(1, ...s.dist)) * 100}%"></div></div><b>${n}</b></li>`).join('')}</ol>
         </div>
+        <div class="mystery-stats mystery-league paper" id="m-league"><p class="result-count">Counting this week's points…</p></div>
         ${coldCasesHTML()}
       </aside>
     </div>`;
   root.removeAttribute('aria-busy');
   wire();
   countdown();
+  showLeague().catch(() => { const box = $('#m-league'); if (box) box.innerHTML = "<p class='result-count'>Couldn't load the leaderboard.</p>"; });
   if (game.done) {
     showFriends().catch(() => { const box = $('#m-friends'); if (box) box.innerHTML = '<p class="result-count">Couldn\'t load your friends\' results.</p>'; });
   }

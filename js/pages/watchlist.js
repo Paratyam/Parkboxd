@@ -1,9 +1,10 @@
-import { initPage } from '../layout.js?v=20261127164324';
-import { supabase } from '../supabase.js?v=20261127164324';
-import { SITE_NAME } from '../config.js?v=20261127164324';
-import { $, esc, params, profileTabsHTML } from '../ui.js?v=20261127164324';
-import { cardHTML, compareEpisodes } from '../episodes.js?v=20261127164324';
-import { line } from '../jokes.js?v=20261127164324';
+import { initPage } from '../layout.js?v=20261127165656';
+import { supabase } from '../supabase.js?v=20261127165656';
+import { SITE_NAME } from '../config.js?v=20261127165656';
+import { $, esc, params, profileTabsHTML } from '../ui.js?v=20261127165656';
+import { cardHTML, compareEpisodes } from '../episodes.js?v=20261127165656';
+import { line } from '../jokes.js?v=20261127165656';
+import { recommendationsFor } from '../recommend.js?v=20261127165656';
 
 const { profile: me } = await initPage({ title: 'Watchlist', auth: 'required' });
 const root = $('#watchlist');
@@ -28,6 +29,14 @@ async function render() {
     .select('added_at, episodes(id, kind, season, number, title, air_date, still_path)')
     .eq('user_id', person.id);
   const eps = (rows || []).map((r) => r.episodes).filter(Boolean).sort(compareEpisodes);
+  // On your own list: who told you that you have to watch it.
+  const from = new Map();
+  if (isMe) {
+    for (const r of await recommendationsFor(me.id)) {
+      const who = r.from?.display_name || r.from?.username || 'a friend';
+      from.set(r.episode_id, [...(from.get(r.episode_id) || []), who]);
+    }
+  }
 
   root.innerHTML = `
     <div>
@@ -38,6 +47,7 @@ async function render() {
       <div class="section-head"><h2>${eps.length} to watch</h2></div>
       ${eps.length
         ? `<div class="ep-grid">${eps.map((e) => `<div style="position:relative">${cardHTML(e, { meta: e.air_date ? e.air_date.slice(0, 4) : '' })}
+            ${from.has(e.id) ? `<p class="rec-from">📨 From ${esc(from.get(e.id).join(', '))}</p>` : ''}
             ${isMe ? `<button type="button" class="remove-x" data-remove="${e.id}" aria-label="Remove ${esc(e.title)} from watchlist">×</button>` : ''}</div>`).join('')}</div>`
         : `<p class="empty">${esc(line(isMe ? 'watchlistEmptyMine' : 'watchlistEmptyOther'))}</p>`}
     </section>`;

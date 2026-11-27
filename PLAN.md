@@ -212,3 +212,9 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Messages on phones: no auto-open (it marked chats read unseen), no keyboard pop-up, an opened chat scrolls into view; new-message check compares the newest message
 - Supabase returns at most 1,000 rows per request: use `fetchAll()` from `js/ui.js` for anything that can grow past that (ratings, logs, cage votes, tags)
 - List items are added after the highest position; passwords need 8+ characters everywhere
+
+## "You have to watch this", phone bar and more (27 Nov 2026)
+- **You have to watch this** (`js/recommend.js`): button on episode pages, send to mutual followers with a note. RPC `recommend_episode()` adds it to their watchlist (unless logged), messages it, and records it in `recommendations`; trigger `notify_rec_rated` sends a `rec_rated` notification when they rate it. Shown on the recipient's episode page and watchlist until rated. SQL applied to the live DB
+- **Phones** (`js/tabbar.js`): bottom bar (Home, Club, + Log, Cage, Mystery) under 900px when logged in, hidden while typing; profile tabs are one swipeable row under 640px
+- **Mystery leaderboard** (`js/mystery-league.js`): you + people you follow, Monday–Sunday UTC, 7 − guesses points, no cold cases; friends' games today hidden until yours is done; last week's top detective
+- **Messages** (`js/dm-cards.js`): episode links show as picture cards

@@ -1,9 +1,9 @@
 // notifications.html: who followed you, liked your reviews, or commented on them.
-import { initPage, refreshBell } from '../layout.js?v=20261127164324';
-import { supabase } from '../supabase.js?v=20261127164324';
-import { $, esc, avatarHTML } from '../ui.js?v=20261127164324';
-import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127164324';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127164324';
+import { initPage, refreshBell } from '../layout.js?v=20261127165656';
+import { supabase } from '../supabase.js?v=20261127165656';
+import { $, esc, avatarHTML, stars } from '../ui.js?v=20261127165656';
+import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127165656';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127165656';
 
 const { user } = await initPage({ title: 'Notifications', auth: 'required' });
 const root = $('#notifs');
@@ -25,7 +25,7 @@ const ago = (iso) => {
 
 async function render() {
   const { data: dbItems } = await supabase.from('notifications')
-    .select('id, type, read, created_at, log_id, actor:profiles!notifications_actor_id_fkey(username, display_name, avatar_color, avatar_icon), logs(id, episodes(id, title)), comments(body)')
+    .select('id, type, read, created_at, log_id, actor:profiles!notifications_actor_id_fkey(username, display_name, avatar_color, avatar_icon), logs(id, rating, episodes(id, title)), comments(body)')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(60);
@@ -43,6 +43,11 @@ async function render() {
     if (n.type === 'club') return `<a href="${n.href}">${esc(n.text)}</a>`;
     if (n.type === 'follow') return `${who} followed you. New friend, or new stalker?`;
     if (n.type === 'review_like') return `${who} liked your review of ${ep}. ♥ What a t-t-terrific audience!`;
+    if (n.type === 'rec_rated') {
+      const rated = n.logs?.rating != null ? ` ${stars(Number(n.logs.rating))}` : '';
+      const link = n.logs?.episodes ? `<a href="episode.html?id=${n.logs.episodes.id}">${esc(n.logs.episodes.title)}</a>` : 'an episode';
+      return `${who} rated ${link}${rated}. You told them they had to watch it.`;
+    }
     if (n.type === 'reply') {
       const body = n.comments?.body || '';
       return `${who} replied to your comment on ${ep}.<span class="quote">“${esc(body.length > 160 ? `${body.slice(0, 160)}…` : body)}”</span>`;

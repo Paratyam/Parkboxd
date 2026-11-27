@@ -651,7 +651,7 @@ alter table public.comments add column if not exists parent_id bigint references
 
 -- Notifications: 'reply' when someone answers your comment.
 alter table public.notifications drop constraint if exists notifications_type_check;
-alter table public.notifications add constraint notifications_type_check check (type in ('follow', 'review_like', 'comment', 'reply'));
+alter table public.notifications add constraint notifications_type_check check (type in ('follow', 'review_like', 'comment', 'reply', 'rec_rated'));
 create or replace function public.notify() returns trigger language plpgsql security definer set search_path = public as $$
 declare target uuid; parent_author uuid;
 begin
@@ -783,3 +783,75 @@ select episode_id, count(*)::int as judges, sum(wins)::int as wins, (sum(fights)
 from per_user group by episode_id;
 revoke all on public.cage_community from anon;
 grant select on public.cage_community to authenticated;
+
+-- "You have to watch this": send an episode to someone who follows you back. It lands on their
+-- watchlist and in their messages, and you're notified when they rate it.
+create table if not exists public.recommendations (
+  id          bigint generated always as identity primary key,
+  from_user   uuid not null references public.profiles (id) on delete cascade,
+  to_user     uuid not null references public.profiles (id) on delete cascade,
+  episode_id  bigint not null references public.episodes (id) on delete cascade,
+  note        text check (char_length(note) <= 500),
+  created_at  timestamptz not null default now(),
+  rated_at    timestamptz,
+  unique (from_user, to_user, episode_id),
+  check (from_user <> to_user)
+);
+create index if not exists recommendations_to_idx on public.recommendations (to_user, episode_id);
+alter table public.recommendations enable row level security;
+revoke all on public.recommendations from anon, authenticated;
+grant select, delete on public.recommendations to authenticated;
+drop policy if exists "read own" on public.recommendations;
+create policy "read own" on public.recommendations for select to authenticated using ((select auth.uid()) in (from_user, to_user));
+drop policy if exists "delete own" on public.recommendations;
+create policy "delete own" on public.recommendations for delete to authenticated using ((select auth.uid()) in (from_user, to_user));
+
+alter table public.notifications drop constraint if exists notifications_type_check;
+alter table public.notifications add constraint notifications_type_check check (type in ('follow', 'review_like', 'comment', 'reply', 'rec_rated'));
+
+-- Returns { "rating": their rating } if they've already rated it, else { "rating": null }.
+create or replace function public.recommend_episode(p_to uuid, p_episode bigint, p_note text default null)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare
+  me uuid := auth.uid();
+  why text := nullif(trim(p_note), '');
+  theirs numeric;
+begin
+  if me is null then raise exception 'Log in first.'; end if;
+  if not exists (select 1 from follows where follower_id = me and followee_id = p_to)
+     or not exists (select 1 from follows where follower_id = p_to and followee_id = me) then
+    raise exception 'You can only send episodes to people who follow you back.';
+  end if;
+  select rating into theirs from logs where user_id = p_to and episode_id = p_episode and rating is not null
+    order by created_at desc limit 1;
+  insert into recommendations (from_user, to_user, episode_id, note, rated_at)
+    values (me, p_to, p_episode, why, case when theirs is null then null else now() end)
+    on conflict (from_user, to_user, episode_id)
+    do update set note = excluded.note, created_at = now(), rated_at = excluded.rated_at;
+  if not exists (select 1 from logs where user_id = p_to and episode_id = p_episode) then
+    insert into watchlist (user_id, episode_id) values (p_to, p_episode) on conflict do nothing;
+  end if;
+  insert into messages (sender_id, recipient_id, body) values (me, p_to,
+    '📺 You have to watch this!' || coalesce(E'\n' || why, '') || E'\nhttps://parkboxd.pages.dev/episode.html?id=' || p_episode);
+  return jsonb_build_object('rating', theirs);
+end;
+$$;
+revoke execute on function public.recommend_episode(uuid, bigint, text) from public, anon;
+grant execute on function public.recommend_episode(uuid, bigint, text) to authenticated;
+
+create or replace function public.notify_rec_rated() returns trigger language plpgsql security definer set search_path = public as $$
+declare sender uuid;
+begin
+  if new.rating is null then return new; end if;
+  for sender in
+    update recommendations set rated_at = now()
+    where to_user = new.user_id and episode_id = new.episode_id and rated_at is null
+    returning from_user
+  loop
+    insert into notifications (user_id, actor_id, type, log_id) values (sender, new.user_id, 'rec_rated', new.id);
+  end loop;
+  return new;
+end;
+$$;
+drop trigger if exists notify_rec_rated on public.logs;
+create trigger notify_rec_rated after insert or update of rating on public.logs for each row execute function public.notify_rec_rated();
