@@ -54,8 +54,9 @@ function rng(seed) {
 /**
  * buttersReview(ep, tags, weekStartDate) -> { rating, text }
  *   tags: the episode's tag names; rating is always 4.5 or 5, because Butters.
+ *   note: his line about this episode (js/data/butters-notes.js); replaces the character tag line.
  */
-export function buttersReview(ep, tags = [], start = new Date()) {
+export function buttersReview(ep, tags = [], start = new Date(), note = '') {
   const week = Math.floor(start.getTime() / 604800000);
   const r = rng(week * 7919 + ep.id);
   const pick = (a) => a[Math.floor(r() * a.length)];
@@ -64,7 +65,7 @@ export function buttersReview(ep, tags = [], start = new Date()) {
   const rating = r() < 0.75 ? 5 : 4.5;
   const closers = rating === 5 ? CLOSERS : CLOSERS.filter((c) => !c.startsWith('Five stars'));
   const halfOff = rating === 4.5 ? 'I took off half a star because one part scared me a little.' : null;
-  const parts = [pick(OPENERS), pick(MIDDLES).replace('{t}', ep.title), tagLine, halfOff, pick(closers)].filter(Boolean);
+  const parts = [pick(OPENERS), pick(MIDDLES).replace('{t}', ep.title), note || tagLine, halfOff, pick(closers)].filter(Boolean);
   return { rating, text: parts.join(' ') };
 }
 

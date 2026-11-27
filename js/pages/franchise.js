@@ -1,8 +1,8 @@
 // franchise.html: The Coon's (completely self-serving) plan for the Coon & Friends franchise.
-import { initPage } from '../layout.js?v=20261127134202';
-import { $, esc, epCode } from '../ui.js?v=20261127134202';
-import { loadAllEpisodes, myLogMap, thumbHTML } from '../episodes.js?v=20261127134202';
-import { coonMember } from '../coon-member.js?v=20261127134202';
+import { initPage } from '../layout.js?v=20261127135216';
+import { $, esc, epCode } from '../ui.js?v=20261127135216';
+import { loadAllEpisodes, myLogMap, thumbHTML } from '../episodes.js?v=20261127135216';
+import { coonMember } from '../coon-member.js?v=20261127135216';
 
 const { user } = await initPage({ title: "The Coon's Franchise Plan", auth: 'required' });
 const root = $('#franchise');

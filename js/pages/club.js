@@ -1,17 +1,18 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
-import { initPage, logEpisode } from '../layout.js?v=20261127134202';
-import { supabase } from '../supabase.js?v=20261127134202';
-import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127134202';
-import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127134202';
-import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127134202';
-import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127134202';
-import { booksSVG } from '../art.js?v=20261127134202';
-import { BUTTERS } from '../butters-profile.js?v=20261127134202';
-import { threadHTML, wireThread } from '../comments.js?v=20261127134202';
+import { initPage, logEpisode } from '../layout.js?v=20261127135216';
+import { supabase } from '../supabase.js?v=20261127135216';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127135216';
+import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127135216';
+import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127135216';
+import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127135216';
+import { booksSVG } from '../art.js?v=20261127135216';
+import { BUTTERS_NOTES } from '../data/butters-notes.js?v=20261127135216';
+import { BUTTERS } from '../butters-profile.js?v=20261127135216';
+import { threadHTML, wireThread } from '../comments.js?v=20261127135216';
 
 const SHELF = 12; // past weeks on the shelf
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127134202';
-import { episodeAverages } from '../insights.js?v=20261127134202';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127135216';
+import { episodeAverages } from '../insights.js?v=20261127135216';
 
 const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');
@@ -61,7 +62,7 @@ async function render() {
     supabase.from('episode_tags').select('tags(name)').eq('episode_id', ep.id),
     supabase.from('butters_likes').select('user_id').eq('week_start', weekKey),
   ]);
-  const butters = buttersReview(ep, (tagRows || []).map((t) => t.tags?.name).filter(Boolean), start);
+  const butters = buttersReview(ep, (tagRows || []).map((t) => t.tags?.name).filter(Boolean), start, BUTTERS_NOTES[`${ep.season}.${ep.number}`]);
   const { data: bComments } = await supabase.from('butters_comments')
     .select('id, user_id, parent_id, body, created_at, profiles(username, display_name, avatar_color, avatar_icon)')
     .eq('week_start', weekKey).order('created_at');
