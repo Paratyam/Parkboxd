@@ -1408,6 +1408,8 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .guest-note { margin: 8px 0 0; padding: 8px 10px; border-left: 3px solid var(--green); background: rgba(63,185,80,.08); font-size: 13px; color: var(--text-soft); }
 .guest-thread { margin: 10px 0 0; border-left-color: var(--green); background: rgba(63,185,80,.05); }
 .guest-thread[hidden] { display: none; }
+.cartman-comment { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0 0 14px; padding: 8px 10px; border-left: 3px solid #e5534b; background: rgba(229,83,75,.08); font-size: 13px; }
+.cartman-comment p { margin: 4px 0 0; color: var(--text-soft); }
 .search-pop-season { border-bottom: 1px solid var(--line); border-radius: 6px 6px 0 0; margin-bottom: 4px; }
 .kyle-note { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; background-color: var(--surface-2); border-left: 4px solid #3fb950; }
 .kyle-note .section-head { margin-bottom: 4px; }

@@ -2,9 +2,10 @@
 // real member: nothing is in the database, so his ratings never touch site averages. He reviews
 // the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
 // also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127191633';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127191633';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127191633';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127192938';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127192938';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127192938';
+import { cartmanCommentHTML } from './cartman-profile.js?v=20261127192938';
 
 export const KYLE_USERNAME = 'kyle';
 export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#3fb950', avatar_icon: 'earflaps' };
@@ -158,6 +159,7 @@ export async function renderKyleProfile(root) {
               <div class="review-meta">${avatarHTML(KYLE, 22)}<span><strong>Kyle Broflovski</strong></span><span class="rating">${stars(x.r)}</span>${x.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}</div>
               <p>${esc(x.text)}</p>
               <p class="guest-note">📖 <strong>Kyle's note:</strong> ${esc(x.note)}</p>
+              ${cartmanCommentHTML(x.ep.title)}
             </div>
           </article>`).join('')}</div>
 
