@@ -2,9 +2,9 @@
 // real member: nothing is in the database, so his ratings never touch site averages. He reviews
 // the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
 // also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127072512';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127072512';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127072512';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127073448';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127073448';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127073448';
 
 export const KYLE_USERNAME = 'kyle';
 export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#f2711c', avatar_icon: 'earflaps' };
@@ -21,6 +21,8 @@ export const RATED = [
   ['Scott Tenorman Must Die', 5, true], ['Make Love, Not Warcraft', 4.5, true], ['Casa Bonita', 3, false],
   ['The Death Camp of Tolerance', 4, false], ['Super Best Friends', 4.5, true], ['Ginger Kids', 3.5, false],
   ['Toilet Paper', 3.5, false], ['Free Hat', 4.5, true], ['Here Comes the Neighborhood', 3.5, false],
+  ['The Hobbit', 4.5, true], ['Breast Cancer Show Ever', 5, true], ['Put It Down', 4, false], ['The Cissy', 4, false],
+  ['South Park: The End of Obesity', 4.5, true], ['South Park (Not Suitable for Children)', 4, false],
 ];
 
 const TOP4 = ['Margaritaville', 'Douche and Turd', 'Cartoon Wars (2)', 'Trapped in the Closet'];
@@ -57,6 +59,22 @@ export const REVIEWS = [
     'Takes on angry talk-show hosts, and parodies a big 2009 sci-fi movie along the way.'],
   ['Safe Space', "A whole town decides to filter out anything that hurts its feelings. There's a lesson here about criticism being good for you. Also there's a guy whose job is reading the mean comments. Four and a half stars.",
     'Big season-19 satire about social media, body shaming and only wanting to hear nice things.'],
+  ['Go God Go (1)', "Our teacher has to teach evolution and clearly does not want to, and Cartman can't wait three weeks for a game console, so he does something extremely stupid about it. Pure setup, but the classroom stuff is great. Four stars.",
+    'Takes on the evolution-in-schools debate, and sets up the future story in part 2.'],
+  ['Stunning and Brave', "A new principal shows up and I get in trouble for asking one honest question. The whole town decides agreeing loudly is more important than thinking. Four stars, and I still think it was a fair question.",
+    'Political correctness, and the start of a season-long story about it. PC Principal\'s first episode.'],
+  ['The Hobbit', "Wendy points out that the pictures everyone compares themselves to are fake, and somehow she's the one who gets in trouble. She was right. She's usually right. Four and a half stars.",
+    'About photo retouching and impossible beauty standards in ads and on social media.'],
+  ['Breast Cancer Show Ever', "Cartman makes fun of something serious and Wendy challenges him to a fight. I will not spoil it, but it's the most satisfying ending in the whole show. Five stars, no notes.",
+    'About standing up to a bully who mocks a serious cause, and the fight everyone at school bets on.'],
+  ['Put It Down', "Tweek is panicking about a nuclear war, and Craig has to figure out how to actually help instead of just saying it's fine. Meanwhile, everyone in town is texting while driving. Four stars. Put your phone down.",
+    'About distracted driving and how scary world news feels when you\'re a kid.'],
+  ['The Cissy', "Cartman pretends to be something he's not just to get his own bathroom, and real people pay for his lie. Also, a famous singer's secret identity gets revealed and I still can't believe it. Four stars.",
+    'Takes on the school bathroom debate, with Cartman abusing it for his own convenience.'],
+  ['South Park: The End of Obesity', "A new medicine works, but only if your insurance lets you have it, and Cartman's doesn't. So the real villain is the paperwork. Pretty smart for a special about weight. Four and a half stars.",
+    'About weight-loss drugs and how hard and expensive health insurance makes it to get medicine.'],
+  ['South Park (Not Suitable for Children)', "The grown-ups lose their minds over one website, and it's the kids who end up being the reasonable ones. Classic. Four stars, and yes, I know what the title says.",
+    'Takes on online subscription content, influencer culture and parents who panic about it.'],
 ];
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
