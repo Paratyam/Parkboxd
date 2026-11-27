@@ -191,3 +191,4 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Home Tegridy streak card links to your diary (it used to go to stats)
 - Secret modes: a "✕ Leave Mysterion mode" / "✕ Go back to being Butters" button (bottom left) whenever Chaos or Mysterion is on, since typing the word doesn't work on phones or with a text box focused. The logo hold no longer gets cancelled by the phone's own long-press handling or link dragging
 - Kyle's profile lists his reviews newest first; his reviews are 3-5 sentences
+- Badges show in a fixed order (computeBadges in js/insights.js): getting started and site games, rating habits, logging and writing, then the watch-them-all ones (Coon & Friends, Professor Chaos, Mysterion, Tegridy, movies) with Completionist last. Profile tabs: Lists sits right after Watchlist

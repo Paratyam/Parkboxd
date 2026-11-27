@@ -1,5 +1,5 @@
 // Rating maths: taste match, hot takes, "which character are you", badges.
-import { supabase } from './supabase.js?v=20261127111407';
+import { supabase } from './supabase.js?v=20261127111732';
 
 // ---- Loaders ----
 
@@ -178,24 +178,29 @@ export function computeBadges(ctx) {
     ? { id, emoji, name, desc, have: need || 1, need: need || 1, earned: true }
     : { id, emoji, name, desc, have: Math.min(have, need), need, earned: need > 0 && have >= need });
   return [
-    b('authoritah', '👮', 'Respect My Authoritah', 'Rate 100 episodes', ratings.size, 100),
-    b('tegridy', '🌱', 'Tegridy', 'Watch every Randy episode', randyHave, randyNeed),
-    b('kenny', '❓', 'Mysterion', 'Watch every Kenny episode', kennyHave, kennyNeed),
-    b('chaos', '😈', 'Professor Chaos', 'Watch every Butters episode', buttersHave, buttersNeed),
-    b('coon', '🦝', 'Coon & Friends', 'Watch the whole Coon saga', coonEps.filter((e) => seen.has(e.id)).length, coonEps.length),
-    b('completionist', '🏔️', 'Completionist', 'Finish every season', finishedSeasons, seasons.size),
-    b('movies', '🎬', 'Bigger, Longer & Logged', 'Watch every movie', movies.filter((m) => seen.has(m.id)).length, movies.length),
-    b('screwyou', '🚪', 'Screw You Guys', 'Give 10 episodes 1★ or less', [...ratings.values()].filter((r) => r <= 1).length, 10),
+    // Easiest to hardest, with related badges side by side; Completionist last.
+    // Getting started and the site's games
+    b('friends', '🤝', 'Super Best Friends', 'Follow 5 people', following, 5),
+    b('tierlord', '🗂️', 'Tier Lord', 'Rank every season in your Season tier list', tierPlaced, seasons.size),
+    b('bookworm', '📚', 'Bookworm', "Review 3 of Butters' Book Club picks during their week", clubReviewCount(logs, ctx.clubPicks || []), 3),
+    b('detective', '🕵️', 'Case Closed', "Solve 5 of Kenny's Mystery Episodes", ctx.mysteryWins || 0, 5),
+    b('ringmaster', '🥊', 'Ringmaster', "Judge 100 fights in Cartman's Cage Match", ctx.cageMatches || 0, 100),
+    // How you rate
     b('hottake', '🌶️', 'Hot Take Artist', 'Make 5 hot takes (2★+ off the average)', hot, 5),
+    b('screwyou', '🚪', 'Screw You Guys', 'Give 10 episodes 1★ or less', [...ratings.values()].filter((r) => r <= 1).length, 10),
+    b('authoritah', '👮', 'Respect My Authoritah', 'Rate 100 episodes', ratings.size, 100),
+    // How much you log and write
+    b('rewatch', '🔁', 'Same Old Story', 'Log 10 rewatches', logs.filter((l) => l.is_rewatch).length, 10),
     b('critic', '✍️', 'Critic', 'Write 25 reviews', logs.filter((l) => l.review && l.review.trim()).length, 25),
     b('mmkay', '📓', 'Mmkay', 'Log 50 times', logs.length, 50),
-    b('rewatch', '🔁', 'Same Old Story', 'Log 10 rewatches', logs.filter((l) => l.is_rewatch).length, 10),
     b('dayone', '📅', 'Day One', 'Watch an episode the day it aired', dayOne ? 1 : 0, 1),
-    b('friends', '🤝', 'Super Best Friends', 'Follow 5 people', following, 5),
-    b('bookworm', '📚', 'Bookworm', "Review 3 of Butters' Book Club picks during their week", clubReviewCount(logs, ctx.clubPicks || []), 3),
-    b('ringmaster', '🥊', 'Ringmaster', "Judge 100 fights in Cartman's Cage Match", ctx.cageMatches || 0, 100),
-    b('detective', '🕵️', 'Case Closed', "Solve 5 of Kenny's Mystery Episodes", ctx.mysteryWins || 0, 5),
-    b('tierlord', '🗂️', 'Tier Lord', 'Rank every season in your Season tier list', tierPlaced, seasons.size),
+    // Watch them all: character sagas, then the movies, then everything
+    b('coon', '🦝', 'Coon & Friends', 'Watch the whole Coon saga', coonEps.filter((e) => seen.has(e.id)).length, coonEps.length),
+    b('chaos', '😈', 'Professor Chaos', 'Watch every Butters episode', buttersHave, buttersNeed),
+    b('kenny', '❓', 'Mysterion', 'Watch every Kenny episode', kennyHave, kennyNeed),
+    b('tegridy', '🌱', 'Tegridy', 'Watch every Randy episode', randyHave, randyNeed),
+    b('movies', '🎬', 'Bigger, Longer & Logged', 'Watch every movie', movies.filter((m) => seen.has(m.id)).length, movies.length),
+    b('completionist', '🏔️', 'Completionist', 'Finish every season', finishedSeasons, seasons.size),
   ];
 }
 
