@@ -1,16 +1,17 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127115618';
-import { supabase } from '../supabase.js?v=20261127115618';
-import { SITE_NAME } from '../config.js?v=20261127115618';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127115618';
-import { line } from '../jokes.js?v=20261127115618';
-import { celebrate } from '../fx.js?v=20261127115618';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127115618';
-import { starInput } from '../stars.js?v=20261127115618';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127115618';
-import { pcButtonHTML } from '../pc.js?v=20261127115618';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261127115618';
-import { loadVotes, loadRatings, scoreVotes, ranking } from '../cage.js?v=20261127115618';
-import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127115618';
+import { initPage, logEpisode } from '../layout.js?v=20261127121311';
+import { supabase } from '../supabase.js?v=20261127121311';
+import { SITE_NAME } from '../config.js?v=20261127121311';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127121311';
+import { line } from '../jokes.js?v=20261127121311';
+import { celebrate } from '../fx.js?v=20261127121311';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127121311';
+import { mackeyNoteHTML } from '../mackey.js?v=20261127121311';
+import { starInput } from '../stars.js?v=20261127121311';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127121311';
+import { pcButtonHTML } from '../pc.js?v=20261127121311';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261127121311';
+import { loadVotes, loadRatings, scoreVotes, ranking } from '../cage.js?v=20261127121311';
+import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127121311';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -35,7 +36,7 @@ if (!ep) {
 } else {
   renderShell();
   $('#roll-again')?.addEventListener('click', async () => {
-    const r = await import('../random.js?v=20261127115618');
+    const r = await import('../random.js?v=20261127121311');
     if (params.get('rolled') === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
@@ -62,12 +63,13 @@ function renderShell() {
 
       <div class="ep-main">
         <div>
-          ${params.get('rolled') ? `<div class="toolbar" style="margin-bottom:10px"><span class="tag-chip">${params.get('rolled') === 'chaos' ? '😈 Professor Chaos chose this. Suffer.' : '🎲 The dice have spoken'}</span>
+          ${params.get('rolled') ? `<div class="toolbar" style="margin-bottom:10px"><span class="tag-chip">${{ chaos: '😈 Professor Chaos chose this. Suffer.', coon: "🦝 The Coon chose this. It's about him." }[params.get('rolled')] || '🎲 The dice have spoken'}</span>
             <button type="button" class="btn btn-ghost" id="roll-again" style="padding:6px 12px">Roll again</button></div>` : ''}
           <div class="crumbs">${crumbs}</div>
           <h1 class="cut">${esc(ep.title)}</h1>
         </div>
         ${ep.overview ? `<p class="overview">${esc(ep.overview)}</p>` : ''}
+        ${mackeyNoteHTML(ep)}
         <div class="tag-chips" id="tags"></div>
 
         <section>
@@ -136,7 +138,7 @@ function renderPanel() {
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
       <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>
     </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127115618')).openAddToList(ep));
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127121311')).openAddToList(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 
   starInput($('#rate-stars'), { value: rating, size: 34, label: 'Your rating', onChange: setRating });

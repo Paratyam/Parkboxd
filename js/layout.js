@@ -1,14 +1,17 @@
 // Shared header + footer, and the session/profile check every page runs first.
-import { supabase, isConfigured } from './supabase.js?v=20261127115618';
-import { SITE_NAME } from './config.js?v=20261127115618';
-import { esc, avatarHTML, currentPage, toast } from './ui.js?v=20261127115618';
-import { line } from './jokes.js?v=20261127115618';
-import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127115618';
-import { pineStripSVG, busStopSVG } from './art.js?v=20261127115618';
-import { VERSION } from './version.js?v=20261127115618';
+import { supabase, isConfigured } from './supabase.js?v=20261127121311';
+import { SITE_NAME } from './config.js?v=20261127121311';
+import { esc, avatarHTML, currentPage, toast } from './ui.js?v=20261127121311';
+import { line } from './jokes.js?v=20261127121311';
+import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127121311';
+import { pineStripSVG, busStopSVG } from './art.js?v=20261127121311';
+import { VERSION } from './version.js?v=20261127121311';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
+
+// Original paper-cutout tinfoil hat (Chaos mode).
+const TINFOIL_HAT = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 30"><path d="M3 28 L11 17 L10 14 L19 6 L22 8 L27 13 L29 18 L37 27 L30 25 L24 29 L17 25 L10 29 Z" fill="#c9d2d9" stroke="#141414" stroke-width="2" stroke-linejoin="round"/><path d="M19 6 L17 15 L22 19 L19 25 M11 17 L17 15 M29 18 L22 19" fill="none" stroke="#7c868e" stroke-width="1.5"/><path d="M20 6 L22 2" stroke="#141414" stroke-width="2"/><circle cx="23" cy="2.5" r="2" fill="#7dff4f" stroke="#141414"/></svg>')}`;
 
 // Set ready: true as each page gets built.
 const NAV = [
@@ -53,7 +56,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   }
 
   renderHeader(profile, session);
-  // Mysterion mode masks everyone's identity except yours.
+  // Mysterion mode masks everyone's identity except yours; Chaos mode gives you a tinfoil hat.
   if (profile?.username && /^[a-z0-9_]+$/.test(profile.username)) {
     const me = profile.username;
     const style = document.createElement('style');
@@ -61,7 +64,9 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
       html.mysterion .avatar[data-u="${me}"] { color: var(--c); }
       html.mysterion .avatar[data-u="${me}"]::after { content: none; }
       html.mysterion a[href="profile.html?u=${me}"]:not(.is-me) { filter: none; }
-      html.mysterion .people li:not(:has(a[href="profile.html?u=${me}"])) .who > span { filter: blur(5px); }`;
+      html.mysterion .people li:not(:has(a[href="profile.html?u=${me}"])) .who > span { filter: blur(5px); }
+      html.chaos .avatar[data-u="${me}"] { position: relative; }
+      html.chaos .avatar[data-u="${me}"]::before { content: ''; position: absolute; left: 50%; bottom: 72%; width: calc(var(--size) * .85); height: calc(var(--size) * .62); transform: translateX(-50%) rotate(-9deg); background: url("${TINFOIL_HAT}") center bottom / contain no-repeat; pointer-events: none; z-index: 2; }`;
     document.head.append(style);
   }
   initModes(() => { const logo = document.querySelector('.logo'); if (logo) logo.innerHTML = logoHTML(); syncDice(); });
@@ -71,7 +76,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   renderFooter(session);
   decorateBigMessages();
   // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
-  if (session) import('./flair.js?v=20261127115618').then((m) => m.startFlair()).catch(() => {});
+  if (session) import('./flair.js?v=20261127121311').then((m) => m.startFlair()).catch(() => {});
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
@@ -146,7 +151,7 @@ function renderHeader(profile, session) {
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
   el.querySelector('#header-random')?.addEventListener('click', async () => {
-    const r = await import('./random.js?v=20261127115618');
+    const r = await import('./random.js?v=20261127121311');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   });
   syncDice();
@@ -159,7 +164,7 @@ function renderHeader(profile, session) {
  * event on window so the current page can refresh itself.
  */
 export async function logEpisode(opts = {}) {
-  const { openLogModal } = await import('./log-modal.js?v=20261127115618');
+  const { openLogModal } = await import('./log-modal.js?v=20261127121311');
   const changed = await openLogModal(opts);
   if (changed) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
   return changed;
@@ -201,7 +206,7 @@ export async function refreshBell() {
     supabase.auth.getUser(),
   ]);
   // Plus unread Book Club notes (new book, vote result), worked out in the browser.
-  const club = await import('./club-notes.js?v=20261127115618').then((m) => m.clubNotes(user?.id)).catch(() => []);
+  const club = await import('./club-notes.js?v=20261127121311').then((m) => m.clubNotes(user?.id)).catch(() => []);
   const count = (dbCount || 0) + club.filter((n) => !n.read).length;
   const badge = bell.querySelector('.bell-count');
   badge.hidden = !count;
@@ -290,8 +295,8 @@ function wireSearch(form) {
     const [{ data: people }, { loadAllEpisodes, seasonCode, matchesCode }, { searchEpisodes, snippetHTML }] = await Promise.all([
       safe ? supabase.from('profiles').select('username, display_name, avatar_color, avatar_icon')
         .not('username', 'is', null).or(`username.ilike.%${safe}%,display_name.ilike.%${safe}%`).limit(5) : Promise.resolve({ data: [] }),
-      import('./episodes.js?v=20261127115618'),
-      import('./search.js?v=20261127115618'),
+      import('./episodes.js?v=20261127121311'),
+      import('./search.js?v=20261127121311'),
     ]);
     // "S15" lists the whole season (plus a link to its page), "S15E3" that one episode.
     // Anything else: title matches, then "what happened" matches from the plot summaries.

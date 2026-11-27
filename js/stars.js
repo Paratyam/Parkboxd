@@ -9,7 +9,7 @@ export function starInput(el, { value = null, size = 32, label = 'Rating', onCha
   el.setAttribute('aria-label', label);
   el.setAttribute('aria-valuemin', '0');
   el.setAttribute('aria-valuemax', '5');
-  el.innerHTML = '★★★★★<span class="fill" aria-hidden="true">★★★★★</span>';
+  el.innerHTML = '<span class="base">★★★★★</span><span class="fill" aria-hidden="true">★★★★★</span>';
   const fill = el.querySelector('.fill');
 
   function paint(v, preview = false) {

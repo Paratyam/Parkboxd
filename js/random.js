@@ -1,7 +1,8 @@
 // Random episode picker: unwatched, ones you rated (with a minimum), or anything.
-import { supabase } from './supabase.js?v=20261127115618';
-import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261127115618';
-import { line } from './jokes.js?v=20261127115618';
+import { supabase } from './supabase.js?v=20261127121311';
+import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261127121311';
+import { COON_SAGA, norm } from './coon-member.js?v=20261127121311';
+import { line } from './jokes.js?v=20261127121311';
 
 const KEY = 'parkboxd-random';
 const DEFAULTS = { pool: 'unwatched', min: 0, kinds: ['episode'], season: '' };
@@ -30,8 +31,21 @@ export async function roll(settings) {
   return { ep: pool[Math.floor(Math.random() * pool.length)], count: pool.length };
 }
 
+// During a Coon takeover every roll lands on the Coon saga (not the episode you're already on).
+const coonRules = () => document.documentElement.classList.contains('coon-takeover-on');
+
+async function rollCoon() {
+  const here = new URLSearchParams(location.search).get('id');
+  const saga = COON_SAGA.map(norm);
+  const pool = (await loadAllEpisodes()).filter((e) => e.kind === 'episode' && saga.includes(norm(e.title)) && String(e.id) !== here);
+  if (!pool.length) return false;
+  location.href = `episode.html?id=${pool[Math.floor(Math.random() * pool.length)].id}&rolled=coon`;
+  return true;
+}
+
 // Roll and go to the episode, keeping the settings in the URL for "Roll again".
 export async function rollAndGo(settings, onMessage) {
+  if (coonRules() && await rollCoon()) return;
   const result = await roll(settings);
   if (!result.ep) return onMessage?.(result.message);
   localStorage.setItem(KEY, JSON.stringify(settings));
@@ -39,6 +53,7 @@ export async function rollAndGo(settings, onMessage) {
 }
 
 export async function openRandomPicker() {
+  if (coonRules() && await rollCoon()) return;
   const s = savedSettings();
   const all = await loadAllEpisodes();
   const seasons = [...new Set(all.filter((e) => e.kind === 'episode').map((e) => e.season))].sort((a, b) => a - b);
@@ -109,6 +124,7 @@ export async function openRandomPicker() {
 
 // Professor Chaos mode: the dice pick one of the episodes you rated lowest.
 export async function rollWorst(onMessage) {
+  if (coonRules() && await rollCoon()) return;
   const { data: { user } } = await supabase.auth.getUser();
   const [all, mine] = await Promise.all([loadAllEpisodes(), myLogMap(user.id)]);
   const rated = all.filter((e) => mine.get(e.id)?.rating != null);

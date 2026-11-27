@@ -1,6 +1,6 @@
 // Little effects: rating reactions, hamburger rain, Professor Chaos mode.
-import { toast } from './ui.js?v=20261127115618';
-import { ratingReaction } from './jokes.js?v=20261127115618';
+import { toast } from './ui.js?v=20261127121311';
+import { ratingReaction } from './jokes.js?v=20261127121311';
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -180,6 +180,38 @@ export function coonTakeoverDue() {
   return due;
 }
 
+// While the takeover is up every rating star on screen becomes a raccoon. Looks only: saved
+// ratings are untouched, and people's own writing is left alone.
+const OWN_WORDS = 'textarea, script, style, [contenteditable="true"], .review-body p, .comments p, .dm-bubbles p, .pc-text';
+const swapped = new Map(); // text node -> its original text
+let starWatcher;
+
+function raccoonStars(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let n = root.nodeType === Node.TEXT_NODE ? root : walker.nextNode(); n; n = walker.nextNode()) {
+    if (!n.nodeValue.includes('★') || n.parentElement?.closest(OWN_WORDS)) continue;
+    swapped.set(n, n.nodeValue);
+    n.nodeValue = n.nodeValue.replaceAll('★', '🦝');
+  }
+}
+
+function startRaccoonStars() {
+  raccoonStars(document.body);
+  starWatcher = new MutationObserver((changes) => {
+    for (const c of changes) {
+      if (c.type === 'characterData') raccoonStars(c.target);
+      else c.addedNodes.forEach(raccoonStars);
+    }
+  });
+  starWatcher.observe(document.body, { childList: true, subtree: true, characterData: true });
+}
+
+function stopRaccoonStars() {
+  starWatcher?.disconnect();
+  for (const [node, text] of swapped) node.nodeValue = text;
+  swapped.clear();
+}
+
 /** Show the banner. setLogo(text) swaps the logo text while it's up (null puts it back). */
 export function showCoonTakeover(setLogo) {
   const main = document.querySelector('main');
@@ -199,6 +231,7 @@ export function showCoonTakeover(setLogo) {
   main.prepend(banner);
   setLogo?.('THE COON');
   document.documentElement.classList.add('coon-takeover-on');
+  startRaccoonStars();
 
   // The Coon renames "Friends" after himself…
   const friendsLink = [...document.querySelectorAll('.main-nav a')].find((a) => a.textContent.trim() === 'Friends');
@@ -208,6 +241,7 @@ export function showCoonTakeover(setLogo) {
     banner.remove();
     setLogo?.(null);
     document.documentElement.classList.remove('coon-takeover-on');
+    stopRaccoonStars();
     sessionStorage.removeItem(COON_KEY);
     if (friendsLink) friendsLink.textContent = 'Friends';
     document.querySelectorAll('.coon-fake').forEach((el) => el.remove());
@@ -216,7 +250,7 @@ export function showCoonTakeover(setLogo) {
   });
 
   // Members of Coon & Friends (badge holders) get VIP treatment.
-  import('./coon-member.js?v=20261127115618').then(({ coonMember }) => coonMember()).then((member) => {
+  import('./coon-member.js?v=20261127121311').then(({ coonMember }) => coonMember()).then((member) => {
     if (!member || !banner.isConnected) return;
     banner.querySelector('.coon-title').textContent = `Welcome back, ${member.name}. Member of Coon & Friends.`;
     banner.querySelector('.coon-sub').innerHTML = 'You may stay. Everyone else: respect his authoritah. <a href="franchise.html" style="color:#fff;text-decoration:underline">Your spin-off is in the franchise plan</a>';
@@ -227,7 +261,7 @@ export function showCoonTakeover(setLogo) {
 // The Coon goes in at #1; a Coon & Friends member gets #2 as his Official Sidekick.
 export async function rigRankings(root) {
   if (!document.documentElement.classList.contains('coon-takeover-on') || !root) return;
-  const member = await import('./coon-member.js?v=20261127115618').then(({ coonMember }) => coonMember()).catch(() => null);
+  const member = await import('./coon-member.js?v=20261127121311').then(({ coonMember }) => coonMember()).catch(() => null);
   if (!document.documentElement.classList.contains('coon-takeover-on')) return; // dismissed meanwhile
 
   let list = root.querySelector('.rank-table');

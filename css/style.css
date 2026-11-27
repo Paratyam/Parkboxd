@@ -1404,3 +1404,13 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .mode-exit { position: fixed; left: 14px; bottom: 14px; z-index: 60; padding: 8px 14px; border: 2px solid #000; border-radius: 999px; box-shadow: 3px 3px 0 #000; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--surface-2); color: var(--white); }
 html.mysterion .mode-exit { background: #2b1f3d; color: #79e06a; box-shadow: 3px 3px 0 #000, inset 0 0 0 2px #79e06a; }
 html.chaos .mode-exit { background: #7dff4f; color: #10180f; }
+
+/* Coon takeover: raccoon stars. Emoji ignore text colour, so the unrated ones are faded instead. */
+html.coon-takeover-on .star-input .base { filter: grayscale(1) opacity(.3); }
+html.coon-takeover-on .histogram .end { font-size: 7px; }
+
+/* Mr. Mackey's counselor note on an episode page */
+.mackey-note { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; background-color: var(--yellow); color: var(--bg); border-radius: 4px; font-size: 13px; line-height: 1.5; }
+.mackey-note > span { font-size: 22px; line-height: 1; }
+.mackey-note p { margin: 0; color: inherit; }
+.mackey-note strong { display: block; }
