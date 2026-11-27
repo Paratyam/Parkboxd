@@ -1,8 +1,8 @@
 // notifications.html: who followed you, liked your reviews, or commented on them.
-import { initPage, refreshBell } from '../layout.js?v=20261127132311';
-import { supabase } from '../supabase.js?v=20261127132311';
-import { $, esc, avatarHTML } from '../ui.js?v=20261127132311';
-import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127132311';
+import { initPage, refreshBell } from '../layout.js?v=20261127132459';
+import { supabase } from '../supabase.js?v=20261127132459';
+import { $, esc, avatarHTML } from '../ui.js?v=20261127132459';
+import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127132459';
 
 const { user } = await initPage({ title: 'Notifications', auth: 'required' });
 const root = $('#notifs');
