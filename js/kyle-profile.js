@@ -2,9 +2,9 @@
 // real member: nothing is in the database, so his ratings never touch site averages. He reviews
 // the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
 // also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127075232';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127075232';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127075232';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127075333';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127075333';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127075333';
 
 export const KYLE_USERNAME = 'kyle';
 export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#f2711c', avatar_icon: 'earflaps' };
@@ -111,7 +111,7 @@ export async function renderKyleProfile(root) {
       <div class="who">
         <h1 class="cut">Kyle Broflovski</h1>
         <span class="handle">@kyle · joined ${esc(formatDate('2026-11-27', { month: 'long', year: 'numeric' }))} · 📖 Reviews the smart ones</span>
-        <p class="bio">I review the episodes that are actually about something, and I add a note on what each one is making fun of. Somebody on this site has to read the subtext. Also I've watched exactly 200 episodes, which is more than anyone here, not that I'm counting. (I'm counting.) Don't tell Cartman I'm on here.</p>
+        <p class="bio">I review the episodes that are actually about something, and I add a note on what each one is making fun of. Somebody on this site has to read the subtext. Don't tell Cartman I'm on here.</p>
         <div style="margin-top:6px"><span class="team-flair paper" style="background-color:#3fb950;color:#1a1a1a">Team Kyle</span></div>
       </div>
       <div class="stats">
