@@ -578,3 +578,13 @@ create policy "delete own" on public.club_votes for delete to authenticated usin
 -- Profile pictures: an optional paper-cutout icon (see js/art.js AVATAR_ICONS); null = first letter.
 alter table public.profiles add column if not exists avatar_icon text check (avatar_icon is null or avatar_icon ~ '^[a-z]{2,20}$');
 grant update (avatar_icon) on public.profiles to authenticated;
+
+-- Delete your own account (login and, by cascade, everything you made). Called from Settings.
+create or replace function public.delete_my_account() returns void
+language plpgsql security definer set search_path = public, auth as $$
+begin
+  if auth.uid() is null then raise exception 'Not signed in'; end if;
+  delete from auth.users where id = auth.uid();
+end $$;
+revoke all on function public.delete_my_account() from public, anon;
+grant execute on function public.delete_my_account() to authenticated;

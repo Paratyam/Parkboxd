@@ -1,10 +1,10 @@
 // reviews.html?u=name&sort=new|high|low|liked: every review a user has written.
-import { initPage } from '../layout.js';
-import { supabase } from '../supabase.js';
-import { SITE_NAME } from '../config.js';
-import { $, esc, params, profileTabsHTML } from '../ui.js';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
-import { episodeAverages } from '../insights.js';
+import { initPage } from '../layout.js?v=20261127025038';
+import { supabase } from '../supabase.js?v=20261127025038';
+import { SITE_NAME } from '../config.js?v=20261127025038';
+import { $, esc, params, profileTabsHTML } from '../ui.js?v=20261127025038';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127025038';
+import { episodeAverages } from '../insights.js?v=20261127025038';
 
 const { profile: me } = await initPage({ title: 'Reviews', auth: 'required' });
 const root = $('#reviews');

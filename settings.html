@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
-<script type="module" src="js/pages/settings.js"></script>
+<link rel="stylesheet" href="css/style.css?v=20261127025038">
+<script type="module" src="js/pages/settings.js?v=20261127025038"></script>
 </head>
 <body>
 <header id="site-header" class="site-header"></header>
@@ -68,6 +68,45 @@
       <button type="submit" form="profile-form" class="btn btn-green" id="save">Save profile</button>
       <a class="btn btn-ghost" id="cancel" href="profile.html">Cancel</a>
     </div>
+
+    <section class="account" aria-labelledby="account-h">
+      <div class="section-head"><h2 id="account-h">Account</h2></div>
+      <div class="account-grid">
+        <form class="form import-card paper" id="email-form" novalidate>
+          <h3 class="cut">Email</h3>
+          <p class="hint" style="margin:0">Signed in as <strong id="current-email">…</strong></p>
+          <div class="field">
+            <label for="new-email">New email</label>
+            <input type="email" id="new-email" autocomplete="email" required>
+          </div>
+          <p class="notice" id="email-msg" hidden></p>
+          <button type="submit" class="btn btn-green">Change email</button>
+        </form>
+        <form class="form import-card paper" id="password-form" novalidate>
+          <h3 class="cut">Password</h3>
+          <div class="field">
+            <label for="new-password">New password</label>
+            <input type="password" id="new-password" autocomplete="new-password" minlength="6" required>
+          </div>
+          <div class="field">
+            <label for="new-password2">Type it again</label>
+            <input type="password" id="new-password2" autocomplete="new-password" minlength="6" required>
+          </div>
+          <p class="notice" id="password-msg" hidden></p>
+          <button type="submit" class="btn btn-green">Change password</button>
+        </form>
+        <form class="form import-card paper danger-zone" id="delete-form" novalidate>
+          <h3 class="cut">Delete account</h3>
+          <p class="hint" style="margin:0">Deletes your profile, diary, ratings, reviews, lists, likes and comments for good. It goes away like Kenny, except it won't come back next week.</p>
+          <div class="field">
+            <label for="delete-confirm">Type your username (<strong id="delete-uname"></strong>) to confirm</label>
+            <input type="text" id="delete-confirm" autocomplete="off">
+          </div>
+          <p class="notice" id="delete-msg" hidden></p>
+          <button type="submit" class="btn btn-danger">Delete my account forever</button>
+        </form>
+      </div>
+    </section>
   </div>
 </main>
 

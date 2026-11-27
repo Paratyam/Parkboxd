@@ -1,15 +1,15 @@
-import { initPage, logEpisode } from '../layout.js';
-import { supabase } from '../supabase.js';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js';
-import { line } from '../jokes.js';
-import { episodeAverages } from '../insights.js';
-import { loadPicks } from '../club.js';
-import { isChaos } from '../fx.js';
-import { streakInfo, streakHTML } from '../streak.js';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js';
-import { gloveSVG, booksSVG } from '../art.js';
+import { initPage, logEpisode } from '../layout.js?v=20261127025038';
+import { supabase } from '../supabase.js?v=20261127025038';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127025038';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127025038';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127025038';
+import { line } from '../jokes.js?v=20261127025038';
+import { episodeAverages } from '../insights.js?v=20261127025038';
+import { loadPicks } from '../club.js?v=20261127025038';
+import { isChaos } from '../fx.js?v=20261127025038';
+import { streakInfo, streakHTML } from '../streak.js?v=20261127025038';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127025038';
+import { gloveSVG, booksSVG } from '../art.js?v=20261127025038';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -27,7 +27,7 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">🎲 Random episode</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js');
+    const r = await import('../random.js?v=20261127025038');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -195,7 +195,7 @@ async function renderHome() {
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js');
+  const random = () => import('../random.js?v=20261127025038');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>

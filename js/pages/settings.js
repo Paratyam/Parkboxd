@@ -1,9 +1,9 @@
-import { initPage } from '../layout.js';
-import { supabase } from '../supabase.js';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js';
-import { loadAllEpisodes, thumbHTML } from '../episodes.js';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js';
+import { initPage } from '../layout.js?v=20261127025038';
+import { supabase } from '../supabase.js?v=20261127025038';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127025038';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127025038';
+import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127025038';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127025038';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -129,4 +129,49 @@ $('#profile-form').addEventListener('submit', async (e) => {
   setBusy(btn, false);
   if (error) return notify($('#msg'), error.message, 'error');
   location.href = `profile.html?u=${encodeURIComponent(profile.username)}`;
+});
+
+// ---- Account: email, password, delete ----
+const { data: { user: authUser } } = await supabase.auth.getUser();
+$('#current-email').textContent = authUser?.email || 'unknown';
+$('#delete-uname').textContent = profile.username;
+
+$('#email-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('#new-email').value.trim();
+  const btn = e.submitter || $('#email-form button');
+  if (!/^\S+@\S+\.\S+$/.test(email)) return notify($('#email-msg'), "That doesn't look like an email address.", 'error');
+  setBusy(btn, true, 'Sending…');
+  const { error } = await supabase.auth.updateUser({ email }, { emailRedirectTo: new URL('settings.html', location.href).href });
+  setBusy(btn, false);
+  if (error) return notify($('#email-msg'), error.message, 'error');
+  notify($('#email-msg'), `Check ${email} (and your old inbox) for a confirmation link. The change happens once you click it.`, 'info');
+});
+
+$('#password-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pw = $('#new-password').value;
+  const btn = e.submitter || $('#password-form button');
+  if (pw.length < 6) return notify($('#password-msg'), 'At least 6 characters, please. Even Cartman knows that.', 'error');
+  if (pw !== $('#new-password2').value) return notify($('#password-msg'), "The two passwords don't match.", 'error');
+  setBusy(btn, true, 'Saving…');
+  const { error } = await supabase.auth.updateUser({ password: pw });
+  setBusy(btn, false);
+  if (error) return notify($('#password-msg'), error.message, 'error');
+  $('#password-form').reset();
+  notify($('#password-msg'), 'Password changed. Respect your new authoritah.', 'info');
+});
+
+$('#delete-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.submitter || $('#delete-form button');
+  if ($('#delete-confirm').value.trim().toLowerCase() !== profile.username) {
+    return notify($('#delete-msg'), 'Type your username exactly to confirm.', 'error');
+  }
+  if (!confirm('Really delete your account and everything in it? This cannot be undone.')) return;
+  setBusy(btn, true, 'Deleting…');
+  const { error } = await supabase.rpc('delete_my_account');
+  if (error) { setBusy(btn, false); return notify($('#delete-msg'), error.message, 'error'); }
+  await supabase.auth.signOut();
+  location.href = 'index.html';
 });

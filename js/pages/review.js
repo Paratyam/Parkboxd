@@ -1,11 +1,11 @@
 // review.html?id=LOG_ID: one review with its likes and comments.
-import { initPage } from '../layout.js';
-import { supabase } from '../supabase.js';
-import { SITE_NAME } from '../config.js';
-import { $, esc, params, avatarHTML, notify } from '../ui.js';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
-import { line } from '../jokes.js';
-import { episodeAverages } from '../insights.js';
+import { initPage } from '../layout.js?v=20261127025038';
+import { supabase } from '../supabase.js?v=20261127025038';
+import { SITE_NAME } from '../config.js?v=20261127025038';
+import { $, esc, params, avatarHTML, notify, toast } from '../ui.js?v=20261127025038';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127025038';
+import { line } from '../jokes.js?v=20261127025038';
+import { episodeAverages } from '../insights.js?v=20261127025038';
 
 const { user } = await initPage({ title: 'Review', auth: 'required' });
 const root = $('#review');
@@ -45,9 +45,10 @@ async function render() {
             <div class="meta">
               <a href="profile.html?u=${encodeURIComponent(c.profiles?.username || '')}"><strong>${esc(c.profiles?.display_name || c.profiles?.username)}</strong></a>
               <time datetime="${esc(c.created_at)}">${esc(new Date(c.created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }))}</time>
+              ${c.user_id === user.id ? `<button type="button" class="link-button" data-edit="${c.id}" style="font-size:12px">Edit</button>` : ''}
               ${c.user_id === user.id || reviewOwner ? `<button type="button" class="link-button" data-delete="${c.id}" style="font-size:12px">Delete</button>` : ''}
             </div>
-            <p>${esc(c.body)}</p>
+            <p data-body="${c.id}">${esc(c.body)}</p>
           </div>
         </li>`).join('')}</ol>` : `<p class="empty">${esc(line('commentsEmpty'))}</p>`}
     </section>
@@ -68,6 +69,29 @@ async function render() {
     const { error } = await supabase.from('comments').delete().eq('id', Number(b.dataset.delete));
     if (error) return alert(error.message);
     render();
+  }));
+  // Edit your own comment in place: the text turns into a box with Save / Cancel.
+  root.querySelectorAll('[data-edit]').forEach((b) => b.addEventListener('click', () => {
+    const cid = Number(b.dataset.edit);
+    const p = root.querySelector(`[data-body="${cid}"]`);
+    const old = (comments || []).find((c) => c.id === cid)?.body || '';
+    p.outerHTML = `<div class="comment-edit" data-editing="${cid}">
+      <textarea maxlength="2000" rows="3" aria-label="Edit comment">${esc(old)}</textarea>
+      <div class="toolbar"><button type="button" class="btn btn-green" data-save>Save</button><button type="button" class="btn btn-ghost" data-cancel>Cancel</button></div>
+    </div>`;
+    const box = root.querySelector(`[data-editing="${cid}"]`);
+    const ta = box.querySelector('textarea');
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+    box.querySelector('[data-cancel]').onclick = () => render();
+    box.querySelector('[data-save]').onclick = async (ev) => {
+      const body = ta.value.trim();
+      if (!body) return toast('A comment needs some words. Or delete it instead.');
+      ev.currentTarget.disabled = true;
+      const { error } = await supabase.from('comments').update({ body }).eq('id', cid);
+      if (error) { ev.currentTarget.disabled = false; return toast(error.message); }
+      render();
+    };
   }));
   $('#comment-form').addEventListener('submit', async (e) => {
     e.preventDefault();

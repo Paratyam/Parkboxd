@@ -160,3 +160,13 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Profile: 📚 Library card (last 10 picks, a red READ stamp for each one read during its week, "Read N of the last 10"). New badges: 📚 Bookworm (review 3 picks during their week) and 🥊 Ringmaster (judge 100 Cage Match fights)
 - Original paper-cutout art (`js/art.js`, no show characters): falling snow on the hero (the town and trees were removed by request); a snowy pine strip above every footer; boxing glove on the Cage Match ad, championship belt on champion cards; stack of books with an apple on the Book Club ad and header; bus stop sign on "nothing here" pages. Header gets a logo-colour paper stripe, episode cards tilt on hover
 - Profile pictures (`js/avatars.js`, `profiles.avatar_icon`): 12 original paper-cutout icons (beanie, mittens, snowman, pine, mountain, school bus, visitors UFO, burger, gold star, boxing glove, microphone, books) on the avatar colour, picked in Settings; null keeps the first letter. Every avatar on the site shows it (all profile embeds load avatar_icon)
+
+### Release checklist
+- **Before every push run `powershell -File tools/bump-version.ps1`.** It stamps `?v=<version>` on every JS import, page script and the stylesheet, and writes `js/version.js` + `version.json`. On load, `layout.js` compares them and reloads once with `?v=` if the code is stale, so nobody runs old code after an update (GitHub Pages caches files for 10 minutes)
+
+### Basics added
+- Phone header: under 900px the nav folds into a ☰ panel (search, links, 🎲 random, admin); the top row keeps logo, bell, + Log, avatar
+- Settings → Account: change email (confirmation link), change password, delete account (`delete_my_account()` RPC; type your username to confirm)
+- Header search shows a live dropdown with matching people and episodes; Enter still opens the episode search
+- Book Club notifications (`js/club-notes.js`, worked out in the browser): a note when a new book starts and whether your vote won; count in the bell, read/cleared state in localStorage
+- Comments: edit your own (inline), delete your own or any on your review

@@ -1,10 +1,11 @@
 // Shared header + footer, and the session/profile check every page runs first.
-import { supabase, isConfigured } from './supabase.js';
-import { SITE_NAME } from './config.js';
-import { esc, avatarHTML, currentPage, toast } from './ui.js';
-import { line } from './jokes.js';
-import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js';
-import { pineStripSVG, busStopSVG } from './art.js';
+import { supabase, isConfigured } from './supabase.js?v=20261127025038';
+import { SITE_NAME } from './config.js?v=20261127025038';
+import { esc, avatarHTML, currentPage, toast } from './ui.js?v=20261127025038';
+import { line } from './jokes.js?v=20261127025038';
+import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127025038';
+import { pineStripSVG, busStopSVG } from './art.js?v=20261127025038';
+import { VERSION } from './version.js?v=20261127025038';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -29,6 +30,7 @@ const never = () => new Promise(() => {});
  * Resolves to { session, user, profile }.
  */
 export async function initPage({ title = '', auth = 'optional', needsUsername = true } = {}) {
+  checkVersion(); // runs in the background; reloads once if the server has a newer version
   document.title = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
   // Swap plain "Loading…" placeholders for something in character.
   document.querySelectorAll('[aria-busy="true"] .empty').forEach((el) => { el.textContent = line('loading'); });
@@ -68,7 +70,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   renderFooter(session);
   decorateBigMessages();
   // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
-  if (session) import('./flair.js').then((m) => m.startFlair()).catch(() => {});
+  if (session) import('./flair.js?v=20261127025038').then((m) => m.startFlair()).catch(() => {});
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
@@ -99,12 +101,12 @@ function renderHeader(profile, session) {
       <form class="header-search" role="search" action="episodes.html">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
         <label class="visually-hidden" for="header-q">Search episodes</label>
-        <input type="search" id="header-q" name="q" placeholder="Search episodes">
+        <input type="search" id="header-q" name="q" placeholder="Search episodes, people" autocomplete="off">
       </form>
       <a class="icon-btn bell" id="header-bell" href="notifications.html" aria-label="Notifications" title="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="bell-count" hidden></span></a>
       <button type="button" class="icon-btn" id="header-random" aria-label="Random episode" title="Random episode">🎲</button>
       <button type="button" class="btn btn-green" id="header-log">+ Log</button>
-      ${profile.is_admin ? `<a class="header-link" href="admin.html">Admin</a>` : ''}
+      ${profile.is_admin ? `<a class="header-link admin-link" href="admin.html">Admin</a>` : ''}
       <a class="avatar-link" href="${me}" aria-label="Your profile">${avatarHTML(profile, 40)}</a>`;
   } else {
     right = `
@@ -112,19 +114,40 @@ function renderHeader(profile, session) {
       <a class="btn btn-green" href="login.html?mode=signup">Sign up</a>`;
   }
 
+  // On phones the nav folds into a ☰ panel, with search, random and admin moved inside it.
+  const mobileExtras = session && profile ? `
+    <form class="header-search nav-mobile-only" role="search" action="episodes.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <label class="visually-hidden" for="menu-q">Search</label>
+      <input type="search" id="menu-q" name="q" placeholder="Search episodes and people" autocomplete="off">
+    </form>` : '';
+  const mobileLinks = session && profile ? `
+    <button type="button" class="nav-mobile-only link-button nav-random">🎲 Random episode</button>
+    ${profile.is_admin ? '<a class="nav-mobile-only" href="admin.html">Admin</a>' : ''}` : '';
+
   el.innerHTML = `
     <div class="wrap header-inner">
       <a class="logo" href="index.html" aria-label="${esc(SITE_NAME)} home">${logoHTML()}</a>
-      <nav class="main-nav" aria-label="Main">${nav}</nav>
+      <nav class="main-nav" id="main-nav" aria-label="Main">${mobileExtras}${nav}${mobileLinks}</nav>
       <div class="header-right">${right}</div>
+      <button type="button" class="menu-toggle icon-btn" aria-expanded="false" aria-controls="main-nav" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
     </div>`;
+  const toggle = el.querySelector('.menu-toggle');
+  toggle.addEventListener('click', () => {
+    const open = el.classList.toggle('menu-open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+  el.querySelector('.nav-random')?.addEventListener('click', () => el.querySelector('#header-random')?.click());
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
   el.querySelector('#header-random')?.addEventListener('click', async () => {
-    const r = await import('./random.js');
+    const r = await import('./random.js?v=20261127025038');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   });
   syncDice();
+  el.querySelectorAll(".header-search").forEach(wireSearch);
   if (session) refreshBell();
 }
 
@@ -133,7 +156,7 @@ function renderHeader(profile, session) {
  * event on window so the current page can refresh itself.
  */
 export async function logEpisode(opts = {}) {
-  const { openLogModal } = await import('./log-modal.js');
+  const { openLogModal } = await import('./log-modal.js?v=20261127025038');
   const changed = await openLogModal(opts);
   if (changed) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
   return changed;
@@ -170,7 +193,13 @@ function showConfigWarning() {
 export async function refreshBell() {
   const bell = document.getElementById('header-bell');
   if (!bell) return;
-  const { count } = await supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('read', false);
+  const [{ count: dbCount }, { data: { user } }] = await Promise.all([
+    supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('read', false),
+    supabase.auth.getUser(),
+  ]);
+  // Plus unread Book Club notes (new book, vote result), worked out in the browser.
+  const club = await import('./club-notes.js?v=20261127025038').then((m) => m.clubNotes(user?.id)).catch(() => []);
+  const count = (dbCount || 0) + club.filter((n) => !n.read).length;
   const badge = bell.querySelector('.bell-count');
   badge.hidden = !count;
   badge.textContent = count > 9 ? '9+' : String(count || '');
@@ -195,4 +224,57 @@ function decorateBigMessages() {
   });
   add();
   new MutationObserver(add).observe(document.body, { childList: true, subtree: true });
+}
+
+// Stale-cache guard: GitHub Pages lets browsers keep files for 10 minutes. If the server's
+// version.json is newer than the code running now, reload once with ?v= so every file is fresh.
+async function checkVersion() {
+  try {
+    const res = await fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) return;
+    const { v } = await res.json();
+    if (!v || v === VERSION || sessionStorage.getItem('parkboxd-reloaded-for') === v) return;
+    sessionStorage.setItem('parkboxd-reloaded-for', v);
+    const url = new URL(location.href);
+    url.searchParams.set('v', v);
+    location.replace(url.href);
+  } catch { /* offline or blocked: keep going with what we have */ }
+}
+
+// Header search: a live dropdown with matching people and episodes. Enter still opens the
+// full episode search (episodes.html?q=).
+function wireSearch(form) {
+  const input = form.querySelector('input[type="search"]');
+  if (!input) return;
+  form.style.position = 'relative';
+  const pop = document.createElement('div');
+  pop.className = 'search-pop';
+  pop.hidden = true;
+  form.append(pop);
+  let seq = 0;
+  const close = () => { pop.hidden = true; };
+  input.addEventListener('input', async () => {
+    const q = input.value.trim();
+    const mine = ++seq;
+    if (q.length < 2) return close();
+    const safe = q.replace(/[^\p{L}\p{N} _-]/gu, '');
+    const [{ data: people }, { loadAllEpisodes }] = await Promise.all([
+      safe ? supabase.from('profiles').select('username, display_name, avatar_color, avatar_icon')
+        .not('username', 'is', null).or(`username.ilike.%${safe}%,display_name.ilike.%${safe}%`).limit(5) : Promise.resolve({ data: [] }),
+      import('./episodes.js?v=20261127025038'),
+    ]);
+    const lower = q.toLowerCase();
+    const eps = (await loadAllEpisodes()).filter((e) => e.title.toLowerCase().includes(lower)).slice(0, 6);
+    if (mine !== seq) return; // a newer keystroke won
+    pop.innerHTML = `
+      ${people?.length ? `<div class="search-pop-head">People</div>${people.map((p) => `
+        <a class="search-pop-item" href="profile.html?u=${encodeURIComponent(p.username)}">${avatarHTML(p, 26)}<span><strong>${esc(p.display_name || p.username)}</strong> <small>@${esc(p.username)}</small></span></a>`).join('')}` : ''}
+      ${eps.length ? `<div class="search-pop-head">Episodes</div>${eps.map((e) => `
+        <a class="search-pop-item" href="episode.html?id=${e.id}"><span class="search-pop-code">${esc(e.kind === 'episode' ? `S${e.season} E${e.number}` : e.kind)}</span><span>${esc(e.title)}</span></a>`).join('')}` : ''}
+      ${!people?.length && !eps.length ? '<div class="search-pop-empty">Nothing found. Not even Kenny.</div>' : ''}
+      <button type="submit" class="search-pop-all">See all episode results for “${esc(q)}”</button>`;
+    pop.hidden = false;
+  });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Escape') { close(); input.blur(); } });
+  document.addEventListener('click', (e) => { if (!form.contains(e.target)) close(); });
 }
