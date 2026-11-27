@@ -2,9 +2,9 @@
 // real member: nothing is in the database, so his ratings never touch site averages. He reviews
 // the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
 // also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127203257';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127203257';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127203257';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127204240';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127204240';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127204240';
 
 export const KYLE_USERNAME = 'kyle';
 export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#3fb950', avatar_icon: 'earflaps' };
@@ -83,19 +83,29 @@ export const REVIEWS = [
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 
+const GRADES = [3, 3.5, 3.5, 4, 4, 4, 4, 4.5, 4.5, 5];
+
+// His watched list. He's a try-hard: the hand-picked ratings topped up to exactly WATCHED episodes,
+// in air order, with fixed ratings per episode (a tough grader). Same list for everyone.
+function watchedList(all) {
+  const byTitle = new Map(all.map((e) => [norm(e.title), e]));
+  const picked = RATED.map(([t, r, liked]) => ({ ep: byTitle.get(norm(t)), r, liked })).filter((x) => x.ep);
+  const have = new Set(picked.map((x) => x.ep.id));
+  const today = new Date().toISOString().slice(0, 10);
+  const filler = all.filter((e) => e.kind === 'episode' && e.air_date && e.air_date <= today && !have.has(e.id))
+    .slice(0, Math.max(0, WATCHED - picked.length))
+    .map((e) => { const r = GRADES[(Math.imul(e.id, 2654435761) >>> 0) % GRADES.length]; return { ep: e, r, liked: r === 5 }; });
+  return [...picked, ...filler];
+}
+
+/** His rating for an episode, or null if he hasn't watched it. */
+export const kyleRating = (all, ep) => watchedList(all).find((x) => x.ep.id === ep.id)?.r ?? null;
+
 export async function renderKyleProfile(root) {
   const all = await loadAllEpisodes();
   const byTitle = new Map(all.map((e) => [norm(e.title), e]));
   const find = (t) => byTitle.get(norm(t));
-  const picked = RATED.map(([t, r, liked]) => ({ ep: find(t), r, liked })).filter((x) => x.ep);
-  // He's a try-hard: tops it up to exactly WATCHED episodes, in air order, with fixed ratings per
-  // episode (mostly 3.5-4.5, he's a tough grader). Same list for everyone, every visit.
-  const have = new Set(picked.map((x) => x.ep.id));
-  const GRADES = [3, 3.5, 3.5, 4, 4, 4, 4, 4.5, 4.5, 5];
-  const filler = all.filter((e) => e.kind === 'episode' && e.air_date && e.air_date <= new Date().toISOString().slice(0, 10) && !have.has(e.id))
-    .slice(0, Math.max(0, WATCHED - picked.length))
-    .map((e) => { const r = GRADES[(Math.imul(e.id, 2654435761) >>> 0) % GRADES.length]; return { ep: e, r, liked: r === 5 }; });
-  const rated = [...picked, ...filler];
+  const rated = watchedList(all);
   const rateOf = (t) => RATED.find(([rt]) => norm(rt) === norm(t)) || [t, 4, false];
   const reviews = REVIEWS.map(([t, text, note]) => ({ ep: find(t), text, note, r: rateOf(t)[1], liked: rateOf(t)[2] })).filter((x) => x.ep).reverse(); // newest reviews first
   const top4 = TOP4.map(find).filter(Boolean);
@@ -179,7 +189,7 @@ export async function renderKyleProfile(root) {
     </div>`;
 
   // Loaded here, not at the top: guest-reviews.js imports this file.
-  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127203257');
+  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127204240');
   await showProfileReviews(root.querySelector('[data-guest-list]'), 'kyle', reviews.map((x) => x.ep));
   root.removeAttribute('aria-busy');
 

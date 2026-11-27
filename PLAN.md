@@ -255,4 +255,6 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Edit profile > Badge extras also shows how to enter Professor Chaos and Mysterion modes, only to badge holders
 - Character reviews and comments (profiles, episode pages, Book Club, Kyle's review of the day) have a "Hear what PC Principal has to say" button that shows his personalised message to that character instead of rewriting the text (`pcTalkButtonHTML` and `TALKS` in `js/pc.js`)
 - Character review cards (profiles and episode pages) look exactly like member reviews, including like and comment on profiles; only the PC Principal button is worded differently (`showProfileReviews` in `js/guest-reviews.js`)
+- Character profiles have a row of all five faces at the top for switching between them (`js/gang-switcher.js`)
+- Book Club weekly guest (`js/club-guest.js`): Kyle, Cartman, Stan, Kenny take turns (from the club's first week) with a card under Butters' review: their own review of the pick if they have one, otherwise a stock line; like and comment via the guest review tables
 - The five character accounts show up in the header search (People) and on Friends → Find people, listed in `js/characters.js` (a new character needs a line there)

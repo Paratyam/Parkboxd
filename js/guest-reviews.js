@@ -2,16 +2,16 @@
 // The reviews live in code, not the database, so they never count toward averages. People can
 // still like and comment on them: guest_review_likes / guest_review_comments, keyed by
 // '<character>:<normalised episode title>'.
-import { supabase } from './supabase.js?v=20261127203257';
-import { esc, epCode, stars, avatarHTML, toast } from './ui.js?v=20261127203257';
-import { threadHTML, wireThread } from './comments.js?v=20261127203257';
-import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127203257';
-import { thumbHTML } from './episodes.js?v=20261127203257';
-import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127203257';
-import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127203257';
-import { CARTMAN, RATED as C_RATED, REVIEWS as C_REVIEWS, cartmanCommentHTML } from './cartman-profile.js?v=20261127203257';
-import { KENNY, RATED as N_RATED, REVIEWS as N_REVIEWS } from './kenny-profile.js?v=20261127203257';
-import { STAN, RATED as S_RATED, REVIEWS as S_REVIEWS } from './stan-profile.js?v=20261127203257';
+import { supabase } from './supabase.js?v=20261127204240';
+import { esc, epCode, stars, avatarHTML, toast } from './ui.js?v=20261127204240';
+import { threadHTML, wireThread } from './comments.js?v=20261127204240';
+import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127204240';
+import { thumbHTML } from './episodes.js?v=20261127204240';
+import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127204240';
+import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127204240';
+import { CARTMAN, RATED as C_RATED, REVIEWS as C_REVIEWS, cartmanCommentHTML } from './cartman-profile.js?v=20261127204240';
+import { KENNY, RATED as N_RATED, REVIEWS as N_REVIEWS } from './kenny-profile.js?v=20261127204240';
+import { STAN, RATED as S_RATED, REVIEWS as S_REVIEWS } from './stan-profile.js?v=20261127204240';
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 
@@ -38,6 +38,8 @@ installPC(); // "PC it" toggle (also installed by social.js; installing twice is
 // Threads stay open across re-renders (a new comment re-renders the whole list).
 const openThreads = new Set();
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+
+export const characterGuest = (username) => GUESTS.find((g) => g.who.username === username);
 
 export function guestReviewsFor(ep) {
   if (!ep?.title) return [];
@@ -86,7 +88,8 @@ export function guestReviewHTML(g, extras, me, ep = null) {
         <div class="review-meta">
           ${ep ? avatarHTML(g.who, 22) : ''}
           <span>${ep ? '' : 'Review by '}<a href="profile.html?u=${encodeURIComponent(g.who.username)}"><strong>${esc(g.who.display_name)}</strong></a></span>
-          <span class="rating">${stars(g.rating)}</span>
+          ${g.tag ? `<span class="host-tag">${esc(g.tag)}</span>` : ''}
+          ${g.rating == null ? '' : `<span class="rating">${stars(g.rating)}</span>`}
           ${g.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}
         </div>
         <p>${esc(g.text)}</p>

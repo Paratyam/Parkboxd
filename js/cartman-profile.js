@@ -2,10 +2,10 @@
 // Kyle, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. He loves the episodes where he wins and hates nearly everything else, and he leaves a
 // comment under every one of Kyle's reviews. Episodes are matched by title.
-import { pcTalkButtonHTML } from './pc.js?v=20261127203257';
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127203257';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127203257';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127203257';
+import { pcTalkButtonHTML } from './pc.js?v=20261127204240';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127204240';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127204240';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127204240';
 
 export const CARTMAN = { username: 'cartman', display_name: 'Eric Cartman', avatar_color: '#e5534b', avatar_icon: 'beanie' };
 
@@ -68,6 +68,12 @@ export function cartmanCommentHTML(title) {
     </div>` : '';
 }
 
+const GRADES = [0.5, 0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1.5, 2];
+const fillerGrade = (ep) => GRADES[(Math.imul(ep.id, 2654435761) >>> 0) % GRADES.length];
+
+/** His rating for any aired episode. */
+export const cartmanRating = (ep) => RATED.find(([t]) => norm(t) === norm(ep.title))?.[1] ?? fillerGrade(ep);
+
 export async function renderCartmanProfile(root) {
   const all = await loadAllEpisodes();
   const byTitle = new Map(all.map((e) => [norm(e.title), e]));
@@ -75,10 +81,9 @@ export async function renderCartmanProfile(root) {
   const picked = RATED.map(([t, r, liked]) => ({ ep: find(t), r, liked })).filter((x) => x.ep);
   // He's "watched" everything else too, and hated it. Fixed ratings per episode, same on every visit.
   const have = new Set(picked.map((x) => x.ep.id));
-  const GRADES = [0.5, 0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1.5, 2];
   const today = new Date().toISOString().slice(0, 10);
   const filler = all.filter((e) => e.kind === 'episode' && e.air_date && e.air_date <= today && !have.has(e.id))
-    .map((e) => ({ ep: e, r: GRADES[(Math.imul(e.id, 2654435761) >>> 0) % GRADES.length], liked: false }));
+    .map((e) => ({ ep: e, r: fillerGrade(e), liked: false }));
   const rated = [...picked, ...filler];
   const reviews = REVIEWS.map(([t, text]) => ({ ep: find(t), text, r: picked.find((x) => x.ep === find(t))?.r, liked: TOP4.includes(t) })).filter((x) => x.ep);
   const top4 = TOP4.map(find).filter(Boolean);
@@ -160,7 +165,7 @@ export async function renderCartmanProfile(root) {
     </div>`;
 
   // Loaded here, not at the top: guest-reviews.js imports this file.
-  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127203257');
+  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127204240');
   await showProfileReviews(root.querySelector('[data-guest-list]'), 'cartman', reviews.map((x) => x.ep));
   root.removeAttribute('aria-busy');
 
