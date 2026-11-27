@@ -1,5 +1,5 @@
 // Small DOM helpers shared by every page.
-import { AVATAR_ICONS } from './avatars.js?v=20261127204240';
+import { AVATAR_ICONS } from './avatars.js?v=20261127211246';
 
 export const $ = (sel, root = document) => root.querySelector(sel);
 

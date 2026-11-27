@@ -1,14 +1,14 @@
 // Shareable paper-cutout cards: one of your reviews, your Top 4 or your Cage Match top 10, drawn on
 // a canvas. Original art, plus the episode stills on the review and Top 4 cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
-import { supabase } from './supabase.js?v=20261127204240';
-import { epCode, stars, toast } from './ui.js?v=20261127204240';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127204240';
-import { SITE_LINK } from './config.js?v=20261127204240';
-import { plantSVG } from './streak.js?v=20261127204240';
-import { farmSceneSVG } from './farm-scene.js?v=20261127204240';
-import { beltSVG } from './art.js?v=20261127204240';
-import { reviewMessage, top4Message, top10Message, awardMessage, streakMessage } from './share-text.js?v=20261127204240';
+import { supabase } from './supabase.js?v=20261127211246';
+import { epCode, stars, toast } from './ui.js?v=20261127211246';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127211246';
+import { SITE_LINK } from './config.js?v=20261127211246';
+import { plantSVG } from './streak.js?v=20261127211246';
+import { farmSceneSVG } from './farm-scene.js?v=20261127211246';
+import { beltSVG } from './art.js?v=20261127211246';
+import { reviewMessage, top4Message, top10Message, awardMessage, streakMessage } from './share-text.js?v=20261127211246';
 
 const W = 1080;
 const H = 1350;

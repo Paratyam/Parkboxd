@@ -2,9 +2,9 @@
 // real member: nothing is in the database, so his ratings never touch site averages. He reviews
 // the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
 // also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127204240';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127204240';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127204240';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127211246';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127211246';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127211246';
 
 export const KYLE_USERNAME = 'kyle';
 export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#3fb950', avatar_icon: 'earflaps' };
@@ -98,9 +98,6 @@ function watchedList(all) {
   return [...picked, ...filler];
 }
 
-/** His rating for an episode, or null if he hasn't watched it. */
-export const kyleRating = (all, ep) => watchedList(all).find((x) => x.ep.id === ep.id)?.r ?? null;
-
 export async function renderKyleProfile(root) {
   const all = await loadAllEpisodes();
   const byTitle = new Map(all.map((e) => [norm(e.title), e]));
@@ -189,7 +186,7 @@ export async function renderKyleProfile(root) {
     </div>`;
 
   // Loaded here, not at the top: guest-reviews.js imports this file.
-  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127204240');
+  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127211246');
   await showProfileReviews(root.querySelector('[data-guest-list]'), 'kyle', reviews.map((x) => x.ep));
   root.removeAttribute('aria-busy');
 
