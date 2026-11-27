@@ -1,9 +1,9 @@
-import { initPage } from '../layout.js?v=20261127074510';
-import { supabase } from '../supabase.js?v=20261127074510';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127074510';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127074510';
-import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127074510';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127074510';
+import { initPage } from '../layout.js?v=20261127075232';
+import { supabase } from '../supabase.js?v=20261127075232';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127075232';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127075232';
+import { loadAllEpisodes, thumbHTML } from '../episodes.js?v=20261127075232';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127075232';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 

@@ -1370,3 +1370,16 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .kyle-note-text { margin: 4px 0 0; font-style: italic; color: var(--text-soft); }
 .kyle-note .guest-note { margin-top: 4px; }
 .kyle-note-foot { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 6px; font-size: 13px; }
+
+/* Mystery on phones: the newest clue right under the photo (the full list is far below) */
+.mystery-new-clue { display: none; }
+.case-folder .kenny-hint.newest { outline: 3px solid #ffd23f; outline-offset: 2px; animation: clue-pop .6s ease-out; }
+@keyframes clue-pop { 0% { transform: scale(.94); } 60% { transform: scale(1.03); } 100% { transform: scale(1); } }
+@media (max-width: 760px) {
+  .mystery-new-clue { display: flex; flex-direction: column; gap: 4px; margin: 14px 0 4px; padding: 12px 14px; background: var(--m-orange); color: #2b1300; border: 3px solid #000; border-radius: 12px 12px 12px 2px; box-shadow: 4px 4px 0 #000; animation: clue-pop .6s ease-out; }
+  .mystery-new-clue .exhibit { align-self: flex-start; padding: 1px 8px; background: #1a1a1a; color: #ffd23f; font-size: 12px; border-radius: 3px; }
+  .mystery-new-clue .kenny-says { font-size: 18px; }
+  .mystery-new-clue .kenny-means { font-size: 15px; }
+  .mystery-all-clues { font-size: 13px; font-weight: 700; color: #2b1300; text-decoration: underline; }
+}
+@media (prefers-reduced-motion: reduce) { .mystery-new-clue, .case-folder .kenny-hint.newest { animation: none; } }

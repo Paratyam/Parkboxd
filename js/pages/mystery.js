@@ -1,10 +1,10 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture and Kenny gives a (muffled) hint. Six tries.
-import { initPage, logEpisode } from '../layout.js?v=20261127074510';
-import { supabase } from '../supabase.js?v=20261127074510';
-import { $, esc, epCode, toast } from '../ui.js?v=20261127074510';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127074510';
-import { mysterySVG } from '../art.js?v=20261127074510';
+import { initPage, logEpisode } from '../layout.js?v=20261127075232';
+import { supabase } from '../supabase.js?v=20261127075232';
+import { $, esc, epCode, toast } from '../ui.js?v=20261127075232';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127075232';
+import { mysterySVG } from '../art.js?v=20261127075232';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -13,6 +13,7 @@ const DAY = 86400000;
 const LAUNCH = Date.UTC(2026, 10, 27); // puzzle #1
 const MAX = 6;
 const BLUR = [26, 17, 11, 6, 3, 1.5, 0]; // by wrong guesses so far; 0 once it's over
+const PHONE = window.matchMedia("(max-width: 760px)"); // same breakpoint as the one-column layout
 const STORE = `parkboxd-mystery-${user.id}`;
 
 const today = Math.floor(Date.now() / DAY);
@@ -120,6 +121,13 @@ function render() {
           <img src="${esc(stillUrl(answer, 'w780'))}" alt="${game.done ? esc(answer.title) : 'The mystery episode, blurred'}" style="filter:blur(${blur}px)${game.done ? '' : ' saturate(1.2)'}">
           ${game.done ? `<span class="case-verdict cut ${game.won ? 'won' : 'lost'}">${game.won ? 'Case closed' : 'R.I.P. Kenny'}</span>` : ''}
         </div>
+        ${!game.done && hintsShown ? `
+          <div class="mystery-new-clue" role="status">
+            <span class="exhibit cut">🆕 New clue · Exhibit ${EXHIBITS[hintsShown - 1]}</span>
+            <span class="kenny-says">“${esc(muffle(HINTS[hintsShown - 1]))}”</span>
+            <span class="kenny-means">Kenny means: ${esc(HINTS[hintsShown - 1])}</span>
+            ${hintsShown > 1 ? `<a href="#m-clues" class="mystery-all-clues">See all ${hintsShown} clues ↓</a>` : ''}
+          </div>` : ''}
         ${game.done ? '' : `<div class="kenny-lives" aria-label="${left} ${left === 1 ? 'try' : 'tries'} left">${Array.from({ length: MAX }, (_, i) => `<span class="${i < left ? '' : 'used'}" aria-hidden="true">🧥</span>`).join('')}<b>${left} ${left === 1 ? 'life' : 'lives'} left</b></div>`}
         ${game.done ? `
           <div class="mystery-result ${game.won ? 'won' : 'lost'} paper">
@@ -140,10 +148,10 @@ function render() {
         ${game.guesses.length ? `<ol class="mystery-guesses">${game.guesses.map((id) => `<li class="${id === answer.id ? 'right' : 'wrong'}">${id === answer.id ? '✓' : '✗'} ${id ? esc(byId.get(id)?.title || '?') : '<em>skipped</em>'}</li>`).join('')}</ol>` : ''}
       </div>
       <aside class="mystery-side">
-        <div class="case-folder">
+        <div class="case-folder" id="m-clues">
           <h2 class="cut">Witness statements</h2>
           ${HINTS.map((h, i) => (i < hintsShown ? `
-            <div class="kenny-hint"><span class="exhibit cut">Exhibit ${EXHIBITS[i]}</span><span class="kenny-says">“${esc(muffle(h))}”</span><span class="kenny-means">Kenny means: ${esc(h)}</span></div>`
+            <div class="kenny-hint${!game.done && i === hintsShown - 1 ? ' newest' : ''}"><span class="exhibit cut">Exhibit ${EXHIBITS[i]}</span><span class="kenny-says">“${esc(muffle(h))}”</span><span class="kenny-means">Kenny means: ${esc(h)}</span></div>`
             : `<div class="kenny-hint locked"><span class="exhibit cut">Exhibit ${EXHIBITS[i]}</span><span class="kenny-means">🔒 Unlocks after ${i + 1} wrong guess${i ? 'es' : ''}</span></div>`)).join('')}
         </div>
         <div class="mystery-stats paper">
@@ -165,7 +173,9 @@ function guess(id) {
   else if (game.guesses.length >= MAX) { game.done = true; game.won = false; }
   save();
   render();
-  if (!game.done && id) toast(['Mmph! (Nope.)', 'Mmmph mph! (Not that one.)', 'Mph. (Try again.)'][game.guesses.length % 3]);
+  if (!game.done && id) toast(`${['Mmph! (Nope.)', 'Mmmph mph! (Not that one.)', 'Mph. (Try again.)'][game.guesses.length % 3]}${wrong() <= HINTS.length ? ' New clue unlocked!' : ''}`);
+  // On phones the clue box sits under the photo: bring it into view.
+  if (!game.done && PHONE.matches) $('.mystery-new-clue')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function wire() {
@@ -193,7 +203,8 @@ function wire() {
     else list.querySelector('[data-guess]')?.click();
   });
   $('#m-skip').addEventListener('click', () => guess(null));
-  q.focus();
+  // Not on phones: the keyboard would pop up and cover the new clue.
+  if (!PHONE.matches) q.focus();
 }
 
 render();

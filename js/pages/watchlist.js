@@ -1,9 +1,9 @@
-import { initPage } from '../layout.js?v=20261127074510';
-import { supabase } from '../supabase.js?v=20261127074510';
-import { SITE_NAME } from '../config.js?v=20261127074510';
-import { $, esc, params, profileTabsHTML } from '../ui.js?v=20261127074510';
-import { cardHTML, compareEpisodes } from '../episodes.js?v=20261127074510';
-import { line } from '../jokes.js?v=20261127074510';
+import { initPage } from '../layout.js?v=20261127075232';
+import { supabase } from '../supabase.js?v=20261127075232';
+import { SITE_NAME } from '../config.js?v=20261127075232';
+import { $, esc, params, profileTabsHTML } from '../ui.js?v=20261127075232';
+import { cardHTML, compareEpisodes } from '../episodes.js?v=20261127075232';
+import { line } from '../jokes.js?v=20261127075232';
 
 const { profile: me } = await initPage({ title: 'Watchlist', auth: 'required' });
 const root = $('#watchlist');
