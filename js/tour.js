@@ -2,7 +2,7 @@
 // merges these into the bell and the notifications page). New members get a welcome, then at most
 // one note per day they visit, skipping features they've already used. Members who joined before
 // the tour existed only get an invite. State is remembered per person in localStorage.
-import { supabase } from './supabase.js?v=20261127133454';
+import { supabase } from './supabase.js?v=20261127133501';
 
 const LAUNCH = '2026-11-27T00:00:00Z'; // accounts older than this are invited, not enrolled
 
@@ -25,7 +25,7 @@ const STEPS = [
     text: "🍎 Your Stats page has your streak and a report card from Mr. Garrison. Seriously, don't take the grades personally." },
   { id: 'badges', href: 'profile.html',
     text: "🏅 Check out the badges on your profile. Some of them unlock cool stuff, like a gold ring around your picture, a tag next to your name, or a secret mode. I'm not spoiling how you get them all, dude." },
-  { id: 'friends',href: 'friends.html', used: [['follows', 'follower_id']],
+  { id: 'friends', href: 'friends.html', used: [['follows', 'follower_id']],
     text: "🤝 Last stop: find your friends and follow them, so you can see what they're watching. That's the tour. You're good, dude." },
 ];
 
