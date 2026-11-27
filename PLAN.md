@@ -189,3 +189,5 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Profile tab "Lists" (`profileTabsHTML` in js/ui.js) → `lists.html?u=name`: that person's lists under their profile tabs; the new-list form only shows on your own
 - 🗂️ Tier Lord badge: rank every aired season in your Season tier list (`profiles.season_tiers`)
 - Home Tegridy streak card links to your diary (it used to go to stats)
+- Secret modes: a "✕ Leave Mysterion mode" / "✕ Go back to being Butters" button (bottom left) whenever Chaos or Mysterion is on, since typing the word doesn't work on phones or with a text box focused. The logo hold no longer gets cancelled by the phone's own long-press handling or link dragging
+- Kyle's profile lists his reviews newest first; his reviews are 3-5 sentences

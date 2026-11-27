@@ -1391,3 +1391,11 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .pc-by strong { display: block; font-family: 'Luckiest Guy', cursive; font-weight: 400; font-size: 15px; letter-spacing: .5px; color: #ffd23f; }
 .pc-badge { flex: 0 0 34px; height: 34px; display: grid; place-items: center; font-size: 20px; background: #ffd23f; border: 2px solid #000; border-radius: 50%; }
 .pc-by + p.pc-text { margin-top: 0; border-radius: 0 0 6px 6px; border-left-width: 3px; }
+
+/* Secret modes: the logo hold must not drag the link or open the long-press menu */
+.logo { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; touch-action: none; }
+.logo img, .logo span { -webkit-user-drag: none; }
+/* Always-visible way out of Chaos / Mysterion mode */
+.mode-exit { position: fixed; left: 14px; bottom: 14px; z-index: 60; padding: 8px 14px; border: 2px solid #000; border-radius: 999px; box-shadow: 3px 3px 0 #000; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--surface-2); color: var(--white); }
+html.mysterion .mode-exit { background: #2b1f3d; color: #79e06a; box-shadow: 3px 3px 0 #000, inset 0 0 0 2px #79e06a; }
+html.chaos .mode-exit { background: #7dff4f; color: #10180f; }

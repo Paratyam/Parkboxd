@@ -1,6 +1,6 @@
 // Little effects: rating reactions, hamburger rain, Professor Chaos mode.
-import { toast } from './ui.js?v=20261127110826';
-import { ratingReaction } from './jokes.js?v=20261127110826';
+import { toast } from './ui.js?v=20261127111407';
+import { ratingReaction } from './jokes.js?v=20261127111407';
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -52,12 +52,14 @@ const MODES = {
     logo: 'CHAOS',
     on: 'I am Professor Chaos! Bringer of destruction and doom! (Type "chaos" or tap the logo 5 times to go back to being Butters.)',
     off: 'Professor Chaos has been grounded. Back to normal, fellas.',
+    exit: 'Go back to being Butters',
   },
   mysterion: {
     word: 'mysterion',
     logo: 'MYSTERION',
     on: 'Who is Mysterion? Nobody knows. (Type "mysterion" or hold the logo to unmask.)',
     off: 'Mysterion has vanished into the night. Nobody saw who it was. Probably Kenny.',
+    exit: 'Leave Mysterion mode',
   },
 };
 
@@ -73,6 +75,12 @@ export const modeLogo = () => MODES[currentMode()]?.logo ?? null;
 export function applyMode() {
   const mode = currentMode();
   for (const m of Object.keys(MODES)) document.documentElement.classList.toggle(m, m === mode);
+  // A way out that always works (typing needs a keyboard and a page without a focused text box).
+  const exit = document.getElementById('mode-exit');
+  if (exit) {
+    exit.hidden = !mode;
+    exit.textContent = mode ? `✕ ${MODES[mode].exit}` : '';
+  }
 }
 
 export function initModes(onChange) {
@@ -108,18 +116,37 @@ export function initModes(onChange) {
   let tapTimer;
   let holdTimer;
   let held = false;
+  let start = null;
   document.addEventListener('pointerdown', (e) => {
     const logo = e.target.closest?.('.logo');
     if (!logo || e.button !== 0) return;
     held = false;
-    holdTimer = setTimeout(() => { held = true; taps = 0; clearTimeout(tapTimer); toggle('mysterion'); }, 800);
+    start = { x: e.clientX, y: e.clientY, touch: e.pointerType !== 'mouse' };
+    clearTimeout(holdTimer);
+    holdTimer = setTimeout(() => { held = true; taps = 0; start = null; clearTimeout(tapTimer); toggle('mysterion'); }, 800);
   });
-  const cancelHold = () => clearTimeout(holdTimer);
+  const cancelHold = () => { clearTimeout(holdTimer); start = null; };
   document.addEventListener('pointerup', cancelHold);
-  document.addEventListener('pointercancel', cancelHold);
-  document.addEventListener('pointermove', (e) => { if (Math.abs(e.movementX) + Math.abs(e.movementY) > 6) cancelHold(); });
-  // Stop the long-press menu ("open in new tab…") from popping up over the logo.
+  // Phones fire pointercancel when they start their own long-press handling; that must not stop
+  // the hold (it used to, so a hold often did nothing). A real drag away still cancels below.
+  document.addEventListener('pointercancel', () => { if (!start?.touch) cancelHold(); });
+  document.addEventListener('pointermove', (e) => {
+    if (start && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 12) cancelHold();
+  });
+  // Stop the long-press menu ("open in new tab…") and link dragging on the logo.
   document.addEventListener('contextmenu', (e) => { if (e.target.closest?.('.logo')) e.preventDefault(); });
+  document.addEventListener('dragstart', (e) => { if (e.target.closest?.('.logo')) e.preventDefault(); });
+
+  // The exit button (shown by applyMode while a mode is on).
+  if (!document.getElementById('mode-exit')) {
+    const exit = document.createElement('button');
+    exit.type = 'button';
+    exit.id = 'mode-exit';
+    exit.className = 'mode-exit';
+    exit.addEventListener('click', () => { if (currentMode()) toggle(currentMode()); });
+    document.body.append(exit);
+    applyMode();
+  }
 
   document.addEventListener('click', (e) => {
     const logo = e.target.closest?.('.logo');
@@ -189,7 +216,7 @@ export function showCoonTakeover(setLogo) {
   });
 
   // Members of Coon & Friends (badge holders) get VIP treatment.
-  import('./coon-member.js?v=20261127110826').then(({ coonMember }) => coonMember()).then((member) => {
+  import('./coon-member.js?v=20261127111407').then(({ coonMember }) => coonMember()).then((member) => {
     if (!member || !banner.isConnected) return;
     banner.querySelector('.coon-title').textContent = `Welcome back, ${member.name}. Member of Coon & Friends.`;
     banner.querySelector('.coon-sub').innerHTML = 'You may stay. Everyone else: respect his authoritah. <a href="franchise.html" style="color:#fff;text-decoration:underline">Your spin-off is in the franchise plan</a>';
@@ -200,7 +227,7 @@ export function showCoonTakeover(setLogo) {
 // The Coon goes in at #1; a Coon & Friends member gets #2 as his Official Sidekick.
 export async function rigRankings(root) {
   if (!document.documentElement.classList.contains('coon-takeover-on') || !root) return;
-  const member = await import('./coon-member.js?v=20261127110826').then(({ coonMember }) => coonMember()).catch(() => null);
+  const member = await import('./coon-member.js?v=20261127111407').then(({ coonMember }) => coonMember()).catch(() => null);
   if (!document.documentElement.classList.contains('coon-takeover-on')) return; // dismissed meanwhile
 
   let list = root.querySelector('.rank-table');
