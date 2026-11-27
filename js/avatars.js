@@ -169,12 +169,12 @@ Object.assign(AVATAR_ICONS, {
     <path d="M13 15 Q13 8 20 8 Q27 8 27 14 Q27 18 22 20 Q20 21 20 25" fill="none" stroke="#141414" stroke-width="7" stroke-linecap="round"/>
     <path d="M13 15 Q13 8 20 8 Q27 8 27 14 Q27 18 22 20 Q20 21 20 25" fill="none" stroke="#79e06a" stroke-width="4" stroke-linecap="round"/>
     <circle cx="20" cy="31.5" r="2.8" fill="#79e06a" ${S}/>`) },
-  barn: { label: 'Farm barn', badge: 'tegridy', svg: svg(`
-    <path d="M7 35 V18 L12 9 L20 5 L28 9 L33 18 V35 Z" fill="#c0392b" ${S}/>
-    <path d="M5 19 L11 8 L20 4 L29 8 L35 19" fill="none" ${S}/>
-    <rect x="14" y="22" width="12" height="13" fill="#f6f1e1" ${S}/>
-    <path d="M14 22 L26 35 M26 22 L14 35" stroke="#c0392b" stroke-width="2"/>
-    <circle cx="20" cy="14" r="3" fill="#f5c518" ${S}/>`) },
+  barn: { label: 'Stars and stripes hat', badge: 'tegridy', svg: svg(`
+    <path d="M11 28 L10 6 Q20 2 30 6 L29 28 Z" fill="#f4f8fb" ${S}/>
+    <path d="M15 6 V20 M25 6 V20" stroke="#d63a3a" stroke-width="4"/>
+    <path d="M11 20 Q20 24 29 20 V28 Q20 32 11 28 Z" fill="#2f4f8f" ${S}/>
+    <path d="M20 22.5 L21 24.9 L23.3 24.9 L21.6 26.4 L22.1 28.8 L20 27.4 L17.9 28.8 L18.4 26.4 L16.7 24.9 L19 24.9 Z" fill="#fff"/>
+    <ellipse cx="20" cy="32" rx="17" ry="4.5" fill="#f4f8fb" ${S}/>`) },
   popcorn: { label: 'Popcorn', badge: 'movies', svg: svg(`
     <path d="M9 18 Q5 11 12 11 Q12 4 19 7 Q24 2 28 8 Q36 8 31 18 Z" fill="#fff3a6" ${S}/>
     <path d="M8 17 H32 L28 36 H12 Z" fill="#f4f8fb" ${S}/>
