@@ -1,6 +1,6 @@
 // "Add to home screen". Chrome, Edge and Android give us a real install prompt; elsewhere
 // (iPhones especially) the best we can do is say where the button is.
-import { toast } from './ui.js?v=20261127122229';
+import { toast } from './ui.js?v=20261127122713';
 
 let promptEvent = null;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); promptEvent = e; });

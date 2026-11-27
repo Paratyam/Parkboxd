@@ -1,5 +1,5 @@
 // Mr. Garrison's Report Card: every season gets a letter grade from your ratings.
-import { esc, stars, toast } from './ui.js?v=20261127122229';
+import { esc, stars, toast } from './ui.js?v=20261127122713';
 
 // Season averages bunch up between 3 and 4, so the scale is set around that: 4.2+ is
 // already exceptional across a whole season, and 3.0 is a perfectly fine season.
@@ -242,7 +242,7 @@ async function saveImage(card, name, button) {
 /** Render the report card into el, with the curve toggle and the save button wired up. */
 export function mountReportCard(el, opts) {
   const draw = () => {
-    const curve = localStorage.getItem(CURVE_KEY) !== '0'; // on a curve unless switched off
+    const curve = localStorage.getItem(CURVE_KEY) === '1'; // straight grades unless the curve is picked
     el.innerHTML = reportCardHTML({ ...opts, curve });
     el.querySelectorAll('[data-curve]').forEach((b) => b.addEventListener('click', () => {
       localStorage.setItem(CURVE_KEY, b.dataset.curve);
