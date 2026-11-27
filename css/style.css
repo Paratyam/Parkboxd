@@ -1071,3 +1071,11 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .lc-now { font-size: 10px; color: var(--club-blue); font-weight: 800; text-transform: uppercase; }
 @media (max-width: 560px) { .lc-body { grid-template-columns: 1fr; } }
 .club-vote-card .btn { border: 2px solid #000; box-shadow: 2px 2px 0 #000; } .club-vote-card .btn-ghost { background: #fffbe0; color: var(--club-ink); } .club-vote-card .btn-ghost:hover { background: #ffe97a; }
+
+/* Cartman's bubble: red announcer card (his jacket), mic in his teal-and-yellow hat colours */
+.cage-bubble { background: linear-gradient(180deg, #e04848, #b02020); color: #fff; }
+.cage-bubble::after { border-right-color: #d23c3c; }
+.cage-bubble .who { color: #ffe066; }
+.cage-bubble .call { color: #fff; text-shadow: 2px 2px 0 #000; }
+.cage-bubble .next { color: #ffe3e3; }
+.cage-mic { background: radial-gradient(circle at 35% 35%, #5ee0ea, #11808c); }
