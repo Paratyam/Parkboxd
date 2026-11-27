@@ -112,7 +112,8 @@ h1, h2, h3 { font-weight: 400; }
 .flair-crown { position: absolute; top: calc(var(--size) * -.24); right: calc(var(--size) * -.16); width: calc(var(--size) * .55); transform: rotate(22deg); pointer-events: none; z-index: 3; }
 .avatar .flair-crown svg { display: block; width: 100%; height: auto; }
 html.mysterion .avatar:not(.is-me) .flair-crown { display: none; }
-.badge .badge-reward { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.badge .badge-reward { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; line-height: 1.4; }
+.badge .badge-reward > span:last-child { min-height: 2.8em; } /* always room for two lines */
 .badge .badge-reward .avatar { filter: grayscale(1); opacity: .6; }
 .badge.earned .badge-reward .avatar { filter: none; opacity: 1; }
 .flair-critic {
@@ -1478,7 +1479,11 @@ html.coon-takeover-on .histogram .end { font-size: 7px; }
 .install-ad-close { position: absolute; top: 6px; right: 10px; background: none; border: 0; padding: 4px; color: var(--bg-deep); font-size: 15px; cursor: pointer; }
 html.chaos .install-ad, html.mysterion .install-ad { bottom: 66px; }
 
-.badge .badge-share { align-self: flex-start; margin-top: auto; padding-top: 8px; font-size: 11px; } /* always the bottom-left corner */
+.badge { align-items: center; text-align: center; }
+.badge-foot { margin-top: auto; padding-top: 6px; align-self: stretch; display: flex; flex-direction: column; align-items: center; gap: 6px; } /* pinned to the bottom, so rows line up across cards */
+.badge .badge-foot .got { height: 16px; line-height: 16px; }
+.badge .badge-foot .bar { align-self: stretch; margin: 5px 0; }
+.badge .badge-share { display: block; height: 24px; min-height: 24px; padding-top: 2px; padding-bottom: 0; font-size: 11px; line-height: 22px; } /* the hidden spacer matches the button */
 
 /* Mystery: friends' results, countdown and cold cases */
 .mystery-next { display: table; margin: 0 auto 16px; padding: 8px 18px; border: 2px solid #000; border-radius: 999px; background: #2a1a40; box-shadow: 3px 3px 0 #000; font-size: 14px; color: #fff; }

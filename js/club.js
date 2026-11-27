@@ -1,8 +1,8 @@
 // Butters' Book Club picks. Each week Butters suggests three episodes and members vote on which
 // one becomes the next week's book. With no votes, his first suggestion wins (the original
 // date-based pick), so weeks from before voting existed keep the same book.
-import { supabase } from './supabase.js?v=20261127175948';
-import { isAired } from './episodes.js?v=20261127175948';
+import { supabase } from './supabase.js?v=20261127180120';
+import { isAired } from './episodes.js?v=20261127180120';
 
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
