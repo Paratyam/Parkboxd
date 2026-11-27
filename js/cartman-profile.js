@@ -2,9 +2,9 @@
 // Kyle, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. He loves the episodes where he wins and hates nearly everything else, and he leaves a
 // comment under every one of Kyle's reviews. Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127194956';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127194956';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127194956';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127200432';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127200432';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127200432';
 
 export const CARTMAN = { username: 'cartman', display_name: 'Eric Cartman', avatar_color: '#e5534b', avatar_icon: 'beanie' };
 
@@ -30,27 +30,27 @@ export const REVIEWS = [
 
 // One comment under each of Kyle's reviews: [the title Kyle used, comment].
 const KYLE_COMMENTS = [
-  ['Chinpokomon', "\"Im not proud.\" You shouldn't be, Kahl. You showed up late wiht the crappiest one and everbody laughed. I'm STILL laughing, asshole. Nerd."],
-  ['Something Wall-Mart This Way Comes', "\"Shop local,\" says the cheap bastard who has never bought me one single thing. Shut your stupd mouth. Cheapskate nerd."],
+  ['Chinpokomon', "\"Im not proud.\" You shouldn't be, Kahl. You showed up late wiht the crappiest one and everbody laughed. I'm STILL laughing, asshole. dumm joo."],
+  ['Something Wall-Mart This Way Comes', "\"Shop local,\" says the griidy joo who has never bought me one single thing. Shut your stupd mouth. Cheapskate nerd."],
   ['Trapped in the Closet', "Oh WOW, your boyfriend Stan gets to be the special one, and your still his sidekick. I would've been a way better prophet. Suck it. Sidekick nerd."],
-  ['Smug Alert!', "KYLE reviewing an epsiode abuot being smug. You ARE the smug cloud, you son of a bitch. Somebody get me a gas mask. Smug little nerd."],
-  ['Cartoon Wars (1)', "It WAS abuot principles. My principal is that I hate it and I hate you. Read a book, jackass."],
+  ['Smug Alert!', "KYLE reviewing an epsiode abuot being smug. You ARE the smug cloud, you son of a bitch. Somebody get me a gas mask. Smug little joo"],
+  ['Cartoon Wars (1)', "It WAS abuot principles. My principal is tat I hate it and I hate you. Read a book, jackass."],
   ['Cartoon Wars (2)', "Five stars for your own damn speach? Nobdy was lisening, Kahl. Nobody has EVER been lisening. Even Stan was asleep. Speach nerd."],
-  ['Douche and Turd', "\"I get both sides.\" Pick one, you spineless fence-sitting buthole. Wishy-washy nerd."],
-  ['Goobacks', "A whole paragraph abuot jobs from a dumbass who's never had one. Go cry about it to sombody who gives a crap. Giant nerd."],
-  ['Margaritaville', "You blew all that money on strangers and not ONE cent on your good buddy Eric? You selfish son of a bitch. Math nerd."],
+  ['Douche and Turd', "\"I get both sides.\" Pick one, you spineless fence-sitting buthole. Wishy-washy andy."],
+  ['Goobacks', "A whole paragraph abuot jobs from a dumbass who's never had one. Go cry about it to sombody who gives a crap. stupid joo."],
+  ['Margaritaville', "You blew all that money on strangers and not ONE cent on your good buddy Eric? You selfish son of a bitch. greedy joo."],
   ['Best Friends Forever', "That handheld fight was totaly legit. I had paperwork. Don't ask who wrote it, you nosy bastard. Nosey nerd."],
-  ['Quest for Ratings', "Our show would've crushed Craig's if you dumbasses had just done exactly what I said. Nerds."],
-  ['The Passion of the Jew', "A whole reveiw abuot your stupd feelings. Boo hoo. Call a waaah-mbulance, crybaby. Crybaby nerd."],
+  ['Quest for Ratings', "Our show would've crushed Craig's if you dumbasses had just done exactly what I said. dirdy joo."],
+  ['The Passion of the Jew', "A whole reveiw abuot your stupd feelings. Boo hoo. Call a waaah-mbulance, crybaby. Crybaby dumass."],
   ['Go God Go XII (2)', "I froze my ass off for like five hundred years and your just sitting there taking notes? Screw you, Kyle. Screw your notes. Mega nerd."],
   ['Dances With Smurfs', "\"My favorite kind of ending.\" Of course it is. Go marry Wendy and be insufferable together, nerd."],
-  ['Safe Space', "From now on only nice commments abuot me are allowed, and yours can kiss my ass. Butters, delete this poophead. Hall monitor nerd."],
-  ['Go God Go (1)', "\"Mostly setup.\" Excuse me, that was MY emotional journey, you insensitive prick. Sience nerd."],
-  ['Stunning and Brave', "YOU got in trouble and for once it wasnt me? Haha! Hahahaha, you dumb bastard! Best day of my life."],
-  ['The Hobbit', "Wendy is NOT usually right, you kiss-ass. Stop encouraging that hippie. Teachers pet nerd."],
+  ['Safe Space', "From now on only nice commments abuot me are allowed, and yours can kiss my ass. Butters, delete this poophead. dum joo."],
+  ['Go God Go (1)', "\"Mostly setup.\" Excuse me, that was MY emotional journey, you insensitive prick. fucking joo prick."],
+  ['Stunning and Brave', "YOU got in trouble and for once it wasnt me? Haha! Hahahaha, you dumb joo! Best day of my life."],
+  ['The Hobbit', "Wendy is NOT usually right, you kiss-ass. Stop encouraging that bitch. Teachers pet nerd."],
   ['Breast Cancer Show Ever', "You've watched it HOW many times? You sick son of a bitch. Im telling your mom. And my mem. MEHHHM!"],
   ['Put It Down', "Aww, what a sweet widdle epsiode abuot lisening. I stopped reading, becuz shut up."],
-  ['The Cissy', "I had a very real need for a privite bathroom and your smug ass is making it weird. I do what I want!"],
+  ['The Cissy', "I had a very real need for a privite bathroom and you woke SJW ass is making it weird. I do what I want!"],
   ['South Park: The End of Obesity', "FINALLY you admit the villain is paperwork and not me. Screenshotting this. Suck my balls, Kahl."],
   ['South Park (Not Suitable for Children)', "You read that title and still reviewed it? Oh, you are SO busted, asshole. Respect my authoritah and log off."],
 ];
