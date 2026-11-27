@@ -190,13 +190,14 @@ export function computeBadges(ctx) {
     b('rewatch', '🔁', 'Same Old Story', 'Log 10 rewatches', logs.filter((l) => l.is_rewatch).length, 10),
     b('dayone', '📅', 'Day One', 'Watch an episode the day it aired', dayOne ? 1 : 0, 1),
     b('friends', '🤝', 'Super Best Friends', 'Follow 5 people', following, 5),
-    b('bookworm', '📚', 'Bookworm', "Read 5 of Butters' Book Club picks during their week", clubReadCount(logs, ctx.clubPicks || []), 5),
+    b('bookworm', '📚', 'Bookworm', "Review 3 of Butters' Book Club picks during their week", clubReviewCount(logs, ctx.clubPicks || []), 3),
     b('ringmaster', '🥊', 'Ringmaster', "Judge 100 fights in Cartman's Cage Match", ctx.cageMatches || 0, 100),
   ];
 }
 
-/** How many Book Club picks were logged during their own week. clubPicks: [{ pick, start, end }] */
-export function clubReadCount(logs, clubPicks) {
-  return clubPicks.filter((p) => p.pick && logs.some((l) => l.episode_id === p.pick.id
+
+/** How many Book Club picks were reviewed (logged with review text) during their own week. clubPicks: [{ pick, start, end }] */
+export function clubReviewCount(logs, clubPicks) {
+  return clubPicks.filter((p) => p.pick && logs.some((l) => l.episode_id === p.pick.id && l.review && l.review.trim()
     && new Date(l.created_at) >= p.start && new Date(l.created_at) < p.end)).length;
 }
