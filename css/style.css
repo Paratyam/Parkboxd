@@ -835,25 +835,25 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .streak-text .who, .streak-best { font-size: 12px; color: #b7d8ad; }
 
 /* Mr. Garrison's Report Card */
-.report-card { background-color: #f6f1e1; color: #2b2b2b; padding: 22px 24px; background-image: repeating-linear-gradient(transparent 0 27px, rgba(74,144,226,.18) 27px 28px); }
-.rc-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 2px solid #c0392b; padding-bottom: 10px; margin-bottom: 12px; }
-.rc-head .cut { color: #c0392b; font-size: 14px; display: block; }
-.rc-head strong { font-family: 'Luckiest Guy', cursive; font-size: 32px; color: #1d3557; }
+.report-card { background-color: var(--surface); color: var(--text-soft); padding: 22px 24px; background-image: repeating-linear-gradient(transparent 0 27px, rgba(255,255,255,.035) 27px 28px); }
+.rc-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 2px solid #d9645a; padding-bottom: 10px; margin-bottom: 12px; }
+.rc-head .cut { color: #ff8a7a; font-size: 14px; display: block; }
+.rc-head strong { font-family: 'Luckiest Guy', cursive; font-size: 32px; color: var(--white); }
 .rc-meta { font-size: 13px; line-height: 1.6; text-align: right; }
 .rc-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.rc-table th, .rc-table td { text-align: left; padding: 7px 8px; border-bottom: 1px solid rgba(0,0,0,.12); vertical-align: top; }
-.rc-table thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: #555; }
-.rc-table a { color: #1d3557; font-weight: 700; }
-.rc-table td:nth-child(3) { color: #555; white-space: nowrap; }
+.rc-table th, .rc-table td { text-align: left; padding: 7px 8px; border-bottom: 1px solid rgba(255,255,255,.1); vertical-align: top; }
+.rc-table thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+.rc-table a { color: var(--white); font-weight: 700; }
+.rc-table td:nth-child(3) { color: var(--muted); white-space: nowrap; }
 .rc-grade { font-family: 'Luckiest Guy', cursive; font-size: 24px; display: inline-block; transform: rotate(-6deg); }
-.grade-a { color: #2e8b3a; } .grade-b { color: #1f6fb2; } .grade-c { color: #b9770e; } .grade-d { color: #d35400; } .grade-f { color: #c0392b; }
+.grade-a { color: #5fd46f; } .grade-b { color: #6ab8f7; } .grade-c { color: #f2c14e; } .grade-d { color: #ff9a4d; } .grade-f { color: #ff7a6b; }
 .rc-foot { margin-top: 14px; font-size: 14px; }
 .rc-foot p { margin: 4px 0; }
-.rc-sign { text-align: right; font-style: italic; font-family: 'Luckiest Guy', cursive; font-size: 18px; color: #c0392b; }
+.rc-sign { text-align: right; font-style: italic; font-family: 'Luckiest Guy', cursive; font-size: 18px; color: #ff8a7a; }
 @media (max-width: 640px) { .rc-meta { text-align: left; } }
-.grade-inc { color: #888; font-size: 18px; }
-.rc-inc td, .rc-inc th { color: #777; }
-.rc-need { display: block; font-size: 11px; color: #999; }
+.grade-inc { color: var(--muted); font-size: 18px; }
+.rc-inc td, .rc-inc th { color: var(--muted); }
+.rc-need { display: block; font-size: 11px; color: var(--muted); }
 
 /* Cage Match extras */
 .cage-top { display: flex; gap: 14px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
@@ -867,15 +867,15 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .cage-move.up { color: var(--green); } .cage-move.down { color: #e5534b; } .cage-move.new { color: var(--yellow); }
 .cage-note { display: block; margin-top: 6px; }
 .rc-actions { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
-.rc-actions .chip { background: #fff; color: #1d3557; border: 2px solid #1d3557; }
-.rc-actions .chip:hover { background: #e4e9f2; }
-.rc-actions .chip[aria-pressed="true"] { background: #1d3557; color: #fff; }
-.rc-actions .btn-ghost { background: #fff; color: #1d3557; border: 2px solid #1d3557; padding: 6px 12px; }
-.rc-actions .btn-ghost:hover { background: #e4e9f2; color: #1d3557; }
-.rc-curve-tag { font-size: 11px; background: #1d3557; color: #fff; border-radius: 3px; padding: 1px 5px; }
-.rc-stars { display: block; margin-top: 4px; font-size: 12px; color: #555; }
-.rc-stars a { color: #1d3557; font-weight: 600; }
-.rc-st { color: #b9770e; letter-spacing: 1px; }
+.rc-actions .chip { background: transparent; color: var(--text); border: 2px solid var(--line-2); }
+.rc-actions .chip:hover { background: var(--line-2); color: var(--white); }
+.rc-actions .chip[aria-pressed="true"] { background: var(--green); color: var(--bg-deep); border-color: var(--green); }
+.rc-actions .btn-ghost { background: transparent; color: var(--text); border: 2px solid var(--line-2); padding: 6px 12px; }
+.rc-actions .btn-ghost:hover { background: var(--line-2); color: var(--white); }
+.rc-curve-tag { font-size: 11px; background: var(--line-2); color: var(--white); border-radius: 3px; padding: 1px 5px; }
+.rc-stars { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); }
+.rc-stars a { color: var(--text); font-weight: 600; }
+.rc-st { color: #f2c14e; letter-spacing: 1px; }
 .cage-card .cage-rating { font-size: 13px; color: var(--muted); } .cage-card .cage-rating b { color: var(--green); letter-spacing: 1px; font-size: 16px; }
 
 /* ===== Cartman's Cage Match arena ===== */

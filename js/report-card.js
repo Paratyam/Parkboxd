@@ -1,5 +1,5 @@
 // Mr. Garrison's Report Card: every season gets a letter grade from your ratings.
-import { esc, stars, toast } from './ui.js?v=20261127122852';
+import { esc, stars, toast } from './ui.js?v=20261127123201';
 
 // Season averages bunch up between 3 and 4, so the scale is set around that: 4.2+ is
 // already exceptional across a whole season, and 3.0 is a perfectly fine season.
@@ -217,7 +217,7 @@ async function saveImage(card, name, button) {
     const { toBlob } = await import('https://esm.sh/html-to-image@1.11.11');
     const blob = await toBlob(card, {
       pixelRatio: 2,
-      backgroundColor: '#f6f1e1',
+      backgroundColor: getComputedStyle(card).backgroundColor,
       filter: (node) => !(node.classList && node.classList.contains('rc-actions')),
     });
     const file = new File([blob], `report-card-${name}.png`, { type: 'image/png' });
