@@ -1,9 +1,9 @@
 // PC Principal's "PC it" filter: rewrites a review in his voice with word swaps, plus an opener,
 // a closer and a verdict from the star rating. Browser only, never saved. Any review card with a
 // [data-pc] button gets the toggle (installPC() listens once for the whole page).
-import { esc } from './ui.js?v=20261127081050';
+import { esc } from './ui.js?v=20261127081202';
 
-// [pattern, replacement]. Order matters: longer phrases first. "$c" keeps a capital first letter.
+// [pattern, replacement]. Order matters: longer phrases first.
 const SWAPS = [
   [/\bthe best\b/gi, 'the most woke'],
   [/\bthe worst\b/gi, 'the least inclusive'],
@@ -15,7 +15,7 @@ const SWAPS = [
   [/\b(trash|garbage)\b/gi, 'not an inclusive viewing space'],
   [/\b(terrible|awful|horrible)\b/gi, 'deeply problematic'],
   [/\bbad\b/gi, 'problematic'],
-  [/\bboring\b/gi, 'low-energy, bro'],
+  [/\bboring\b/gi, 'low-energy'],
   [/\b(stupid|dumb)\b/gi, 'intellectually non-inclusive'],
   [/\b(funny|hilarious)\b/gi, 'problematic but valid'],
   [/\b(amazing|awesome|great)\b/gi, 'totally woke'],
@@ -50,10 +50,18 @@ const hash = (s) => { let h = 7; for (const ch of s) h = (Math.imul(h, 31) + ch.
 export function pcify(text, rating) {
   let out = String(text || '');
   for (const [re, to] of SWAPS) {
-    out = out.replace(re, (m) => (m[0] === m[0].toUpperCase() && m[0] !== m[0].toLowerCase() ? to[0].toUpperCase() + to.slice(1) : to));
+    // Capitalise the replacement only where it starts a sentence.
+    out = out.replace(re, (m, ...rest) => {
+      const at = rest[rest.length - 2];
+      const start = /(^|[.!?]\s+)$/.test(out.slice(0, at));
+      return start ? to[0].toUpperCase() + to.slice(1) : to;
+    });
   }
+  out = out.trim();
+  if (out && !/[.!?)]$/.test(out)) out += '.';
+  else if (out.endsWith(')') && !/[.!?]\)$/.test(out)) out += '.';
   const h = hash(text || '');
-  return [OPENERS[h % OPENERS.length], out.trim(), verdict(rating == null ? null : Number(rating)), CLOSERS[(h >> 3) % CLOSERS.length]].filter(Boolean).join(' ');
+  return [OPENERS[h % OPENERS.length], out, verdict(rating == null ? null : Number(rating)), CLOSERS[(h >> 3) % CLOSERS.length]].filter(Boolean).join(' ');
 }
 
 /** The toggle button for a review card's footer. */
