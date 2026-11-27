@@ -1,12 +1,12 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127142419';
-import { initPage, logEpisode } from '../layout.js?v=20261127142419';
-import { supabase } from '../supabase.js?v=20261127142419';
-import { $, esc, epCode, toast } from '../ui.js?v=20261127142419';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127142419';
-import { mysterySVG } from '../art.js?v=20261127142419';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127142419';
+import { SITE_LINK } from '../config.js?v=20261127143645';
+import { initPage, logEpisode } from '../layout.js?v=20261127143645';
+import { supabase } from '../supabase.js?v=20261127143645';
+import { $, esc, epCode, toast } from '../ui.js?v=20261127143645';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127143645';
+import { mysterySVG } from '../art.js?v=20261127143645';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127143645';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -35,7 +35,9 @@ if (!pool.length) {
   root.removeAttribute('aria-busy');
   throw new Error('no episodes');
 }
-const answer = pool[seededIndex(today * 7 + 13, pool.length)];
+// A day listed here was reset and drew a new episode (day = days since 1970-01-01 UTC).
+const RESEEDS = { 20784: 1 };
+const answer = pool[seededIndex(today * 7 + 13 + (RESEEDS[today] || 0) * 100003, pool.length)];
 const [{ data: tagRows }, { data: rated }] = await Promise.all([
   supabase.from('episode_tags').select('tags(name, kind)').eq('episode_id', answer.id),
   supabase.from('episode_ratings').select('avg_rating, rating_count').eq('episode_id', answer.id).maybeSingle(),

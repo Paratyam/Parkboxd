@@ -1,9 +1,9 @@
 // arc.html?id=N: a multi-part arc.
-import { initPage } from '../layout.js?v=20261127142419';
-import { SITE_NAME } from '../config.js?v=20261127142419';
-import { $, esc, params } from '../ui.js?v=20261127142419';
-import { loadAllEpisodes, myLogMap, cardHTML } from '../episodes.js?v=20261127142419';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261127142419';
+import { initPage } from '../layout.js?v=20261127143645';
+import { SITE_NAME } from '../config.js?v=20261127143645';
+import { $, esc, params } from '../ui.js?v=20261127143645';
+import { loadAllEpisodes, myLogMap, cardHTML } from '../episodes.js?v=20261127143645';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261127143645';
 
 const { user } = await initPage({ title: 'Arc', auth: 'required' });
 const root = $('#arc');
