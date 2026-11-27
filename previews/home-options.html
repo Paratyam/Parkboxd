@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parkboxd home page options</title>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body { padding-bottom: 60px; }
+  .opt-nav { position: sticky; top: 0; z-index: 50; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 12px; background: #0b0e11; border-bottom: 3px solid #000; }
+  .opt-nav a { padding: 6px 14px; border-radius: 6px; background: var(--surface-2); color: var(--white); font-weight: 700; }
+  .opt { max-width: 1180px; margin: 40px auto 0; padding: 0 20px; }
+  .opt-label { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; margin-bottom: 12px; }
+  .opt-label h2 { margin: 0; font-family: var(--font-cut); font-size: 34px; color: var(--yellow); }
+  .opt-label p { margin: 0; color: var(--text-soft); max-width: 760px; }
+  .frame { border: 4px solid #000; border-radius: 12px; overflow: hidden; box-shadow: 6px 6px 0 #000; background: var(--bg); }
+  .frame .wrap { max-width: 1100px; }
+  .mini-header { display: flex; align-items: center; gap: 22px; padding: 12px 24px; background: var(--bg-deep); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text); }
+  .mini-header .logo-letter { font-size: 16px !important; }
+  .mini-header .grow { flex: 1; }
+  .stripe { height: 5px; background: linear-gradient(90deg, #3fb950 0 20%, #4a90e2 20% 40%, #d63a3a 40% 60%, #f5c518 60% 80%, #f2711c 80%); }
+  .page-pad { padding: 28px 24px; display: flex; flex-direction: column; gap: 32px; }
+  .fake-thumb { aspect-ratio: 16/9; border-radius: 6px; position: relative; overflow: hidden; }
+  .fake-thumb span { position: absolute; top: 6px; left: 6px; background: rgba(255,255,255,.85); color: #111; font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 3px; }
+  .grid6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .card-title { font-size: 13px; font-weight: 700; margin-top: 6px; color: var(--white); }
+  .card-meta { font-size: 12px; color: var(--muted); }
+  .feed { display: flex; flex-direction: column; gap: 12px; }
+  .feed-row { display: flex; gap: 12px; align-items: center; padding: 10px; background: var(--surface); border-radius: 8px; }
+  .feed-row .fake-thumb { width: 90px; flex: 0 0 90px; }
+  .feed-row p { margin: 0; font-size: 14px; color: var(--text-soft); }
+  .feed-row b { color: var(--white); }
+  .pill-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .game-pill { display: flex; gap: 10px; align-items: center; padding: 10px 16px; border: 3px solid #000; border-radius: 999px; box-shadow: 3px 3px 0 #000; font-family: var(--font-cut); font-size: 18px; color: #fff; }
+  .game-pill .art { width: 32px; filter: none; }
+  .shelf { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 6px; }
+  .shelf > div { flex: 0 0 200px; }
+  .feature { position: relative; border: 4px solid #000; border-radius: 12px; overflow: hidden; box-shadow: 5px 5px 0 #000; min-height: 300px; display: flex; align-items: flex-end; background: linear-gradient(135deg, #2f6db5, #6c38a6 60%, #f2711c); }
+  .feature .inner { padding: 26px; background: linear-gradient(transparent, rgba(0,0,0,.75)); width: 100%; }
+  .feature h3 { margin: 4px 0; font-family: var(--font-cut); font-size: 44px; color: #fff; text-shadow: 3px 3px 0 #000; }
+  .feature .tag { display: inline-block; background: #f5c518; color: #111; font-weight: 800; padding: 2px 10px; border: 2px solid #000; border-radius: 4px; transform: rotate(-2deg); }
+  .side { display: flex; flex-direction: column; gap: 18px; }
+  .tile { border: 3px solid #000; border-radius: 10px; box-shadow: 4px 4px 0 #000; padding: 14px 16px; }
+  .tile h4 { margin: 0 0 4px; font-family: var(--font-cut); font-size: 20px; }
+  .tile p { margin: 0; font-size: 13px; }
+  .bar2 { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; margin-top: 6px; } .bar2 > div { height: 100%; background: var(--green); }
+  .layout-dash { display: grid; grid-template-columns: 1.7fr 1fr; gap: 26px; }
+  .quick { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 16px 20px; border: 3px solid #000; border-radius: 10px; box-shadow: 4px 4px 0 #000; background: var(--surface); }
+  .quick h1 { margin: 0; font-family: var(--font-cut); font-size: 30px; color: var(--white); }
+  .big-games { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .big-games > a { min-height: 220px; }
+</style>
+</head>
+<body>
+<nav class="opt-nav"><a href="#current">Current</a><a href="#a">A · Social feed</a><a href="#b">B · Games first</a><a href="#c">C · Magazine</a></nav>
+<div id="out"></div>
+
+<script type="module">
+import { gloveSVG, booksSVG, mysterySVG } from '../js/art.js';
+
+const COLS = ['#d63a3a', '#2f6db5', '#3fb950', '#f2711c', '#6c38a6', '#c99700', '#1f8a8a', '#b5476b'];
+const EPS = ['Scott Tenorman Must Die', 'Casa Bonita', 'Make Love, Not Warcraft', 'Good Times with Weapons', 'The Coon', 'Imaginationland', 'Trapper Keeper', 'Pandemic', 'Fishsticks', 'Christian Rock Hard', 'Raisins', 'Marjorine'];
+const thumb = (i, code) => `<div class="fake-thumb" style="background:${COLS[i % COLS.length]}"><span>${code || `S${(i % 20) + 1} E${(i % 14) + 1}`}</span></div>`;
+const card = (i, meta) => `<div>${thumb(i)}<div class="card-title">${EPS[i % EPS.length]}</div><div class="card-meta">${meta || '★★★★ · 3 friends'}</div></div>`;
+const header = `<div class="mini-header"><span class="logo">${'PARKBOXD'.split('').map((c, i) => `<span class="logo-letter cut paper" style="background-color:${['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'][i % 5]};transform:rotate(${[-4, 3, -2, 5, -3, 2, -5, 4][i]}deg)">${c}</span>`).join('')}</span><span>Episodes</span><span>Seasons</span><span>Book Club</span><span>Cage Match</span><span>Rankings</span><span class="grow"></span><span class="btn btn-green" style="padding:6px 12px">+ Log</span></div><div class="stripe"></div>`;
+
+const clubAd = `<a class="club-ad" href="#"><span class="club-tape"></span><span class="club-ad-head"><span class="club-ad-books">${booksSVG()}</span><span class="club-ad-title cut">Butters' Book Club</span></span><span class="club-ad-text">This week's book: <strong>Casa Bonita</strong> · S7 E11. Butters already wrote a review, and it's real nice.</span><span class="club-ad-cta cut">See the reviews →</span><span class="club-sticker">⭐<small>Butters' pick</small></span></a>`;
+const cageAd = `<a class="cage-ad" href="#"><span class="cage-ad-head"><span class="cage-ad-glove">${gloveSVG()}</span><span class="cage-ad-title cut">Cartman's Cage Match</span></span><span class="cage-ad-text">Your champion: <strong>Scott Tenorman Must Die</strong>. Think anything can take it down?</span><span class="cage-ad-cta cut">Defend the title →</span></a>`;
+const kennyAd = `<a class="kenny-ad" href="#"><span class="kenny-ad-head"><span class="kenny-ad-logo">${mysterySVG()}</span><span class="kenny-ad-title cut">Kenny's Mystery Episode</span></span><span class="kenny-ad-text">Daily puzzle #2. Guess the episode from a blurry picture.</span><span class="kenny-ad-cta cut">Play today's puzzle →</span></a>`;
+const streak = `<div class="streak-card paper"><div class="streak-num"><span>🌱</span><b>12</b><span>days</span></div><div class="streak-text"><strong>Your Tegridy streak</strong><p>“A full week! That is real tegridy, right there.” <span class="who">— Randy</span></p><span class="streak-best">Longest: 26 days · ✓ logged today</span></div></div>`;
+const hero = (small) => `<section class="hero${small ? ' small' : ''}" style="background:var(--sky)"><svg class="hero-mountains" viewBox="0 0 1440 320" preserveAspectRatio="none"><path d="M0 320 L0 200 L160 90 L260 170 L420 40 L560 160 L700 70 L860 180 L1000 60 L1150 170 L1300 100 L1440 190 L1440 320 Z" fill="#2c3e52"/><path d="M0 320 L0 260 L240 220 L520 250 L800 210 L1100 245 L1440 220 L1440 320 Z" fill="#eef3f7"/></svg><div class="wrap hero-inner"><h1 class="cut">Welcome back,<br>paratyam.</h1><p>What did you watch? Log it, rate it, and roast your friends' takes.</p><div class="hero-actions"><span class="paper btn-paper" style="background-color:var(--green)">+ Log an episode</span><span class="paper btn-paper" style="background-color:var(--yellow)">🎲 Random episode</span></div></div></section>`;
+const feed = (n) => `<div class="feed">${Array.from({ length: n }, (_, i) => `<div class="feed-row">${thumb(i + 3)}<p><b>${['eliyagos', 'itai', 'paratyam'][i % 3]}</b> ${['rated', 'reviewed', 'liked'][i % 3]} <b>${EPS[(i + 3) % EPS.length]}</b> ${['★★★★½', '“funniest episode ever, Cartman at his worst”', '♥'][i % 3]}<br><span class="card-meta">${i + 1}h ago</span></p></div>`).join('')}</div>`;
+const progress = `<div class="tile" style="background:var(--surface)"><h4 style="color:var(--white)">Your progress</h4>${['Season 7', 'Season 8', 'Everything'].map((s, i) => `<div style="font-size:13px;margin-top:8px">${s}<div class="bar2"><div style="width:${[70, 40, 32][i]}%"></div></div></div>`).join('')}</div>`;
+
+const OPTIONS = [
+  { id: 'current', name: 'Current', desc: 'What it looks like now: big welcome hero, today\'s anniversary, the three game cards, your streak, Stan\'s Picks, then popular episodes and the social feed with a sidebar.',
+    html: `${hero()}<div class="wrap page-pad"><div class="paper callout" style="background-color:#f5c518;color:#111"><b class="cut">Aired on this day</b> · The Coon first aired 2009</div><div class="home-promos">${clubAd}${cageAd}${kennyAd}</div>${streak}<section><div class="section-head"><h2>👦 Stan's Picks</h2></div><div class="grid6">${[0, 1, 2, 3, 4, 5].map((i) => card(i, 'eliyagos (91% match) · ★5')).join('')}</div></section><section><div class="section-head"><h2>Popular with friends this week</h2></div><div class="grid6">${[6, 7, 8, 9, 10, 11].map((i) => card(i)).join('')}</div></section></div>` },
+  { id: 'a', name: 'A · Social feed', desc: 'Letterboxd-style. A slim welcome bar instead of the big hero, so your friends\' activity and reviews are the first thing you see. Games, streak and progress live in a right-hand sidebar as compact tiles.',
+    html: `<div class="wrap page-pad"><div class="quick"><h1>Hey paratyam. Watched something?</h1><div style="display:flex;gap:10px"><span class="btn btn-green">+ Log an episode</span><span class="btn btn-ghost">🎲 Random</span></div></div><div class="layout-dash"><div style="display:flex;flex-direction:column;gap:26px"><section><div class="section-head"><h2>Friends' activity</h2></div>${feed(5)}</section><section><div class="section-head"><h2>👦 Stan's Picks</h2></div><div class="grid4">${[0, 1, 2, 3].map((i) => card(i, '★4.5 from your taste twins')).join('')}</div></section></div><aside class="side">${streak}<div class="tile" style="background:#fff3a6;color:#1d2a44"><h4 style="color:#2f6db5">📚 Book Club</h4><p>This week: <b>Casa Bonita</b>. 3 members read it.</p></div><div class="tile" style="background:#15181d;color:#eee;border-color:#000;box-shadow:inset 0 0 0 2px #f5c518,4px 4px 0 #000"><h4 style="color:#f5c518">🥊 Cage Match</h4><p>Champion: <b>Scott Tenorman Must Die</b></p></div><div class="tile" style="background:linear-gradient(160deg,#6c38a6,#43206b);color:#f1e8ff"><h4 style="color:#ffb066">🔍 Mystery #2</h4><p>Not solved yet. 6 lives left.</p></div>${progress}</aside></div></div>` },
+  { id: 'b', name: 'B · Games first', desc: 'The fun stuff up top. No big hero: the three games become large posters across the top (with today\'s status on each), then a row with your streak and quick actions, then Stan\'s Picks and the feed.',
+    html: `<div class="wrap page-pad"><div class="big-games home-promos">${clubAd}${cageAd}${kennyAd}</div><div style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px;align-items:stretch">${streak}<div class="quick" style="flex-direction:column;align-items:stretch;justify-content:center"><b class="cut" style="font-size:22px;color:#fff">Watched something?</b><div style="display:flex;gap:10px"><span class="btn btn-green">+ Log</span><span class="btn btn-ghost">🎲 Random</span><span class="btn btn-ghost">Search</span></div></div></div><section><div class="section-head"><h2>👦 Stan's Picks</h2></div><div class="grid6">${[0, 1, 2, 3, 4, 5].map((i) => card(i, 'eliyagos (91% match) · ★5')).join('')}</div></section><div class="two-col"><section><div class="section-head"><h2>Recent reviews from friends</h2></div>${feed(3)}</section><aside class="side">${progress}</aside></div></div>` },
+  { id: 'c', name: 'C · Magazine', desc: 'A big featured banner up top (this week\'s Book Club book, or the anniversary episode, with a big picture), the games as a slim row of colourful pills, then scrolling shelves: Stan\'s Picks, popular with friends, friends\' reviews.',
+    html: `<div class="wrap page-pad"><div class="feature"><div class="inner"><span class="tag">📚 This week in Butters' Book Club</span><h3>Casa Bonita</h3><p style="margin:0;color:#eee">S7 E11 · 3 friends read it this week · Butters gave it ★★★★½</p><div style="display:flex;gap:10px;margin-top:12px"><span class="btn btn-green">I read it! Let's talk</span><span class="btn btn-ghost" style="color:#fff">See the reviews</span></div></div></div><div class="pill-row"><span class="game-pill" style="background:#15181d;box-shadow:inset 0 0 0 2px #f5c518,3px 3px 0 #000">${gloveSVG()} Cage Match</span><span class="game-pill" style="background:#6c38a6">${mysterySVG()} Mystery #2</span><span class="game-pill" style="background:#2f5d34">🌱 12-day streak</span><span class="game-pill" style="background:#d63a3a">🎲 Random episode</span></div><section><div class="section-head"><h2>👦 Stan's Picks</h2><span class="result-count">scroll →</span></div><div class="shelf">${[0, 1, 2, 3, 4, 5, 6, 7].map((i) => card(i, '★4.5 from your taste twins')).join('')}</div></section><section><div class="section-head"><h2>Popular with friends</h2><span class="result-count">scroll →</span></div><div class="shelf">${[8, 9, 10, 11, 0, 1, 2, 3].map((i) => card(i)).join('')}</div></section><section><div class="section-head"><h2>Friends' reviews</h2></div>${feed(3)}</section></div>` },
+];
+
+document.getElementById('out').innerHTML = OPTIONS.map((o) => `
+  <section class="opt" id="${o.id}">
+    <div class="opt-label"><h2>${o.name}</h2><p>${o.desc}</p></div>
+    <div class="frame">${header}${o.html}</div>
+  </section>`).join('');
+</script>
+</body>
+</html>
