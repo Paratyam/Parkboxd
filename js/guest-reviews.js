@@ -2,14 +2,15 @@
 // The reviews live in code, not the database, so they never count toward averages. People can
 // still like and comment on them: guest_review_likes / guest_review_comments, keyed by
 // '<character>:<normalised episode title>'.
-import { supabase } from './supabase.js?v=20261127201827';
-import { esc, stars, avatarHTML, toast } from './ui.js?v=20261127201827';
-import { threadHTML, wireThread } from './comments.js?v=20261127201827';
-import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201827';
-import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127201827';
-import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127201827';
-import { CARTMAN, RATED as C_RATED, REVIEWS as C_REVIEWS, cartmanCommentHTML } from './cartman-profile.js?v=20261127201827';
-import { KENNY, RATED as N_RATED, REVIEWS as N_REVIEWS } from './kenny-profile.js?v=20261127201827';
+import { supabase } from './supabase.js?v=20261127202236';
+import { esc, epCode, stars, avatarHTML, toast } from './ui.js?v=20261127202236';
+import { threadHTML, wireThread } from './comments.js?v=20261127202236';
+import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127202236';
+import { thumbHTML } from './episodes.js?v=20261127202236';
+import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127202236';
+import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127202236';
+import { CARTMAN, RATED as C_RATED, REVIEWS as C_REVIEWS, cartmanCommentHTML } from './cartman-profile.js?v=20261127202236';
+import { KENNY, RATED as N_RATED, REVIEWS as N_REVIEWS } from './kenny-profile.js?v=20261127202236';
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 
@@ -64,18 +65,23 @@ export async function loadGuestExtras(guests, me) {
   return out;
 }
 
-export function guestReviewHTML(g, extras, me) {
+// Looks the same as a member's review card (reviewHTML in social.js). Pass `ep` on profile pages to
+// show the episode picture and title.
+export function guestReviewHTML(g, extras, me, ep = null) {
   const likes = extras?.likes.get(g.key) || 0;
   const liked = extras?.mine.has(g.key);
   const comments = extras?.comments.get(g.key) || [];
   const open = openThreads.has(g.key);
   return `
     <article class="review guest-review" data-guest="${esc(g.key)}">
-      ${avatarHTML(g.who, 36)}
+      ${ep
+        ? `<a href="episode.html?id=${ep.id}" style="flex:0 0 110px" aria-hidden="true" tabindex="-1">${thumbHTML(ep, { showTitle: false })}</a>`
+        : avatarHTML(g.who, 36)}
       <div class="review-body">
+        ${ep ? `<div style="font-size:14px"><a class="ep-link" href="episode.html?id=${ep.id}">${esc(ep.title)}</a> <span style="color:var(--muted)">${esc(epCode(ep))}</span></div>` : ''}
         <div class="review-meta">
-          <span>Review by <a href="profile.html?u=${encodeURIComponent(g.who.username)}"><strong>${esc(g.who.display_name)}</strong></a></span>
-          <span class="guest-tag" title="A built-in character account. Doesn't count toward the average.">Character</span>
+          ${ep ? avatarHTML(g.who, 22) : ''}
+          <span>${ep ? '' : 'Review by '}<a href="profile.html?u=${encodeURIComponent(g.who.username)}"><strong>${esc(g.who.display_name)}</strong></a></span>
           <span class="rating">${stars(g.rating)}</span>
           ${g.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}
         </div>
@@ -138,4 +144,17 @@ export function wireGuestReviews(root, guests, extras, onChange) {
     });
     wireThread(thread, { table: 'guest_review_comments', extra: { review_key: g.key }, comments: extras.comments.get(g.key) || [], onChange });
   }
+}
+
+// The review list on a character's profile, in the order of `eps`, with likes and comments.
+export async function showProfileReviews(box, username, eps) {
+  const list = eps.flatMap((ep) => guestReviewsFor(ep).filter((g) => g.who.username === username).map((g) => ({ g, ep })));
+  const guests = list.map((x) => x.g);
+  const { data: { user } } = await supabase.auth.getUser();
+  const draw = async () => {
+    const extras = await loadGuestExtras(guests, user?.id);
+    box.innerHTML = list.map((x) => guestReviewHTML(x.g, extras, user?.id, x.ep)).join('');
+    wireGuestReviews(box, guests, extras, draw);
+  };
+  await draw();
 }

@@ -2,10 +2,10 @@
 // Kyle, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. He loves the episodes where he wins and hates nearly everything else, and he leaves a
 // comment under every one of Kyle's reviews. Episodes are matched by title.
-import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201827';
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201827';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201827';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127201827';
+import { pcTalkButtonHTML } from './pc.js?v=20261127202236';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127202236';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127202236';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127202236';
 
 export const CARTMAN = { username: 'cartman', display_name: 'Eric Cartman', avatar_color: '#e5534b', avatar_icon: 'beanie' };
 
@@ -131,16 +131,7 @@ export async function renderCartmanProfile(root) {
     <div class="two-col">
       <section>
         <div class="section-head"><h2>Reviews</h2><span class="result-count">${reviews.length} reviews</span></div>
-        <div class="reviews">${reviews.map((x) => `
-          <article class="review">
-            <a href="episode.html?id=${x.ep.id}" style="flex:0 0 110px" aria-hidden="true" tabindex="-1">${thumbHTML(x.ep, { showTitle: false })}</a>
-            <div class="review-body">
-              <div style="font-size:14px"><a class="ep-link" href="episode.html?id=${x.ep.id}">${esc(x.ep.title)}</a> <span style="color:var(--muted)">${esc(epCode(x.ep))}</span></div>
-              <div class="review-meta">${avatarHTML(CARTMAN, 22)}<span><strong>Eric Cartman</strong></span><span class="rating">${stars(x.r)}</span>${x.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}</div>
-              <p>${esc(x.text)}</p>
-              ${pcTalkButtonHTML('cartman', x.text)}
-            </div>
-          </article>`).join('')}</div>
+        <div class="reviews" data-guest-list></div>
 
         <div class="section-head" style="margin-top:32px"><h2>Recent diary</h2></div>
         <ol class="diary">${diary.map((l) => `
@@ -167,7 +158,10 @@ export async function renderCartmanProfile(root) {
         </section>
       </aside>
     </div>`;
-  installPC();
+
+  // Loaded here, not at the top: guest-reviews.js imports this file.
+  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127202236');
+  await showProfileReviews(root.querySelector('[data-guest-list]'), 'cartman', reviews.map((x) => x.ep));
   root.removeAttribute('aria-busy');
 
   const follow = root.querySelector('#follow-cartman');

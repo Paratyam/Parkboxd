@@ -2,10 +2,9 @@
 // accounts, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. His reviews are all muffled, and also show on those episode pages
 // (js/guest-reviews.js). Episodes are matched by title.
-import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201827';
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201827';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201827';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127201827';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127202236';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127202236';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127202236';
 
 export const KENNY = { username: 'kenny', display_name: 'Kenny McCormick', avatar_color: '#f2711c', avatar_icon: 'mittens' };
 
@@ -78,16 +77,7 @@ export async function renderKennyProfile(root) {
     <div class="two-col">
       <section>
         <div class="section-head"><h2>Reviews</h2><span class="result-count">${reviews.length} reviews</span></div>
-        <div class="reviews">${reviews.map((x) => `
-          <article class="review">
-            <a href="episode.html?id=${x.ep.id}" style="flex:0 0 110px" aria-hidden="true" tabindex="-1">${thumbHTML(x.ep, { showTitle: false })}</a>
-            <div class="review-body">
-              <div style="font-size:14px"><a class="ep-link" href="episode.html?id=${x.ep.id}">${esc(x.ep.title)}</a> <span style="color:var(--muted)">${esc(epCode(x.ep))}</span></div>
-              <div class="review-meta">${avatarHTML(KENNY, 22)}<span><strong>Kenny McCormick</strong></span><span class="rating">${stars(x.r)}</span>${x.liked ? '<span class="heart" aria-label="Liked">♥</span>' : ''}</div>
-              <p>${esc(x.text)}</p>
-              ${pcTalkButtonHTML('kenny', x.text)}
-            </div>
-          </article>`).join('')}</div>
+        <div class="reviews" data-guest-list></div>
 
         <div class="section-head" style="margin-top:32px"><h2>Recent diary</h2></div>
         <ol class="diary">${diary.map((l) => `
@@ -114,7 +104,10 @@ export async function renderKennyProfile(root) {
         </section>
       </aside>
     </div>`;
-  installPC();
+
+  // Loaded here, not at the top: guest-reviews.js imports this file.
+  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127202236');
+  await showProfileReviews(root.querySelector('[data-guest-list]'), 'kenny', reviews.map((x) => x.ep));
   root.removeAttribute('aria-busy');
 
   const follow = root.querySelector('#follow-kenny');
