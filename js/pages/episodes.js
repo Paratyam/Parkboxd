@@ -1,9 +1,9 @@
-import { initPage } from '../layout.js?v=20261127072141';
-import { supabase } from '../supabase.js?v=20261127072141';
-import { $, esc, params } from '../ui.js?v=20261127072141';
-import { loadAllEpisodes, myLogMap, cardHTML } from '../episodes.js?v=20261127072141';
-import { FOCUS_CHARACTERS } from '../data/character-tags.js?v=20261127072141';
-import { line } from '../jokes.js?v=20261127072141';
+import { initPage } from '../layout.js?v=20261127072512';
+import { supabase } from '../supabase.js?v=20261127072512';
+import { $, esc, params } from '../ui.js?v=20261127072512';
+import { loadAllEpisodes, myLogMap, cardHTML, seasonCode, matchesCode } from '../episodes.js?v=20261127072512';
+import { FOCUS_CHARACTERS } from '../data/character-tags.js?v=20261127072512';
+import { line } from '../jokes.js?v=20261127072512';
 
 const { user } = await initPage({ title: 'Episodes', auth: 'required' });
 
@@ -73,13 +73,13 @@ async function load() {
 
 function render() {
   const text = q.value.trim().toLowerCase();
-  const code = text.match(/^s(\d+)\s*e(\d+)$/);
+  const code = seasonCode(text); // S15 = the whole season, S15E3 = one episode
   const tagSet = tagSelect.value ? tagged.get(Number(tagSelect.value)) || new Set() : null;
   let list = all.filter((e) => {
     if (tagSet && !tagSet.has(e.id)) return false;
     if (filter === 'unwatched' && mine.has(e.id)) return false;
     if (['episode', 'special', 'movie'].includes(filter) && e.kind !== filter) return false;
-    if (code) return e.season === +code[1] && e.number === +code[2];
+    if (code) return matchesCode(e, code);
     return !text || e.title.toLowerCase().includes(text);
   });
 

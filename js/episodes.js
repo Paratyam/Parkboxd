@@ -1,7 +1,7 @@
 // Episode data helpers and the shared episode card.
-import { supabase } from './supabase.js?v=20261127072141';
-import { TMDB_IMAGE_BASE } from './config.js?v=20261127072141';
-import { esc, epCode, stars } from './ui.js?v=20261127072141';
+import { supabase } from './supabase.js?v=20261127072512';
+import { TMDB_IMAGE_BASE } from './config.js?v=20261127072512';
+import { esc, epCode, stars } from './ui.js?v=20261127072512';
 
 const FALLBACK = ['#b8432f', '#3b6ea8', '#6b4fa0', '#d0682a', '#2f8a5a', '#a8892f'];
 const EP_FIELDS = 'id, kind, season, number, title, overview, air_date, still_path, runtime';
@@ -58,6 +58,16 @@ export function seasonHref(ep) {
   if (ep.kind === 'special' || ep.season === 0) return 'seasons.html?s=specials';
   return `seasons.html?s=${ep.season}`;
 }
+
+// Search codes: "S15", "s 15", "season 15" → { season: 15, number: null }; "S15E3", "s15 e03",
+// "season 15 episode 3" → { season: 15, number: 3 }. Anything else → null.
+export function seasonCode(text) {
+  const m = String(text || '').trim().toLowerCase().match(/^s(?:eason)?\s*(\d{1,2})(?:\s*e(?:p(?:isode)?)?\s*(\d{1,3}))?$/);
+  return m ? { season: Number(m[1]), number: m[2] ? Number(m[2]) : null } : null;
+}
+
+// Does an episode match a seasonCode() result?
+export const matchesCode = (e, c) => e.kind === 'episode' && e.season === c.season && (c.number == null || e.number === c.number);
 
 // The thumbnail block (paper card with still, code chip and title).
 export function thumbHTML(ep, { size = 'w300', showTitle = true, extra = '', code = epCode(ep) } = {}) {

@@ -1,10 +1,10 @@
 // lists.html?tab=all|mine  (or ?u=name for one person's lists)
-import { initPage } from '../layout.js?v=20261127072141';
-import { supabase } from '../supabase.js?v=20261127072141';
-import { SITE_NAME } from '../config.js?v=20261127072141';
-import { $, esc, params, avatarHTML, notify } from '../ui.js?v=20261127072141';
-import { thumbHTML } from '../episodes.js?v=20261127072141';
-import { line } from '../jokes.js?v=20261127072141';
+import { initPage } from '../layout.js?v=20261127072512';
+import { supabase } from '../supabase.js?v=20261127072512';
+import { SITE_NAME } from '../config.js?v=20261127072512';
+import { $, esc, params, avatarHTML, notify } from '../ui.js?v=20261127072512';
+import { thumbHTML } from '../episodes.js?v=20261127072512';
+import { line } from '../jokes.js?v=20261127072512';
 
 const { user } = await initPage({ title: 'Lists', auth: 'required' });
 const root = $('#lists');

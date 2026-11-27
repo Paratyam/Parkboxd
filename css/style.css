@@ -1363,3 +1363,4 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .guest-note { margin: 8px 0 0; padding: 8px 10px; border-left: 3px solid var(--green); background: rgba(63,185,80,.08); font-size: 13px; color: var(--text-soft); }
 .guest-thread { margin: 10px 0 0; border-left-color: var(--green); background: rgba(63,185,80,.05); }
 .guest-thread[hidden] { display: none; }
+.search-pop-season { border-bottom: 1px solid var(--line); border-radius: 6px 6px 0 0; margin-bottom: 4px; }
