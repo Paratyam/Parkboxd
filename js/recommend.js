@@ -1,8 +1,8 @@
 // "You have to watch this": send an episode to a friend with a note. The database function
 // recommend_episode() puts it on their watchlist, messages it to them, and tells you when they
 // rate it. Only people who follow each other can send to each other.
-import { supabase } from './supabase.js?v=20261127193601';
-import { esc, avatarHTML, toast, stars } from './ui.js?v=20261127193601';
+import { supabase } from './supabase.js?v=20261127194038';
+import { esc, avatarHTML, toast, stars } from './ui.js?v=20261127194038';
 
 async function mutuals(me) {
   const [{ data: out }, { data: inc }] = await Promise.all([
