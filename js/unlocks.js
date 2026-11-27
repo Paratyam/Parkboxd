@@ -1,11 +1,11 @@
 // "You unlocked a badge" message: what you earned and every perk that comes with it. Checked
 // after anything that can earn a badge (js/supabase.js announces it) and now and then on page
 // load. profiles.badges_seen remembers what was already announced, on every device.
-import { supabase } from './supabase.js?v=20261127190744';
-import { esc, avatarHTML } from './ui.js?v=20261127190744';
-import { loadBadges, rankFor } from './badges.js?v=20261127190744';
-import { AVATAR_ICONS } from './avatars.js?v=20261127190744';
-import { CACHE_KEY as FLAIR_CACHE } from './flair.js?v=20261127190744';
+import { supabase } from './supabase.js?v=20261127191134';
+import { esc, avatarHTML } from './ui.js?v=20261127191134';
+import { loadBadges, rankFor } from './badges.js?v=20261127191134';
+import { AVATAR_ICONS } from './avatars.js?v=20261127191134';
+import { CACHE_KEY as FLAIR_CACHE } from './flair.js?v=20261127191134';
 
 const DIRTY = 'parkboxd-badges-dirty';
 const CHECKED = 'parkboxd-badges-checked';

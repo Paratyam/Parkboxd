@@ -244,3 +244,4 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Bookworm: gold library card tag after your name and a gold library card on your profile; switchable in Edit profile (`flair_off` value `bookworm`)
 - Case Closed: Detective tag on the Mystery leaderboard. Screw You Guys: "going home" stamp on reviews of 1 star or less. Ringmaster: Cartman announces you as guest referee in the Cage Match
 - Badge checks for other people come from the flair cache (`hasBadge` / `iHave` in `js/flair.js`), cleared when you unlock something
+- Edit profile > Badge extras also shows how to enter Professor Chaos and Mysterion modes, only to badge holders

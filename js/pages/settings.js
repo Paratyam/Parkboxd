@@ -1,13 +1,13 @@
-import { initPage, refreshBell } from '../layout.js?v=20261127190744';
-import { supabase } from '../supabase.js?v=20261127190744';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127190744';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127190744';
-import { loadStreaks } from '../streak.js?v=20261127190744';
-import { loadBadges, rankFor } from '../badges.js?v=20261127190744';
-import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261127190744';
-import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127190744';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127190744';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127190744';
+import { initPage, refreshBell } from '../layout.js?v=20261127191134';
+import { supabase } from '../supabase.js?v=20261127191134';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127191134';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127191134';
+import { loadStreaks } from '../streak.js?v=20261127191134';
+import { loadBadges, rankFor } from '../badges.js?v=20261127191134';
+import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261127191134';
+import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127191134';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127191134';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127191134';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -87,6 +87,11 @@ function drawSwitches() {
       <input type="checkbox" value="${key}"${earned && !flairOff.has(key) ? ' checked' : ''}${earned ? '' : ' disabled'}>
       <span>${label}${earned || !badges.size ? '' : ` (🔒 ${how})`}</span>
     </label>`).join('');
+  // How to get into the secret modes you've unlocked. Nothing shows until you have the badge.
+  $('#secret-modes').innerHTML = [
+    ['chaos', '😈 <strong>Professor Chaos mode:</strong> type “chaos” anywhere on the site, or tap the logo 5 times on a phone.'],
+    ['kenny', '❓ <strong>Mysterion mode:</strong> type “mysterion” anywhere on the site, or press and hold the logo on a phone.'],
+  ].filter(([id]) => badges.get(id)?.earned).map(([, how]) => `<p style="margin:0">${how}</p>`).join('');
 }
 drawSwitches();
 $('#flair-switches').addEventListener('change', (e) => { flairOff[e.target.checked ? 'delete' : 'add'](e.target.value); });

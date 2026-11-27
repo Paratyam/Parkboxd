@@ -1,9 +1,9 @@
 // Invite links (?invite=<username>): someone who joins through one follows the inviter.
 // Only new accounts follow automatically, so clicking a link never changes an existing one.
-import { supabase } from './supabase.js?v=20261127190744';
-import { USERNAME_RE, params, toast } from './ui.js?v=20261127190744';
-import { SITE_LINK } from './config.js?v=20261127190744';
-import { inviteMessage } from './share-text.js?v=20261127190744';
+import { supabase } from './supabase.js?v=20261127191134';
+import { USERNAME_RE, params, toast } from './ui.js?v=20261127191134';
+import { SITE_LINK } from './config.js?v=20261127191134';
+import { inviteMessage } from './share-text.js?v=20261127191134';
 
 const KEY = 'parkboxd-invite';
 const NEW_ACCOUNT_MS = 7 * 24 * 60 * 60 * 1000;
