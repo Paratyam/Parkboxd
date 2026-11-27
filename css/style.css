@@ -1887,3 +1887,5 @@ body:has(.site-header.menu-open) .install-ad, body:has(dialog[open]) .install-ad
 .share-how { margin: 0; font-size: 13px; line-height: 1.45; color: var(--text-soft); }
 .share-message { margin: 0; padding: 10px 12px; max-height: 22vh; overflow: auto; white-space: pre-line; overflow-wrap: anywhere; user-select: all; font-size: 13px; line-height: 1.45; background: var(--bg-deep); border: 1px solid var(--line-2); border-radius: 8px; }
 .share-dialog img { max-height: 42vh; }
+/* Mystery: what a clue is about */
+.kenny-topic { font-size: 14px; font-weight: 800; line-height: 1.3; padding-bottom: 4px; margin-bottom: 2px; border-bottom: 2px dashed rgba(43,19,0,.4); }

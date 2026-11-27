@@ -1,14 +1,14 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127172100';
-import { initPage, logEpisode } from '../layout.js?v=20261127172100';
-import { supabase } from '../supabase.js?v=20261127172100';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127172100';
-import { followingIds } from '../social.js?v=20261127172100';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127172100';
-import { mysterySVG } from '../art.js?v=20261127172100';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127172100';
-import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127172100';
+import { SITE_LINK } from '../config.js?v=20261127172227';
+import { initPage, logEpisode } from '../layout.js?v=20261127172227';
+import { supabase } from '../supabase.js?v=20261127172227';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127172227';
+import { followingIds } from '../social.js?v=20261127172227';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127172227';
+import { mysterySVG } from '../art.js?v=20261127172227';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127172227';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127172227';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -58,10 +58,10 @@ const character = (tagRows || []).map((t) => t.tags).filter((t) => t?.kind === '
 // translation underneath. The season and episode number come from the warmer/colder arrows.
 const [fate, evidence, comment] = MYSTERY_CLUES[`${answer.season}.${answer.number}`] || ['?'];
 const FATES = {
-  d: "I don't survive this one. Typical.",
-  s: 'I make it out alive! Dude, write that down.',
-  a: "I'm not really around for this one. Long story.",
-  '?': "My memory's fuzzy on whether I make it, dude.",
+  d: 'I definitely DIE in this episode. Typical.',
+  s: 'I definitely do NOT die in this episode. I make it out alive! Dude, write that down.',
+  a: "Dying isn't an issue: I'm not really in this episode. Long story.",
+  '?': "My memory's fuzzy on whether I make it out of this episode alive, dude.",
 };
 const ratingCount = rated?.rating_count || 0;
 const verdict = !ratingCount ? "Nobody on Parkboxd has rated this one yet. I know how that feels."
@@ -74,7 +74,7 @@ const blank = (text) => text.replace(/[A-Za-z']+/g, (w) => (titleWords.has(w.toL
 const words = answer.title.split(/\s+/).length;
 const letters = answer.title.replace(/[^A-Za-z]/g, '').length;
 const HINTS = [
-  { text: FATES[fate] },
+  { topic: '💀 Does Kenny die in this episode?', text: FATES[fate] },
   { text: verdict },
   { text: !character ? "Nobody hogs this one, dude. It's a group thing." : character === 'Kenny' ? 'Keep an eye on me, dude.' : `Keep an eye on ${character}.` },
   evidence ? { evidence, text: 'Three things from the evidence bag.' } : { text: `The title has ${words} word${words === 1 ? '' : 's'}.` },
@@ -82,9 +82,9 @@ const HINTS = [
 ];
 const EXHIBITS = ['A', 'B', 'C', 'D', 'E'];
 const muffle = (text) => text.split(/\s+/).map((w, i) => ['Mmph', 'mmrph', 'mph', 'mmmph', 'rmph'][(w.length + i) % 5]).join(' ') + '!';
-const clueHTML = (h) => (h.evidence
+const clueHTML = (h) => `${h.topic ? `<span class="kenny-topic">${esc(h.topic)}</span>` : ''}${h.evidence
   ? `<span class="kenny-evidence">${esc(h.evidence)}</span><span class="kenny-means">${esc(h.text)}</span>`
-  : `<span class="kenny-says">“${esc(muffle(h.text))}”</span><span class="kenny-means">Kenny means: ${esc(h.text)}</span>`);
+  : `<span class="kenny-says">“${esc(muffle(h.text))}”</span><span class="kenny-means">Kenny means: ${esc(h.text)}</span>`}`;
 
 // ---- Saved progress and stats: one database row per day, so they follow you between devices ----
 const { data: rows } = await supabase.from('mystery_plays').select('day, guesses, done, won, cold')
