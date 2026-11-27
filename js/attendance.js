@@ -1,7 +1,7 @@
 // Book Club attendance: weeks in a row you logged that week's pick, with stickers along the way.
 // Worked out from your logs (by when they were made, so backdating doesn't count). No database.
-import { stickerSVG } from './art.js?v=20261127145910';
-import { CLUB_START, weekStart } from './club.js?v=20261127145910';
+import { stickerSVG } from './art.js?v=20261127150114';
+import { CLUB_START, weekStart } from './club.js?v=20261127150114';
 
 const SLIP_EVERY = 10; // one free life (a forgiven missed week) in any 10
 
@@ -56,9 +56,8 @@ export function attendanceHTML(a, { mine = false } = {}) {
   return `<div class="attend">
     <p class="attend-line" style="margin:0"><strong>🔥 ${a.streak} week${a.streak === 1 ? '' : 's'} in a row</strong>
       <span>· Best: ${a.best}${nudge ? ` · ${nudge}` : ''}</span></p>
-    <p class="attend-life${a.lifeReady ? '' : ' used'}"><span class="attend-heart" aria-hidden="true">${a.lifeReady ? '❤️' : '🖤'}</span>
-      <span><b>${a.lifeReady ? '1 free life' : 'Free life used'}</b>
-      ${a.lifeReady ? 'Miss a week and the streak survives.' : `A new one arrives in ${a.lifeIn} week${a.lifeIn === 1 ? '' : 's'}. Another miss before then resets the streak.`}</span></p>
+    <p class="attend-life${a.lifeReady ? '' : ' used'}" title="${a.lifeReady ? 'Miss a week and the streak survives.' : 'Another miss before it returns resets the streak.'}"><i aria-hidden="true">${a.lifeReady ? '♥' : '♡'}</i>
+      <span>${a.lifeReady ? '<b>1 free life</b> · miss a week, keep the streak' : `<b>Free life used</b> · back in ${a.lifeIn} week${a.lifeIn === 1 ? '' : 's'}`}</span></p>
     <ul class="attend-stickers">${STICKERS.map((s) => `<li class="${a.best >= s.n ? '' : 'locked'}" title="${s.name}: ${s.n} weeks in a row${a.best >= s.n ? ' (earned)' : ''}">${stickerSVG(s.key)}<span>${a.best >= s.n ? s.name : `${s.n} weeks`}</span></li>`).join('')}</ul>
     ${top ? `<p class="attend-butters">“${top.line}” — Butters</p>` : ''}
   </div>`;
