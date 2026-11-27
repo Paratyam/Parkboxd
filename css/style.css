@@ -1475,7 +1475,7 @@ html.chaos .install-ad, html.mysterion .install-ad { bottom: 66px; }
 /* Cage Match: share button and the crowd's champion */
 .cage-share { margin: 0 0 14px; }
 .cage-crowd-champ { margin: 0 0 12px; color: var(--muted); }
-.crowd-you { font-size: 12px; color: var(--yellow); }
+#crowd-champ .cage-champ > div { padding-top: 40px; }
 
 /* Book Club attendance streak and stickers */
 .attend { display: flex; flex-direction: column; gap: 6px; }

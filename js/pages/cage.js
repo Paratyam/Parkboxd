@@ -1,19 +1,19 @@
 // cage.html: Cartman's Cage Match, the game (pick the better of two episodes you've watched) plus your ranking.
 // cage.html?u=name&view=ranking: a profile's Rankings tab, just the ranking list.
 
-import { initPage } from '../layout.js?v=20261127150350';
-import { supabase } from '../supabase.js?v=20261127150350';
-import { SITE_NAME } from '../config.js?v=20261127150350';
-import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127150350';
-import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127150350';
-import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127150350';
+import { initPage } from '../layout.js?v=20261127150451';
+import { supabase } from '../supabase.js?v=20261127150451';
+import { SITE_NAME } from '../config.js?v=20261127150451';
+import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127150451';
+import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127150451';
+import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127150451';
 import {
   introLine, resultLine, crowd, hostPick,
   HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
-} from '../cage-host.js?v=20261127150350';
-import { burgerRain } from '../fx.js?v=20261127150350';
-import { beltSVG } from '../art.js?v=20261127150350';
-import { shareTop10 } from '../share.js?v=20261127150350';
+} from '../cage-host.js?v=20261127150451';
+import { burgerRain } from '../fx.js?v=20261127150451';
+import { beltSVG } from '../art.js?v=20261127150451';
+import { shareTop10 } from '../share.js?v=20261127150451';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
@@ -355,11 +355,13 @@ async function start() {
   async function renderCrowd() {
     if (!showGame) return;
     const { data, error } = await supabase.from('cage_community').select('episode_id, judges, wins, losses, score')
-      .order('score', { ascending: false }).order('judges', { ascending: false }).order('wins', { ascending: false }).limit(10);
+      .order('score', { ascending: false }).order('judges', { ascending: false }).order('wins', { ascending: false }).limit(1);
     const top = (data || []).filter((x) => byId.has(x.episode_id));
     if (error || !top.length) return;
     const myPos = new Map(ranking(scores).map((x, i) => [x.id, i + 1]));
-    const first = top[0].episode_id;
+    const [winner] = top;
+    const first = winner.episode_id;
+    const e = byId.get(first);
     const verdict = !myPos.has(first) ? "You haven't even judged the crowd's champion. Do your job!"
       : myPos.get(first) === 1 ? 'You and the crowd agree. How boring.'
         : myPos.get(first) <= 10 ? `The crowd's champ is only #${myPos.get(first)} for you. Close, but wrong.`
@@ -368,15 +370,12 @@ async function start() {
     box.innerHTML = `
       <div class="section-head"><h2>👥 The crowd's champion</h2><span class="result-count">Everyone's picks, one voice each</span></div>
       <p class="cage-crowd-champ">“${esc(verdict)}” <span>— Cartman</span></p>
-      <ol class="rank-table">${top.map((x, i) => {
-        const e = byId.get(x.episode_id);
-        return `<li>
-          <span class="pos">${i + 1}</span>
-          <a href="episode.html?id=${e.id}" class="thumb" aria-hidden="true" tabindex="-1">${thumbHTML(e, { showTitle: false })}</a>
-          <div class="info"><a href="episode.html?id=${e.id}">${i === 0 ? '👑 ' : ''}${esc(e.title)}</a><span>${esc(epCode(e))} · ${x.judges} judge${x.judges === 1 ? '' : 's'} <span class="crowd-you">${myPos.has(e.id) ? `· you: #${myPos.get(e.id)}` : ''}</span></span></div>
-          <div class="score"><b style="font-size:16px">${x.wins}–${x.losses}</b><span title="Crowd score">${Math.round(x.score * 100)}%</span></div>
-        </li>`;
-      }).join('')}</ol>`;
+      <a class="cage-champ paper" href="episode.html?id=${e.id}"><span class="cage-champ-belt">${beltSVG()}</span>
+        ${thumbHTML(e, { showTitle: false, size: 'w780' })}
+        <div><span class="cut">👑 People's champion</span>
+          <strong>${esc(e.title)}</strong>
+          <span>${esc(epCode(e))} · ${winner.wins}–${winner.losses} from ${winner.judges} judge${winner.judges === 1 ? '' : 's'}${myPos.has(e.id) ? ` · you: #${myPos.get(e.id)}` : ''}</span></div>
+      </a>`;
     box.hidden = false;
   }
 
