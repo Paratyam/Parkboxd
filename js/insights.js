@@ -1,5 +1,5 @@
 // Rating maths: taste match, hot takes, "which character are you", badges.
-import { supabase } from './supabase.js?v=20261127083153';
+import { supabase } from './supabase.js?v=20261127110826';
 
 // ---- Loaders ----
 
@@ -160,6 +160,8 @@ export function computeBadges(ctx) {
     seasons.set(e.season, s);
   }
   const finishedSeasons = [...seasons.values()].filter((s) => s.have >= s.need).length;
+  // Season tier list (profiles.season_tiers: { S: [5, 7], A: [...] }): aired seasons placed in a tier.
+  const tierPlaced = new Set(Object.values(ctx.seasonTiers || {}).flat().map(Number).filter((s) => seasons.has(s))).size;
   const movies = all.filter((e) => e.kind === 'movie');
   const dayOne = logs.some((l) => l.watched_on && byId.get(l.episode_id)?.air_date === l.watched_on);
   const hot = [...ratings].filter(([epId, r]) => isHotTake(r, avgs.get(epId))).length;
@@ -193,6 +195,7 @@ export function computeBadges(ctx) {
     b('bookworm', '📚', 'Bookworm', "Review 3 of Butters' Book Club picks during their week", clubReviewCount(logs, ctx.clubPicks || []), 3),
     b('ringmaster', '🥊', 'Ringmaster', "Judge 100 fights in Cartman's Cage Match", ctx.cageMatches || 0, 100),
     b('detective', '🕵️', 'Case Closed', "Solve 5 of Kenny's Mystery Episodes", ctx.mysteryWins || 0, 5),
+    b('tierlord', '🗂️', 'Tier Lord', 'Rank every season in your Season tier list', tierPlaced, seasons.size),
   ];
 }
 

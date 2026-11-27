@@ -1,5 +1,5 @@
 // Small DOM helpers shared by every page.
-import { AVATAR_ICONS } from './avatars.js?v=20261127083153';
+import { AVATAR_ICONS } from './avatars.js?v=20261127110826';
 
 export const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -85,7 +85,7 @@ export function epCode(ep) {
 // Profile / Diary / Watchlist tabs for a user.
 export function profileTabsHTML(username, active) {
   const u = encodeURIComponent(username);
-  const tabs = [['profile', 'Profile', `profile.html?u=${u}`], ['diary', 'Diary', `diary.html?u=${u}`], ['reviews', 'Reviews', `reviews.html?u=${u}`], ['watchlist', 'Watchlist', `watchlist.html?u=${u}`], ['ratings', 'Ratings', `ratings.html?u=${u}`], ['cage', 'Rankings', `cage.html?u=${u}&view=ranking`], ['stats', 'Stats', `stats.html?u=${u}`], ['tiers', 'Tier list', `tiers.html?u=${u}`]];
+  const tabs = [['profile', 'Profile', `profile.html?u=${u}`], ['diary', 'Diary', `diary.html?u=${u}`], ['reviews', 'Reviews', `reviews.html?u=${u}`], ['watchlist', 'Watchlist', `watchlist.html?u=${u}`], ['ratings', 'Ratings', `ratings.html?u=${u}`], ['cage', 'Rankings', `cage.html?u=${u}&view=ranking`], ['stats', 'Stats', `stats.html?u=${u}`], ['tiers', 'Tier list', `tiers.html?u=${u}`], ['lists', 'Lists', `lists.html?u=${u}`]];
   return `<nav class="profile-tabs" aria-label="Profile sections">${tabs.map(([key, label, href]) =>
     `<a href="${href}"${key === active ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>`;
 }

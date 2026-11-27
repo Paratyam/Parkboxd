@@ -1,10 +1,10 @@
 // lists.html?tab=all|mine  (or ?u=name for one person's lists)
-import { initPage } from '../layout.js?v=20261127083153';
-import { supabase } from '../supabase.js?v=20261127083153';
-import { SITE_NAME } from '../config.js?v=20261127083153';
-import { $, esc, params, avatarHTML, notify } from '../ui.js?v=20261127083153';
-import { thumbHTML } from '../episodes.js?v=20261127083153';
-import { line } from '../jokes.js?v=20261127083153';
+import { initPage } from '../layout.js?v=20261127110826';
+import { supabase } from '../supabase.js?v=20261127110826';
+import { SITE_NAME } from '../config.js?v=20261127110826';
+import { $, esc, params, avatarHTML, notify, profileTabsHTML } from '../ui.js?v=20261127110826';
+import { thumbHTML } from '../episodes.js?v=20261127110826';
+import { line } from '../jokes.js?v=20261127110826';
 
 const { user } = await initPage({ title: 'Lists', auth: 'required' });
 const root = $('#lists');
@@ -13,19 +13,29 @@ const tab = params.get('tab') === 'mine' ? 'mine' : 'all';
 let q = supabase.from('lists')
   .select('id, user_id, title, description, created_at, profiles(username, display_name, avatar_color, avatar_icon), list_items(position, episodes(id, kind, season, number, title, still_path))')
   .order('created_at', { ascending: false }).limit(200);
-if (tab === 'mine') q = q.eq('user_id', user.id);
+// ?u=name: one person's lists, shown as a tab of their profile.
+const wantedU = (params.get('u') || '').toLowerCase();
+const { data: person } = wantedU
+  ? await supabase.from('profiles').select('id, username, display_name').eq('username', wantedU).maybeSingle()
+  : { data: null };
+const isMe = person ? person.id === user.id : tab === 'mine';
+if (person) q = q.eq('user_id', person.id);
+else if (tab === 'mine') q = q.eq('user_id', user.id);
 const { data: lists } = await q;
-document.title = `${tab === 'mine' ? 'My lists' : 'Lists'} · ${SITE_NAME}`;
+const personName = person ? person.display_name || person.username : '';
+const heading = person ? (isMe ? 'Your lists' : `${personName}'s lists`) : 'Lists';
+document.title = `${person ? heading : tab === 'mine' ? 'My lists' : 'Lists'} · ${SITE_NAME}`;
 
 root.innerHTML = `
   <div>
-    <h1 class="cut" style="margin:0 0 14px;color:var(--white);font-size:clamp(30px,4vw,44px)">Lists</h1>
+    <h1 class="cut" style="margin:0 0 14px;color:var(--white);font-size:clamp(30px,4vw,44px)">${esc(heading)}</h1>
+    ${person ? profileTabsHTML(person.username, 'lists') : `
     <nav class="profile-tabs" aria-label="Which lists">
       <a href="lists.html"${tab === 'all' ? ' aria-current="page"' : ''}>Everyone's</a>
       <a href="lists.html?tab=mine"${tab === 'mine' ? ' aria-current="page"' : ''}>Mine</a>
-    </nav>
+    </nav>`}
   </div>
-  <form class="toolbar" id="new-list">
+  <form class="toolbar" id="new-list"${person && !isMe ? ' hidden' : ''}>
     <label class="visually-hidden" for="new-title">New list name</label>
     <input type="text" id="new-title" maxlength="100" placeholder="Start a new list, e.g. Episodes that ruined my childhood" style="max-width:420px">
     <button type="submit" class="btn btn-green">Create list</button>
@@ -43,7 +53,7 @@ root.innerHTML = `
       </div>
     </a>`;
   }).join('')}</div>`
-    : `<p class="empty">${esc(line(tab === 'mine' ? 'listsEmptyMine' : 'listsEmpty'))}</p>`}`;
+    : `<p class="empty">${esc(person && !isMe ? `${personName} hasn't made any lists yet.` : line(isMe ? 'listsEmptyMine' : 'listsEmpty'))}</p>`}`;
 root.removeAttribute('aria-busy');
 
 $('#new-list').addEventListener('submit', async (e) => {

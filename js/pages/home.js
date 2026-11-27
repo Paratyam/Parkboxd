@@ -1,18 +1,18 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127083153';
-import { supabase } from '../supabase.js?v=20261127083153';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127083153';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127083153';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127083153';
-import { line } from '../jokes.js?v=20261127083153';
-import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127083153';
-import { stanPicks, stanLine } from '../stan.js?v=20261127083153';
-import { loadPicks } from '../club.js?v=20261127083153';
-import { isChaos } from '../fx.js?v=20261127083153';
-import { streakInfo, streakHTML } from '../streak.js?v=20261127083153';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127083153';
-import { gloveSVG, booksSVG, mysterySVG } from '../art.js?v=20261127083153';
-import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261127083153';
-import { guestReviewsFor } from '../guest-reviews.js?v=20261127083153';
+import { initPage, logEpisode } from '../layout.js?v=20261127110826';
+import { supabase } from '../supabase.js?v=20261127110826';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127110826';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127110826';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127110826';
+import { line } from '../jokes.js?v=20261127110826';
+import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127110826';
+import { stanPicks, stanLine } from '../stan.js?v=20261127110826';
+import { loadPicks } from '../club.js?v=20261127110826';
+import { isChaos } from '../fx.js?v=20261127110826';
+import { streakInfo, streakHTML } from '../streak.js?v=20261127110826';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127110826';
+import { gloveSVG, booksSVG, mysterySVG } from '../art.js?v=20261127110826';
+import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261127110826';
+import { guestReviewsFor } from '../guest-reviews.js?v=20261127110826';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -30,7 +30,7 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">🎲 Random episode</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js?v=20261127083153');
+    const r = await import('../random.js?v=20261127110826');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -202,7 +202,7 @@ async function renderHome() {
 
   // Tegridy streak (only once you've logged something).
   const { data: dayLogs } = await supabase.from('logs').select('watched_on, created_at').eq('user_id', user.id).limit(5000);
-  const streakBox = dayLogs?.length ? `<a href="stats.html" class="streak-link">${streakHTML(streakInfo(dayLogs))}</a>` : '';
+  const streakBox = dayLogs?.length ? `<a href="diary.html" class="streak-link" title="Your diary: every day you logged">${streakHTML(streakInfo(dayLogs))}</a>` : '';
 
   root.innerHTML = `
     ${anniversaryHTML}
@@ -240,7 +240,7 @@ async function renderHome() {
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js?v=20261127083153');
+  const random = () => import('../random.js?v=20261127110826');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>
