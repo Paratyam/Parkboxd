@@ -56,6 +56,14 @@ const GENERIC = [
   "Cartman says he's not fat, he's big-boned. I've seen the X-rays, folks. The bones are fine.",
   'I tried to write a joke about procrastination. I will finish it tomorrow.',
   "Kyle asked me if I've ever been to Jersey. I said no. He said good, don't.",
+  // Fishsticks: Jimmy wrote the funniest joke in the world. Cartman says he helped.
+  "I once wrote the funniest joke in the world. Cartman says he helped. Cartman's help was standing next to me eating.",
+  "People still come up to me and ask about the fishsticks joke. I tell them: a comedian never repeats himself. Then I repeat it. Every time.",
+  "I ordered fishsticks at a restaurant last week. The whole place started laughing before I finished ordering. Tough crowd? No. Perfect crowd.",
+  "Cartman told everyone he came up with the fishsticks joke. Folks, the only thing Cartman ever came up with was the stairs, and he complained the whole way.",
+  "My agent says I should do a fishsticks sequel. I said lightning doesn't strike twice. He said it struck Kenny a bunch of times.",
+  "Somebody didn't get the fishsticks joke once. Just one guy. I still think about him. Every night. He knows who he is.",
+  "Writing the perfect joke is like making fishsticks. You need the right ingredients, perfect timing, and a big kid who takes all the credit.",
 ];
 
 /**

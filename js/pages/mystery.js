@@ -1,9 +1,10 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture and Kenny gives a (muffled) hint. Six tries.
-import { initPage, logEpisode } from '../layout.js?v=20261127061203';
-import { supabase } from '../supabase.js?v=20261127061203';
-import { $, esc, epCode, toast } from '../ui.js?v=20261127061203';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127061203';
+import { initPage, logEpisode } from '../layout.js?v=20261127063307';
+import { supabase } from '../supabase.js?v=20261127063307';
+import { $, esc, epCode, toast } from '../ui.js?v=20261127063307';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127063307';
+import { mysterySVG } from '../art.js?v=20261127063307';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -103,7 +104,7 @@ function render() {
       <span class="case-tab cut">Case file #${number}</span>
       <span class="case-stamp cut" aria-hidden="true">Top secret</span>
       <div class="case-head-row">
-        <span class="mystery-kenny" aria-hidden="true">🧥</span>
+        <span class="mystery-logo">${mysterySVG()}</span>
         <div>
           <h1 class="cut">Kenny's Mystery Episode</h1>
           <p>Somebody stole an episode and Kenny saw everything. Every wrong guess sharpens the evidence photo and gets you a clue from your witness. He's a little hard to understand. ${MAX} tries. New case every day.</p>

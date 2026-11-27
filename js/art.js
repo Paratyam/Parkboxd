@@ -109,3 +109,18 @@ export function housesSVG() {
 export function heroPinesSVG() {
   return [pine(70, 268, 120, '#24573a'), pine(150, 262, 90), pine(1300, 262, 100), pine(1385, 270, 130, '#24573a'), pine(880, 238, 70)].join('');
 }
+
+/** Paper magnifying glass with an orange question mark: the Daily Mystery logo. */
+export function mysterySVG() {
+  return `<svg class="art art-mystery" viewBox="0 0 72 72" aria-hidden="true" focusable="false">
+    <path d="M44 46 L62 64 Q65 67 62 70 Q59 72 56 69 L38 51 Z" fill="#7b45b8" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M47 52 L58 63" stroke="#b58ae8" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="30" cy="30" r="22" fill="#5b2a86" stroke="${INK}" stroke-width="3.5"/>
+    <circle cx="30" cy="30" r="16" fill="#d9c6f2" stroke="${INK}" stroke-width="2.5"/>
+    <path d="M20 22 Q24 16 31 16" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M24 26 Q24 19 30.5 19 Q37 19 37 25 Q37 29 32.5 31 Q30.5 32 30.5 35" fill="none" stroke="#f2711c" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M24 26 Q24 19 30.5 19 Q37 19 37 25 Q37 29 32.5 31 Q30.5 32 30.5 35" fill="none" stroke="${INK}" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/>
+    <circle cx="30.5" cy="40.5" r="2.8" fill="#f2711c" stroke="${INK}" stroke-width="1.5"/>
+    <path d="M60 8 L62 14 L68 16 L62 18 L60 24 L58 18 L52 16 L58 14 Z" fill="#f2711c" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
+  </svg>`;
+}

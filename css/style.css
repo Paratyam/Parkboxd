@@ -1330,3 +1330,30 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .dm-empty { margin: auto; padding: 30px; text-align: center; color: var(--text-soft); display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .dm-empty p { margin: 0; }
 @media (max-width: 760px) { .dm-layout { grid-template-columns: 1fr; } .dm-thread { min-height: 420px; } }
+
+/* ===== Kenny's mystery, part 3: purple + orange ===== */
+:root { --m-purple: #5b2a86; --m-purple-2: #7b45b8; --m-lilac: #d9c6f2; --m-deep: #1d1030; --m-orange: #f2711c; }
+.mystery-logo { flex: 0 0 76px; width: 76px; transform: rotate(-8deg); }
+.mystery-title, .case-head h1 { background: linear-gradient(180deg, #ffb066 0%, #f2711c 45%, #b06ae8 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; filter: drop-shadow(3px 3px 0 #000); }
+.case-head { background: radial-gradient(ellipse at 85% 0%, rgba(242,113,28,.25), transparent 55%), linear-gradient(160deg, #6c38a6, #4a2273); color: #f1e8ff; }
+.case-tab { background: #6c38a6; color: #f1e8ff; }
+.case-stamp { border-color: var(--m-orange); color: var(--m-orange); }
+.case-head p { color: #e6d8fb; }
+.mystery-board { background: radial-gradient(ellipse at 50% 0%, rgba(242,113,28,.14), transparent 60%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ctext x='8' y='40' font-size='34' font-family='Arial' fill='%23c9a6ff' fill-opacity='.08'%3E%3F%3C/text%3E%3C/svg%3E"), var(--m-deep); }
+.mystery-frame { box-shadow: inset 0 0 0 4px var(--m-purple), 0 0 0 4px #000, 6px 6px 0 #000; }
+.evidence-label { background: var(--m-lilac); color: #2a1640; }
+.kenny-lives b { color: #ffb066; }
+.mystery-board .mystery-guess input { background: #2a1a40; border-color: #5b3a86; }
+.case-folder { background: linear-gradient(160deg, #4f2680, #3a1b60); color: #f1e8ff; }
+.case-folder h2 { color: #fff; }
+.case-folder .exhibit { background: var(--m-orange); color: #2b1300; }
+.case-folder .kenny-hint.locked { background: rgba(255,255,255,.06); color: #cdb6ee; border-color: #8a63c0; }
+.mystery-stats { background: #2a1a40; border: 2px solid #000; box-shadow: 3px 3px 0 #000; }
+.mystery-stats h2 { color: #fff; }
+
+/* Home card: purple with an orange call to action */
+.kenny-ad { color: #f1e8ff; background: radial-gradient(ellipse at 85% 10%, rgba(242,113,28,.3), transparent 55%), repeating-linear-gradient(-45deg, rgba(255,255,255,.04) 0 3px, transparent 3px 9px), linear-gradient(160deg, #6c38a6, #43206b); }
+.kenny-ad-logo { width: 46px; flex: 0 0 46px; transform: rotate(-8deg); }
+.kenny-ad-title { background: linear-gradient(180deg, #ffb066, #f2711c 50%, #c48cff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; filter: drop-shadow(2px 2px 0 #000); }
+.kenny-ad-text { color: #eadcff; }
+.kenny-ad-cta { background: var(--m-orange); color: #2b1300; }

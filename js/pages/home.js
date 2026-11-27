@@ -1,16 +1,16 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127061203';
-import { supabase } from '../supabase.js?v=20261127061203';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127061203';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127061203';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127061203';
-import { line } from '../jokes.js?v=20261127061203';
-import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127061203';
-import { stanPicks, stanLine } from '../stan.js?v=20261127061203';
-import { loadPicks } from '../club.js?v=20261127061203';
-import { isChaos } from '../fx.js?v=20261127061203';
-import { streakInfo, streakHTML } from '../streak.js?v=20261127061203';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127061203';
-import { gloveSVG, booksSVG } from '../art.js?v=20261127061203';
+import { initPage, logEpisode } from '../layout.js?v=20261127063307';
+import { supabase } from '../supabase.js?v=20261127063307';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127063307';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127063307';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127063307';
+import { line } from '../jokes.js?v=20261127063307';
+import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127063307';
+import { stanPicks, stanLine } from '../stan.js?v=20261127063307';
+import { loadPicks } from '../club.js?v=20261127063307';
+import { isChaos } from '../fx.js?v=20261127063307';
+import { streakInfo, streakHTML } from '../streak.js?v=20261127063307';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127063307';
+import { gloveSVG, booksSVG, mysterySVG } from '../art.js?v=20261127063307';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -28,7 +28,7 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">🎲 Random episode</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js?v=20261127061203');
+    const r = await import('../random.js?v=20261127063307');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -151,7 +151,7 @@ async function renderHome() {
   const { data: todayGame } = await supabase.from('mystery_plays').select('guesses, done, won').eq('user_id', user.id).eq('day', dayNo).maybeSingle();
   const kennyAd = `
     <a class="kenny-ad" href="mystery.html">
-      <span class="kenny-ad-head"><span aria-hidden="true">🧥</span><span class="kenny-ad-title cut">Kenny's Mystery Episode</span></span>
+      <span class="kenny-ad-head"><span class="kenny-ad-logo">${mysterySVG()}</span><span class="kenny-ad-title cut">Kenny's Mystery Episode</span></span>
       <span class="kenny-ad-text">Daily puzzle #${puzzleNo}. Guess the episode from a blurry picture. Kenny gives hints. They're muffled.</span>
       <span class="kenny-ad-cta cut">${todayGame?.done ? (todayGame.won ? `Solved in ${todayGame.guesses.length}! ✓` : 'Kenny didn\'t make it. See you tomorrow') : todayGame?.guesses?.length ? 'Keep guessing →' : "Play today's puzzle →"}</span>
     </a>`;
@@ -222,7 +222,7 @@ async function renderHome() {
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js?v=20261127061203');
+  const random = () => import('../random.js?v=20261127063307');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>
