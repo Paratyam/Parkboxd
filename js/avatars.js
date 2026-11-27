@@ -161,9 +161,10 @@ Object.assign(AVATAR_ICONS, {
     <path d="M7 20 Q13 14 18 20 Q20 22 22 20 Q27 14 33 20 Q31 27 25 25 Q20 23 15 25 Q9 27 7 20 Z" fill="#2b2b2b"/>
     <circle cx="14" cy="21" r="2" fill="#fff"/><circle cx="26" cy="21" r="2" fill="#fff"/>
     <path d="M17 29 Q20 27 23 29 Q20 33 17 29 Z" fill="${K}"/>`) },
-  foilhat: { label: 'Tinfoil hat', badge: 'chaos', svg: svg(`
-    <path d="M5 31 L11 18 L15 21 L20 5 L24 17 L29 14 L35 31 Q20 37 5 31 Z" fill="#cfd8e3" ${S}/>
-    <path d="M11 18 L17 29 M20 5 L19 22 L26 30 M29 14 L27 23" stroke="#7d8a99" stroke-width="1.5" fill="none"/>`) },
+  foilhat: { label: 'Lightning orb', badge: 'chaos', svg: svg(`
+    <circle cx="20" cy="18" r="15" fill="#5b3590" ${S}/>
+    <path d="M20 5 L15 15 L22 16 L14 30 M30 11 L23 19 L30 22 M9 12 L14 20 L8 23" stroke="#d8ff7a" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+    <path d="M10 31 H30 L33 37 H7 Z" fill="#6b7480" ${S}/>`) },
   question: { label: 'Mystery mark', badge: 'kenny', svg: svg(`
     <circle cx="20" cy="20" r="16" fill="#4b2a7a" ${S}/>
     <path d="M13 15 Q13 8 20 8 Q27 8 27 14 Q27 18 22 20 Q20 21 20 25" fill="none" stroke="#141414" stroke-width="7" stroke-linecap="round"/>

@@ -1,6 +1,6 @@
 // Rating maths: taste match, hot takes, "which character are you", badges.
-import { fetchAll } from './ui.js?v=20261127181158';
-import { supabase } from './supabase.js?v=20261127181158';
+import { fetchAll } from './ui.js?v=20261127181437';
+import { supabase } from './supabase.js?v=20261127181437';
 
 // ---- Loaders ----
 
@@ -188,7 +188,7 @@ export function computeBadges(ctx) {
     b('ringmaster', '🥊', 'Ringmaster', "Judge 100 fights in Cartman's Cage Match", ctx.cageMatches || 0, 100),
     // How you rate
     b('hottake', '🌶️', 'Hot Take Artist', 'Make 5 hot takes (2★+ off the average)', hot, 5),
-    b('screwyou', '🚪', 'Screw You Guys', 'Give 10 episodes 1★ or less', [...ratings.values()].filter((r) => r <= 1).length, 10),
+    b('screwyou', '🚪', 'Screw You Guys', 'Give 5 episodes 1★ or less', [...ratings.values()].filter((r) => r <= 1).length, 5),
     b('authoritah', '👮', 'Respect My Authoritah', 'Rate 100 episodes', ratings.size, 100),
     // How much you log and write
     b('rewatch', '🔁', 'Same Old Story', 'Log 10 rewatches', logs.filter((l) => l.is_rewatch).length, 10),
