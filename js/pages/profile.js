@@ -1,30 +1,30 @@
-import { initPage } from '../layout.js?v=20261127182952';
-import { supabase } from '../supabase.js?v=20261127182952';
-import { SITE_NAME } from '../config.js?v=20261127182952';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127182952';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127182952';
-import { shareInvite } from '../invite.js?v=20261127182952';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast, fetchAll } from '../ui.js?v=20261127182952';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127182952';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127182952';
-import { line } from '../jokes.js?v=20261127182952';
-import { characterColours } from '../data/character-tags.js?v=20261127182952';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127182952';
-import { rankFor, nextRank } from '../badges.js?v=20261127182952';
-import { loadStreaks, streakHTML } from'../streak.js?v=20261127182952';
-import { loadPicks } from '../club.js?v=20261127182952';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127182952';
-import { AVATAR_ICONS } from '../avatars.js?v=20261127182952';
-import { beltSVG } from'../art.js?v=20261127182952';
-import { roastJokes } from '../jimmy.js?v=20261127182952';
+import { initPage } from '../layout.js?v=20261127183114';
+import { supabase } from '../supabase.js?v=20261127183114';
+import { SITE_NAME } from '../config.js?v=20261127183114';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127183114';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127183114';
+import { shareInvite } from '../invite.js?v=20261127183114';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast, fetchAll } from '../ui.js?v=20261127183114';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127183114';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127183114';
+import { line } from '../jokes.js?v=20261127183114';
+import { characterColours } from '../data/character-tags.js?v=20261127183114';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127183114';
+import { rankFor, nextRank } from '../badges.js?v=20261127183114';
+import { loadStreaks, streakHTML } from'../streak.js?v=20261127183114';
+import { loadPicks } from '../club.js?v=20261127183114';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127183114';
+import { AVATAR_ICONS } from '../avatars.js?v=20261127183114';
+import { beltSVG } from'../art.js?v=20261127183114';
+import { roastJokes } from '../jimmy.js?v=20261127183114';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' and Kyle's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127182952')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127182952')).renderKyleProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127183114')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127183114')).renderKyleProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {
@@ -310,7 +310,7 @@ async function render(p) {
     </section>
 
     <section>
-      <div class="section-head"><h2>Tegridy streak</h2>${isMe && streak.longest ? `<button type="button" class="link-button" data-share-streak data-days="${streak.current}" data-longest="${streak.longest}" data-name="${esc(name)}">🖼️ Share my streak</button>` : ''}</div>
+      <div class="section-head"><h2>Tegridy streak</h2>${isMe && streak.longest ? `<button type="button" class="link-button" data-share-streak data-days="${streak.current}" data-name="${esc(name)}">🖼️ Share my streak</button>` : ''}</div>
       ${streakHTML(streak, { isMe, name })}
       ${rewardsHtml}
     </section>

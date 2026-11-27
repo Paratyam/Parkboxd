@@ -1,19 +1,19 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127182952';
-import { supabase } from '../supabase.js?v=20261127182952';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127182952';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127182952';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127182952';
-import { line } from '../jokes.js?v=20261127182952';
-import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127182952';
-import { stanPicks, stanLine } from '../stan.js?v=20261127182952';
-import { loadPicks } from '../club.js?v=20261127182952';
-import { isChaos } from '../fx.js?v=20261127182952';
-import { loadStreaks, streakHTML } from '../streak.js?v=20261127182952';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127182952';
-import { gloveSVG, booksSVG, mysterySVG } from '../art.js?v=20261127182952';
-import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261127182952';
-import { guestReviewsFor } from '../guest-reviews.js?v=20261127182952';
-import { showInstallAd } from '../install.js?v=20261127182952';
+import { initPage, logEpisode } from '../layout.js?v=20261127183114';
+import { supabase } from '../supabase.js?v=20261127183114';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261127183114';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261127183114';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127183114';
+import { line } from '../jokes.js?v=20261127183114';
+import { episodeAverages, allLatestRatings } from '../insights.js?v=20261127183114';
+import { stanPicks, stanLine } from '../stan.js?v=20261127183114';
+import { loadPicks } from '../club.js?v=20261127183114';
+import { isChaos } from '../fx.js?v=20261127183114';
+import { loadStreaks, streakHTML } from '../streak.js?v=20261127183114';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261127183114';
+import { gloveSVG, booksSVG, mysterySVG } from '../art.js?v=20261127183114';
+import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261127183114';
+import { guestReviewsFor } from '../guest-reviews.js?v=20261127183114';
+import { showInstallAd } from '../install.js?v=20261127183114';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -32,7 +32,7 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">🎲 Random episode</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js?v=20261127182952');
+    const r = await import('../random.js?v=20261127183114');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -242,7 +242,7 @@ async function renderHome() {
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js?v=20261127182952');
+  const random = () => import('../random.js?v=20261127183114');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>
