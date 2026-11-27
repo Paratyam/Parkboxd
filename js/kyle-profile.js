@@ -2,9 +2,9 @@
 // real member: nothing is in the database, so his ratings never touch site averages. He reviews
 // the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
 // also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127074241';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127074241';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127074241';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127074510';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127074510';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127074510';
 
 export const KYLE_USERNAME = 'kyle';
 export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#f2711c', avatar_icon: 'earflaps' };
@@ -24,6 +24,8 @@ export const RATED = [
   ['The Hobbit', 4.5, true], ['Breast Cancer Show Ever', 5, true], ['Put It Down', 4, false], ['The Cissy', 4, false],
   ['South Park: The End of Obesity', 4.5, true], ['South Park (Not Suitable for Children)', 4, false],
 ];
+
+const WATCHED = 200; // he made sure it was a round number
 
 const TOP4 = ['Margaritaville', 'Douche and Turd', 'Cartoon Wars (2)', 'Trapped in the Closet'];
 
@@ -83,7 +85,15 @@ export async function renderKyleProfile(root) {
   const all = await loadAllEpisodes();
   const byTitle = new Map(all.map((e) => [norm(e.title), e]));
   const find = (t) => byTitle.get(norm(t));
-  const rated = RATED.map(([t, r, liked]) => ({ ep: find(t), r, liked })).filter((x) => x.ep);
+  const picked = RATED.map(([t, r, liked]) => ({ ep: find(t), r, liked })).filter((x) => x.ep);
+  // He's a try-hard: tops it up to exactly WATCHED episodes, in air order, with fixed ratings per
+  // episode (mostly 3.5-4.5, he's a tough grader). Same list for everyone, every visit.
+  const have = new Set(picked.map((x) => x.ep.id));
+  const GRADES = [3, 3.5, 3.5, 4, 4, 4, 4, 4.5, 4.5, 5];
+  const filler = all.filter((e) => e.kind === 'episode' && e.air_date && e.air_date <= new Date().toISOString().slice(0, 10) && !have.has(e.id))
+    .slice(0, Math.max(0, WATCHED - picked.length))
+    .map((e) => { const r = GRADES[(Math.imul(e.id, 2654435761) >>> 0) % GRADES.length]; return { ep: e, r, liked: r === 5 }; });
+  const rated = [...picked, ...filler];
   const rateOf = (t) => RATED.find(([rt]) => norm(rt) === norm(t)) || [t, 4, false];
   const reviews = REVIEWS.map(([t, text, note]) => ({ ep: find(t), text, note, r: rateOf(t)[1], liked: rateOf(t)[2] })).filter((x) => x.ep);
   const top4 = TOP4.map(find).filter(Boolean);
@@ -101,7 +111,7 @@ export async function renderKyleProfile(root) {
       <div class="who">
         <h1 class="cut">Kyle Broflovski</h1>
         <span class="handle">@kyle · joined ${esc(formatDate('2026-11-27', { month: 'long', year: 'numeric' }))} · 📖 Reviews the smart ones</span>
-        <p class="bio">I review the episodes that are actually about something, and I add a note on what each one is making fun of. Somebody on this site has to read the subtext. Don't tell Cartman I'm on here.</p>
+        <p class="bio">I review the episodes that are actually about something, and I add a note on what each one is making fun of. Somebody on this site has to read the subtext. Also I've watched exactly 200 episodes, which is more than anyone here, not that I'm counting. (I'm counting.) Don't tell Cartman I'm on here.</p>
         <div style="margin-top:6px"><span class="team-flair paper" style="background-color:#3fb950;color:#1a1a1a">Team Kyle</span></div>
       </div>
       <div class="stats">
@@ -128,6 +138,8 @@ export async function renderKyleProfile(root) {
         ${badge('📖', 'Reading List', 'Wrote a note on every episode he reviewed')}
         ${badge('🗳️', 'Civic Duty', 'Reviewed every election episode')}
         ${badge('🧠', 'Subtext Spotter', 'Explained the satire so you don\'t have to')}
+        ${badge('💯', '200 Club', 'Watched 200 episodes. Took notes on most of them.')}
+        ${badge('📝', 'Try-Hard', 'Logged an episode every single day for a month. Voluntarily.')}
         ${badge('🤝', 'Super Best Friend', 'Follows exactly one person. It\'s Stan.')}
         ${badge('😤', 'Not Today, Cartman', 'Never gave a Cartman scheme 5★ for the scheme')}
       </div>
@@ -168,7 +180,7 @@ export async function renderKyleProfile(root) {
         <section>
           <div class="section-head"><h2>Ratings</h2><span class="result-count">${rated.length}</span></div>
           ${histogramHTML(countRatings(rated.map((x) => x.r)))}
-          <p style="margin:10px 0 0;font-size:12px;color:var(--muted)">Mostly 4s and up. "I only watch the good ones. That's not bias, that's taste." — Kyle</p>
+          <p style="margin:10px 0 0;font-size:12px;color:var(--muted)">A tough grader. "I don't give out fives for free. You have to earn them." — Kyle</p>
         </section>
       </aside>
     </div>`;

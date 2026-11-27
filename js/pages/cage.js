@@ -1,18 +1,18 @@
 // cage.html: Cartman's Cage Match, the game (pick the better of two episodes you've watched) plus your ranking.
 // cage.html?u=name&view=ranking: a profile's Rankings tab, just the ranking list.
 
-import { initPage } from '../layout.js?v=20261127074241';
-import { supabase } from '../supabase.js?v=20261127074241';
-import { SITE_NAME } from '../config.js?v=20261127074241';
-import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127074241';
-import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127074241';
-import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127074241';
+import { initPage } from '../layout.js?v=20261127074510';
+import { supabase } from '../supabase.js?v=20261127074510';
+import { SITE_NAME } from '../config.js?v=20261127074510';
+import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127074510';
+import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127074510';
+import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127074510';
 import {
   introLine, resultLine, crowd, hostPick,
   HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
-} from '../cage-host.js?v=20261127074241';
-import { burgerRain } from '../fx.js?v=20261127074241';
-import { beltSVG } from '../art.js?v=20261127074241';
+} from '../cage-host.js?v=20261127074510';
+import { burgerRain } from '../fx.js?v=20261127074510';
+import { beltSVG } from '../art.js?v=20261127074510';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
