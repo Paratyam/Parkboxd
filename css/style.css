@@ -1111,13 +1111,13 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .cage-mic .art { filter: none; }
 .cage-ad-glove { width: 42px; flex: 0 0 42px; transform: rotate(-12deg); }
 .cage-champ { position: relative; }
-.cage-champ-belt { position: absolute; right: 14px; top: -20px; width: 112px; transform: rotate(6deg); z-index: 2; }
+.cage-champ-belt { position: absolute; right: 18px; top: 14px; width: 120px; transform: rotate(6deg); z-index: 2; }
 
 /* Book Club pieces */
 .club-ad-books { width: 48px; flex: 0 0 48px; transform: rotate(-6deg); }
 .club-hero-art { position: absolute; right: 168px; top: 18px; width: 92px; transform: rotate(-8deg); }
 
-@media (max-width: 720px) { .club-hero-art { display: none; } .cage-champ-belt { width: 80px; top: -14px; } }
+@media (max-width: 720px) { .club-hero-art { display: none; } .cage-champ-belt { width: 84px; top: 10px; right: 10px; } }
 @media (prefers-reduced-motion: reduce) { .hero-snow::before, .hero-snow::after { animation: none; } }
 
 /* ===== General polish ===== */
