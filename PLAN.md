@@ -253,3 +253,4 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Badge checks for other people come from the flair cache (`hasBadge` / `iHave` in `js/flair.js`), cleared when you unlock something
 - Edit profile > Badge extras also shows how to enter Professor Chaos and Mysterion modes, only to badge holders
 - Character reviews and comments (profiles, episode pages, Book Club, Kyle's review of the day) have a "Let PC Principal fix it" button that shows his personalised message to that character instead of rewriting the text (`pcTalkButtonHTML` and `TALKS` in `js/pc.js`)
+- The four character accounts show up in the header search (People) and on Friends → Find people, listed in `js/characters.js` (a new character needs a line there)

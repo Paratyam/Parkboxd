@@ -1,10 +1,10 @@
 // Butters' own (pretend) Parkboxd account, shown at profile.html?u=butters. It isn't a real
 // member: nothing here is in the database, so his ratings never touch site averages, Stan's
 // Picks or taste matches. Episodes are matched by title; any title TMDB names differently is skipped.
-import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201535';
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201535';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201535';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127201535';
+import { pcTalkButtonHTML, installPC } from './pc.js?v=20261127201633';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127201633';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127201633';
+import { countRatings, histogramHTML } from './histogram.js?v=20261127201633';
 
 export const BUTTERS_USERNAME = 'butters';
 export const BUTTERS = { username: 'butters', display_name: 'Butters Stotch', avatar_color: '#f5c518', avatar_icon: 'books' };

@@ -1,16 +1,17 @@
 // Shared header + footer, and the session/profile check every page runs first.
-import { soundSwitch } from './sfx.js?v=20261127201535';
-import { supabase, isConfigured } from './supabase.js?v=20261127201535';
-import { SITE_NAME } from './config.js?v=20261127201535';
-import { esc, avatarHTML, currentPage, currentFile, toast } from './ui.js?v=20261127201535';
-import { line } from './jokes.js?v=20261127201535';
-import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127201535';
-import { pineStripSVG, busStopSVG } from './art.js?v=20261127201535';
-import { addInstallButton } from './install.js?v=20261127201535';
-import { captureInvite, redeemInvite } from './invite.js?v=20261127201535';
-import { VERSION } from './version.js?v=20261127201535';
-import { renderTabBar, followProfileTabs } from './tabbar.js?v=20261127201535';
-import { startPresence } from './presence.js?v=20261127201535';
+import { findCharacters } from './characters.js?v=20261127201633';
+import { soundSwitch } from './sfx.js?v=20261127201633';
+import { supabase, isConfigured } from './supabase.js?v=20261127201633';
+import { SITE_NAME } from './config.js?v=20261127201633';
+import { esc, avatarHTML, currentPage, currentFile, toast } from './ui.js?v=20261127201633';
+import { line } from './jokes.js?v=20261127201633';
+import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127201633';
+import { pineStripSVG, busStopSVG } from './art.js?v=20261127201633';
+import { addInstallButton } from './install.js?v=20261127201633';
+import { captureInvite, redeemInvite } from './invite.js?v=20261127201633';
+import { VERSION } from './version.js?v=20261127201633';
+import { renderTabBar, followProfileTabs } from './tabbar.js?v=20261127201633';
+import { startPresence } from './presence.js?v=20261127201633';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -88,8 +89,8 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   if (session && profile?.username) renderTabBar({ current: currentFile(), onLog: () => logEpisode() });
   followProfileTabs();
   // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
-  if (session) import('./flair.js?v=20261127201535').then((m) => m.startFlair()).catch(() => {});
-  if (session && profile?.username) import('./unlocks.js?v=20261127201535').then((m) => m.startUnlocks(profile)).catch(() => {});
+  if (session) import('./flair.js?v=20261127201633').then((m) => m.startFlair()).catch(() => {});
+  if (session && profile?.username) import('./unlocks.js?v=20261127201633').then((m) => m.startUnlocks(profile)).catch(() => {});
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
@@ -164,7 +165,7 @@ function renderHeader(profile, session) {
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
   el.querySelector('#header-random')?.addEventListener('click', async () => {
-    const r = await import('./random.js?v=20261127201535');
+    const r = await import('./random.js?v=20261127201633');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   });
   syncDice();
@@ -177,7 +178,7 @@ function renderHeader(profile, session) {
  * event on window so the current page can refresh itself.
  */
 export async function logEpisode(opts = {}) {
-  const { openLogModal } = await import('./log-modal.js?v=20261127201535');
+  const { openLogModal } = await import('./log-modal.js?v=20261127201633');
   const changed = await openLogModal(opts);
   if (changed) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
   return changed;
@@ -221,7 +222,7 @@ export async function refreshBell() {
     supabase.auth.getUser(),
   ]);
   // Plus unread Book Club notes (new book, vote result), worked out in the browser.
-  const club = await import('./club-notes.js?v=20261127201535').then((m) => m.clubNotes(user?.id)).catch(() => []);
+  const club = await import('./club-notes.js?v=20261127201633').then((m) => m.clubNotes(user?.id)).catch(() => []);
   const count = (dbCount || 0) + club.filter((n) => !n.read).length;
   const badge = bell.querySelector('.bell-count');
   badge.hidden = !count;
@@ -310,8 +311,8 @@ function wireSearch(form) {
     const [{ data: people }, { loadAllEpisodes, seasonCode, matchesCode }, { searchEpisodes, snippetHTML }] = await Promise.all([
       safe ? supabase.from('profiles').select('username, display_name, avatar_color, avatar_icon')
         .not('username', 'is', null).or(`username.ilike.%${safe}%,display_name.ilike.%${safe}%`).limit(5) : Promise.resolve({ data: [] }),
-      import('./episodes.js?v=20261127201535'),
-      import('./search.js?v=20261127201535'),
+      import('./episodes.js?v=20261127201633'),
+      import('./search.js?v=20261127201633'),
     ]);
     // "S15" lists the whole season (plus a link to its page), "S15E3" that one episode.
     // Anything else: title matches, then "what happened" matches from the plot summaries.
@@ -324,13 +325,14 @@ function wireSearch(form) {
     const epItem = (e, extra = '') => `
         <a class="search-pop-item" href="episode.html?id=${e.id}"><span class="search-pop-code">${esc(e.kind === 'episode' ? `S${e.season} E${e.number}` : e.kind)}</span><span>${esc(e.title)}${extra}</span></a>`;
     if (mine !== seq) return; // a newer keystroke won
+    const found = [...findCharacters(safe), ...(people || [])];
     pop.innerHTML = `
       ${code && code.number == null && eps.length ? `<a class="search-pop-item search-pop-season" href="seasons.html?s=${code.season}"><span class="search-pop-code">📺</span><span><strong>Season ${code.season}</strong> <small>${eps.length} episodes · open the season page</small></span></a>` : ''}
-      ${people?.length ? `<div class="search-pop-head">People</div>${people.map((p) => `
+      ${found.length ? `<div class="search-pop-head">People</div>${found.map((p) => `
         <a class="search-pop-item" href="profile.html?u=${encodeURIComponent(p.username)}">${avatarHTML(p, 26)}<span><strong>${esc(p.display_name || p.username)}</strong> <small>@${esc(p.username)}</small></span></a>`).join('')}` : ''}
       ${eps.length ? `<div class="search-pop-head">Episodes</div>${eps.map((e) => epItem(e)).join('')}` : ''}
       ${plotHits.length ? `<div class="search-pop-head">What happened</div>${plotHits.map((h) => epItem(h.ep, `<small class="search-pop-snippet">${snippetHTML(h, 110)}</small>`)).join('')}` : ''}
-      ${!people?.length && !eps.length && !plotHits.length ? '<div class="search-pop-empty">Nothing found. Not even Kenny.</div>' : ''}
+      ${!found.length && !eps.length && !plotHits.length ? '<div class="search-pop-empty">Nothing found. Not even Kenny.</div>' : ''}
       <button type="submit" class="search-pop-all">See all episode results for “${esc(q)}”</button>`;
     pop.hidden = false;
   });

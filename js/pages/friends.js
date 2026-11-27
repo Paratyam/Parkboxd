@@ -1,11 +1,12 @@
 // friends.html?u=name&tab=following|followers|everyone
-import { initPage } from '../layout.js?v=20261127201535';
-import { supabase } from '../supabase.js?v=20261127201535';
-import { SITE_NAME } from '../config.js?v=20261127201535';
-import { $, esc, params, avatarHTML } from '../ui.js?v=20261127201535';
-import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261127201535';
-import { line } from '../jokes.js?v=20261127201535';
-import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261127201535';
+import { CHARACTERS } from '../characters.js?v=20261127201633';
+import { initPage } from '../layout.js?v=20261127201633';
+import { supabase } from '../supabase.js?v=20261127201633';
+import { SITE_NAME } from '../config.js?v=20261127201633';
+import { $, esc, params, avatarHTML } from '../ui.js?v=20261127201633';
+import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261127201633';
+import { line } from '../jokes.js?v=20261127201633';
+import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261127201633';
 
 const { profile: me } = await initPage({ title: 'Friends', auth: 'required' });
 const root = $('#friends');
@@ -33,7 +34,7 @@ async function render() {
   const statsBy = new Map((stats || []).map((s) => [s.user_id, s]));
   const following = (follows || []).filter((f) => f.follower_id === person.id).map((f) => byId.get(f.followee_id)).filter(Boolean);
   const followers = (follows || []).filter((f) => f.followee_id === person.id).map((f) => byId.get(f.follower_id)).filter(Boolean);
-  const everyone = people.filter((p) => p.id !== me.id);
+  const everyone = [...people.filter((p) => p.id !== me.id), ...CHARACTERS];
 
   if (!tab) tab = isMe && !following.length ? 'everyone' : 'following';
   const lists = { following, followers, everyone };
@@ -62,6 +63,13 @@ async function render() {
     <p class="empty" id="people-none" hidden></p>` : ''}
     ${list.length ? `<ul class="people">${list.map((p) => {
       const s = statsBy.get(p.id);
+      if (p.character) return `<li data-q="${esc(`${p.display_name} ${p.username}`.toLowerCase())}">
+        <a href="profile.html?u=${p.username}" aria-hidden="true" tabindex="-1">${avatarHTML(p, 48)}</a>
+        <div class="who">
+          <a href="profile.html?u=${p.username}">${esc(p.display_name)}</a>
+          <span>@${p.username} · Character account</span>
+        </div>
+      </li>`;
       return `<li data-q="${esc(`${p.display_name || ''} ${p.username}`.toLowerCase())}">
         ${presenceAvatar(p.id, `<a href="profile.html?u=${encodeURIComponent(p.username)}" aria-hidden="true" tabindex="-1">${avatarHTML(p, 48)}</a>`)}
         <div class="who">

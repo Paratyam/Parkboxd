@@ -1,6 +1,6 @@
 // Rating maths: taste match, hot takes, "which character are you", badges.
-import { fetchAll } from './ui.js?v=20261127201535';
-import { supabase } from './supabase.js?v=20261127201535';
+import { fetchAll } from './ui.js?v=20261127201633';
+import { supabase } from './supabase.js?v=20261127201633';
 
 // ---- Loaders ----
 
