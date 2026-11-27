@@ -123,21 +123,19 @@ Object.assign(AVATAR_ICONS, {
     <path d="M2 15 H38 V26 H2 Z" fill="#2b2b2b" ${S}/>
     <circle cx="20" cy="20.5" r="12" fill="#f5c518" ${S}/>
     <path d="M20 13 L22 18 L27 18.5 L23 22 L24.5 27 L20 24.5 L15.5 27 L17 22 L13 18.5 L18 18 Z" fill="#d63a3a" ${S}/>`) },
-  pepper: { label: 'Hot pepper', badge: 'hottake', svg: svg(`
-    <path d="M25 13 Q35 16 31 26 Q25 37 8 35 Q19 30 18 20 Q18 12 25 13 Z" fill="#d63a3a" ${S}/>
-    <path d="M18 15 Q20 9 26 11 Q31 10 30 17 Q24 13 18 15 Z M25 11 Q24 5 30 4" fill="#3fb950" ${S}/>
-    <path d="M27 20 Q28 25 23 29" stroke="#ff9a8a" stroke-width="2" fill="none"/>`) },
+  pepper: { label: 'Flame', badge: 'hottake', svg: svg(`
+    <path d="M20 2 Q24 10 29 13 Q36 21 31 30 Q27 37 20 37 Q11 37 8 29 Q5 20 13 13 Q13 19 17 20 Q14 10 20 2 Z" fill="#f2711c" ${S}/>
+    <path d="M20 19 Q28 26 25 31 Q23 35 20 35 Q14 34 14 29 Q15 24 20 19 Z" fill="#f5c518" ${S}/>`) },
   door: { label: 'Raspberry', badge: 'screwyou', svg: svg(`
     <circle cx="20" cy="20" r="16" fill="#f5c518" ${S}/>
     <path d="M10 13 L16 16 L10 19 M30 13 L24 16 L30 19" fill="none" ${S}/>
     <path d="M11 24 H29" fill="none" ${S}/>
     <path d="M15 24 V30 Q15 36 20 36 Q25 36 25 30 V24 Z" fill="#ff7eb6" ${S}/>
     <path d="M20 25 V31" stroke="#141414" stroke-width="1.5"/>`) },
-  police: { label: 'Police cap', badge: 'authoritah', svg: svg(`
-    <path d="M7 22 Q4 9 20 8 Q36 9 33 22 Z" fill="#2f4f8f" ${S}/>
-    <rect x="8" y="21" width="24" height="6" fill="#1d2f57" ${S}/>
-    <path d="M9 27 Q20 38 31 27 Z" fill="#2b2b2b" ${S}/>
-    <path d="M20 11 L22 15 L26 15.5 L23 18 L24 21 L20 19.5 L16 21 L17 18 L14 15.5 L18 15 Z" fill="#f5c518" ${S}/>`) },
+  police: { label: 'Sheriff star', badge: 'authoritah', svg: svg(`
+    <path d="M20 3 L24.5 14 L36 15 L27 22.5 L30 34 L20 28 L10 34 L13 22.5 L4 15 L15.5 14 Z" fill="#f5c518" ${S}/>
+    <circle cx="20" cy="20" r="5" fill="#c9a227" ${S}/>
+    <circle cx="20" cy="3.5" r="2" fill="#f5c518" ${S}/><circle cx="36" cy="15" r="2" fill="#f5c518" ${S}/><circle cx="4" cy="15" r="2" fill="#f5c518" ${S}/>`) },
   towel: { label: 'Towel', badge: 'rewatch', svg: svg(`
     <path d="M10 7 Q20 4 30 7 L32 34 Q26 31 20 34 Q14 37 8 34 Z" fill="#a78bda" ${S}/>
     <path d="M10 12 L30 12 M9 29 L31 29" stroke="#f4f8fb" stroke-width="2.5"/>
@@ -147,15 +145,16 @@ Object.assign(AVATAR_ICONS, {
     <path d="M12 28 Q10 10 34 4 Q34 22 16 27 Z" fill="#f4f8fb" ${S}/>
     <path d="M8 35 L27 12" ${S}/>
     <rect x="22" y="27" width="12" height="9" rx="2" fill="#2f6db5" ${S}/><rect x="25" y="24" width="6" height="4" fill="#2b2b2b" ${S}/>`) },
-  clipboard: { label: 'Clipboard', badge: 'mmkay', svg: svg(`
-    <rect x="8" y="7" width="24" height="29" rx="2.5" fill="#8a5a3b" ${S}/>
-    <rect x="11" y="11" width="18" height="22" fill="#f6f1e1" ${S}/>
-    <rect x="15" y="4" width="10" height="7" rx="2" fill="#9aa5b1" ${S}/>
-    <path d="M15 18 H25 M15 23 H25 M15 28 H21" ${S}/>`) },
-  ticket: { label: 'Premiere ticket', badge: 'dayone', svg: svg(`
-    <g transform="rotate(-14 20 20)"><path d="M5 12 H35 V17 Q31 20 35 23 V28 H5 V23 Q9 20 5 17 Z" fill="#f5c518" ${S}/>
-    <path d="M26 13 V27" stroke="#141414" stroke-width="1.5" stroke-dasharray="2 2"/>
-    <path d="M15 15 L17 18.5 L20.5 19 L18 21.5 L18.5 25 L15 23.5 L11.5 25 L12 21.5 L9.5 19 L13 18.5 Z" fill="#d63a3a" ${S}/></g>`) },
+  clipboard: { label: 'Necktie', badge: 'mmkay', svg: svg(`
+    <path d="M14 4 H26 L23 11 H17 Z" fill="#2f6db5" ${S}/>
+    <path d="M17 11 H23 L28 29 L20 37 L12 29 Z" fill="#4a90e2" ${S}/>
+    <path d="M15 19 L25 23 M14 25 L23 29" stroke="#f4f8fb" stroke-width="2"/>`) },
+  ticket: { label: 'Calendar day 1', badge: 'dayone', svg: svg(`
+    <rect x="6" y="8" width="28" height="29" rx="3" fill="#f6f1e1" ${S}/>
+    <path d="M6 16 H34 V11 Q34 8 31 8 H9 Q6 8 6 11 Z" fill="#d63a3a" ${S}/>
+    <path d="M13 4 V12 M27 4 V12" ${S}/>
+    <path d="M17 23 L21 20 V32" fill="none" stroke="#141414" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M17 23 L21 20 V32" fill="none" stroke="#1d3557" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`) },
   raccoon: { label: 'Raccoon', badge: 'coon', svg: svg(`
     <path d="M7 18 L6 6 L16 11 Q20 10 24 11 L34 6 L33 18 Q37 24 30 29 Q20 40 10 29 Q3 24 7 18 Z" fill="#9aa5b1" ${S}/>
     <path d="M7 20 Q13 14 18 20 Q20 22 22 20 Q27 14 33 20 Q31 27 25 25 Q20 23 15 25 Q9 27 7 20 Z" fill="#2b2b2b"/>

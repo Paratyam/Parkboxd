@@ -1,7 +1,7 @@
 // Book Club attendance: weeks in a row you logged that week's pick, with stickers along the way.
 // Worked out from your logs (by when they were made, so backdating doesn't count). No database.
-import { stickerSVG } from './art.js?v=20261127181643';
-import { CLUB_START, weekStart } from './club.js?v=20261127181643';
+import { stickerSVG } from './art.js?v=20261127182140';
+import { CLUB_START, weekStart } from './club.js?v=20261127182140';
 
 const SLIP_EVERY = 10; // one free life (a forgiven missed week) in any 10
 
