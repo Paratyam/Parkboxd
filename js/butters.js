@@ -42,6 +42,22 @@ const CLOSERS = [
   "Let's all be real nice in the reviews, fellas.",
   'Book Club is the best part of my week. Thanks for coming, everybody!',
   "I'll write a longer one next week. If I'm not grounded.",
+  'Please return your books on time, or I get real nervous.',
+  "Okay, I gotta go, my dad's coming up the stairs.",
+  'Same time next week? Please say yes.',
+  'If you liked it too, we can be reading buddies!',
+  'Gold star for everybody who watched it!',
+  "Now if you'll excuse me, I'm grounded.",
+  "I give it two thumbs up, and I'd give more if I had 'em.",
+  'Thanks for reading. I really mean it, it gets lonely.',
+  'Last one to comment is a rotten egg! No offense to eggs.',
+  "Don't forget, snack time is right after discussion.",
+  "That's my review, and I'm sticking to it, unless you disagree.",
+  'Aw, I wish Book Club was every day.',
+  'If anybody asks, I was doing homework.',
+  "I'm gonna go think about it in my room for a long time.",
+  'Keep on reading, even if it\'s TV.',
+  "Bye for now! I'll be right here by the bookshelf.",
 ];
 
 // Extra line when a character tag is on the episode (first match wins, Butters first).
