@@ -1,30 +1,30 @@
-import { initPage } from '../layout.js?v=20261127190142';
-import { supabase } from '../supabase.js?v=20261127190142';
-import { SITE_NAME } from '../config.js?v=20261127190142';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127190142';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127190142';
-import { shareInvite } from '../invite.js?v=20261127190142';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, fetchAll } from '../ui.js?v=20261127190142';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127190142';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127190142';
-import { line } from '../jokes.js?v=20261127190142';
-import { characterColours } from '../data/character-tags.js?v=20261127190142';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127190142';
-import { rankFor, nextRank } from '../badges.js?v=20261127190142';
-import { loadStreaks, streakHTML } from'../streak.js?v=20261127190142';
-import { loadPicks } from '../club.js?v=20261127190142';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127190142';
-import { AVATAR_ICONS } from '../avatars.js?v=20261127190142';
-import { beltSVG } from'../art.js?v=20261127190142';
-import { roastJokes } from '../jimmy.js?v=20261127190142';
+import { initPage } from '../layout.js?v=20261127190744';
+import { supabase } from '../supabase.js?v=20261127190744';
+import { SITE_NAME } from '../config.js?v=20261127190744';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127190744';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127190744';
+import { shareInvite } from '../invite.js?v=20261127190744';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, fetchAll } from '../ui.js?v=20261127190744';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127190744';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127190744';
+import { line } from '../jokes.js?v=20261127190744';
+import { characterColours } from '../data/character-tags.js?v=20261127190744';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127190744';
+import { rankFor, nextRank } from '../badges.js?v=20261127190744';
+import { loadStreaks, streakHTML } from'../streak.js?v=20261127190744';
+import { loadPicks } from '../club.js?v=20261127190744';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127190744';
+import { AVATAR_ICONS } from '../avatars.js?v=20261127190744';
+import { beltSVG } from'../art.js?v=20261127190744';
+import { roastJokes } from '../jimmy.js?v=20261127190744';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' and Kyle's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127190142')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127190142')).renderKyleProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127190744')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127190744')).renderKyleProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {
@@ -129,8 +129,10 @@ async function render(p) {
     && new Date(l.created_at) >= pk.start && new Date(l.created_at) < pk.end);
   const lastTen = clubPicks.slice(0, 10).reverse(); // oldest first, this week last
   const readCount = lastTen.filter(readInWeek).length;
+  const holds = (id) => badges.some((b) => b.id === id && b.earned);
+  const goldCard = holds('bookworm') && !(p.flair_off || []).includes('bookworm');
   const libraryHtml = `
-    <div class="library-card">
+    <div class="library-card${goldCard ? ' gold' : ''}">
       <div class="lc-head"><span class="cut">South Park Elementary Library</span><span>Book Club card</span></div>
       <div class="lc-body">
         <div class="lc-who"><span>Member</span><strong>${esc(name)}</strong><span class="lc-count">Read <b>${readCount}</b> of ${lastTen.length < 10 ? `${lastTen.length} pick${lastTen.length === 1 ? "" : "s"} so far` : "the last 10 picks"}</span></div>
@@ -299,8 +301,8 @@ async function render(p) {
     </section>
 
     <section>
-      <div class="section-head"><h2>Tegridy streak</h2>${isMe && streak.longest ? `<button type="button" class="link-button" data-share-streak data-days="${streak.current}" data-name="${esc(name)}">🖼️ Share my streak</button>` : ''}</div>
-      ${streakHTML(streak, { isMe, name })}
+      <div class="section-head"><h2>Tegridy streak</h2>${isMe && streak.longest ? `<button type="button" class="link-button" data-share-streak${holds('tegridy') ? ' data-flag="1"' : ''} data-days="${streak.current}" data-name="${esc(name)}">🖼️ Share my streak</button>` : ''}</div>
+      ${streakHTML(streak, { isMe, name, flag: holds('tegridy') })}
       ${rewardsHtml}
     </section>
 

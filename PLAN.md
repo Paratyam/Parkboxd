@@ -238,3 +238,9 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 ## Badge extras switches and unlock message (27 Nov 2026)
 - Edit profile > Badge extras: show or hide the rank ring, Completionist crown, Critic tag and Hot Take pepper (`profiles.flair_off`; others see a change once their 10-minute flair cache expires)
 - `js/unlocks.js`: a "Congratulations!" dialog listing each newly earned badge, its avatar and perks, and a new ring if reached. Checked after logging, Cage Match picks, Mystery, follows and tier list saves (`parkboxd:progress`, fired in `js/supabase.js`) and on page load at most every 5 minutes. `profiles.badges_seen` stops repeats across devices; the first check only records what someone already has. Replaces the old secret-mode toast
+
+## More badge rewards (27 Nov 2026)
+- Super Best Friends: fist-bump animation on follow. I Thought This Was America: eagle flyby when rating a Randy episode, plus a stars-and-stripes streak card (profile, Stats and share picture; home unchanged). Both animations in `js/rewards.js`, off with reduced motion (the follow toast stays)
+- Bookworm: gold library card tag after your name and a gold library card on your profile; switchable in Edit profile (`flair_off` value `bookworm`)
+- Case Closed: Detective tag on the Mystery leaderboard. Screw You Guys: "going home" stamp on reviews of 1 star or less. Ringmaster: Cartman announces you as guest referee in the Cage Match
+- Badge checks for other people come from the flair cache (`hasBadge` / `iHave` in `js/flair.js`), cleared when you unlock something

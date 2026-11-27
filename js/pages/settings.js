@@ -1,13 +1,13 @@
-import { initPage, refreshBell } from '../layout.js?v=20261127190142';
-import { supabase } from '../supabase.js?v=20261127190142';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127190142';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127190142';
-import { loadStreaks } from '../streak.js?v=20261127190142';
-import { loadBadges, rankFor } from '../badges.js?v=20261127190142';
-import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261127190142';
-import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127190142';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127190142';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127190142';
+import { initPage, refreshBell } from '../layout.js?v=20261127190744';
+import { supabase } from '../supabase.js?v=20261127190744';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127190744';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127190744';
+import { loadStreaks } from '../streak.js?v=20261127190744';
+import { loadBadges, rankFor } from '../badges.js?v=20261127190744';
+import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261127190744';
+import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127190744';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127190744';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127190744';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -80,6 +80,7 @@ function drawSwitches() {
     ['crown', '👑 Completionist crown', badges.get('completionist')?.earned, 'earn the Completionist badge'],
     ['critic', '✍️ “Critic” tag after your name', badges.get('critic')?.earned, 'earn the Critic badge'],
     ['spicy', '🌶️ Hot Take Artist pepper', badges.get('hottake')?.earned, 'earn the Hot Take Artist badge'],
+    ['bookworm', '📚 Bookworm gold library card', badges.get('bookworm')?.earned, 'earn the Bookworm badge'],
   ];
   $('#flair-switches').innerHTML = rows.map(([key, label, earned, how]) => `
     <label class="checkbox"${earned ? '' : ' style="opacity:.55;cursor:default"'}>

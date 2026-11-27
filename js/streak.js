@@ -2,8 +2,8 @@
 // finished that day's Mystery Episode, or judged 10 Cage Match fights ("watering"). Every 7 days
 // in a row earns a rain day (hold up to 2) that covers a missed day. Randy has feelings about it.
 // Everything is worked out in the browser from rows that already exist.
-import { esc, fetchAll } from './ui.js?v=20261127190142';
-import { supabase } from './supabase.js?v=20261127190142';
+import { esc, fetchAll } from './ui.js?v=20261127190744';
+import { supabase } from './supabase.js?v=20261127190744';
 
 export const WATER_FIGHTS = 10;
 export const RAIN_EVERY = 7;
@@ -193,7 +193,7 @@ export function randyLine(s, isMe) {
   ], s.longest);
 }
 
-export function streakHTML(s, { isMe = true, name = '' } = {}) {
+export function streakHTML(s, { isMe = true, name = '', flag = false } = {}) {
   const notes = [
     `Longest: ${s.longest} day${s.longest === 1 ? '' : 's'}`,
     s.current >= FULL_GROWN ? 'Fully grown!' : s.current ? `${FULL_GROWN - s.current} days to fully grown` : '',
@@ -202,7 +202,7 @@ export function streakHTML(s, { isMe = true, name = '' } = {}) {
     isMe && s.doneToday ? (s.loggedToday ? '✓ logged today' : '✓ watered today') : '',
   ].filter(Boolean).join(' · ');
   return `
-    <div class="streak-card paper${s.current >= 7 ? ' hot' : ''}">
+    <div class="streak-card paper${s.current >= 7 ? ' hot' : ''}${flag ? ' stars' : ''}">
       <div class="streak-plant">${plantSVG(s.broke || s.current, { wilted: !!s.broke })}</div>
       <div class="streak-num"><b>${s.current}</b><span>day${s.current === 1 ? '' : 's'}</span></div>
       <div class="streak-text">

@@ -1,12 +1,12 @@
 // Follows, review likes and the shared review block.
-import { supabase } from './supabase.js?v=20261127190142';
-import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261127190142';
-import { thumbHTML } from './episodes.js?v=20261127190142';
-import { line } from './jokes.js?v=20261127190142';
-import { isHotTake } from './insights.js?v=20261127190142';
-import { buttersLikes } from './butters.js?v=20261127190142';
-import './share.js?v=20261127190142';
-import { pcButtonHTML, installPC } from './pc.js?v=20261127190142';
+import { supabase } from './supabase.js?v=20261127190744';
+import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261127190744';
+import { thumbHTML } from './episodes.js?v=20261127190744';
+import { line } from './jokes.js?v=20261127190744';
+import { isHotTake } from './insights.js?v=20261127190744';
+import { buttersLikes } from './butters.js?v=20261127190744';
+import './share.js?v=20261127190744';
+import { pcButtonHTML, installPC } from './pc.js?v=20261127190744';
 
 installPC(); // PC Principal's "PC it" toggle on review cards
 
@@ -37,6 +37,7 @@ export function wireFollowButtons(root, onChange) {
     b.setAttribute('aria-pressed', String(!following));
     b.textContent = following ? 'Follow' : 'Following';
     b.className = `btn ${following ? 'btn-green' : 'btn-ghost'}`;
+    if (!following) import('./rewards.js?v=20261127190744').then((m) => m.followReward()).catch(() => {});
     onChange?.();
   }));
 }
@@ -82,7 +83,7 @@ export function reviewHTML(r, { me, extras, friends, avgs, showEpisode = false, 
         : avatarHTML(r.profiles, 36)}
       <div class="review-body">
         ${showEpisode && ep ? `<div style="font-size:14px"><a class="ep-link" href="episode.html?id=${ep.id}">${esc(ep.title)}</a> <span style="color:var(--muted)">${esc(epCode(ep))}</span></div>` : ''}
-        <div class="review-meta">
+        <div class="review-meta"${r.rating != null && Number(r.rating) <= 1 ? ` data-going-home="${esc(r.profiles?.username || '')}"` : ''}>
           ${showEpisode ? avatarHTML(r.profiles, 22) : ''}
           <span>${showEpisode ? '' : 'Review by '}<a href="profile.html?u=${encodeURIComponent(r.profiles?.username || '')}"><strong>${esc(who)}</strong></a></span>
           ${friends?.has(r.user_id) ? '<span class="friend-tag">Friend</span>' : ''}
@@ -125,7 +126,7 @@ export function wireReviewLikes(root, onChange) {
       .select('*, episodes(id, kind, season, number, title, air_date, still_path)').eq('id', Number(b.dataset.editReview)).maybeSingle();
     b.disabled = false;
     if (error || !log) return alert(error?.message || "Couldn't find that review.");
-    const { logEpisode } = await import('./layout.js?v=20261127190142');
+    const { logEpisode } = await import('./layout.js?v=20261127190744');
     const changed = await logEpisode({ episode: log.episodes, log });
     if (changed) onChange?.();
   }));

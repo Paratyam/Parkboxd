@@ -3,21 +3,32 @@
 //   🏔️ Completionist    → a crown on their avatar
 //   ✍️ Critic (25+ reviews) → "Critic" tag after their name
 //   🌶️ Hot Take Artist (5+ hot takes) → 🌶️ after their name
-// Each person can switch theirs off in Edit profile (profiles.flair_off).
-import { loadBadges, rankFor } from './badges.js?v=20261127190142';
+//   📚 Bookworm          → a little gold library card after their name
+//   🕵️ Case Closed       → "Detective" on the Mystery leaderboard
+//   🚪 Screw You Guys    → a stamp on their reviews of 1★ or less
+// People can switch the ring, crown and name tags off in Edit profile (profiles.flair_off).
+import { loadBadges, rankFor } from './badges.js?v=20261127190744';
+import { supabase } from './supabase.js?v=20261127190744';
 
-export const CACHE_KEY = 'parkboxd-flair-3';
+export const CACHE_KEY = 'parkboxd-flair-4';
 const CACHE_MS = 10 * 60 * 1000;
 
 const CROWN = '<svg viewBox="0 0 40 28" aria-hidden="true" focusable="false"><path d="M4 24 L2 6 L12 14 L20 2 L28 14 L38 6 L36 24 Z" fill="#f5c518" stroke="#141414" stroke-width="3" stroke-linejoin="round"/><circle cx="20" cy="17" r="3.5" fill="#d63a3a" stroke="#141414" stroke-width="2"/></svg>';
 
-/** { username: { rank, count, crown, critic, spicy } } — cached for 10 minutes per tab. */
-async function loadFlair() {
+let loading; // one load at a time, however many ask
+let myName; // the signed-in username
+
+/** { username: { earned, rank, count, crown, critic, ... } } — cached for 10 minutes per tab. */
+function loadFlair() {
   try {
     const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
-    if (cached && Date.now() - cached.t < CACHE_MS) return cached.data;
+    if (cached && Date.now() - cached.t < CACHE_MS) return Promise.resolve(cached.data);
   } catch { /* ignore a broken cache */ }
+  loading ||= buildFlair().finally(() => { loading = null; });
+  return loading;
+}
 
+async function buildFlair() {
   const data = {};
   for (const { username, flairOff, badges } of (await loadBadges()).values()) {
     const earned = new Set(badges.filter((b) => b.earned).map((b) => b.id));
@@ -27,11 +38,35 @@ async function loadFlair() {
       crown: earned.has('completionist') && !flairOff.includes('crown'),
       critic: earned.has('critic') && !flairOff.includes('critic'),
       spicy: earned.has('hottake') && !flairOff.includes('spicy'),
+      bookworm: earned.has('bookworm') && !flairOff.includes('bookworm'),
+      detective: earned.has('detective'),
+      goingHome: earned.has('screwyou'),
+      earned: [...earned],
     };
-    if (f.rank || f.crown || f.critic || f.spicy) data[username] = f;
+    if (earned.size) data[username] = f;
   }
   sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data }));
   return data;
+}
+
+/** Does this person hold this badge? False if it can't be worked out. */
+export async function hasBadge(username, id) {
+  try {
+    return !!(await loadFlair())[username]?.earned.includes(id);
+  } catch {
+    return false;
+  }
+}
+
+/** Do I? */
+export async function iHave(id) {
+  if (!myName) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    const { data } = await supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
+    myName = data?.username;
+  }
+  return hasBadge(myName, id);
 }
 
 function decorate(root, flair) {
@@ -62,7 +97,17 @@ function decorate(root, flair) {
     let tags = '';
     if (f.critic) tags += '<span class="flair-critic" title="Critic: 25+ reviews">Critic</span>';
     if (f.spicy) tags += '<span class="flair-spicy" title="Hot Take Artist: 5+ hot takes" aria-label="Hot Take Artist">🌶️</span>';
+    if (f.bookworm) tags += '<span class="flair-bookworm" title="Bookworm: gold library card">📚 Bookworm</span>';
     if (tags) link.insertAdjacentHTML('afterend', tags);
+  });
+  // Mystery leaderboard names and harsh reviews mark who they belong to.
+  root.querySelectorAll('[data-detective]:not([data-flair])').forEach((el) => {
+    el.dataset.flair = '1';
+    if (flair[el.dataset.detective]?.detective) el.insertAdjacentHTML('afterend', '<span class="flair-detective" title="Case Closed: solved 5 mysteries">🕵️ Detective</span>');
+  });
+  root.querySelectorAll('[data-going-home]:not([data-flair])').forEach((el) => {
+    el.dataset.flair = '1';
+    if (flair[el.dataset.goingHome]?.goingHome) el.insertAdjacentHTML('beforeend', '<span class="going-home">Screw you guys, I\'m going home</span>');
   });
 }
 

@@ -1,11 +1,12 @@
 // stats.html?u=name: totals, monthly activity, season progress and season rankings.
-import { initPage } from '../layout.js?v=20261127190142';
-import { supabase } from '../supabase.js?v=20261127190142';
-import { SITE_NAME } from '../config.js?v=20261127190142';
-import { $, esc, params, profileTabsHTML, fetchAll } from '../ui.js?v=20261127190142';
-import { loadAllEpisodes, cardHTML } from '../episodes.js?v=20261127190142';
-import { mountReportCard } from '../report-card.js?v=20261127190142';
-import { loadStreaks, streakHTML } from '../streak.js?v=20261127190142';
+import { initPage } from '../layout.js?v=20261127190744';
+import { supabase } from '../supabase.js?v=20261127190744';
+import { SITE_NAME } from '../config.js?v=20261127190744';
+import { $, esc, params, profileTabsHTML, fetchAll } from '../ui.js?v=20261127190744';
+import { loadAllEpisodes, cardHTML } from '../episodes.js?v=20261127190744';
+import { mountReportCard } from '../report-card.js?v=20261127190744';
+import { loadStreaks, streakHTML } from '../streak.js?v=20261127190744';
+import { hasBadge } from '../flair.js?v=20261127190744';
 
 const { profile: me } = await initPage({ title: 'Stats', auth: 'required' });
 const root = $('#stats');
@@ -16,6 +17,7 @@ const { data: person } = await supabase.from('profiles').select('id, username, d
 if (!person) {
   root.innerHTML = `<div class="big-message"><h1 class="cut">Nobody by that name</h1><a class="btn btn-green" href="stats.html">Your stats</a></div>`;
   root.removeAttribute('aria-busy');
+hasBadge(person.username, 'tegridy').then((yes) => yes && document.querySelector('#streak-box .streak-card')?.classList.add('stars'));
 } else {
   await render();
   window.addEventListener('parkboxd:logged', render);
@@ -118,7 +120,7 @@ async function render() {
     <div class="stat-tiles">${tiles.map(([n, label]) => `<div class="stat-tile paper"><b>${esc(String(n))}</b><span>${esc(label)}</span></div>`).join('')}</div>
     <section>
       <div class="section-head"><h2>Tegridy streak</h2></div>
-      ${streakHTML(streak, { isMe, name })}
+      <div id="streak-box">${streakHTML(streak, { isMe, name })}</div>
     </section>
     <section>
       <div class="section-head"><h2>Mr. Garrison's Report Card</h2></div>
@@ -143,5 +145,6 @@ async function render() {
       <div class="ep-grid">${rewatched.map(([id, n]) => byId.get(id) && cardHTML(byId.get(id), { meta: `${n}× watched` })).filter(Boolean).join('')}</div>
     </section>` : ''}`;
   root.removeAttribute('aria-busy');
+hasBadge(person.username, 'tegridy').then((yes) => yes && document.querySelector('#streak-box .streak-card')?.classList.add('stars'));
   mountReportCard($('#report-card'), { seasonAvgs, all, seen, ratings: new Map((latest || []).map((r) => [r.episode_id, Number(r.rating)])), isMe, name });
 }

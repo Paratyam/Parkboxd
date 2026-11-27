@@ -1,19 +1,19 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127190142';
-import { supabase } from '../supabase.js?v=20261127190142';
-import { SITE_NAME } from '../config.js?v=20261127190142';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127190142';
-import { line } from '../jokes.js?v=20261127190142';
-import { celebrate } from '../fx.js?v=20261127190142';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127190142';
-import { mackeyNoteHTML } from '../mackey.js?v=20261127190142';
-import { starInput } from '../stars.js?v=20261127190142';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127190142';
-import { pcButtonHTML } from '../pc.js?v=20261127190142';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261127190142';
-import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261127190142';
-import { peoplesCupSVG } from '../art.js?v=20261127190142';
-import { openRecommend, recommendationsFor } from '../recommend.js?v=20261127190142';
-import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127190142';
+import { initPage, logEpisode } from '../layout.js?v=20261127190744';
+import { supabase } from '../supabase.js?v=20261127190744';
+import { SITE_NAME } from '../config.js?v=20261127190744';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127190744';
+import { line } from '../jokes.js?v=20261127190744';
+import { celebrate } from '../fx.js?v=20261127190744';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127190744';
+import { mackeyNoteHTML } from '../mackey.js?v=20261127190744';
+import { starInput } from '../stars.js?v=20261127190744';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127190744';
+import { pcButtonHTML } from '../pc.js?v=20261127190744';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261127190744';
+import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261127190744';
+import { peoplesCupSVG } from '../art.js?v=20261127190744';
+import { openRecommend, recommendationsFor } from '../recommend.js?v=20261127190744';
+import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127190744';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -38,7 +38,7 @@ if (!ep) {
 } else {
   renderShell();
   $('#roll-again')?.addEventListener('click', async () => {
-    const r = await import('../random.js?v=20261127190142');
+    const r = await import('../random.js?v=20261127190744');
     if (params.get('rolled') === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
@@ -167,7 +167,7 @@ function renderPanel() {
           ? '<button type="button" class="link-button" id="btn-top4" style="color:var(--text-soft)">Add to your Top 4</button>'
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
       <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>    </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127190142')).openAddToList(ep));
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127190744')).openAddToList(ep));
   $('#btn-rec').addEventListener('click', () => openRecommend(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 
@@ -209,7 +209,7 @@ function renderMyReview() {
         <article class="review my-review">
           ${avatarHTML(profile, 36)}
           <div class="review-body">
-            <div class="review-meta"><span>Review by <strong>you</strong></span>${meta(l)}</div>
+            <div class="review-meta"${l.rating != null && Number(l.rating) <= 1 ? ` data-going-home="${esc(profile.username)}"` : ''}><span>Review by <strong>you</strong></span>${meta(l)}</div>
             <p>${esc(l.review)}</p>
             <div class="review-foot">
               <button type="button" class="link-button" data-edit-log="${l.id}">Edit review</button>

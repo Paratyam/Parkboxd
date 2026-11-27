@@ -1,10 +1,11 @@
 // "You unlocked a badge" message: what you earned and every perk that comes with it. Checked
 // after anything that can earn a badge (js/supabase.js announces it) and now and then on page
 // load. profiles.badges_seen remembers what was already announced, on every device.
-import { supabase } from './supabase.js?v=20261127190142';
-import { esc, avatarHTML } from './ui.js?v=20261127190142';
-import { loadBadges, rankFor } from './badges.js?v=20261127190142';
-import { AVATAR_ICONS } from './avatars.js?v=20261127190142';
+import { supabase } from './supabase.js?v=20261127190744';
+import { esc, avatarHTML } from './ui.js?v=20261127190744';
+import { loadBadges, rankFor } from './badges.js?v=20261127190744';
+import { AVATAR_ICONS } from './avatars.js?v=20261127190744';
+import { CACHE_KEY as FLAIR_CACHE } from './flair.js?v=20261127190744';
 
 const DIRTY = 'parkboxd-badges-dirty';
 const CHECKED = 'parkboxd-badges-checked';
@@ -13,6 +14,12 @@ const GAP_MS = 20 * 1000; // quick-fire actions (Cage Match picks) don't check e
 
 const TOGGLE = '(on/off in <a href="settings.html">Edit profile</a>)';
 const PERKS = {
+  friends: ['🤜🤛 A fist bump every time you follow someone'],
+  bookworm: [`📚 A gold library card after your name and on your profile ${TOGGLE}`],
+  detective: ['🕵️ A “Detective” tag on the Mystery leaderboard'],
+  ringmaster: ['🥊 Cartman announces you as guest referee in the Cage Match'],
+  screwyou: ['🚪 A “Screw you guys, I\'m going home” stamp on your reviews of 1★ or less'],
+  tegridy: ['🦅 An eagle flies past when you rate a Randy episode', '🇺🇸 A stars-and-stripes Tegridy streak card, to keep and share'],
   completionist: [`👑 A crown on your avatar across the site ${TOGGLE}`],
   critic: [`✍️ A “Critic” tag after your name ${TOGGLE}`],
   hottake: [`🌶️ A pepper after your name ${TOGGLE}`],
@@ -59,6 +66,7 @@ async function check(profile) {
     .update({ badges_seen: [...new Set([...seen, ...earned.map((b) => b.id)])] }).eq('id', profile.id);
   // The very first check only takes note of what you already had.
   if (saveError || !me.badges_seen) return;
+  sessionStorage.removeItem(FLAIR_CACHE); // so the new perks work straight away
   show(profile, fresh, earned.length, mine.badges.length);
 }
 

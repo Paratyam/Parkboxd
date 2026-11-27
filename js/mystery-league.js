@@ -1,9 +1,9 @@
 // Kenny's mystery: this week's leaderboard among the people you follow (and you).
 // A solved case is worth 6 points on the first try, down to 1 on the sixth. Weeks start Monday
 // (UTC, like the puzzles); cold cases never count.
-import { supabase } from './supabase.js?v=20261127190142';
-import { esc, avatarHTML } from './ui.js?v=20261127190142';
-import { followingIds } from './social.js?v=20261127190142';
+import { supabase } from './supabase.js?v=20261127190744';
+import { esc, avatarHTML } from './ui.js?v=20261127190744';
+import { followingIds } from './social.js?v=20261127190744';
 
 const MAX = 6;
 const DAY = 86400000;
@@ -64,7 +64,7 @@ export function leagueHTML({ friends, people, plays }, { userId, today, mine }) 
     ${rows.length ? `<ol>${rows.map((r, i) => {
       const p = people.get(r.user_id) || {};
       return `<li class="${r.user_id === userId ? 'me' : ''}"><b>${i + 1}</b>
-        <a href="profile.html?u=${encodeURIComponent(p.username || '')}">${avatarHTML(p, 30)}<span><strong>${esc(name(r.user_id))}</strong>
+        <a href="profile.html?u=${encodeURIComponent(p.username || '')}">${avatarHTML(p, 30)}<span><strong data-detective="${esc(p.username || '')}">${esc(name(r.user_id))}</strong>
           <small>${r.solved} of ${r.played} solved${r.solved ? ` · ${(r.guesses / r.solved).toFixed(1)} guesses` : ''}</small></span></a>
         <span class="ml-points">${r.points}<small> pts</small></span></li>`;
     }).join('')}</ol>` : '<p class="result-count">Nobody is on the board yet this week. Be first.</p>'}

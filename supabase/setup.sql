@@ -890,3 +890,7 @@ grant execute on function public.friends_presence() to authenticated;
 alter table public.profiles add column if not exists flair_off text[] not null default '{}' check (flair_off <@ array['ring','crown','critic','spicy']);
 alter table public.profiles add column if not exists badges_seen text[] check (cardinality(badges_seen) <= 100);
 grant update (flair_off, badges_seen) on public.profiles to authenticated;
+
+-- The Bookworm gold library card can be switched off too (27 Nov 2026).
+alter table public.profiles drop constraint if exists profiles_flair_off_check;
+alter table public.profiles add constraint profiles_flair_off_check check (flair_off <@ array['ring','crown','critic','spicy','bookworm']);

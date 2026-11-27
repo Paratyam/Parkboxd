@@ -1,19 +1,19 @@
 // cage.html: Cartman's Cage Match, the game (pick the better of two episodes you've watched) plus your ranking.
 // cage.html?u=name&view=ranking: a profile's Rankings tab, just the ranking list.
 
-import { initPage } from '../layout.js?v=20261127190142';
-import { supabase } from '../supabase.js?v=20261127190142';
-import { SITE_NAME } from '../config.js?v=20261127190142';
-import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127190142';
-import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127190142';
-import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, peoplesChampion, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127190142';
+import { initPage } from '../layout.js?v=20261127190744';
+import { supabase } from '../supabase.js?v=20261127190744';
+import { SITE_NAME } from '../config.js?v=20261127190744';
+import { $, esc, params, epCode, profileTabsHTML, toast, stars } from '../ui.js?v=20261127190744';
+import { loadAllEpisodes, thumbHTML, myLogMap } from '../episodes.js?v=20261127190744';
+import { scoreVotes, ranking, champion, loadVotes, loadRatings, nextPair, peoplesChampion, UNDEFEATED_MIN, SETTLED_FIGHTS } from '../cage.js?v=20261127190744';
 import {
   introLine, resultLine, crowd, hostPick,
-  HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
-} from '../cage-host.js?v=20261127190142';
-import { burgerRain } from '../fx.js?v=20261127190142';
-import { beltSVG, peoplesCupSVG } from '../art.js?v=20261127190142';
-import { shareTop10 } from '../share.js?v=20261127190142';
+  HOST_SKIP, HOST_UNDO, HOST_WELCOME, HOST_REFEREE, HOST_FINALS, HOST_NEW_ARENA, HOST_RESET,
+} from '../cage-host.js?v=20261127190744';
+import { burgerRain } from '../fx.js?v=20261127190744';
+import { beltSVG, peoplesCupSVG } from '../art.js?v=20261127190744';
+import { shareTop10 } from '../share.js?v=20261127190744';
 
 const { profile: me } = await initPage({ title: 'Cage Match', auth: 'required' });
 const root = $('#cage');
@@ -56,7 +56,9 @@ async function start() {
   let showAll = false;
   const streaks = new Map(); // wins in a row this visit
   // What Cartman says: `call` is his reaction, `next` hypes the fight on screen.
-  let call = hostPick(HOST_WELCOME);
+  // 100 fights judged = the Ringmaster badge: Cartman announces you as guest referee.
+  const referee = votes.length >= 100;
+  let call = referee ? hostPick(HOST_REFEREE).replace('{n}', () => name) : hostPick(HOST_WELCOME);
 
   // ---- Which episodes fight: everything you've watched, one season, the extras, your 4★+, or the finals ----
   const seasons = [...new Set(watched.map((id) => byId.get(id)).filter((e) => e.kind === 'episode').map((e) => e.season))].sort((a, b) => a - b);
@@ -86,6 +88,7 @@ async function start() {
     ${showGame ? `<section class="cage-ring" id="cage-game" aria-label="Cartman's Cage Match: pick the better episode">
       <div class="cage-banner">
         <span class="cage-title cut">Cartman's Cage Match</span>
+        ${referee ? `<span class="cage-referee">🥊 Guest referee: ${esc(name)}</span>` : ''}
         <span class="cage-round cut" id="round"></span>
       </div>
       <div class="cage-host">

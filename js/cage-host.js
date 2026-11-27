@@ -120,6 +120,12 @@ export const HOST_WELCOME = [
   "Hey! Welcome back to the cage! I'm your host, Eric Cartman, and you will respect my authoritah!",
   "LADIES AND GENTLEMEN! Welcome to the most important event in South Park history! It's my show!",
 ];
+// For Ringmaster badge holders. {n} = their name.
+export const HOST_REFEREE = [
+  "Ladies and gentlemen, please welcome tonight's GUEST REFEREE: {n}! A hundred fights judged! Show some respect!",
+  "HOLD IT! We have a guest referee in the cage! It's {n}! The Ringmaster! I'm still in charge though.",
+  "Tonight's guest referee needs no introduction, but I'm doing one anyway: {n}! Give it up!",
+];
 export const HOST_FINALS = ["THE FINALS! Only the top 10 survive in here! This is the big leagues, baby!"];
 export const HOST_NEW_ARENA = ['New arena! Same rules! I still win!', 'Moving the cage! Everybody grab your stuff!'];
 export const HOST_RESET = ["Total reset?! Fine. Everybody's a nobody again. Just like Kyle."];

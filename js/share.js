@@ -1,14 +1,14 @@
 // Shareable paper-cutout cards: one of your reviews, your Top 4 or your Cage Match top 10, drawn on
 // a canvas. Original art, plus the episode stills on the review and Top 4 cards. Any button with data-share-review="<log id>" or
 // data-share-top4="<username>" or data-share-award (badge / personality) opens the preview.
-import { supabase } from './supabase.js?v=20261127190142';
-import { epCode, stars, toast } from './ui.js?v=20261127190142';
-import { fallbackColour, stillUrl } from './episodes.js?v=20261127190142';
-import { SITE_LINK } from './config.js?v=20261127190142';
-import { plantSVG } from './streak.js?v=20261127190142';
-import { farmSceneSVG } from './farm-scene.js?v=20261127190142';
-import { beltSVG } from './art.js?v=20261127190142';
-import { reviewMessage, top4Message, top10Message, awardMessage, streakMessage } from './share-text.js?v=20261127190142';
+import { supabase } from './supabase.js?v=20261127190744';
+import { epCode, stars, toast } from './ui.js?v=20261127190744';
+import { fallbackColour, stillUrl } from './episodes.js?v=20261127190744';
+import { SITE_LINK } from './config.js?v=20261127190744';
+import { plantSVG } from './streak.js?v=20261127190744';
+import { farmSceneSVG } from './farm-scene.js?v=20261127190744';
+import { beltSVG } from './art.js?v=20261127190744';
+import { reviewMessage, top4Message, top10Message, awardMessage, streakMessage } from './share-text.js?v=20261127190744';
 
 const W = 1080;
 const H = 1350;
@@ -261,12 +261,27 @@ export async function drawAwardCard({ kicker, emoji, heading, line, name }) {
   return canvas;
 }
 
-/** { name, days } -> canvas: the plant at its current size, down on the farm. */
-export async function drawStreakCard({ name, days }) {
+// Thirteen red and white stripes with a starry blue band, for "I Thought This Was America" holders.
+function starsAndStripes(c) {
+  for (let i = 0; i < 13; i++) {
+    c.fillStyle = i % 2 ? '#f6f1e1' : '#c0392b';
+    c.fillRect(110, 200 + i * (940 / 13), 860, 940 / 13 + 1);
+  }
+  c.lineWidth = 5;
+  c.strokeStyle = INK;
+  c.strokeRect(110, 200, 860, 940);
+  paper(c, 150, 222, 780, 88, '#1d3557', 0);
+  for (const x of [195, 250, 830, 885]) text(c, '★', x, 281, { size: 42, colour: '#fff', align: 'center' });
+  paper(c, 150, 935, 780, 190, PAPER, -0.4);
+}
+
+/** { name, days, flag } -> canvas: the plant at its current size, down on the farm. */
+export async function drawStreakCard({ name, days, flag }) {
   const { canvas, c } = await newCanvas('Grow your own');
   const n = Number(days);
-  paper(c, 110, 200, 860, 940, PAPER, 0.8);
-  text(c, 'MY TEGRIDY STREAK', W / 2, 285, { size: 36, weight: 700, colour: '#c0392b', align: 'center' });
+  if (flag) starsAndStripes(c);
+  else paper(c, 110, 200, 860, 940, PAPER, 0.8);
+  text(c, 'MY TEGRIDY STREAK', W / 2, flag ? 280 : 285, { size: 36, weight: 700, colour: flag ? '#fff' : '#c0392b', align: 'center' });
   const svgImage = (svg) => loadPicture(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`, false);
   const [farm, plant] = await Promise.all([
     svgImage(farmSceneSVG()),
