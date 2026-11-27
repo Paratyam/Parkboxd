@@ -1,13 +1,13 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127150743';
-import { initPage, logEpisode } from '../layout.js?v=20261127150743';
-import { supabase } from '../supabase.js?v=20261127150743';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127150743';
-import { followingIds } from '../social.js?v=20261127150743';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127150743';
-import { mysterySVG } from '../art.js?v=20261127150743';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127150743';
+import { SITE_LINK } from '../config.js?v=20261127150845';
+import { initPage, logEpisode } from '../layout.js?v=20261127150845';
+import { supabase } from '../supabase.js?v=20261127150845';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127150845';
+import { followingIds } from '../social.js?v=20261127150845';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127150845';
+import { mysterySVG } from '../art.js?v=20261127150845';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127150845';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -218,6 +218,7 @@ function render() {
       </div>
     </section>
     ${cold ? '<p class="mystery-coldnote">🧊 You\'re reopening a past case. It won\'t change your stats or streak. <a href="mystery.html">Back to today\'s case →</a></p>' : ''}
+    <p class="mystery-next" id="m-next"></p>
     <div class="mystery-layout">
       <div class="mystery-board">
         <div class="mystery-frame">
@@ -241,7 +242,6 @@ function render() {
               <button type="button" class="btn btn-green" id="m-share">Copy my result</button>
               <button type="button" class="btn btn-ghost" id="m-log">Log ${esc(answer.title)}</button>
             </div>
-            <p class="mystery-next" id="m-next"></p>
           </div>
           <div class="mystery-friends mystery-stats paper" id="m-friends"><p class="result-count">Checking on your friends…</p></div>` : `
           <form class="mystery-guess" id="m-form" autocomplete="off">
@@ -271,8 +271,8 @@ function render() {
     </div>`;
   root.removeAttribute('aria-busy');
   wire();
+  countdown();
   if (game.done) {
-    countdown();
     showFriends().catch(() => { const box = $('#m-friends'); if (box) box.innerHTML = '<p class="result-count">Couldn\'t load your friends\' results.</p>'; });
   }
 }
