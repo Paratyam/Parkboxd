@@ -1,17 +1,18 @@
-import { initPage, logEpisode } from '../layout.js?v=20261127151157';
-import { supabase } from '../supabase.js?v=20261127151157';
-import { SITE_NAME } from '../config.js?v=20261127151157';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127151157';
-import { line } from '../jokes.js?v=20261127151157';
-import { celebrate } from '../fx.js?v=20261127151157';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127151157';
-import { mackeyNoteHTML } from '../mackey.js?v=20261127151157';
-import { starInput } from '../stars.js?v=20261127151157';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127151157';
-import { pcButtonHTML } from '../pc.js?v=20261127151157';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261127151157';
-import { loadVotes, loadRatings, scoreVotes, ranking } from '../cage.js?v=20261127151157';
-import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127151157';
+import { initPage, logEpisode } from '../layout.js?v=20261127151509';
+import { supabase } from '../supabase.js?v=20261127151509';
+import { SITE_NAME } from '../config.js?v=20261127151509';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261127151509';
+import { line } from '../jokes.js?v=20261127151509';
+import { celebrate } from '../fx.js?v=20261127151509';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261127151509';
+import { mackeyNoteHTML } from '../mackey.js?v=20261127151509';
+import { starInput } from '../stars.js?v=20261127151509';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127151509';
+import { pcButtonHTML } from '../pc.js?v=20261127151509';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261127151509';
+import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261127151509';
+import { peoplesCupSVG } from '../art.js?v=20261127151509';
+import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261127151509';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -36,11 +37,11 @@ if (!ep) {
 } else {
   renderShell();
   $('#roll-again')?.addEventListener('click', async () => {
-    const r = await import('../random.js?v=20261127151157');
+    const r = await import('../random.js?v=20261127151509');
     if (params.get('rolled') === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
-  await Promise.all([refreshMine(), refreshCommunity(), renderNeighbours(), renderTags(), renderArc()]);
+  await Promise.all([refreshMine(), refreshCommunity(), renderNeighbours(), renderTags(), renderArc(), renderPeoplesChamp().catch(() => {})]);
   root.removeAttribute('aria-busy');
   window.addEventListener('parkboxd:logged', () => { refreshMine(); refreshCommunity(); renderArc(); });
 }
@@ -68,6 +69,7 @@ function renderShell() {
           <div class="crumbs">${crumbs}</div>
           <h1 class="cut">${esc(ep.title)}</h1>
         </div>
+        <div id="peoples-champ" hidden></div>
         ${ep.overview ? `<p class="overview">${esc(ep.overview)}</p>` : ''}
         ${mackeyNoteHTML(ep)}
         <div class="tag-chips" id="tags"></div>
@@ -93,6 +95,17 @@ function renderShell() {
         <div id="arc-box"></div>
       </aside>
     </div>`;
+}
+
+// A banner on the one episode everyone's Cage Match picks put first.
+async function renderPeoplesChamp() {
+  const champ = await peoplesChampion();
+  const box = $('#peoples-champ');
+  if (!box || champ?.episode_id !== ep.id) return;
+  box.innerHTML = `<a class="ep-peoples paper" href="cage.html">${peoplesCupSVG()}
+    <span><strong class="cut">The people's champion</strong>
+      <span>Number one in Cartman's Cage Match across everyone's picks · ${champ.wins}–${champ.losses} from ${champ.judges} judge${champ.judges === 1 ? '' : 's'}</span></span></a>`;
+  box.hidden = false;
 }
 
 // ---- Your actions ----
@@ -138,7 +151,7 @@ function renderPanel() {
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
       <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>
     </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127151157')).openAddToList(ep));
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261127151509')).openAddToList(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 
   starInput($('#rate-stars'), { value: rating, size: 34, label: 'Your rating', onChange: setRating });

@@ -1,5 +1,5 @@
 // Cage Match: a personal head-to-head game. Votes are stored, scores (Elo) are worked out here.
-import { supabase } from './supabase.js?v=20261127151157';
+import { supabase } from './supabase.js?v=20261127151509';
 
 const K = 32;
 export const UNDEFEATED_MIN = 3; // wins needed before "undefeated" means anything
@@ -48,6 +48,14 @@ export async function loadVotes(userId) {
   const { data } = await supabase.from('cage_votes').select('id, winner_id, loser_id, created_at')
     .eq('user_id', userId).order('created_at').limit(20000);
   return data || [];
+}
+
+// The people's champion: #1 on everyone's picks together (the cage_community view), or null.
+export async function peoplesChampion() {
+  const { data, error } = await supabase.from('cage_community').select('episode_id, judges, wins, losses, score')
+    .order('score', { ascending: false }).order('judges', { ascending: false }).order('wins', { ascending: false })
+    .order('episode_id').limit(1);
+  return error ? null : data?.[0] || null;
 }
 
 export async function loadRatings(userId) {

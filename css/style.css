@@ -1514,3 +1514,9 @@ html.chaos .install-ad, html.mysterion .install-ad { bottom: 66px; }
   .cage-champ:has(.peoples) { grid-template-columns: 1fr; }
   .cage-champ .cage-champ-belt.peoples { position: absolute; top: 8px; right: 8px; width: 78px; }
 }
+
+/* Episode page: the people's champion banner */
+.ep-peoples { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border: 2px solid var(--yellow); background-color: var(--surface); color: var(--text); }
+.ep-peoples .art { flex: none; width: 76px; height: auto; transform: rotate(-5deg); }
+.ep-peoples strong { display: block; font-size: 22px; font-weight: 400; color: var(--yellow); }
+.ep-peoples span span { font-size: 13px; color: var(--muted); }
