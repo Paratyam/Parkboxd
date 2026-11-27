@@ -1475,7 +1475,6 @@ html.chaos .install-ad, html.mysterion .install-ad { bottom: 66px; }
 /* Cage Match: share button and the crowd's champion */
 .cage-share { margin: 0 0 14px; }
 .cage-crowd-champ { margin: 0 0 12px; color: var(--muted); }
-#crowd-champ .cage-champ > div { padding-top: 40px; }
 
 /* Book Club attendance streak and stickers */
 .attend { display: flex; flex-direction: column; gap: 6px; }
@@ -1508,10 +1507,10 @@ html.chaos .install-ad, html.mysterion .install-ad { bottom: 66px; }
 .mystery-dist .md-track { height: 14px; border-radius: 7px; background: rgba(255,255,255,.08); overflow: hidden; }
 .mystery-dist .md-track > div { height: 100%; border-radius: 7px; background: #f2711c; }
 
-/* Undefeated champions get their own prize instead of the belt */
-.cage-champ:has(.unbeaten) { grid-template-columns: minmax(120px, 260px) 1fr auto; }
-.cage-champ .cage-champ-belt.unbeaten { position: static; grid-column: 3; grid-row: 1; width: 108px; }
+/* The people's champion gets its own prize (personal champions wear the belt) */
+.cage-champ:has(.peoples) { grid-template-columns: minmax(120px, 260px) 1fr auto; }
+.cage-champ .cage-champ-belt.peoples { position: static; grid-column: 3; grid-row: 1; width: 108px; }
 @media (max-width: 720px) {
-  .cage-champ:has(.unbeaten) { grid-template-columns: 1fr; }
-  .cage-champ .cage-champ-belt.unbeaten { position: absolute; top: 8px; right: 8px; width: 78px; }
+  .cage-champ:has(.peoples) { grid-template-columns: 1fr; }
+  .cage-champ .cage-champ-belt.peoples { position: absolute; top: 8px; right: 8px; width: 78px; }
 }

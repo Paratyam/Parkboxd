@@ -66,10 +66,10 @@ export function stickerSVG(key) {
   </svg>`;
 }
 
-/** The undefeated champion's prize: a crowned gold cup in front of paper flames, with a banner. */
-export function unbeatenSVG() {
+/** The people's champion's prize: a crowned gold cup in front of paper flames, with a banner. */
+export function peoplesCupSVG() {
   const cut = `stroke="${INK}" stroke-width="3" stroke-linejoin="round"`;
-  return `<svg class="art art-unbeaten" viewBox="0 0 120 128" aria-hidden="true" focusable="false">
+  return `<svg class="art art-peoples" viewBox="0 0 120 128" aria-hidden="true" focusable="false">
     <path d="M60 4 L72 26 L90 12 L90 36 L113 31 L101 53 L118 66 L98 76 L106 96 L82 92 L60 106 L38 92 L14 96 L22 76 L2 66 L19 53 L7 31 L30 36 L30 12 L48 26 Z" fill="#d63a3a" ${cut}/>
     <path d="M60 20 L70 40 L86 31 L84 50 L101 52 L88 65 L98 78 L78 80 L60 94 L42 80 L22 78 L32 65 L19 52 L36 50 L34 31 L50 40 Z" fill="#f2711c"/>
     <path d="M37 52 Q18 52 24 67 Q29 76 43 73 M83 52 Q102 52 96 67 Q91 76 77 73" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round"/>
@@ -81,7 +81,7 @@ export function unbeatenSVG() {
     <circle cx="60" cy="34" r="4" fill="#4a90e2" stroke="${INK}" stroke-width="2"/>
     <path d="M60 53 L63.5 61 L72 62 L65.5 67.500 L68 76 L60 71 L52 76 L54.500 67.500 L48 62 L56.500 61 Z" fill="#fff" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
     <path d="M6 104 L22 108 L98 108 L114 104 L107 115 L114 126 L96 123 L24 123 L6 126 L13 115 Z" fill="#fff" ${cut}/>
-    <text x="60" y="120" text-anchor="middle" font-family="'Luckiest Guy', cursive" font-size="13" fill="#d63a3a">UNBEATEN</text>
+    <text x="60" y="120" text-anchor="middle" font-family="'Luckiest Guy', cursive" font-size="13" fill="#d63a3a">PEOPLE'S</text>
   </svg>`;
 }
 
