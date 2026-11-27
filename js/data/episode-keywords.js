@@ -150,7 +150,7 @@ export const EPISODE_KEYWORDS = {
   "City People": "covid, moving, city people, real estate",
   "Back to the Cold War": "russia, ukraine, cold war, dressage, butters",
   "Help, My Teenager Hates Me!": "airsoft, teenagers, teens",
-  "Cupid Ye": "kanye, ye, antisemitism, cupid, cartman",
+  "Cupid Ye": "kanye, ye, antisemitism, cupid, cartman, tiktok, tik tok",
   "The Worldwide Privacy Tour": "harry and meghan, prince harry, royal family, memoir",
   "Japanese Toilet": "bidet, toilet",
   "Deep Learning": "chatgpt, chat gpt, ai, artificial intelligence, texting, homework, stan",
