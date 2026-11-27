@@ -1,6 +1,7 @@
 // Animations some badge holders get. Original paper-cutout art.
-import { toast } from './ui.js?v=20261127191134';
-import { iHave } from './flair.js?v=20261127191134';
+import { sfx } from './sfx.js?v=20261127191633';
+import { toast } from './ui.js?v=20261127191633';
+import { iHave } from './flair.js?v=20261127191633';
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const S = 'stroke="#141414" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
@@ -38,10 +39,13 @@ function play(className, html, ms) {
 export async function followReward() {
   if (!await iHave('friends')) return;
   toast('🤜🤛 Super best friends!');
+  sfx('thud');
   play('fist-bump', `<span class="fist-left">${fist('#4a90e2', '#f5c9a0')}</span><span class="fist-burst">${BURST}</span><span class="fist-right">${fist('#3fb950', '#c8935f')}</span>`, 1900);
 }
 
 /** 🦅 I Thought This Was America: an eagle flies past when you rate a Randy episode. */
 export async function randyReward() {
-  if (await iHave('tegridy')) play('eagle-flyby', EAGLE, 3600);
+  if (!await iHave('tegridy')) return;
+  sfx('whoosh');
+  play('eagle-flyby', EAGLE, 3600);
 }

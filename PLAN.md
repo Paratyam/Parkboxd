@@ -239,6 +239,11 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Edit profile > Badge extras: show or hide the rank ring, Completionist crown, Critic tag and Hot Take pepper (`profiles.flair_off`; others see a change once their 10-minute flair cache expires)
 - `js/unlocks.js`: a "Congratulations!" dialog listing each newly earned badge, its avatar and perks, and a new ring if reached. Checked after logging, Cage Match picks, Mystery, follows and tier list saves (`parkboxd:progress`, fired in `js/supabase.js`) and on page load at most every 5 minutes. `profiles.badges_seen` stops repeats across devices; the first check only records what someone already has. Replaces the old secret-mode toast
 
+## Sound effects (27 Nov 2026)
+- `js/sfx.js`: short sounds made with Web Audio (no files). Off by default; "Sound effects" switch in every footer and in Edit profile, saved per device (`localStorage` `parkboxd-sound`)
+- Badge unlock fanfare, burger plops (5-star Butters), fist-bump thud, eagle whoosh, Cage Match bell (new champion and upset), Mystery solved jingle, Jimmy rimshot
+- Plays only within 25s of a tap, never overlapping (the fanfare cuts others off). Everything else stays silent on purpose
+
 ## More badge rewards (27 Nov 2026)
 - Super Best Friends: fist-bump animation on follow. I Thought This Was America: eagle flyby when rating a Randy episode, plus a stars-and-stripes streak card (profile, Stats and share picture; home unchanged). Both animations in `js/rewards.js`, off with reduced motion (the follow toast stays)
 - Bookworm: gold library card tag after your name and a gold library card on your profile; switchable in Edit profile (`flair_off` value `bookworm`)

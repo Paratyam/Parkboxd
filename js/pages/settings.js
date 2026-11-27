@@ -1,13 +1,14 @@
-import { initPage, refreshBell } from '../layout.js?v=20261127191134';
-import { supabase } from '../supabase.js?v=20261127191134';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127191134';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127191134';
-import { loadStreaks } from '../streak.js?v=20261127191134';
-import { loadBadges, rankFor } from '../badges.js?v=20261127191134';
-import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261127191134';
-import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127191134';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127191134';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127191134';
+import { soundSwitch } from '../sfx.js?v=20261127191633';
+import { initPage, refreshBell } from '../layout.js?v=20261127191633';
+import { supabase } from '../supabase.js?v=20261127191633';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127191633';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127191633';
+import { loadStreaks } from '../streak.js?v=20261127191633';
+import { loadBadges, rankFor } from '../badges.js?v=20261127191633';
+import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261127191633';
+import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127191633';
+import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127191633';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127191633';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -70,6 +71,8 @@ drawIcons();
 loadStreaks([user.id]).then((m) => { longest = m.get(user.id).longest; drawIcons(); });
 loadBadges([user.id]).then((m) => { badges = new Map(m.get(user.id).badges.map((b) => [b.id, b])); drawIcons(); drawSwitches(); });
 $('#icon-picker').addEventListener('change', (e) => { icon = e.target.value || null; });
+
+$('#sound-setting').append(soundSwitch());
 
 // ---- Badge extras: show or hide each one you've earned ----
 const flairOff = new Set(profile.flair_off || []);

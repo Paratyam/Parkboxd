@@ -1,30 +1,31 @@
-import { initPage } from '../layout.js?v=20261127191134';
-import { supabase } from '../supabase.js?v=20261127191134';
-import { SITE_NAME } from '../config.js?v=20261127191134';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127191134';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127191134';
-import { shareInvite } from '../invite.js?v=20261127191134';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, fetchAll } from '../ui.js?v=20261127191134';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127191134';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127191134';
-import { line } from '../jokes.js?v=20261127191134';
-import { characterColours } from '../data/character-tags.js?v=20261127191134';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127191134';
-import { rankFor, nextRank } from '../badges.js?v=20261127191134';
-import { loadStreaks, streakHTML } from'../streak.js?v=20261127191134';
-import { loadPicks } from '../club.js?v=20261127191134';
-import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127191134';
-import { AVATAR_ICONS } from '../avatars.js?v=20261127191134';
-import { beltSVG } from'../art.js?v=20261127191134';
-import { roastJokes } from '../jimmy.js?v=20261127191134';
+import { sfx } from '../sfx.js?v=20261127191633';
+import { initPage } from '../layout.js?v=20261127191633';
+import { supabase } from '../supabase.js?v=20261127191633';
+import { SITE_NAME } from '../config.js?v=20261127191633';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127191633';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127191633';
+import { shareInvite } from '../invite.js?v=20261127191633';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, fetchAll } from '../ui.js?v=20261127191633';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127191633';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127191633';
+import { line } from '../jokes.js?v=20261127191633';
+import { characterColours } from '../data/character-tags.js?v=20261127191633';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127191633';
+import { rankFor, nextRank } from '../badges.js?v=20261127191633';
+import { loadStreaks, streakHTML } from'../streak.js?v=20261127191633';
+import { loadPicks } from '../club.js?v=20261127191633';
+import { attendance, attendanceHTML, clubOffsets } from '../attendance.js?v=20261127191633';
+import { AVATAR_ICONS } from '../avatars.js?v=20261127191633';
+import { beltSVG } from'../art.js?v=20261127191633';
+import { roastJokes } from '../jimmy.js?v=20261127191633';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' and Kyle's (pretend) accounts live in code, not the database.
-const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127191134')).renderButtersProfile
-  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127191134')).renderKyleProfile : null;
+const renderGuest = wanted === 'butters' ? (await import('../butters-profile.js?v=20261127191633')).renderButtersProfile
+  : wanted === 'kyle' ? (await import('../kyle-profile.js?v=20261127191633')).renderKyleProfile : null;
 const { data: person } = renderGuest ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (renderGuest) {
@@ -363,6 +364,7 @@ async function render(p) {
       jokeAt = 0;
     }
     const joke = jokes[jokeAt++];
+    sfx('rimshot');
     let bubble = $('#jimmy-bubble');
     if (!bubble) {
       e.currentTarget.closest('.profile-actions').insertAdjacentHTML('afterend', '<div class="jimmy-bubble" id="jimmy-bubble" aria-live="polite"></div>');

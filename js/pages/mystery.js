@@ -1,14 +1,15 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { SITE_LINK } from '../config.js?v=20261127191134';
-import { initPage, logEpisode } from '../layout.js?v=20261127191134';
-import { supabase } from '../supabase.js?v=20261127191134';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127191134';
-import { followingIds } from '../social.js?v=20261127191134';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127191134';
-import { mysterySVG } from '../art.js?v=20261127191134';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127191134';
-import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127191134';
+import { sfx } from '../sfx.js?v=20261127191633';
+import { SITE_LINK } from '../config.js?v=20261127191633';
+import { initPage, logEpisode } from '../layout.js?v=20261127191633';
+import { supabase } from '../supabase.js?v=20261127191633';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261127191633';
+import { followingIds } from '../social.js?v=20261127191633';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127191633';
+import { mysterySVG } from '../art.js?v=20261127191633';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261127191633';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261127191633';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -297,7 +298,7 @@ function guess(id) {
   if (game.done) return;
   if (id && game.guesses.includes(id)) return toast("You already guessed that one. Mmph.");
   game.guesses.push(id);
-  if (id === answer.id) { game.done = true; game.won = true; }
+  if (id === answer.id) { game.done = true; game.won = true; sfx('jingle'); }
   else if (game.guesses.length >= MAX) { game.done = true; game.won = false; }
   save();
   render();

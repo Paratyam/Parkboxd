@@ -2,12 +2,12 @@
 // The reviews live in code, not the database, so they never count toward averages. People can
 // still like and comment on them: guest_review_likes / guest_review_comments, keyed by
 // '<character>:<normalised episode title>'.
-import { supabase } from './supabase.js?v=20261127191134';
-import { esc, stars, avatarHTML, toast } from './ui.js?v=20261127191134';
-import { threadHTML, wireThread } from './comments.js?v=20261127191134';
-import { pcButtonHTML, installPC } from './pc.js?v=20261127191134';
-import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127191134';
-import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127191134';
+import { supabase } from './supabase.js?v=20261127191633';
+import { esc, stars, avatarHTML, toast } from './ui.js?v=20261127191633';
+import { threadHTML, wireThread } from './comments.js?v=20261127191633';
+import { pcButtonHTML, installPC } from './pc.js?v=20261127191633';
+import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261127191633';
+import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261127191633';
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 
