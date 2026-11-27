@@ -1,24 +1,25 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
-import { initPage, logEpisode } from '../layout.js?v=20261127032110';
-import { supabase } from '../supabase.js?v=20261127032110';
-import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127032110';
-import { buttersReview, buttersComment, BEST_FRIENDS } from '../butters.js?v=20261127032110';
-import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127032110';
-import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127032110';
-import { booksSVG } from '../art.js?v=20261127032110';
-import { BUTTERS } from '../butters-profile.js?v=20261127032110';
+import { initPage, logEpisode } from '../layout.js?v=20261127060855';
+import { supabase } from '../supabase.js?v=20261127060855';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js?v=20261127060855';
+import { buttersReview, buttersComment, buttersLikes } from '../butters.js?v=20261127060855';
+import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js?v=20261127060855';
+import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js?v=20261127060855';
+import { booksSVG } from '../art.js?v=20261127060855';
+import { BUTTERS } from '../butters-profile.js?v=20261127060855';
+import { threadHTML, wireThread } from '../comments.js?v=20261127060855';
 
 const SHELF = 12; // past weeks on the shelf
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127032110';
-import { episodeAverages } from '../insights.js?v=20261127032110';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261127060855';
+import { episodeAverages } from '../insights.js?v=20261127060855';
 
 const { user } = await initPage({ title: "Butters' Book Club", auth: 'required' });
 const root = $('#club');
 
 // About 1 in 5 reviews get a reply from Butters, tucked under the review text.
 function withButters(html, r) {
-  // Butters likes every review his best friend writes, and says so.
-  if (BEST_FRIENDS.includes(r.profiles?.username)) {
+  // Butters likes every review his best friend writes (and, rarely, other positive ones), and says so.
+  if (buttersLikes(r)) {
     html = html.replace('<div class="review-foot">', '<div class="review-foot"><span class="butters-liked" title="Butters liked this review">♥ Liked by Butters</span>');
   }
   const c = buttersComment(r);
@@ -61,6 +62,9 @@ async function render() {
     supabase.from('butters_likes').select('user_id').eq('week_start', weekKey),
   ]);
   const butters = buttersReview(ep, (tagRows || []).map((t) => t.tags?.name).filter(Boolean), start);
+  const { data: bComments } = await supabase.from('butters_comments')
+    .select('id, user_id, parent_id, body, created_at, profiles(username, display_name, avatar_color, avatar_icon)')
+    .eq('week_start', weekKey).order('created_at');
   const bCount = (bLikes || []).length;
   const bLiked = (bLikes || []).some((l) => l.user_id === user.id);
   const buttersHTML = `
@@ -78,10 +82,18 @@ async function render() {
         <p>${esc(butters.text)}</p>
         <div class="review-foot">
           <button type="button" class="link-button review-like" id="butters-like" aria-pressed="${bLiked}">${bLiked ? '♥ Liked' : '♡ Like review'}</button>
-          <span>${bCount} like${bCount === 1 ? '' : 's'}</span>
+          <span>${bCount} like${bCount === 1 ? '' : 's'} · ${(bComments || []).length} comment${(bComments || []).length === 1 ? '' : 's'}</span>
         </div>
       </div>
-    </article>`;
+    </article>
+    <div class="butters-thread" id="butters-thread">
+      ${bComments?.length ? threadHTML(bComments, { me: user.id }) : ''}
+      <form class="butters-comment-form" id="butters-comment-form" novalidate>
+        <label class="visually-hidden" for="butters-comment">Comment on Butters' review</label>
+        <textarea id="butters-comment" maxlength="2000" rows="2" placeholder="Say something nice to Butters… or about his review"></textarea>
+        <button type="submit" class="btn btn-green">Comment</button>
+      </form>
+    </div>`;
   const watchers = [...new Map((logs || []).map((l) => [l.user_id, l.profiles])).values()];
   const reviews = (logs || []).filter((l) => l.review && l.review.trim());
   const extras = await reviewExtras(reviews.map((r) => r.id), user.id);
@@ -184,6 +196,19 @@ async function render() {
 
   $('#club-log')?.addEventListener('click', () => logEpisode({ episode: ep, rewatch: mine.has(ep.id) }));
   wireReviewLikes($('#club-reviews'), render);
+  // Comments (and replies) on Butters' review.
+  wireThread($('#butters-thread'), { table: 'butters_comments', extra: { week_start: weekKey }, comments: bComments || [], onChange: render });
+  $('#butters-comment-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const body = $('#butters-comment').value.trim();
+    if (!body) return toast('Write something first. Butters is waiting!');
+    const btn = e.submitter;
+    if (btn) btn.disabled = true;
+    const { error } = await supabase.from('butters_comments').insert({ week_start: weekKey, body });
+    if (btn) btn.disabled = false;
+    if (error) return toast(error.message);
+    render();
+  });
   root.querySelectorAll('[data-vote]').forEach((b) => b.addEventListener('click', async () => {
     const id = Number(b.dataset.vote);
     root.querySelectorAll('[data-vote]').forEach((x) => { x.disabled = true; });

@@ -1,25 +1,25 @@
-import { initPage } from '../layout.js?v=20261127032110';
-import { supabase } from '../supabase.js?v=20261127032110';
-import { SITE_NAME } from '../config.js?v=20261127032110';
-import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127032110';
-import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127032110';
-import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127032110';
-import { countRatings, histogramHTML } from '../histogram.js?v=20261127032110';
-import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127032110';
-import { line } from '../jokes.js?v=20261127032110';
-import { characterColours } from '../data/character-tags.js?v=20261127032110';
-import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127032110';
-import { streakInfo } from '../streak.js?v=20261127032110';
-import { loadPicks } from '../club.js?v=20261127032110';
-import { beltSVG } from '../art.js?v=20261127032110';
-import { roastJokes } from '../jimmy.js?v=20261127032110';
+import { initPage } from '../layout.js?v=20261127060855';
+import { supabase } from '../supabase.js?v=20261127060855';
+import { SITE_NAME } from '../config.js?v=20261127060855';
+import { thumbHTML, loadAllEpisodes } from '../episodes.js?v=20261127060855';
+import { allLatestRatings, characterTags, episodeAverages, computeBadges, personality, tasteMatch, tasteLabel } from '../insights.js?v=20261127060855';
+import { $, esc, params, avatarHTML, formatDate, stars, epCode, profileTabsHTML, toast } from '../ui.js?v=20261127060855';
+import { countRatings, histogramHTML } from '../histogram.js?v=20261127060855';
+import { followingIds, followButtonHTML, wireFollowButtons, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261127060855';
+import { line } from '../jokes.js?v=20261127060855';
+import { characterColours } from '../data/character-tags.js?v=20261127060855';
+import { loadVotes, scoreVotes, champion } from '../cage.js?v=20261127060855';
+import { streakInfo } from '../streak.js?v=20261127060855';
+import { loadPicks } from '../club.js?v=20261127060855';
+import { beltSVG } from '../art.js?v=20261127060855';
+import { roastJokes } from '../jimmy.js?v=20261127060855';
 
 const { profile: me } = await initPage({ title: 'Profile', auth: 'required' });
 const root = $('#profile');
 
 const wanted = (params.get('u') || me.username).toLowerCase();
 // Butters' (pretend) account lives in code, not the database.
-const { BUTTERS_USERNAME, renderButtersProfile } = wanted === 'butters' ? await import('../butters-profile.js?v=20261127032110') : {};
+const { BUTTERS_USERNAME, renderButtersProfile } = wanted === 'butters' ? await import('../butters-profile.js?v=20261127060855') : {};
 const { data: person } = wanted === BUTTERS_USERNAME ? { data: null } : await supabase.from('profiles').select('*').eq('username', wanted).maybeSingle();
 
 if (wanted === BUTTERS_USERNAME) {
@@ -73,6 +73,7 @@ async function render(p) {
 
   // Cage Match champion: #1 in their personal head-to-head ranking.
   const cageVotes = await loadVotes(p.id);
+  const { count: mysteryWins } = await supabase.from('mystery_plays').select('day', { count: 'exact', head: true }).eq('user_id', p.id).eq('won', true);
   // Book Club: this week and the 51 before it, for the Bookworm badge and the library card.
   const clubPicks = (await loadPicks(all, Array.from({ length: 52 }, (_, i) => -i))).filter((pk) => pk.real);
   const champ = champion(scoreVotes(cageVotes, theirRatings));
@@ -114,7 +115,7 @@ async function render(p) {
   // Badges
   const badges = computeBadges({
     username: p.username, logs: allLogs || [], ratings: theirRatings, all, byName: chars.byName, avgs, following: stats?.following ?? 0,
-    clubPicks, cageMatches: cageVotes.length,
+    clubPicks, cageMatches: cageVotes.length, mysteryWins: mysteryWins || 0,
   }).sort((a, b) => Number(b.earned) - Number(a.earned) || b.have / b.need - a.have / a.need);
   const earned = badges.filter((b) => b.earned).length;
 
@@ -215,6 +216,8 @@ async function render(p) {
     ['🌱 Streak', streak.current, `stats.html?u=${u}`],
   ];
   const iFollow = isMe ? false : (await followingIds(me.id)).has(p.id);
+  const { count: followsMeCount } = isMe ? { count: 0 } : await supabase.from('follows').select('follower_id', { count: 'exact', head: true }).eq('follower_id', p.id).eq('followee_id', me.id);
+  const canMessage = !isMe && iFollow && followsMeCount > 0; // messages are for people who follow each other
 
   const top4Html = [0, 1, 2, 3].map((i) => {
     const ep = (top4Eps || []).find((e) => e.id === p.top4[i]);
@@ -261,6 +264,7 @@ async function render(p) {
         : `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join('')}</div>
       <div class="profile-actions" style="width:100%">
         ${isMe ? '<a class="btn btn-ghost" href="settings.html">Edit profile</a>' : followButtonHTML(p.id, iFollow)}
+        ${canMessage ? `<a class="btn btn-ghost" href="messages.html?u=${u}">💬 Message</a>` : ''}
         <button type="button" class="btn btn-ghost jimmy-btn" id="jimmy-roast">🎤 ${isMe ? 'Roast me, Jimmy' : 'Get Jimmy to roast them'}</button>
       </div>
     </section>

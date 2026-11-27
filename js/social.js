@@ -1,9 +1,10 @@
 // Follows, review likes and the shared review block.
-import { supabase } from './supabase.js?v=20261127032110';
-import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261127032110';
-import { thumbHTML } from './episodes.js?v=20261127032110';
-import { line } from './jokes.js?v=20261127032110';
-import { isHotTake } from './insights.js?v=20261127032110';
+import { supabase } from './supabase.js?v=20261127060855';
+import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261127060855';
+import { thumbHTML } from './episodes.js?v=20261127060855';
+import { line } from './jokes.js?v=20261127060855';
+import { isHotTake } from './insights.js?v=20261127060855';
+import { buttersLikes } from './butters.js?v=20261127060855';
 
 export async function followingIds(userId) {
   const { data } = await supabase.from('follows').select('followee_id').eq('follower_id', userId);
@@ -61,7 +62,8 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
  */
 export function reviewHTML(r, { me, extras, friends, avgs, showEpisode = false, full = false } = {}) {
   const hot = isHotTake(r.rating, avgs?.get(r.episode_id ?? r.episodes?.id));
-  const likes = extras?.likes.get(r.id) || 0;
+  // Butters (built-in, not a real member) adds a like to some reviews: see buttersLikes().
+  const likes = (extras?.likes.get(r.id) || 0) + (buttersLikes(r) ? 1 : 0);
   const comments = extras?.comments.get(r.id) || 0;
   const liked = extras?.mine.has(r.id);
   const own = r.user_id === me;
@@ -117,7 +119,7 @@ export function wireReviewLikes(root, onChange) {
       .select('*, episodes(id, kind, season, number, title, air_date, still_path)').eq('id', Number(b.dataset.editReview)).maybeSingle();
     b.disabled = false;
     if (error || !log) return alert(error?.message || "Couldn't find that review.");
-    const { logEpisode } = await import('./layout.js?v=20261127032110');
+    const { logEpisode } = await import('./layout.js?v=20261127060855');
     const changed = await logEpisode({ episode: log.episodes, log });
     if (changed) onChange?.();
   }));

@@ -1,7 +1,7 @@
 // Stan's Picks: episodes you haven't seen that people with your taste rated highly.
 // Each other member counts more the closer their taste is to yours (taste match on shared ratings).
-import { tasteMatch } from './insights.js?v=20261127032110';
-import { isAired } from './episodes.js?v=20261127032110';
+import { tasteMatch } from './insights.js?v=20261127060855';
+import { isAired } from './episodes.js?v=20261127060855';
 
 /**
  * stanPicks({ meId, everyone, seen, all, avgs, limit }) -> [{ ep, score, raters, reason }]

@@ -1,8 +1,8 @@
 // notifications.html: who followed you, liked your reviews, or commented on them.
-import { initPage, refreshBell } from '../layout.js?v=20261127032110';
-import { supabase } from '../supabase.js?v=20261127032110';
-import { $, esc, avatarHTML } from '../ui.js?v=20261127032110';
-import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127032110';
+import { initPage, refreshBell } from '../layout.js?v=20261127060855';
+import { supabase } from '../supabase.js?v=20261127060855';
+import { $, esc, avatarHTML } from '../ui.js?v=20261127060855';
+import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261127060855';
 
 const { user } = await initPage({ title: 'Notifications', auth: 'required' });
 const root = $('#notifs');
@@ -34,6 +34,10 @@ async function render() {
     if (n.type === 'club') return `<a href="${n.href}">${esc(n.text)}</a>`;
     if (n.type === 'follow') return `${who} followed you. New friend, or new stalker?`;
     if (n.type === 'review_like') return `${who} liked your review of ${ep}. ♥ What a t-t-terrific audience!`;
+    if (n.type === 'reply') {
+      const body = n.comments?.body || '';
+      return `${who} replied to your comment on ${ep}.<span class="quote">“${esc(body.length > 160 ? `${body.slice(0, 160)}…` : body)}”</span>`;
+    }
     if (n.type === 'comment') {
       const body = n.comments?.body || '';
       return `${who} commented on your review of ${ep}.<span class="quote">“${esc(body.length > 160 ? `${body.slice(0, 160)}…` : body)}”</span>`;

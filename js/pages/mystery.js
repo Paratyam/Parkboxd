@@ -1,9 +1,9 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture and Kenny gives a (muffled) hint. Six tries.
-import { initPage, logEpisode } from '../layout.js?v=20261127032110';
-import { supabase } from '../supabase.js?v=20261127032110';
-import { $, esc, epCode, toast } from '../ui.js?v=20261127032110';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127032110';
+import { initPage, logEpisode } from '../layout.js?v=20261127060855';
+import { supabase } from '../supabase.js?v=20261127060855';
+import { $, esc, epCode, toast } from '../ui.js?v=20261127060855';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261127060855';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -36,14 +36,21 @@ const { data: tagRows } = await supabase.from('episode_tags').select('tags(name,
 const character = (tagRows || []).map((t) => t.tags).filter((t) => t?.kind === 'character').map((t) => t.name)[0];
 
 // Hints, clearest last. Kenny says them muffled; the translation sits underneath.
+// 1 season · 2 a main character (or the title's word count) · 3 a word from the plot
+// · 4 the episode number · 5 the title's first letter
 const words = answer.title.split(/\s+/).length;
+const titleWords = new Set(answer.title.toLowerCase().match(/[a-z]+/g) || []);
+const plotWord = ((answer.overview || '').match(/[A-Za-z][a-z]{5,}/g) || [])
+  .filter((w) => !titleWords.has(w.toLowerCase()))
+  .sort((a, b) => b.length - a.length)[0];
 const HINTS = [
   `It's from Season ${answer.season}.`,
-  `It first aired in ${answer.air_date.slice(0, 4)}.`,
   character ? `${character} is in it. A lot.` : `The title has ${words} word${words === 1 ? '' : 's'}.`,
+  plotWord ? `A word from the plot: “${plotWord.toLowerCase()}”.` : (character ? `The title has ${words} word${words === 1 ? '' : 's'}.` : `The title has ${answer.title.replace(/[^A-Za-z]/g, '').length} letters.`),
   `It's episode ${answer.number} of the season.`,
   `The title starts with “${answer.title[0]}”.`,
 ];
+const EXHIBITS = ['A', 'B', 'C', 'D', 'E'];
 const muffle = (text) => text.split(/\s+/).map((w, i) => ['Mmph', 'mmrph', 'mph', 'mmmph', 'rmph'][(w.length + i) % 5]).join(' ') + '!';
 
 // ---- Saved progress and stats: one database row per day, so they follow you between devices ----
@@ -90,21 +97,27 @@ function render() {
   const hintsShown = game.done ? HINTS.length : Math.min(wrong(), HINTS.length);
   const s = stats();
   const squares = game.guesses.map((id) => (id === answer.id ? '🟩' : id ? '🟥' : '⬛')).join('');
+  const left = MAX - game.guesses.length;
   root.innerHTML = `
-    <section class="mystery-head">
-      <span class="mystery-kenny" aria-hidden="true">🧥</span>
-      <div>
-        <span class="club-kicker" style="color:var(--orange)">Daily puzzle #${number}</span>
-        <h1 class="cut">Kenny's Mystery Episode</h1>
-        <p>Which episode is this? Every wrong guess makes the picture sharper and gets you a hint from Kenny. You have ${MAX} tries. New puzzle every day.</p>
+    <section class="case-head">
+      <span class="case-tab cut">Case file #${number}</span>
+      <span class="case-stamp cut" aria-hidden="true">Top secret</span>
+      <div class="case-head-row">
+        <span class="mystery-kenny" aria-hidden="true">🧥</span>
+        <div>
+          <h1 class="cut">Kenny's Mystery Episode</h1>
+          <p>Somebody stole an episode and Kenny saw everything. Every wrong guess sharpens the evidence photo and gets you a clue from your witness. He's a little hard to understand. ${MAX} tries. New case every day.</p>
+        </div>
       </div>
     </section>
     <div class="mystery-layout">
-      <div>
-        <div class="mystery-frame paper">
+      <div class="mystery-board">
+        <div class="mystery-frame">
+          <span class="evidence-label cut" aria-hidden="true">Evidence photo</span>
           <img src="${esc(stillUrl(answer, 'w780'))}" alt="${game.done ? esc(answer.title) : 'The mystery episode, blurred'}" style="filter:blur(${blur}px)${game.done ? '' : ' saturate(1.2)'}">
-          ${game.done ? '' : `<span class="mystery-tries cut">${MAX - game.guesses.length} ${MAX - game.guesses.length === 1 ? 'try' : 'tries'} left</span>`}
+          ${game.done ? `<span class="case-verdict cut ${game.won ? 'won' : 'lost'}">${game.won ? 'Case closed' : 'R.I.P. Kenny'}</span>` : ''}
         </div>
+        ${game.done ? '' : `<div class="kenny-lives" aria-label="${left} ${left === 1 ? 'try' : 'tries'} left">${Array.from({ length: MAX }, (_, i) => `<span class="${i < left ? '' : 'used'}" aria-hidden="true">🧥</span>`).join('')}<b>${left} ${left === 1 ? 'life' : 'lives'} left</b></div>`}
         ${game.done ? `
           <div class="mystery-result ${game.won ? 'won' : 'lost'} paper">
             <strong class="cut">${game.won ? `Mmph! You got it in ${game.guesses.length}!` : 'Kenny didn\'t make it today.'}</strong>
@@ -124,11 +137,11 @@ function render() {
         ${game.guesses.length ? `<ol class="mystery-guesses">${game.guesses.map((id) => `<li class="${id === answer.id ? 'right' : 'wrong'}">${id === answer.id ? '✓' : '✗'} ${id ? esc(byId.get(id)?.title || '?') : '<em>skipped</em>'}</li>`).join('')}</ol>` : ''}
       </div>
       <aside class="mystery-side">
-        <div class="mystery-hints">
-          <h2 class="cut">Kenny's hints</h2>
-          ${hintsShown ? HINTS.slice(0, hintsShown).map((h, i) => `
-            <div class="kenny-hint"><span class="kenny-says">“${esc(muffle(h))}”</span><span class="kenny-means">Kenny means: ${esc(h)}</span></div>`).join('')
-            : '<p class="kenny-hint"><span class="kenny-says">“Mmph mmph.”</span><span class="kenny-means">Kenny means: guess first, then I\'ll help.</span></p>'}
+        <div class="case-folder">
+          <h2 class="cut">Witness statements</h2>
+          ${HINTS.map((h, i) => (i < hintsShown ? `
+            <div class="kenny-hint"><span class="exhibit cut">Exhibit ${EXHIBITS[i]}</span><span class="kenny-says">“${esc(muffle(h))}”</span><span class="kenny-means">Kenny means: ${esc(h)}</span></div>`
+            : `<div class="kenny-hint locked"><span class="exhibit cut">Exhibit ${EXHIBITS[i]}</span><span class="kenny-means">🔒 Unlocks after ${i + 1} wrong guess${i ? 'es' : ''}</span></div>`)).join('')}
         </div>
         <div class="mystery-stats paper">
           <h2 class="cut">Your stats</h2>

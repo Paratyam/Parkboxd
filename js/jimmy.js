@@ -1,9 +1,61 @@
-// Jimmy's Comedy Roast: jokes built from someone's real Parkboxd stats, one per click.
-// Every stat joke needs a fact behind it; a few filler jokes cover quiet profiles.
-
+// Jimmy's Comedy Roast: one joke per click. Jokes about the person's real Parkboxd stats are
+// mixed with Jimmy's general material, and every joke gets a couple of extra stutters.
 
 const shuffle = (arr) => arr.map((x) => [Math.random(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 const stars = (r) => `${r}★`;
+
+// Stutter on a couple more words: "terrific" -> "t-t-terrific". Skips names, numbers and
+// words that already stutter.
+const SKIP = /^(the|and|that|this|with|they|them|their|what|your|have|from|were|just)$/i;
+function stutter(text, extra = 2) {
+  const words = text.split(' ');
+  const spots = shuffle(words.map((w, i) => i).filter((i) => {
+    const w = words[i];
+    return /^[a-z]{4,}[,.!?]?$/.test(w) && !SKIP.test(w.replace(/[,.!?]/g, '')); // lowercase words only: no names
+  })).slice(0, extra);
+  for (const i of spots) {
+    const w = words[i];
+    const first = w.slice(0, /^(th|sh|ch|wh)/i.test(w) ? 2 : 1);
+    words[i] = `${first}-${first.toLowerCase()}-${first.toLowerCase()}${w.slice(first.length)}`;
+  }
+  return words.join(' ');
+}
+
+// Jimmy's general material: nothing to do with anyone's account.
+const GENERIC = [
+  "I told my crutches a joke. They didn't laugh, but they were really supportive.",
+  "Why don't skeletons fight each other? They don't have the guts. That one's for Kenny.",
+  'I bought a dictionary and all the pages were blank. I have no words for how angry I am.',
+  "I'm reading a book about anti-gravity. I just can't put it down.",
+  "My teacher said I'd never amount to anything. Now I'm a comedian on a website. So she was half right.",
+  "Parallel lines have so much in common. It's a shame they'll never meet.",
+  'I used to hate facial hair. Then it grew on me.',
+  "I tried to catch some fog yesterday. I mist.",
+  'What do you call a fake noodle? An impasta. Cartman calls it lunch.',
+  "I asked the librarian for books about paranoia. She whispered: they're right behind you.",
+  "Why couldn't the bicycle stand up on its own? It was two-tired. Believe me, I know the feeling.",
+  "I was going to tell you a time-travel joke. But you didn't like it.",
+  "What's orange and sounds like a parrot? A carrot. Thank you, I'm here all week.",
+  "I told my mom she was drawing her eyebrows too high. She looked surprised.",
+  "I'd tell you a joke about construction, but I'm still working on it.",
+  'Why did the math book look so sad? Too many problems. Same, buddy. Same.',
+  "Towelie asked me for some advice. I said: don't forget to bring a towel. He cried. It was beautiful.",
+  "I named my dog Five Miles, so I can tell people I walk Five Miles every single day.",
+  "I'm terrified of elevators, so I'm taking steps to avoid them.",
+  'Randy Marsh told me his farm has integrity. I asked him to spell it. We are still waiting.',
+  'What do you call a bear with no teeth? A gummy bear. What do you call Cartman with no snacks? Furious.',
+  'My favourite exercise is a cross between a lunge and a crunch. I call it lunch.',
+  "Butters asked me how my show went. I said I killed. He called the police.",
+  'Mr. Mackey told me jokes are bad, m\'kay. I said, have you heard mine? He said, especially yours, m\'kay.',
+  "How does Kenny stay so calm all the time? Buddy, he's been through worse. Every single week.",
+  "I'm great at multitasking. I can waste time, be unproductive and procrastinate, all at once.",
+  'Why did the scarecrow get an award? He was outstanding in his field. Like me, but with less straw.',
+  "I wanted to be a stand-up comedian, but people kept asking me to sit down. Joke's on them, I brought my own chair.",
+  'The other day a clown held the door open for me. I thought it was a really nice jester.',
+  "Cartman says he's not fat, he's big-boned. I've seen the X-rays, folks. The bones are fine.",
+  'I tried to write a joke about procrastination. I will finish it tomorrow.',
+  "Kyle asked me if I've ever been to Jersey. I said no. He said good, don't.",
+];
 
 /**
  * roastJokes(ctx) -> [string], one joke per click
@@ -51,6 +103,13 @@ export function roastJokes(ctx) {
     `${name} said they'd write a review "later." Later never came. Later is still out there s-s-somewhere.`,
     `${name} is so quiet on here, the site thought their account was a b-b-bot.`,
   ];
-  // Real-stat jokes first (shuffled), then the filler ones.
-  return [...shuffle(jokes), ...shuffle(FILLER)];
+  // Mix them: a stat joke, a general one, a stat joke... Quiet profiles get the filler roasts too.
+  const stat = shuffle(jokes.length >= 3 ? jokes : [...jokes, ...FILLER]);
+  const general = shuffle(GENERIC);
+  const mixed = [];
+  while (stat.length || general.length) {
+    if (stat.length) mixed.push(stat.shift());
+    if (general.length) mixed.push(general.shift());
+  }
+  return mixed.map((j) => stutter(j));
 }

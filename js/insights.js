@@ -1,5 +1,5 @@
 // Rating maths: taste match, hot takes, "which character are you", badges.
-import { supabase } from './supabase.js?v=20261127032110';
+import { supabase } from './supabase.js?v=20261127060855';
 
 // ---- Loaders ----
 
@@ -192,6 +192,7 @@ export function computeBadges(ctx) {
     b('friends', '🤝', 'Super Best Friends', 'Follow 5 people', following, 5),
     b('bookworm', '📚', 'Bookworm', "Review 3 of Butters' Book Club picks during their week", clubReviewCount(logs, ctx.clubPicks || []), 3),
     b('ringmaster', '🥊', 'Ringmaster', "Judge 100 fights in Cartman's Cage Match", ctx.cageMatches || 0, 100),
+    b('detective', '🕵️', 'Case Closed', "Solve 5 of Kenny's Mystery Episodes", ctx.mysteryWins || 0, 5),
   ];
 }
 

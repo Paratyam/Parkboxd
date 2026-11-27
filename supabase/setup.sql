@@ -646,3 +646,83 @@ create policy "read" on public.mystery_plays for select to authenticated using (
 create policy "insert own" on public.mystery_plays for insert to authenticated with check (user_id = (select auth.uid()));
 create policy "update own" on public.mystery_plays for update to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 create policy "delete own" on public.mystery_plays for delete to authenticated using (user_id = (select auth.uid()));
+-- Replies to comments: a reply points at the comment it answers.
+alter table public.comments add column if not exists parent_id bigint references public.comments (id) on delete cascade;
+
+-- Notifications: 'reply' when someone answers your comment.
+alter table public.notifications drop constraint if exists notifications_type_check;
+alter table public.notifications add constraint notifications_type_check check (type in ('follow', 'review_like', 'comment', 'reply'));
+create or replace function public.notify() returns trigger language plpgsql security definer set search_path = public as $$
+declare target uuid; parent_author uuid;
+begin
+  if tg_table_name = 'follows' then
+    delete from notifications where user_id = new.followee_id and actor_id = new.follower_id and type = 'follow';
+    insert into notifications (user_id, actor_id, type) values (new.followee_id, new.follower_id, 'follow');
+  elsif tg_table_name = 'review_likes' then
+    select user_id into target from logs where id = new.log_id;
+    if target is not null and target <> new.user_id then
+      delete from notifications where user_id = target and actor_id = new.user_id and type = 'review_like' and log_id = new.log_id;
+      insert into notifications (user_id, actor_id, type, log_id) values (target, new.user_id, 'review_like', new.log_id);
+    end if;
+  elsif tg_table_name = 'comments' then
+    select user_id into target from logs where id = new.log_id;
+    if target is not null and target <> new.user_id then
+      insert into notifications (user_id, actor_id, type, log_id, comment_id) values (target, new.user_id, 'comment', new.log_id, new.id);
+    end if;
+    if new.parent_id is not null then
+      select user_id into parent_author from comments where id = new.parent_id;
+      if parent_author is not null and parent_author <> new.user_id and parent_author is distinct from target then
+        insert into notifications (user_id, actor_id, type, log_id, comment_id) values (parent_author, new.user_id, 'reply', new.log_id, new.id);
+      end if;
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+-- Comments on Butters' weekly Book Club review (it isn't a real log, so it gets its own table).
+create table if not exists public.butters_comments (
+  id          bigint generated always as identity primary key,
+  week_start  date not null,
+  user_id     uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  parent_id   bigint references public.butters_comments (id) on delete cascade,
+  body        text not null check (char_length(body) between 1 and 2000),
+  created_at  timestamptz not null default now()
+);
+create index if not exists butters_comments_week_idx on public.butters_comments (week_start, created_at);
+alter table public.butters_comments enable row level security;
+grant select, insert, update, delete on public.butters_comments to authenticated;
+drop policy if exists "read" on public.butters_comments;
+drop policy if exists "insert own" on public.butters_comments;
+drop policy if exists "update own" on public.butters_comments;
+drop policy if exists "delete own" on public.butters_comments;
+create policy "read" on public.butters_comments for select to authenticated using (true);
+create policy "insert own" on public.butters_comments for insert to authenticated with check (user_id = (select auth.uid()));
+create policy "update own" on public.butters_comments for update to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+create policy "delete own" on public.butters_comments for delete to authenticated using (user_id = (select auth.uid()));
+
+-- Direct messages, only between people who follow each other. Only the two people can read them.
+create table if not exists public.messages (
+  id            bigint generated always as identity primary key,
+  sender_id     uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  recipient_id  uuid not null references public.profiles (id) on delete cascade,
+  body          text not null check (char_length(body) between 1 and 2000),
+  read          boolean not null default false,
+  created_at    timestamptz not null default now(),
+  check (sender_id <> recipient_id)
+);
+create index if not exists messages_recipient_idx on public.messages (recipient_id, read);
+create index if not exists messages_pair_idx on public.messages (sender_id, recipient_id, created_at);
+alter table public.messages enable row level security;
+grant select, insert on public.messages to authenticated;
+grant update (read) on public.messages to authenticated;
+drop policy if exists "read own" on public.messages;
+drop policy if exists "send to mutuals" on public.messages;
+drop policy if exists "mark read" on public.messages;
+create policy "read own" on public.messages for select to authenticated using ((select auth.uid()) in (sender_id, recipient_id));
+create policy "send to mutuals" on public.messages for insert to authenticated with check (
+  sender_id = (select auth.uid())
+  and exists (select 1 from public.follows a where a.follower_id = (select auth.uid()) and a.followee_id = recipient_id)
+  and exists (select 1 from public.follows b where b.follower_id = recipient_id and b.followee_id = (select auth.uid())));
+create policy "mark read" on public.messages for update to authenticated using (recipient_id = (select auth.uid())) with check (recipient_id = (select auth.uid()));
+grant usage, select on all sequences in schema public to authenticated;

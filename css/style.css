@@ -1258,3 +1258,75 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .jimmy-rim { align-self: flex-end; font-size: 11px; color: var(--muted); white-space: nowrap; }
 .jimmy-bubble.pop { animation: cage-pop .3s cubic-bezier(.2, 1.6, .5, 1); }
 @media (prefers-reduced-motion: reduce) { .jimmy-bubble.pop { animation: none; } }
+
+/* ===== Kenny's mystery, part 2: case-file / evidence-board theme ===== */
+.case-head { position: relative; padding: 30px 26px 22px; border: 4px solid #1a1a1a; border-radius: 4px 10px 10px 10px; box-shadow: 5px 5px 0 #000; color: #3b2a12;
+  background: linear-gradient(180deg, rgba(0,0,0,.04), transparent 30%), #e9c98a; margin-top: 18px; }
+.case-tab { position: absolute; top: -22px; left: -4px; padding: 4px 16px 2px; background: #e9c98a; border: 4px solid #1a1a1a; border-bottom: 0; border-radius: 8px 8px 0 0; font-size: 15px; color: #3b2a12; }
+.case-stamp { position: absolute; top: 14px; right: 18px; padding: 2px 10px; border: 3px solid #c0392b; border-radius: 6px; color: #c0392b; font-size: 18px; transform: rotate(8deg); opacity: .85; }
+.case-head-row { display: flex; gap: 16px; align-items: center; }
+.case-head h1 { margin: 0 0 4px; font-size: clamp(30px, 5vw, 46px); color: #f2711c; text-shadow: 3px 3px 0 #000; transform: rotate(-1deg); }
+.case-head p { margin: 0; color: #4a3820; max-width: 640px; font-weight: 500; }
+.mystery-board { padding: 18px; border-radius: 10px; border: 4px solid #1a1a1a; box-shadow: 5px 5px 0 #000;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,200,140,.12), transparent 60%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ctext x='8' y='40' font-size='34' font-family='Arial' fill='%23ffffff' fill-opacity='.05'%3E%3F%3C/text%3E%3C/svg%3E"), #1b1410; }
+.mystery-frame { border: 10px solid #f2711c; border-radius: 28px; box-shadow: inset 0 0 0 4px #7a3a08, 0 0 0 4px #000, 6px 6px 0 #000; }
+.mystery-frame img { border-radius: 16px; }
+.evidence-label { position: absolute; top: 10px; left: 12px; z-index: 2; padding: 2px 10px; background: #fff3a6; color: #1a1a1a; border: 2px solid #000; transform: rotate(-4deg); font-size: 13px; }
+.case-verdict { position: absolute; left: 50%; top: 50%; z-index: 2; padding: 6px 18px; font-size: clamp(28px, 5vw, 46px); border: 5px solid currentColor; border-radius: 10px; background: rgba(0,0,0,.45); transform: translate(-50%, -50%) rotate(-10deg); }
+.case-verdict.won { color: #5be36f; } .case-verdict.lost { color: #ff5a5a; }
+.kenny-lives { display: flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 22px; }
+.kenny-lives span { filter: drop-shadow(1px 1px 0 #000); transition: opacity .3s; }
+.kenny-lives span.used { opacity: .2; filter: grayscale(1); }
+.kenny-lives b { margin-left: 8px; font-size: 13px; color: #ffb27a; text-transform: uppercase; letter-spacing: .5px; }
+.mystery-board .mystery-guess input { background: #2a1e16; border-color: #5a3d22; }
+.case-folder { padding: 16px; border: 3px solid #1a1a1a; border-radius: 4px 10px 10px 10px; box-shadow: 4px 4px 0 #000; background: #e9c98a; color: #3b2a12; }
+.case-folder h2 { margin: 0 0 12px; font-size: 20px; color: #3b2a12; }
+.case-folder .kenny-hint { position: relative; padding-top: 22px; }
+.case-folder .exhibit { position: absolute; top: -9px; left: 10px; padding: 1px 8px; background: #1a1a1a; color: #e9c98a; font-size: 11px; border-radius: 3px; }
+.case-folder .kenny-hint.locked { background: rgba(0,0,0,.08); color: #6b5530; border-style: dashed; box-shadow: none; }
+.case-folder .kenny-hint.locked .kenny-means { font-weight: 700; }
+/* Comment replies: indented under the comment they answer */
+.comments > li.replies { display: block; padding: 0 0 0 44px; border: 0; margin-top: -6px; }
+.comments > li.replies > .comments { border-left: 2px solid var(--line); padding-left: 12px; }
+.comments li.is-reply .body p { font-size: 14px; }
+.reply-to { color: var(--blue); font-weight: 600; }
+.reply-box:empty { display: none; }
+.reply-box { margin-top: 6px; }
+/* Comments under Butters' Book Club review */
+.butters-thread { margin: -6px 0 6px 50px; padding: 12px 14px; border-left: 3px solid #f5c518; background: rgba(245,197,24,.05); border-radius: 0 8px 8px 0; display: flex; flex-direction: column; gap: 12px; }
+.butters-comment-form { display: flex; gap: 8px; align-items: flex-end; }
+.butters-comment-form textarea { flex: 1; min-height: 42px; }
+@media (max-width: 560px) { .butters-thread { margin-left: 0; } .butters-comment-form { flex-direction: column; align-items: stretch; } }
+.menu-count { margin-left: 8px; padding: 0 7px; border-radius: 999px; background: var(--orange); color: #fff; font-size: 12px; }
+@media (max-width: 900px) { .header-right > .mail-btn { display: none; } }
+
+/* ===== Direct messages ===== */
+.dm-head h1 { margin: 0; font-size: clamp(30px, 4vw, 44px); color: var(--white); }
+.dm-cartman { margin: 6px 0 4px; font-size: 15px; font-style: italic; color: #ffb3b3; }
+.dm-cartman span:last-child { font-style: normal; color: var(--muted); font-size: 13px; }
+.dm-layout { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 18px; margin-top: 18px; min-height: 480px; }
+.dm-list { display: flex; flex-direction: column; gap: 4px; padding: 8px; background: var(--surface); border-radius: 10px; border: 2px solid #000; box-shadow: 4px 4px 0 #000; align-self: start; }
+.dm-person { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 8px; color: var(--text); }
+.dm-person:hover { background: var(--surface-2); color: var(--white); }
+.dm-person.active { background: #1f4d2a; color: #fff; }
+.dm-who { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dm-who small { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dm-person.active .dm-who small { color: #b9e7c1; }
+.dm-person time { font-size: 11px; color: var(--muted); }
+.dm-unread { min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--orange); color: #fff; font-size: 12px; font-weight: 800; text-align: center; }
+.dm-thread { display: flex; flex-direction: column; background: var(--surface); border-radius: 10px; border: 2px solid #000; box-shadow: 4px 4px 0 #000; overflow: hidden; min-height: 480px; }
+.dm-thread-head { padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.dm-thread-head a { display: inline-flex; gap: 10px; align-items: center; color: var(--white); }
+.dm-bubbles { list-style: none; margin: 0; padding: 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; max-height: 60vh; }
+.dm-bubbles li { max-width: 75%; display: flex; flex-direction: column; }
+.dm-bubbles li p { margin: 0; padding: 8px 12px; border-radius: 14px; white-space: pre-line; overflow-wrap: anywhere; border: 2px solid #000; }
+.dm-bubbles li time { font-size: 10px; color: var(--muted); margin: 2px 6px 0; }
+.dm-bubbles li.mine { align-self: flex-end; align-items: flex-end; }
+.dm-bubbles li.mine p { background: var(--green); color: #08240f; border-bottom-right-radius: 4px; }
+.dm-bubbles li.theirs p { background: var(--surface-2); color: var(--white); border-bottom-left-radius: 4px; }
+.dm-bubbles li.dm-start { max-width: none; align-self: center; color: var(--muted); font-size: 13px; text-align: center; margin: auto 0; }
+.dm-compose { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--line); }
+.dm-compose textarea { flex: 1; resize: none; min-height: 42px; }
+.dm-empty { margin: auto; padding: 30px; text-align: center; color: var(--text-soft); display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.dm-empty p { margin: 0; }
+@media (max-width: 760px) { .dm-layout { grid-template-columns: 1fr; } .dm-thread { min-height: 420px; } }

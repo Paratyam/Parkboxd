@@ -1,11 +1,11 @@
 // Shared header + footer, and the session/profile check every page runs first.
-import { supabase, isConfigured } from './supabase.js?v=20261127032110';
-import { SITE_NAME } from './config.js?v=20261127032110';
-import { esc, avatarHTML, currentPage, toast } from './ui.js?v=20261127032110';
-import { line } from './jokes.js?v=20261127032110';
-import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127032110';
-import { pineStripSVG, busStopSVG } from './art.js?v=20261127032110';
-import { VERSION } from './version.js?v=20261127032110';
+import { supabase, isConfigured } from './supabase.js?v=20261127060855';
+import { SITE_NAME } from './config.js?v=20261127060855';
+import { esc, avatarHTML, currentPage, toast } from './ui.js?v=20261127060855';
+import { line } from './jokes.js?v=20261127060855';
+import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261127060855';
+import { pineStripSVG, busStopSVG } from './art.js?v=20261127060855';
+import { VERSION } from './version.js?v=20261127060855';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -70,7 +70,7 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   renderFooter(session);
   decorateBigMessages();
   // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
-  if (session) import('./flair.js?v=20261127032110').then((m) => m.startFlair()).catch(() => {});
+  if (session) import('./flair.js?v=20261127060855').then((m) => m.startFlair()).catch(() => {});
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
@@ -104,6 +104,7 @@ function renderHeader(profile, session) {
         <input type="search" id="header-q" name="q" placeholder="Search episodes, people" autocomplete="off">
       </form>
       <a class="icon-btn bell" id="header-bell" href="notifications.html" aria-label="Notifications" title="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="bell-count" hidden></span></a>
+      <a class="icon-btn bell mail-btn" id="header-mail" href="messages.html" aria-label="Messages" title="Messages"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span class="bell-count" hidden></span></a>
       <button type="button" class="icon-btn" id="header-random" aria-label="Random episode" title="Random episode">🎲</button>
       <button type="button" class="btn btn-green" id="header-log">+ Log</button>
       ${profile.is_admin ? `<a class="header-link admin-link" href="admin.html">Admin</a>` : ''}
@@ -123,6 +124,7 @@ function renderHeader(profile, session) {
     </form>` : '';
   const mobileLinks = session && profile ? `
     <button type="button" class="nav-mobile-only link-button nav-random">🎲 Random episode</button>
+    <a class="nav-mobile-only" href="messages.html" id="menu-mail">✉️ Messages<span class="menu-count" hidden></span></a>
     ${profile.is_admin ? '<a class="nav-mobile-only" href="admin.html">Admin</a>' : ''}` : '';
 
   el.innerHTML = `
@@ -143,12 +145,12 @@ function renderHeader(profile, session) {
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
   el.querySelector('#header-random')?.addEventListener('click', async () => {
-    const r = await import('./random.js?v=20261127032110');
+    const r = await import('./random.js?v=20261127060855');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   });
   syncDice();
   el.querySelectorAll(".header-search").forEach(wireSearch);
-  if (session) refreshBell();
+  if (session) { refreshBell(); refreshMail(); }
 }
 
 /**
@@ -156,7 +158,7 @@ function renderHeader(profile, session) {
  * event on window so the current page can refresh itself.
  */
 export async function logEpisode(opts = {}) {
-  const { openLogModal } = await import('./log-modal.js?v=20261127032110');
+  const { openLogModal } = await import('./log-modal.js?v=20261127060855');
   const changed = await openLogModal(opts);
   if (changed) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
   return changed;
@@ -198,7 +200,7 @@ export async function refreshBell() {
     supabase.auth.getUser(),
   ]);
   // Plus unread Book Club notes (new book, vote result), worked out in the browser.
-  const club = await import('./club-notes.js?v=20261127032110').then((m) => m.clubNotes(user?.id)).catch(() => []);
+  const club = await import('./club-notes.js?v=20261127060855').then((m) => m.clubNotes(user?.id)).catch(() => []);
   const count = (dbCount || 0) + club.filter((n) => !n.read).length;
   const badge = bell.querySelector('.bell-count');
   badge.hidden = !count;
@@ -261,7 +263,7 @@ function wireSearch(form) {
     const [{ data: people }, { loadAllEpisodes }] = await Promise.all([
       safe ? supabase.from('profiles').select('username, display_name, avatar_color, avatar_icon')
         .not('username', 'is', null).or(`username.ilike.%${safe}%,display_name.ilike.%${safe}%`).limit(5) : Promise.resolve({ data: [] }),
-      import('./episodes.js?v=20261127032110'),
+      import('./episodes.js?v=20261127060855'),
     ]);
     const lower = q.toLowerCase();
     const eps = (await loadAllEpisodes()).filter((e) => e.title.toLowerCase().includes(lower)).slice(0, 6);
@@ -277,4 +279,18 @@ function wireSearch(form) {
   });
   input.addEventListener('keydown', (e) => { if (e.key === 'Escape') { close(); input.blur(); } });
   document.addEventListener('click', (e) => { if (!form.contains(e.target)) close(); });
+}
+
+// Unread direct messages: a count on the ✉️ header button and in the phone menu.
+export async function refreshMail() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  const { count } = await supabase.from('messages').select('id', { count: 'exact', head: true }).eq('recipient_id', user.id).eq('read', false);
+  const n = count || 0;
+  for (const el of [document.querySelector('#header-mail .bell-count'), document.querySelector('#menu-mail .menu-count')]) {
+    if (!el) continue;
+    el.hidden = !n;
+    el.textContent = n > 9 ? '9+' : String(n || '');
+  }
+  document.getElementById('header-mail')?.setAttribute('aria-label', n ? `Messages, ${n} unread` : 'Messages');
 }
