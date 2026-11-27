@@ -79,11 +79,11 @@ const EYE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke=
  *   meta: text for the right side under the card (e.g. "3 logs")
  *   rating: a rating to show under the card instead of mine (e.g. community avg)
  */
-export function cardHTML(ep, { mine, meta = '', rating, extra = '' } = {}) {
+export function cardHTML(ep, { mine, meta = '', rating, extra = '', href = null, current = false } = {}) {
   const shown = rating ?? mine?.rating ?? null;
   const badge = mine?.count ? `<span class="watched-badge" title="You've watched this">${EYE}<span class="visually-hidden">Watched</span></span>` : '';
   return `
-    <a class="ep-card" href="episode.html?id=${ep.id}">
+    <a class="ep-card${current ? ' current' : ''}" href="${esc(href || `episode.html?id=${ep.id}`)}"${current ? ' aria-current="page"' : ''}>
       ${thumbHTML(ep, { extra: badge + extra })}
       <div class="ep-card-meta">
         <span><span class="rating">${stars(shown)}</span>${mine?.liked ? ' <span class="heart" aria-label="Liked">♥</span>' : ''}</span>

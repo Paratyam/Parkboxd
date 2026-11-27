@@ -1,10 +1,12 @@
 // club.html: Butters' Book Club. Everyone gets the same episode each week (it's not a book, nobody has told him); Butters reviews it first.
 import { initPage, logEpisode } from '../layout.js';
 import { supabase } from '../supabase.js';
-import { $, esc, epCode, avatarHTML, formatDate, stars, toast } from '../ui.js';
+import { $, esc, epCode, avatarHTML, formatDate, stars, toast, params } from '../ui.js';
 import { buttersReview, buttersComment } from '../butters.js';
 import { loadAllEpisodes, thumbHTML, cardHTML, myLogMap } from '../episodes.js';
-import { weekStart, loadPicks } from '../club.js';
+import { weekStart, loadPicks, weekKey as keyOf, CLUB_START } from '../club.js';
+
+const SHELF = 12; // past weeks on the shelf
 import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js';
 import { episodeAverages } from '../insights.js';
 
@@ -25,22 +27,29 @@ function withButters(html, r) {
 
 async function render() {
   const [all, mine, friends] = await Promise.all([loadAllEpisodes(), myLogMap(user.id), followingIds(user.id)]);
-  // This week, the last four, and next week (the one being voted on).
-  const picks = await loadPicks(all, [0, -1, -2, -3, -4, 1]);
+  // ?week=YYYY-MM-DD shows a past week's page: its book, Butters' note and that week's reviews.
+  const asked = params.get('week');
+  const viewOffset = asked && /^\d{4}-\d{2}-\d{2}$/.test(asked) && asked >= CLUB_START && asked < keyOf(0)
+    ? Math.round((Date.parse(`${asked}T00:00:00Z`) - weekStart(0).getTime()) / (7 * 86400000)) : 0;
+  const archive = viewOffset < 0;
+  // The week on screen, the shelf (last SHELF weeks), and next week (the one being voted on).
+  const picks = await loadPicks(all, [viewOffset, ...Array.from({ length: SHELF }, (_, i) => -(i + 1)), 1]);
   const ep = picks[0].pick;
-  const upcoming = picks[5];
+  const upcoming = picks[picks.length - 1];
   if (!ep) {
     root.innerHTML = '<p class="empty">No episodes yet. Ask your admin to run the import.</p>';
     root.removeAttribute('aria-busy');
     return;
   }
-  const start = weekStart();
-  const next = weekStart(1);
+  const start = picks[0].start;
+  const next = picks[0].end;
   const daysLeft = Math.max(1, Math.ceil((next - Date.now()) / 86400000));
+  const weekLabel = formatDate(start.toISOString().slice(0, 10), { month: 'long', day: 'numeric' });
+  if (archive) document.title = `Book Club: week of ${weekLabel} · Parkboxd`;
 
   const weekKey = start.toISOString().slice(0, 10);
   const [{ data: logs }, avgs, { data: tagRows }, { data: bLikes }] = await Promise.all([
-    supabase.from('logs').select(REVIEW_SELECT).eq('episode_id', ep.id).gte('created_at', start.toISOString()).order('created_at', { ascending: false }),
+    supabase.from('logs').select(REVIEW_SELECT).eq('episode_id', ep.id).gte('created_at', start.toISOString()).lt('created_at', next.toISOString()).order('created_at', { ascending: false }),
     episodeAverages(),
     supabase.from('episode_tags').select('tags(name)').eq('episode_id', ep.id),
     supabase.from('butters_likes').select('user_id').eq('week_start', weekKey),
@@ -71,7 +80,7 @@ async function render() {
   const reviews = (logs || []).filter((l) => l.review && l.review.trim());
   const extras = await reviewExtras(reviews.map((r) => r.id), user.id);
   const iWatched = (logs || []).some((l) => l.user_id === user.id);
-  const past = picks.slice(1, 5).filter((p) => p.real).map((p) => ({ ep: p.pick, start: p.start, end: p.end })).filter((x) => x.ep);
+  const past = picks.slice(1, 1 + SHELF).filter((p) => p.real).map((p) => ({ ep: p.pick, key: p.key, start: p.start, end: p.end })).filter((x) => x.ep);
   // Club average: ratings members gave each past pick during its week.
   const { data: pastLogs } = past.length
     ? await supabase.from('logs').select('user_id, episode_id, rating, created_at')
@@ -116,20 +125,23 @@ async function render() {
     <section class="club-hero">
       <span class="club-tape" aria-hidden="true"></span>
       <div class="club-head">
-        <span class="club-kicker">South Park Elementary Library presents</span>
+        <span class="club-kicker">${archive ? 'From the Book Club archives' : 'South Park Elementary Library presents'}</span>
         <h1 class="club-title cut">Butters' Book Club</h1>
-        <p class="club-sub">It's episodes, not books. Nobody has the heart to tell him. Week of ${esc(formatDate(start.toISOString().slice(0, 10), { month: 'long', day: 'numeric' }))}.</p>
+        <p class="club-sub">${archive
+          ? `Week of ${esc(weekLabel)}. The discussion is closed, but the reviews live forever. <a href="club.html">Go to this week's book →</a>`
+          : `It's episodes, not books. Nobody has the heart to tell him. Week of ${esc(weekLabel)}.`}</p>
       </div>
-      <div class="club-due" title="New pick on ${esc(newPickDay)}">
+      ${archive ? `<div class="club-due archived"><span>Returned</span><b>✓</b><span>${esc(formatDate(next.toISOString().slice(0, 10), { month: 'short', day: 'numeric' }))}</span></div>`
+        : `<div class="club-due" title="New pick on ${esc(newPickDay)}">
         <span>Due back in</span>
         <b>${daysLeft}</b>
         <span>day${daysLeft === 1 ? '' : 's'}</span>
-      </div>
+      </div>`}
     </section>
     <section class="club-book">
       <a href="episode.html?id=${ep.id}" class="club-cover">
         ${thumbHTML(ep, { size: 'w780', showTitle: false })}
-        <span class="club-ribbon cut">This week's book</span>
+        <span class="club-ribbon cut">${archive ? 'Past read' : "This week's book"}</span>
         <span class="club-sticker" aria-hidden="true">⭐<small>Butters' pick</small></span>
       </a>
       <div class="club-card">
@@ -137,11 +149,11 @@ async function render() {
         <h2 class="cut"><a href="episode.html?id=${ep.id}">${esc(ep.title)}</a></h2>
         ${ep.overview ? `<p class="club-blurb">${esc(ep.overview)}</p>` : ''}
         <div class="toolbar">
-          <button type="button" class="btn btn-green" id="club-log">${iWatched ? 'Log it again' : "I read it! Let's talk"}</button>
-          ${mine.has(ep.id) && !iWatched ? '<span class="result-count">You\'ve read it before, but not this week.</span>' : ''}
+          ${archive ? "<a class=\"btn btn-green\" href=\"club.html\">See this week's book</a>" : `<button type="button" class="btn btn-green" id="club-log">${iWatched ? 'Log it again' : "I read it! Let's talk"}</button>`}
+          ${!archive && mine.has(ep.id) && !iWatched ? '<span class="result-count">You\'ve read it before, but not this week.</span>' : ''}
         </div>
         <div class="club-members">
-          <span class="club-members-label">Checked out this week</span>
+          <span class="club-members-label">Checked out ${archive ? 'that' : 'this'} week</span>
           <div>${watchers.length ? `${watchers.map((p) => `<a href="profile.html?u=${encodeURIComponent(p?.username || '')}" title="${esc(p?.display_name || p?.username)}">${avatarHTML(p, 30)}</a>`).join('')}
             <span class="result-count">${watchers.length} member${watchers.length === 1 ? '' : 's'}</span>`
             : '<span class="result-count">Nobody yet. Be the first, Butters is waiting!</span>'}</div>
@@ -149,21 +161,21 @@ async function render() {
       </div>
     </section>
     <section>
-      <div class="section-head"><h2>📝 This week's discussion</h2></div>
+      <div class="section-head"><h2>📝 ${archive ? 'That' : 'This'} week's discussion</h2></div>
       <div class="reviews" id="club-reviews">${buttersHTML}${reviews.length
         ? reviews.map((r) => withButters(reviewHTML(r, { me: user.id, extras, friends, avgs }), r)).join('')
-        : '<p class="empty">Nobody else has reviewed it yet. Don\'t leave Butters hanging!</p>'}</div>
+        : `<p class="empty">${archive ? 'Nobody else reviewed it that week. Butters had the whole discussion to himself.' : 'Nobody else has reviewed it yet. Don\'t leave Butters hanging!'}</p>`}</div>
     </section>
-    ${voteHTML}
+    ${archive ? "" : voteHTML}
     <section>
       <div class="section-head"><h2>📚 Past reads</h2></div>
       ${past.length
-        ? `<div class="club-shelf"><div class="ep-grid">${past.map((x) => cardHTML(x.ep, { mine: mine.get(x.ep.id), meta: pastMeta(x) })).join('')}</div></div>`
+        ? `<div class="club-shelf"><div class="ep-grid">${past.map((x) => cardHTML(x.ep, { mine: mine.get(x.ep.id), meta: pastMeta(x), href: `club.html?week=${x.key}`, current: archive && x.key === weekKey })).join('')}</div></div>`
         : "<div class=\"club-shelf\"><p class=\"empty\" style=\"margin:0\">The shelf is empty! This is the club's very first week. Every book we read goes up here, so make it a good one.</p></div>"}
     </section>`;
   root.removeAttribute('aria-busy');
 
-  $('#club-log').onclick = () => logEpisode({ episode: ep, rewatch: mine.has(ep.id) });
+  $('#club-log')?.addEventListener('click', () => logEpisode({ episode: ep, rewatch: mine.has(ep.id) }));
   wireReviewLikes($('#club-reviews'), render);
   root.querySelectorAll('[data-vote]').forEach((b) => b.addEventListener('click', async () => {
     const id = Number(b.dataset.vote);

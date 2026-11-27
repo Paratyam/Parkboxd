@@ -1079,3 +1079,5 @@ html.mysterion a[href*="profile.html?u="]:not(.is-me):focus-visible { filter: no
 .cage-bubble .call { color: #fff; text-shadow: 2px 2px 0 #000; }
 .cage-bubble .next { color: #ffe3e3; }
 .cage-mic { background: radial-gradient(circle at 35% 35%, #5ee0ea, #11808c); }
+.club-due.archived { border-color: #2e8b3a; color: #2e8b3a; transform: rotate(-5deg); }
+.club-shelf .ep-card.current { outline: 3px solid #f5c518; outline-offset: 3px; border-radius: 6px; }
