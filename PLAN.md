@@ -209,6 +209,7 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Kyle's profile lists his reviews newest first; his reviews are 3-5 sentences
 - Cartman's profile (`js/cartman-profile.js`, `profile.html?u=cartman`): another pretend account. 10 short reviews (his 4 wins 5★ and make up the Top 4, 6 losses ½★), every other aired episode rated ½-2★, and a fixed comment under each of Kyle's reviews (Kyle's profile and episode pages). A new Kyle review needs a line in `KYLE_COMMENTS`
 - Kenny's profile (`js/kenny-profile.js`, `profile.html?u=kenny`): another pretend account (69 followers, 69 following, orange mittens avatar). Exactly 7 rated episodes; 4 have muffled, excited reviews (also on those episode pages, with like and comment), the other 3 are 2½★. Kenny is a child: keep reviewed episodes free of sexual or body themes
+- Stan's profile (`js/stan-profile.js`, `profile.html?u=stan`): a deliberately ordinary pretend account (12 followers, 4 following, blue mountain avatar), 7 reviews of episodes no other character reviewed, one mentioning Wendy
 - Badges show in a fixed order (computeBadges in js/insights.js): getting started and site games, rating habits, logging and writing, then the watch-them-all ones (Coon & Friends, Professor Chaos, Mysterion, I Thought This Was America (every Randy episode, id `tegridy`), movies) with Completionist last; on profiles unlocked badges come first, each half keeping that order. Profile tabs: Lists sits right after Watchlist
 
 ## Debug pass: phones and data limits (27 Nov 2026)
@@ -254,4 +255,4 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Edit profile > Badge extras also shows how to enter Professor Chaos and Mysterion modes, only to badge holders
 - Character reviews and comments (profiles, episode pages, Book Club, Kyle's review of the day) have a "Hear what PC Principal has to say" button that shows his personalised message to that character instead of rewriting the text (`pcTalkButtonHTML` and `TALKS` in `js/pc.js`)
 - Character review cards (profiles and episode pages) look exactly like member reviews, including like and comment on profiles; only the PC Principal button is worded differently (`showProfileReviews` in `js/guest-reviews.js`)
-- The four character accounts show up in the header search (People) and on Friends → Find people, listed in `js/characters.js` (a new character needs a line there)
+- The five character accounts show up in the header search (People) and on Friends → Find people, listed in `js/characters.js` (a new character needs a line there)

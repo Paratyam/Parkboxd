@@ -3,7 +3,7 @@
 // one note per day they visit (or all at once with a speedrun), skipping features they've already
 // used, except the finale. Members who joined before the tour existed only get an invite. State is
 // remembered per person in localStorage.
-import { supabase } from './supabase.js?v=20261127202236';
+import { supabase } from './supabase.js?v=20261127202937';
 
 const LAUNCH = '2026-11-27T00:00:00Z'; // accounts older than this are invited, not enrolled
 

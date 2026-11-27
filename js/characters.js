@@ -1,4 +1,4 @@
-// The four character accounts, as people search lists them. Their profiles live in code
+// The five character accounts, as people search lists them. Their profiles live in code
 // (js/<name>-profile.js), not the database, so search has to add them itself. Kept separate so
 // the header search doesn't load whole profile pages.
 export const CHARACTERS = [
@@ -6,6 +6,7 @@ export const CHARACTERS = [
   { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#3fb950', avatar_icon: 'earflaps', character: true },
   { username: 'cartman', display_name: 'Eric Cartman', avatar_color: '#e5534b', avatar_icon: 'beanie', character: true },
   { username: 'kenny', display_name: 'Kenny McCormick', avatar_color: '#f2711c', avatar_icon: 'mittens', character: true },
+  { username: 'stan', display_name: 'Stan Marsh', avatar_color: '#4a90e2', avatar_icon: 'mountain', character: true },
 ];
 
 /** Characters whose name or @username contains the search. */

@@ -1,7 +1,7 @@
 // PC Principal's "PC it" filter: rewrites a review in his voice with word swaps, plus an opener
 // and a closer. Browser only, never saved. Any review card with a [data-pc] button gets the
 // toggle (installPC() listens once for the whole page).
-import { esc } from './ui.js?v=20261127202236';
+import { esc } from './ui.js?v=20261127202937';
 
 // [pattern, replacement]. Order matters: phrases before single words. Each replacement is only
 // made of words no later rule matches, so nothing gets swapped twice. "$1" = a captured word.
@@ -234,6 +234,11 @@ export function installPC() {
 // Character accounts (their reviews and comments) aren't rewritten: PC Principal has a word with
 // that character instead.
 const TALKS = {
+  stan: [
+    "Stan, bro, real honest stuff. If things ever start looking like crap again, my door is open.",
+    "Marsh! I like how you keep it simple. Just try ending one of these with something hopeful, bro.",
+    "Stan, bro, it's okay to care about things. Saying you don't is not a personality.",
+  ],
   butters: [
     "Butters, bro, I love the positivity. But you don't have to apologize for having an opinion. Your voice is valid.",
     "Butters! Being this nice is totally progressive, bro. Now go be that nice to yourself.",
