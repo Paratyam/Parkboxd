@@ -2,9 +2,9 @@
 // week's book starts, and one telling you whether the episode you voted for won.
 // Also a note when Butters likes one of your reviews (buttersLikes in js/butters.js). Not for his
 // best friends: he likes all of theirs. "Read" is remembered per person in localStorage.
-import { supabase } from './supabase.js?v=20261127072042';
-import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261127072042';
-import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127072042';
+import { supabase } from './supabase.js?v=20261127072141';
+import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261127072141';
+import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127072141';
 
 const seenKey = (userId) => `parkboxd-club-seen-${userId}`;
 const seen = (userId) => new Set(JSON.parse(localStorage.getItem(seenKey(userId)) || '[]'));
@@ -12,7 +12,7 @@ const seen = (userId) => new Set(JSON.parse(localStorage.getItem(seenKey(userId)
 /** [{ id, text, href, created_at, read }]: this week's book notes plus Butters' likes. */
 export async function clubNotes(userId) {
   if (!userId) return [];
-  const [book, likes] = await Promise.all([bookNotes(userId), buttersLikeNotes(userId)]);
+  const [book, likes] = await Promise.all([bookNotes(userId).catch(() => []), buttersLikeNotes(userId).catch(() => [])]);
   const read = seen(userId);
   return [...book, ...likes].filter((n) => !isHiddenClubNote(userId, n.id)).map((n) => ({ ...n, read: read.has(n.id) }));
 }
@@ -31,7 +31,7 @@ async function buttersLikeNotes(userId) {
 
 async function bookNotes(userId) {
   if (weekKey(0) < CLUB_START) return [];
-  const { loadAllEpisodes } = await import('./episodes.js?v=20261127072042');
+  const { loadAllEpisodes } = await import('./episodes.js?v=20261127072141');
   const [pk] = await loadPicks(await loadAllEpisodes(), [0]);
   if (!pk?.pick) return [];
   const title = pk.pick.title;
