@@ -1290,7 +1290,39 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 @keyframes jimmy-in { from { opacity: 0; transform: translateY(8px) rotate(-1deg); } to { opacity: 1; transform: none; } }
 .jimmy-crowd { margin: 4px 0 0; text-align: center; color: var(--muted); font-size: 13px; }
 @media (prefers-reduced-motion: reduce) { .jimmy-set li { animation: none; opacity: 1; } }
-.stan-quote { margin: -6px 0 14px; font-style: italic; color: var(--text-soft); } .stan-quote span { font-style: normal; color: var(--muted); }
+/* Stan's Picks: blue jacket panel, red collar trim, snow along the bottom. */
+.stan-picks { position: relative; padding: 26px 20px 30px; border: 4px solid #111; border-radius: 10px; box-shadow: 5px 5px 0 #000; overflow: hidden;
+  background: repeating-linear-gradient(45deg, rgba(255,255,255,.035) 0 2px, transparent 2px 6px), linear-gradient(165deg, #35599c, #1d3157 70%); }
+.stan-picks::before { content: ""; position: absolute; inset: 0 0 auto; height: 10px; background: #c8332e; border-bottom: 3px solid #111; }
+.stan-picks::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 14px; background: #eef4fb;
+  clip-path: polygon(0 55%, 8% 15%, 17% 50%, 28% 5%, 39% 55%, 52% 20%, 63% 60%, 74% 10%, 86% 50%, 94% 20%, 100% 45%, 100% 100%, 0 100%); }
+.stan-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 20px; }
+.stan-hat { width: 66px; flex: 0 0 66px; transform: rotate(-8deg); filter: drop-shadow(3px 3px 0 rgba(0,0,0,.45)); }
+.stan-hat svg { display: block; width: 100%; height: auto; }
+.stan-head h2 { margin: 0; font-size: 30px; line-height: 1.1; color: #fff; text-shadow: 2px 2px 0 #c8332e, 4px 4px 0 #000; }
+.stan-sub { margin: 4px 0 0; font-size: 13px; color: #cfdcf3; }
+.stan-quote { position: relative; flex: 1 1 260px; margin: 0 0 0 10px; padding: 12px 16px; background: #fdfaf0; color: #1b1b1b; font-weight: 600; border: 3px solid #111; border-radius: 14px; box-shadow: 4px 4px 0 rgba(0,0,0,.5); }
+.stan-quote::before { content: ""; position: absolute; left: -10px; top: 50%; width: 14px; height: 14px; margin-top: -7px; background: #fdfaf0; border: solid #111; border-width: 0 0 3px 3px; transform: rotate(45deg); }
+.stan-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px 14px; }
+@media (max-width: 900px) { .stan-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.stan-pick { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.stan-pick .ep-card-meta { display: none; }
+.stan-pick .ep-card:hover .ep-thumb { transform: rotate(-1.2deg) translateY(-3px); }
+.stan-reason { flex: 1; margin: 0; font-size: 12px; line-height: 1.4; color: #e6eefc; overflow-wrap: anywhere; }
+.stan-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.stan-actions button { flex: 1 1 auto; padding: 5px 8px; font: 600 12px var(--font-body); white-space: nowrap; cursor: pointer; color: #fff; background: rgba(0,0,0,.3); border: 2px solid #111; border-radius: 6px; box-shadow: 2px 2px 0 #000; }
+.stan-actions .stan-save { background: #c8332e; }
+.stan-actions .stan-save[aria-pressed="true"] { background: #2e8b45; }
+.stan-actions button:hover { filter: brightness(1.15); }
+.stan-actions button:disabled { opacity: .6; cursor: default; }
+.stan-restore { margin-top: 16px; padding: 0; background: none; border: 0; color: #cfdcf3; font: 13px var(--font-body); text-decoration: underline; cursor: pointer; }
+@media (max-width: 760px) {
+  .stan-picks { padding: 24px 12px 28px; }
+  .stan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; }
+  .stan-head { flex: 1 1 0; min-width: 0; }
+  .stan-quote { flex-basis: 100%; margin-left: 0; }
+  .stan-quote::before { left: 26px; top: -2px; transform: rotate(135deg); }
+}
 
 /* ===== Kenny's Daily Mystery Episode ===== */
 .mystery-head { display: flex; gap: 16px; align-items: center; }

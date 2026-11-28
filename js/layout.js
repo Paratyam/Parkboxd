@@ -1,17 +1,17 @@
 // Shared header + footer, and the session/profile check every page runs first.
-import { findCharacters } from './characters.js?v=20261128091532';
-import { soundSwitch } from './sfx.js?v=20261128091532';
-import { supabase, isConfigured } from './supabase.js?v=20261128091532';
-import { SITE_NAME } from './config.js?v=20261128091532';
-import { esc, avatarHTML, currentPage, currentFile, toast } from './ui.js?v=20261128091532';
-import { line } from './jokes.js?v=20261128091532';
-import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261128091532';
-import { pineStripSVG, busStopSVG, chefHatSVG } from './art.js?v=20261128091532';
-import { addInstallButton } from './install.js?v=20261128091532';
-import { captureInvite, redeemInvite } from './invite.js?v=20261128091532';
-import { VERSION } from './version.js?v=20261128091532';
-import { renderTabBar, followProfileTabs } from './tabbar.js?v=20261128091532';
-import { startPresence } from './presence.js?v=20261128091532';
+import { findCharacters } from './characters.js?v=20261128092307';
+import { soundSwitch } from './sfx.js?v=20261128092307';
+import { supabase, isConfigured } from './supabase.js?v=20261128092307';
+import { SITE_NAME } from './config.js?v=20261128092307';
+import { esc, avatarHTML, currentPage, currentFile, toast } from './ui.js?v=20261128092307';
+import { line } from './jokes.js?v=20261128092307';
+import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261128092307';
+import { pineStripSVG, busStopSVG, chefHatSVG } from './art.js?v=20261128092307';
+import { addInstallButton } from './install.js?v=20261128092307';
+import { captureInvite, redeemInvite } from './invite.js?v=20261128092307';
+import { VERSION } from './version.js?v=20261128092307';
+import { renderTabBar, followProfileTabs } from './tabbar.js?v=20261128092307';
+import { startPresence } from './presence.js?v=20261128092307';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -89,8 +89,8 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   if (session && profile?.username) renderTabBar({ current: currentFile(), onLog: () => logEpisode() });
   followProfileTabs();
   // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
-  if (session) import('./flair.js?v=20261128091532').then((m) => m.startFlair()).catch(() => {});
-  if (session && profile?.username) import('./unlocks.js?v=20261128091532').then((m) => m.startUnlocks(profile)).catch(() => {});
+  if (session) import('./flair.js?v=20261128092307').then((m) => m.startFlair()).catch(() => {});
+  if (session && profile?.username) import('./unlocks.js?v=20261128092307').then((m) => m.startUnlocks(profile)).catch(() => {});
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
@@ -165,7 +165,7 @@ function renderHeader(profile, session) {
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
   el.querySelector('#header-random')?.addEventListener('click', async () => {
-    const r = await import('./random.js?v=20261128091532');
+    const r = await import('./random.js?v=20261128092307');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   });
   syncDice();
@@ -178,7 +178,7 @@ function renderHeader(profile, session) {
  * event on window so the current page can refresh itself.
  */
 export async function logEpisode(opts = {}) {
-  const { openLogModal } = await import('./log-modal.js?v=20261128091532');
+  const { openLogModal } = await import('./log-modal.js?v=20261128092307');
   const changed = await openLogModal(opts);
   if (changed) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
   return changed;
@@ -222,7 +222,7 @@ export async function refreshBell() {
     supabase.auth.getUser(),
   ]);
   // Plus unread Book Club notes (new book, vote result), worked out in the browser.
-  const club = await import('./club-notes.js?v=20261128091532').then((m) => m.clubNotes(user?.id)).catch(() => []);
+  const club = await import('./club-notes.js?v=20261128092307').then((m) => m.clubNotes(user?.id)).catch(() => []);
   const count = (dbCount || 0) + club.filter((n) => !n.read).length;
   const badge = bell.querySelector('.bell-count');
   badge.hidden = !count;
@@ -311,8 +311,8 @@ function wireSearch(form) {
     const [{ data: people }, { loadAllEpisodes, seasonCode, matchesCode }, { searchEpisodes, snippetHTML }] = await Promise.all([
       safe ? supabase.from('profiles').select('username, display_name, avatar_color, avatar_icon')
         .not('username', 'is', null).or(`username.ilike.%${safe}%,display_name.ilike.%${safe}%`).limit(5) : Promise.resolve({ data: [] }),
-      import('./episodes.js?v=20261128091532'),
-      import('./search.js?v=20261128091532'),
+      import('./episodes.js?v=20261128092307'),
+      import('./search.js?v=20261128092307'),
     ]);
     // "S15" lists the whole season (plus a link to its page), "S15E3" that one episode.
     // Anything else: title matches, then "what happened" matches from the plot summaries.
@@ -347,7 +347,7 @@ export async function refreshMail() {
   const { count } = await supabase.from('messages').select('id', { count: 'exact', head: true }).eq('recipient_id', user.id).eq('read', false);
   // Plus a character's unread "I followed you" message (character-follows.js).
   const { data: me } = await supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
-  const chat = await import('./character-follows.js?v=20261128091532').then((m) => m.characterChat(user.id, me?.username)).catch(() => null);
+  const chat = await import('./character-follows.js?v=20261128092307').then((m) => m.characterChat(user.id, me?.username)).catch(() => null);
   const n = (count || 0) + (chat?.unread || 0);
   for (const el of [document.querySelector('#header-mail .bell-count'), document.querySelector('#menu-mail .menu-count')]) {
     if (!el) continue;

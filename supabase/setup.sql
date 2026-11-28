@@ -898,3 +898,20 @@ alter table public.profiles add constraint profiles_flair_off_check check (flair
 -- Replies to a character's visit comment (28 Nov 2026). The visit itself lives in code
 -- (js/visits.js), so the reply names the character instead of pointing at a parent row.
 alter table public.comments add column if not exists reply_character text check (reply_character in ('cartman', 'kenny', 'butters'));
+
+-- Stan's Picks "Not for me": episodes a member has hidden from their picks (28 Nov 2026).
+create table if not exists public.stan_hidden (
+  user_id     uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  episode_id  bigint not null references public.episodes (id) on delete cascade,
+  hidden_at   timestamptz not null default now(),
+  primary key (user_id, episode_id)
+);
+alter table public.stan_hidden enable row level security;
+revoke all on public.stan_hidden from anon, authenticated;
+grant select, insert, delete on public.stan_hidden to authenticated;
+drop policy if exists "read own" on public.stan_hidden;
+create policy "read own" on public.stan_hidden for select to authenticated using (user_id = (select auth.uid()));
+drop policy if exists "insert own" on public.stan_hidden;
+create policy "insert own" on public.stan_hidden for insert to authenticated with check (user_id = (select auth.uid()));
+drop policy if exists "delete own" on public.stan_hidden;
+create policy "delete own" on public.stan_hidden for delete to authenticated using (user_id = (select auth.uid()));

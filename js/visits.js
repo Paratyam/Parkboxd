@@ -2,10 +2,10 @@
 // review and mumbles under it, Butters cheers on his best friend. The visits aren't in the
 // database: each is picked from the review id, so it is decided once per review and reloading
 // never re-rolls it. Replies to them are real comments with `reply_character` set.
-import { BUTTERS } from './butters-profile.js?v=20261128091532';
-import { buttersComment } from './butters.js?v=20261128091532';
-import { CARTMAN } from './cartman-profile.js?v=20261128091532';
-import { KENNY } from './kenny-profile.js?v=20261128091532';
+import { BUTTERS } from './butters-profile.js?v=20261128092307';
+import { buttersComment } from './butters.js?v=20261128092307';
+import { CARTMAN } from './cartman-profile.js?v=20261128092307';
+import { KENNY } from './kenny-profile.js?v=20261128092307';
 
 export const RARE = 1 / 500;
 export const OFTEN = 1 / 10;

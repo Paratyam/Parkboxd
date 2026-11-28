@@ -163,5 +163,14 @@ export function mysterySVG() {
   </svg>`;
 }
 
+// Paper knit hat with a red brim and bobble: Stan's Picks.
+export const stanHatSVG = () => `<svg class="art art-stan-hat" viewBox="0 0 80 72" aria-hidden="true" focusable="false">
+  <path d="M10 52 Q10 18 40 17 Q70 18 70 52 Z" fill="#3f6fc4" stroke="${INK}" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M22 30 Q27 23 35 22" stroke="#7fa6e8" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M6 49 Q40 40 74 49 L73 63 Q40 55 7 63 Z" fill="#c8332e" stroke="${INK}" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M18 49 L19 57 M30 47 L30 55 M50 47 L50 55 M62 49 L61 57" stroke="#8f1f1c" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M40 3 L45 6 L51 6 L50 12 L53 16 L47 18 L44 23 L39 20 L33 22 L31 16 L27 13 L32 9 L33 4 Z" fill="#c8332e" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+</svg>`;
+
 // Paper chef hat: the Chef's menu button.
 export const chefHatSVG = (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 64 64" aria-hidden="true" style="vertical-align:middle;flex:0 0 auto"><path d="M17 38C6 38 3 22 15 18C15 8 27 4 33 11C41 3 54 9 50 19C62 22 59 39 47 38L46 50L18 50Z" fill="#fdfaf0" stroke="#222" stroke-width="3.5" stroke-linejoin="round"/><path d="M17 49L47 49L46 59L18 60Z" fill="#d63a3a" stroke="#222" stroke-width="3.5" stroke-linejoin="round"/><path d="M26 39L25 45M38 39L39 45" stroke="#222" stroke-width="2.5" stroke-linecap="round"/></svg>`;

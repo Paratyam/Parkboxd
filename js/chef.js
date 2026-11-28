@@ -1,8 +1,8 @@
 // Chef's menu: the random episode picker. Pick a dish, get one episode.
-import { supabase } from './supabase.js?v=20261128091532';
-import { loadAllEpisodes, myLogMap, isAired, todayISO, seasonLabel } from './episodes.js?v=20261128091532';
-import { characterTags } from './insights.js?v=20261128091532';
-import { esc } from './ui.js?v=20261128091532';
+import { supabase } from './supabase.js?v=20261128092307';
+import { loadAllEpisodes, myLogMap, isAired, todayISO, seasonLabel } from './episodes.js?v=20261128092307';
+import { characterTags } from './insights.js?v=20261128092307';
+import { esc } from './ui.js?v=20261128092307';
 
 export const DISHES = [
   { id: 'cartman', emoji: '🍕', name: "Cartman's chaos platter", hint: 'Cartman episodes', who: 'Cartman' },

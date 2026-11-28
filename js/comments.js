@@ -1,9 +1,9 @@
 // Comment threads with replies, shared by review pages (comments) and Butters' Book Club
 // review (butters_comments). Replies show one level deep: a reply to a reply joins the same
 // thread under the top comment, with an "@name" so it's clear who's being answered.
-import { supabase } from './supabase.js?v=20261128091532';
-import { esc, avatarHTML, toast } from './ui.js?v=20261128091532';
-import { pcTalkButtonHTML } from './pc.js?v=20261128091532';
+import { supabase } from './supabase.js?v=20261128092307';
+import { esc, avatarHTML, toast } from './ui.js?v=20261128092307';
+import { pcTalkButtonHTML } from './pc.js?v=20261128092307';
 
 const when = (iso) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 

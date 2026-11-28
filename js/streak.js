@@ -2,8 +2,8 @@
 // finished that day's Mystery Episode, or judged 10 Cage Match fights ("watering"). Every 7 days
 // in a row earns a rain day (hold up to 2) that covers a missed day. Randy has feelings about it.
 // Everything is worked out in the browser from rows that already exist.
-import { esc, fetchAll } from './ui.js?v=20261128091532';
-import { supabase } from './supabase.js?v=20261128091532';
+import { esc, fetchAll } from './ui.js?v=20261128092307';
+import { supabase } from './supabase.js?v=20261128092307';
 
 export const WATER_FIGHTS = 10;
 export const RAIN_EVERY = 7;

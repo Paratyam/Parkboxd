@@ -1,20 +1,20 @@
-import { pcTalkButtonHTML } from '../pc.js?v=20261128091532';
-import { initPage, logEpisode } from '../layout.js?v=20261128091532';
-import { supabase } from '../supabase.js?v=20261128091532';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261128091532';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261128091532';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261128091532';
-import { line } from '../jokes.js?v=20261128091532';
-import { episodeAverages, allLatestRatings } from '../insights.js?v=20261128091532';
-import { stanPicks, stanLine } from '../stan.js?v=20261128091532';
-import { loadPicks } from '../club.js?v=20261128091532';
-import { isChaos } from '../fx.js?v=20261128091532';
-import { loadStreaks, streakHTML } from '../streak.js?v=20261128091532';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261128091532';
-import { gloveSVG, booksSVG, mysterySVG, chefHatSVG } from '../art.js?v=20261128091532';
-import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261128091532';
-import { guestReviewsFor } from '../guest-reviews.js?v=20261128091532';
-import { showInstallAd } from '../install.js?v=20261128091532';
+import { pcTalkButtonHTML } from '../pc.js?v=20261128092307';
+import { initPage, logEpisode } from '../layout.js?v=20261128092307';
+import { supabase } from '../supabase.js?v=20261128092307';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261128092307';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261128092307';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261128092307';
+import { line } from '../jokes.js?v=20261128092307';
+import { episodeAverages } from '../insights.js?v=20261128092307';
+import { loadStanBox } from '../stan-box.js?v=20261128092307';
+import { loadPicks } from '../club.js?v=20261128092307';
+import { isChaos } from '../fx.js?v=20261128092307';
+import { loadStreaks, streakHTML } from '../streak.js?v=20261128092307';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261128092307';
+import { gloveSVG, booksSVG, mysterySVG, chefHatSVG } from '../art.js?v=20261128092307';
+import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261128092307';
+import { guestReviewsFor } from '../guest-reviews.js?v=20261128092307';
+import { showInstallAd } from '../install.js?v=20261128092307';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -33,7 +33,7 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random" title="Chef's menu: pick a dish and get an episode to watch">${chefHatSVG()} Chef's menu</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js?v=20261128091532');
+    const r = await import('../random.js?v=20261128092307');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -161,19 +161,8 @@ async function renderHome() {
       <span class="kenny-ad-cta cut">${todayGame?.done ? (todayGame.won ? `Solved in ${todayGame.guesses.length}! ✓` : 'Kenny didn\'t make it. See you tomorrow') : todayGame?.guesses?.length ? 'Keep guessing →' : "Play today's puzzle →"}</span>
     </a>`;
 
-  // Stan's Picks: unseen episodes that people with your taste loved.
-  const [everyone, { data: people }] = await Promise.all([
-    allLatestRatings(),
-    supabase.from('profiles').select('id, username, display_name').not('username', 'is', null),
-  ]);
-  const names = new Map((people || []).map((p) => [p.id, p.display_name || p.username]));
-  const picks = stanPicks({ meId: user.id, everyone, seen: new Set(mine.keys()), all, avgs, names });
-  const stanHTML = picks.length ? `
-    <section class="stan-picks">
-      <div class="section-head"><h2>👦 Stan's Picks</h2><span class="result-count">Unseen episodes that people with your taste loved</span></div>
-      <p class="stan-quote">“${esc(stanLine())}” <span>— Stan</span></p>
-      <div class="ep-grid">${picks.map((p) => cardHTML(p.ep, { meta: p.reason })).join('')}</div>
-    </section>` : '';
+  // Stan's Picks (js/stan-box.js).
+  const mountStan = await loadStanBox({ userId: user.id, all, mine, avgs });
 
   // Cartman's Cage Match ad, with your current champion if you have one.
   const [cageVotes, cageRatings] = await Promise.all([loadVotes(user.id), loadRatings(user.id)]);
@@ -211,7 +200,7 @@ async function renderHome() {
     ${anniversaryHTML}
     <div class="home-promos">${weeklyHTML}${cageAd}${kennyAd}</div>
     ${streakBox}
-    ${stanHTML}
+    <section class="stan-picks" id="stan-box" hidden></section>
     <section>
       <div class="section-head"><h2>${popTitle}</h2><a href="episodes.html">More</a></div>
       <div class="ep-grid">${popCards.join('')}</div>
@@ -235,6 +224,7 @@ async function renderHome() {
       </aside>
     </div>`;
 
+  mountStan($('#stan-box'));
   wireReviewLikes($('#home-reviews'), renderHome);
   renderDecideBox();
 }
@@ -243,7 +233,7 @@ async function renderHome() {
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js?v=20261128091532');
+  const random = () => import('../random.js?v=20261128092307');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>
