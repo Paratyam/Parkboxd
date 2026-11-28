@@ -1,6 +1,6 @@
 // Messages: an episode link shows as a picture card instead of a long address.
-import { esc, epCode } from './ui.js?v=20261128085011';
-import { thumbHTML } from './episodes.js?v=20261128085011';
+import { esc, epCode } from './ui.js?v=20261128085136';
+import { thumbHTML } from './episodes.js?v=20261128085136';
 
 // Either of the site's addresses, with or without https and ".html".
 const EP_LINK = /(?:https?:\/\/)?(?:parkboxd\.pages\.dev|paratyam\.github\.io\/parkboxd)\/episode(?:\.html)?\?id=(\d+)(?!\d)(?:[&#][^\s]*)?/gi;

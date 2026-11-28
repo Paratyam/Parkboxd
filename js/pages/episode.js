@@ -1,20 +1,20 @@
-import { initPage, logEpisode } from '../layout.js?v=20261128085011';
-import { supabase } from '../supabase.js?v=20261128085011';
-import { SITE_NAME } from '../config.js?v=20261128085011';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261128085011';
-import { line } from '../jokes.js?v=20261128085011';
-import { celebrate } from '../fx.js?v=20261128085011';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261128085011';
-import { mackeyNoteHTML } from '../mackey.js?v=20261128085011';
-import { starInput } from '../stars.js?v=20261128085011';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261128085011';
-import { pcButtonHTML } from '../pc.js?v=20261128085011';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261128085011';
-import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261128085011';
-import { peoplesCupSVG, chefHatSVG } from '../art.js?v=20261128085011';
-import { openRecommend, recommendationsFor } from '../recommend.js?v=20261128085011';
-import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261128085011';
-import { DISHES, serve, dishHref } from '../chef.js?v=20261128085011';
+import { initPage, logEpisode } from '../layout.js?v=20261128085136';
+import { supabase } from '../supabase.js?v=20261128085136';
+import { SITE_NAME } from '../config.js?v=20261128085136';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261128085136';
+import { line } from '../jokes.js?v=20261128085136';
+import { celebrate } from '../fx.js?v=20261128085136';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261128085136';
+import { mackeyNoteHTML } from '../mackey.js?v=20261128085136';
+import { starInput } from '../stars.js?v=20261128085136';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261128085136';
+import { pcButtonHTML } from '../pc.js?v=20261128085136';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261128085136';
+import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261128085136';
+import { peoplesCupSVG, chefHatSVG } from '../art.js?v=20261128085136';
+import { openRecommend, recommendationsFor } from '../recommend.js?v=20261128085136';
+import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261128085136';
+import { DISHES, serve, dishHref } from '../chef.js?v=20261128085136';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -47,7 +47,7 @@ if (!ep) {
       location.href = dishHref(next.ep.id, dish.id, params.get('unseen') === '1');
       return;
     }
-    const r = await import('../random.js?v=20261128085011');
+    const r = await import('../random.js?v=20261128085136');
     if (how === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
@@ -67,8 +67,9 @@ function pickedTagHTML() {
   if (!how) return '';
   const other = { chaos: '😈 Professor Chaos chose this. Suffer.', coon: "🦝 The Coon chose this. It's about him." }[how];
   const dish = chefDish();
+  const hint = other ? '' : dish ? 'Not feeling it? Get another episode from the same dish' : 'Not feeling it? Get a different episode';
   return `<div class="toolbar" style="margin-bottom:10px"><span class="tag-chip">${other || `${chefHatSVG(18)} Chef's choice${dish ? `: ${esc(dish.name)}` : ''}`}</span>
-    <button type="button" class="btn btn-ghost" id="roll-again" style="padding:6px 12px">${other ? 'Roll again' : 'Send it back'}</button></div>`;
+    <button type="button" class="btn btn-ghost" id="roll-again" style="padding:6px 12px" title="${hint}">${other ? 'Roll again' : 'Send it back'}</button></div>`;
 }
 
 function renderShell() {
@@ -190,7 +191,7 @@ function renderPanel() {
           ? '<button type="button" class="link-button" id="btn-top4" style="color:var(--text-soft)">Add to your Top 4</button>'
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
       <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>    </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261128085011')).openAddToList(ep));
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261128085136')).openAddToList(ep));
   $('#btn-rec').addEventListener('click', () => openRecommend(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 
