@@ -1,9 +1,9 @@
 // Multi-part arcs: loading and the "log the whole arc" dialog.
-import { supabase } from './supabase.js?v=20261128084948';
-import { esc, epCode } from './ui.js?v=20261128084948';
-import { starInput } from './stars.js?v=20261128084948';
-import { todayISO } from './episodes.js?v=20261128084948';
-import { towelieRewatch } from './fx.js?v=20261128084948';
+import { supabase } from './supabase.js?v=20261128085011';
+import { esc, epCode } from './ui.js?v=20261128085011';
+import { starInput } from './stars.js?v=20261128085011';
+import { todayISO } from './episodes.js?v=20261128085011';
+import { towelieRewatch } from './fx.js?v=20261128085011';
 
 // All arcs with their episode ids in order: [{ id, name, episodeIds: [] }]
 export async function loadArcs() {

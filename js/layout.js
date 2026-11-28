@@ -1,17 +1,17 @@
 // Shared header + footer, and the session/profile check every page runs first.
-import { findCharacters } from './characters.js?v=20261128084948';
-import { soundSwitch } from './sfx.js?v=20261128084948';
-import { supabase, isConfigured } from './supabase.js?v=20261128084948';
-import { SITE_NAME } from './config.js?v=20261128084948';
-import { esc, avatarHTML, currentPage, currentFile, toast } from './ui.js?v=20261128084948';
-import { line } from './jokes.js?v=20261128084948';
-import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261128084948';
-import { pineStripSVG, busStopSVG, chefHatSVG } from './art.js?v=20261128084948';
-import { addInstallButton } from './install.js?v=20261128084948';
-import { captureInvite, redeemInvite } from './invite.js?v=20261128084948';
-import { VERSION } from './version.js?v=20261128084948';
-import { renderTabBar, followProfileTabs } from './tabbar.js?v=20261128084948';
-import { startPresence } from './presence.js?v=20261128084948';
+import { findCharacters } from './characters.js?v=20261128085011';
+import { soundSwitch } from './sfx.js?v=20261128085011';
+import { supabase, isConfigured } from './supabase.js?v=20261128085011';
+import { SITE_NAME } from './config.js?v=20261128085011';
+import { esc, avatarHTML, currentPage, currentFile, toast } from './ui.js?v=20261128085011';
+import { line } from './jokes.js?v=20261128085011';
+import { initModes, modeLogo, isChaos, coonTakeoverDue, showCoonTakeover } from './fx.js?v=20261128085011';
+import { pineStripSVG, busStopSVG, chefHatSVG } from './art.js?v=20261128085011';
+import { addInstallButton } from './install.js?v=20261128085011';
+import { captureInvite, redeemInvite } from './invite.js?v=20261128085011';
+import { VERSION } from './version.js?v=20261128085011';
+import { renderTabBar, followProfileTabs } from './tabbar.js?v=20261128085011';
+import { startPresence } from './presence.js?v=20261128085011';
 
 const LOGO_COLOURS = ['#3fb950', '#4a90e2', '#d63a3a', '#f5c518', '#f2711c'];
 const LOGO_TILT = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3];
@@ -89,8 +89,8 @@ export async function initPage({ title = '', auth = 'optional', needsUsername = 
   if (session && profile?.username) renderTabBar({ current: currentFile(), onLog: () => logEpisode() });
   followProfileTabs();
   // Badge flair (gold rings, Critic tags, 🌶️) is decoration: load it after the page, never block on it.
-  if (session) import('./flair.js?v=20261128084948').then((m) => m.startFlair()).catch(() => {});
-  if (session && profile?.username) import('./unlocks.js?v=20261128084948').then((m) => m.startUnlocks(profile)).catch(() => {});
+  if (session) import('./flair.js?v=20261128085011').then((m) => m.startFlair()).catch(() => {});
+  if (session && profile?.username) import('./unlocks.js?v=20261128085011').then((m) => m.startUnlocks(profile)).catch(() => {});
   if (!isConfigured) showConfigWarning();
 
   return { session, user: session?.user ?? null, profile };
@@ -125,7 +125,7 @@ function renderHeader(profile, session) {
       </form>
       <a class="icon-btn bell" id="header-bell" href="notifications.html" aria-label="Notifications" title="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="bell-count" hidden></span></a>
       <a class="icon-btn bell mail-btn" id="header-mail" href="messages.html" aria-label="Messages" title="Messages"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span class="bell-count" hidden></span></a>
-      <button type="button" class="icon-btn" id="header-random" aria-label="Chef's menu" title="Chef's menu">${chefHatSVG(22)}</button>
+      <button type="button" class="icon-btn" id="header-random" aria-label="Chef's menu" title="Chef's menu: pick a dish and get an episode to watch">${chefHatSVG(22)}</button>
       <button type="button" class="btn btn-green" id="header-log">+ Log</button>
       ${profile.is_admin ? `<a class="header-link admin-link" href="admin.html">Admin</a>` : ''}
       <a class="avatar-link" href="${me}" aria-label="Your profile">${avatarHTML(profile, 40)}</a>`;
@@ -143,7 +143,7 @@ function renderHeader(profile, session) {
       <input type="search" id="menu-q" name="q" placeholder="Search episodes, plots, people" autocomplete="off">
     </form>` : '';
   const mobileLinks = session && profile ? `
-    <button type="button" class="nav-mobile-only link-button nav-random">${chefHatSVG()} Chef's menu</button>
+    <button type="button" class="nav-mobile-only link-button nav-random" title="Chef's menu: pick a dish and get an episode to watch">${chefHatSVG()} Chef's menu</button>
     <a class="nav-mobile-only" href="messages.html" id="menu-mail">✉️ Messages<span class="menu-count" hidden></span></a>
     ${profile.is_admin ? '<a class="nav-mobile-only" href="admin.html">Admin</a>' : ''}` : '';
 
@@ -165,7 +165,7 @@ function renderHeader(profile, session) {
 
   el.querySelector('#header-log')?.addEventListener('click', () => logEpisode());
   el.querySelector('#header-random')?.addEventListener('click', async () => {
-    const r = await import('./random.js?v=20261128084948');
+    const r = await import('./random.js?v=20261128085011');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   });
   syncDice();
@@ -178,7 +178,7 @@ function renderHeader(profile, session) {
  * event on window so the current page can refresh itself.
  */
 export async function logEpisode(opts = {}) {
-  const { openLogModal } = await import('./log-modal.js?v=20261128084948');
+  const { openLogModal } = await import('./log-modal.js?v=20261128085011');
   const changed = await openLogModal(opts);
   if (changed) window.dispatchEvent(new CustomEvent('parkboxd:logged'));
   return changed;
@@ -222,7 +222,7 @@ export async function refreshBell() {
     supabase.auth.getUser(),
   ]);
   // Plus unread Book Club notes (new book, vote result), worked out in the browser.
-  const club = await import('./club-notes.js?v=20261128084948').then((m) => m.clubNotes(user?.id)).catch(() => []);
+  const club = await import('./club-notes.js?v=20261128085011').then((m) => m.clubNotes(user?.id)).catch(() => []);
   const count = (dbCount || 0) + club.filter((n) => !n.read).length;
   const badge = bell.querySelector('.bell-count');
   badge.hidden = !count;
@@ -236,7 +236,7 @@ function syncDice() {
   if (!b) return;
   const evil = isChaos();
   b.innerHTML = evil ? '😈' : chefHatSVG(22);
-  b.title = evil ? 'Unleash chaos: rewatch one of your worst-rated episodes' : "Chef's menu";
+  b.title = evil ? 'Unleash chaos: rewatch one of your worst-rated episodes' : "Chef's menu: pick a dish and get an episode to watch";
   b.setAttribute('aria-label', evil ? 'Unleash chaos' : "Chef's menu");
 }
 
@@ -311,8 +311,8 @@ function wireSearch(form) {
     const [{ data: people }, { loadAllEpisodes, seasonCode, matchesCode }, { searchEpisodes, snippetHTML }] = await Promise.all([
       safe ? supabase.from('profiles').select('username, display_name, avatar_color, avatar_icon')
         .not('username', 'is', null).or(`username.ilike.%${safe}%,display_name.ilike.%${safe}%`).limit(5) : Promise.resolve({ data: [] }),
-      import('./episodes.js?v=20261128084948'),
-      import('./search.js?v=20261128084948'),
+      import('./episodes.js?v=20261128085011'),
+      import('./search.js?v=20261128085011'),
     ]);
     // "S15" lists the whole season (plus a link to its page), "S15E3" that one episode.
     // Anything else: title matches, then "what happened" matches from the plot summaries.
