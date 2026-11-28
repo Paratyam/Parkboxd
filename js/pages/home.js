@@ -1,20 +1,20 @@
-import { pcTalkButtonHTML } from '../pc.js?v=20261128084148';
-import { initPage, logEpisode } from '../layout.js?v=20261128084148';
-import { supabase } from '../supabase.js?v=20261128084148';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261128084148';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261128084148';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261128084148';
-import { line } from '../jokes.js?v=20261128084148';
-import { episodeAverages, allLatestRatings } from '../insights.js?v=20261128084148';
-import { stanPicks, stanLine } from '../stan.js?v=20261128084148';
-import { loadPicks } from '../club.js?v=20261128084148';
-import { isChaos } from '../fx.js?v=20261128084148';
-import { loadStreaks, streakHTML } from '../streak.js?v=20261128084148';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261128084148';
-import { gloveSVG, booksSVG, mysterySVG } from '../art.js?v=20261128084148';
-import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261128084148';
-import { guestReviewsFor } from '../guest-reviews.js?v=20261128084148';
-import { showInstallAd } from '../install.js?v=20261128084148';
+import { pcTalkButtonHTML } from '../pc.js?v=20261128084453';
+import { initPage, logEpisode } from '../layout.js?v=20261128084453';
+import { supabase } from '../supabase.js?v=20261128084453';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261128084453';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261128084453';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261128084453';
+import { line } from '../jokes.js?v=20261128084453';
+import { episodeAverages, allLatestRatings } from '../insights.js?v=20261128084453';
+import { stanPicks, stanLine } from '../stan.js?v=20261128084453';
+import { loadPicks } from '../club.js?v=20261128084453';
+import { isChaos } from '../fx.js?v=20261128084453';
+import { loadStreaks, streakHTML } from '../streak.js?v=20261128084453';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261128084453';
+import { gloveSVG, booksSVG, mysterySVG, chefHatSVG } from '../art.js?v=20261128084453';
+import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261128084453';
+import { guestReviewsFor } from '../guest-reviews.js?v=20261128084453';
+import { showInstallAd } from '../install.js?v=20261128084453';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -30,10 +30,10 @@ if (profile?.username) {
   $('.hero p').textContent = 'What did you watch? Log it, rate it, and roast your friends\' takes.';
   $('#hero-actions').innerHTML = `
     <button type="button" class="paper btn-paper" style="background-color:var(--green);border:0;cursor:pointer" id="hero-log">+ Log an episode</button>
-    <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">🎲 Random episode</button>`;
+    <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random">${chefHatSVG()} Chef's menu</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js?v=20261128084148');
+    const r = await import('../random.js?v=20261128084453');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -243,7 +243,7 @@ async function renderHome() {
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js?v=20261128084148');
+  const random = () => import('../random.js?v=20261128084453');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>
@@ -276,10 +276,10 @@ function renderDecideBox() {
   $('#rand-more').onclick = async () => (await random()).openRandomPicker();
 }
 
-// Big hero button: 🎲 normally, 😈 in Professor Chaos mode.
+// Big hero button: chef hat normally, 😈 in Professor Chaos mode.
 function syncHeroRandom() {
   const b = $('#hero-random');
-  if (b) b.textContent = isChaos() ? '😈 Unleash chaos' : '🎲 Random episode';
+  if (b) b.innerHTML = isChaos() ? '😈 Unleash chaos' : `${chefHatSVG()} Chef's menu`;
 }
 
 window.addEventListener('parkboxd:mode', () => {

@@ -162,3 +162,6 @@ export function mysterySVG() {
     <path d="M60 8 L62 14 L68 16 L62 18 L60 24 L58 18 L52 16 L58 14 Z" fill="#f2711c" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
   </svg>`;
 }
+
+// Paper chef hat: the Chef's menu button.
+export const chefHatSVG = (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 64 64" aria-hidden="true" style="vertical-align:middle;flex:0 0 auto"><path d="M17 38C6 38 3 22 15 18C15 8 27 4 33 11C41 3 54 9 50 19C62 22 59 39 47 38L46 50L18 50Z" fill="#fdfaf0" stroke="#222" stroke-width="3.5" stroke-linejoin="round"/><path d="M17 49L47 49L46 59L18 60Z" fill="#d63a3a" stroke="#222" stroke-width="3.5" stroke-linejoin="round"/><path d="M26 39L25 45M38 39L39 45" stroke="#222" stroke-width="2.5" stroke-linecap="round"/></svg>`;
