@@ -2,9 +2,9 @@
 // real member: nothing is in the database, so his ratings never touch site averages. He reviews
 // the "smart" episodes and adds a reading-list note on what each one is spoofing. His reviews
 // also show on those episode pages (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127211602';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127211602';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127211602';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261128081227';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261128081227';
+import { countRatings, histogramHTML } from './histogram.js?v=20261128081227';
 
 export const KYLE_USERNAME = 'kyle';
 export const KYLE = { username: 'kyle', display_name: 'Kyle Broflovski', avatar_color: '#3fb950', avatar_icon: 'earflaps' };
@@ -83,7 +83,7 @@ export const REVIEWS = [
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 
-const GRADES = [3, 3.5, 3.5, 4, 4, 4, 4, 4.5, 4.5, 5];
+const AVERAGE = 3.5; // the filler grades are set so his overall average lands here
 
 // His watched list. He's a try-hard: the hand-picked ratings topped up to exactly WATCHED episodes,
 // in air order, with fixed ratings per episode (a tough grader). Same list for everyone.
@@ -92,9 +92,21 @@ function watchedList(all) {
   const picked = RATED.map(([t, r, liked]) => ({ ep: byTitle.get(norm(t)), r, liked })).filter((x) => x.ep);
   const have = new Set(picked.map((x) => x.ep.id));
   const today = new Date().toISOString().slice(0, 10);
-  const filler = all.filter((e) => e.kind === 'episode' && e.air_date && e.air_date <= today && !have.has(e.id))
-    .slice(0, Math.max(0, WATCHED - picked.length))
-    .map((e) => { const r = GRADES[(Math.imul(e.id, 2654435761) >>> 0) % GRADES.length]; return { ep: e, r, liked: r === 5 }; });
+  const rest = all.filter((e) => e.kind === 'episode' && e.air_date && e.air_date <= today && !have.has(e.id))
+    .slice(0, Math.max(0, WATCHED - picked.length));
+  // Counted in half stars: share out what the average still needs, then spread pairs apart by the
+  // same amount up and down, so the total doesn't move.
+  const need = Math.round(AVERAGE * 2 * (picked.length + rest.length) - picked.reduce((s, x) => s + x.r * 2, 0));
+  const hash = (e) => Math.imul(e.id, 2654435761) >>> 0;
+  const order = [...rest].sort((a, b) => hash(a) - hash(b));
+  const halves = new Map(order.map((e, i) => [e.id, Math.floor(need / order.length) + (i < need % order.length ? 1 : 0)]));
+  for (let i = 0; i + 1 < order.length; i += 2) {
+    const [a, b] = [order[i].id, order[i + 1].id];
+    const spread = Math.max(0, Math.min((hash(order[i]) >>> 16) % 4, 10 - halves.get(a), halves.get(b) - 1));
+    halves.set(a, halves.get(a) + spread);
+    halves.set(b, halves.get(b) - spread);
+  }
+  const filler = rest.map((e) => { const r = halves.get(e.id) / 2; return { ep: e, r, liked: r === 5 }; });
   return [...picked, ...filler];
 }
 
@@ -186,7 +198,7 @@ export async function renderKyleProfile(root) {
     </div>`;
 
   // Loaded here, not at the top: guest-reviews.js imports this file.
-  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127211602');
+  const { showProfileReviews } = await import('./guest-reviews.js?v=20261128081227');
   await showProfileReviews(root.querySelector('[data-guest-list]'), 'kyle', reviews.map((x) => x.ep));
   root.removeAttribute('aria-busy');
 

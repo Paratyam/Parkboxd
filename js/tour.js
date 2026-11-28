@@ -1,9 +1,10 @@
 // Stan's site tour, worked out in the browser like the Book Club notes (js/club-notes.js, which
 // merges these into the bell and the notifications page). New members get a welcome, then at most
 // one note per day they visit (or all at once with a speedrun), skipping features they've already
-// used, except the finale. Members who joined before the tour existed only get an invite. State is
-// remembered per person in localStorage.
-import { supabase } from './supabase.js?v=20261127211602';
+// used, except the finale. Members who joined before the tour existed only get an invite. State
+// (including which tour notes were read or cleared) is saved on the account (auth user metadata)
+// so it follows you across devices; localStorage is the working copy.
+import { supabase } from './supabase.js?v=20261128081227';
 
 const LAUNCH = '2026-11-27T00:00:00Z'; // accounts older than this are invited, not enrolled
 
@@ -33,8 +34,61 @@ const STEPS = [
 
 const key = (userId) => `parkboxd-tour-${userId}`;
 const load = (userId) => { try { return JSON.parse(localStorage.getItem(key(userId))); } catch { return null; } };
-const save = (userId, state) => localStorage.setItem(key(userId), JSON.stringify(state));
+const store = (userId, state) => localStorage.setItem(key(userId), JSON.stringify(state));
 const today = () => new Date().toDateString();
+
+let pushing = Promise.resolve();
+function push(state) {
+  pushing = pushing.then(() => supabase.auth.updateUser({ data: { tour: state } })).catch(() => {});
+  return pushing;
+}
+function save(userId, state) {
+  const next = { ...state, updated: Date.now() };
+  store(userId, next);
+  return push(next);
+}
+
+// Read and cleared flags this browser saved before they were kept on the account.
+const oldFlags = (name, userId) => {
+  try { return JSON.parse(localStorage.getItem(`parkboxd-club-${name}-${userId}`) || '[]').filter((id) => id.startsWith('tour-')); } catch { return []; }
+};
+
+async function pull(userId) {
+  const { data, error } = await supabase.auth.getUser(); // fresh from the server, not the saved session
+  if (error || data.user?.id !== userId) return false;
+  const remote = data.user.user_metadata?.tour;
+  const local = load(userId);
+  if (!remote && !local) return true;
+  // The newer copy wins. A copy from before syncing wins if it is further along.
+  const useLocal = !remote || (local && ((!local.updated && (local.sent?.length || 0) > (remote.sent?.length || 0))
+    || (local.updated || 0) > (remote.updated || 0)));
+  const state = { ...(useLocal ? local : remote) };
+  const union = (field, old) => [...new Set([...(remote?.[field] || []), ...(local?.[field] || []), ...oldFlags(old, userId)])].slice(-40);
+  state.read = union('read', 'seen');
+  state.hidden = union('hidden', 'hidden');
+  state.updated ||= Date.now();
+  store(userId, state);
+  if (JSON.stringify(state) !== JSON.stringify(remote)) await push(state);
+  return true;
+}
+
+let pulled;
+/** Fetch the account's copy once per page. Resolves false if it couldn't be reached. */
+export function syncTour(userId) {
+  pulled ||= pull(userId).catch(() => false);
+  return pulled;
+}
+
+/** Tour note ids the person has read ('read') or cleared ('hidden'), on any device. */
+export const tourFlags = (userId, field) => load(userId)?.[field] || [];
+
+export function flagTourNotes(userId, field, ids) {
+  const state = load(userId);
+  if (!state) return;
+  const have = state[field] || [];
+  const fresh = ids.filter((id) => id.startsWith('tour-') && !have.includes(id));
+  if (fresh.length) save(userId, { ...state, [field]: [...have, ...fresh].slice(-40) });
+}
 
 function newRun(replay) {
   const now = new Date().toISOString();
@@ -52,7 +106,7 @@ const FINALE = STEPS[STEPS.length - 1].id;
 const handled = (state) => new Set([...state.sent.map((s) => s.id), ...state.skipped.filter((id) => id !== FINALE)]);
 const nextStep = (state) => STEPS.find((s) => !handled(state).has(s.id));
 
-// First sight of this person on this device: start the tour, or leave an invite.
+// First sight of this person anywhere: start the tour, or leave an invite.
 async function firstState(userId) {
   const { data } = await supabase.from('profiles').select('created_at').eq('id', userId).maybeSingle();
   if (!data?.created_at) return null;
@@ -63,8 +117,10 @@ async function firstState(userId) {
 
 // Adds today's note if one is due.
 async function advance(userId) {
+  const synced = await syncTour(userId);
   let state = load(userId);
   if (!state) {
+    if (!synced) return null; // can't tell whether the welcome was already sent
     state = await firstState(userId);
     if (state) save(userId, state);
     return state;
@@ -111,7 +167,7 @@ export function tourStatus(userId) {
 
 /** Start from the welcome. Running it again replays every stop, used or not. */
 export function startTour(userId) {
-  save(userId, newRun(Boolean(load(userId)?.run)));
+  return save(userId, newRun(Boolean(load(userId)?.run)));
 }
 
 /** Every remaining stop right now. Starts the tour first if it isn't running. */
@@ -138,5 +194,5 @@ export async function speedrunTour(userId) {
 /** No more tips. Ones already delivered stay in the list. */
 export function endTour(userId) {
   const state = load(userId) || {};
-  save(userId, { ...state, status: 'off', sent: state.sent || [], skipped: state.skipped || [] });
+  return save(userId, { ...state, status: 'off', sent: state.sent || [], skipped: state.skipped || [] });
 }

@@ -2,12 +2,12 @@
 // their line about that episode (js/data/<name>-notes.js; Kenny's is muffled) plus one of their 15
 // verdicts (js/data/guest-verdicts.js: 5 bad, 5 average, 5 good), picked at random but the same for
 // everyone all week. If they've already reviewed the episode, they keep that review's rating.
-import { CLUB_START } from './club.js?v=20261127211602';
-import { guestReviewsFor, characterGuest } from './guest-reviews.js?v=20261127211602';
-import { KYLE_NOTES } from './data/kyle-notes.js?v=20261127211602';
-import { CARTMAN_NOTES } from './data/cartman-notes.js?v=20261127211602';
-import { STAN_NOTES } from './data/stan-notes.js?v=20261127211602';
-import { VERDICTS } from './data/guest-verdicts.js?v=20261127211602';
+import { CLUB_START } from './club.js?v=20261128081227';
+import { guestReviewsFor, characterGuest } from './guest-reviews.js?v=20261128081227';
+import { KYLE_NOTES } from './data/kyle-notes.js?v=20261128081227';
+import { CARTMAN_NOTES } from './data/cartman-notes.js?v=20261128081227';
+import { STAN_NOTES } from './data/stan-notes.js?v=20261128081227';
+import { VERDICTS } from './data/guest-verdicts.js?v=20261128081227';
 
 const ORDER = ['kyle', 'cartman', 'stan', 'kenny'];
 

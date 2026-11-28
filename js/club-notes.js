@@ -3,10 +3,10 @@
 // Also a note when Butters likes one of your reviews (buttersLikes in js/butters.js). Not for his
 // best friends: he likes all of theirs. "Read" is remembered per person in localStorage.
 // Stan's site tour (js/tour.js) travels the same way, so its notes are merged in here too.
-import { supabase } from './supabase.js?v=20261127211602';
-import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261127211602';
-import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261127211602';
-import { tourNotes } from './tour.js?v=20261127211602';
+import { supabase } from './supabase.js?v=20261128081227';
+import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261128081227';
+import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261128081227';
+import { tourNotes, tourFlags, flagTourNotes } from './tour.js?v=20261128081227';
 
 const seenKey = (userId) => `parkboxd-club-seen-${userId}`;
 const seen = (userId) => new Set(JSON.parse(localStorage.getItem(seenKey(userId)) || '[]'));
@@ -16,8 +16,10 @@ export async function clubNotes(userId) {
   if (!userId) return [];
   const [book, likes, tour] = await Promise.all(
     [bookNotes, buttersLikeNotes, tourNotes].map((get) => get(userId).catch(() => [])));
-  const read = seen(userId);
-  return [...book, ...likes, ...tour].filter((n) => !isHiddenClubNote(userId, n.id)).map((n) => ({ ...n, read: read.has(n.id) }));
+  const read = new Set([...seen(userId), ...tourFlags(userId, 'read')]);
+  const gone = new Set(tourFlags(userId, 'hidden'));
+  return [...book, ...likes, ...tour].filter((n) => !gone.has(n.id) && !isHiddenClubNote(userId, n.id))
+    .map((n) => ({ ...n, read: read.has(n.id) }));
 }
 
 // Butters liked your review. Only reviews of 4 stars and up can qualify, so only those are fetched.
@@ -34,7 +36,7 @@ async function buttersLikeNotes(userId) {
 
 async function bookNotes(userId) {
   if (weekKey(0) < CLUB_START) return [];
-  const { loadAllEpisodes } = await import('./episodes.js?v=20261127211602');
+  const { loadAllEpisodes } = await import('./episodes.js?v=20261128081227');
   const [pk] = await loadPicks(await loadAllEpisodes(), [0]);
   if (!pk?.pick) return [];
   const title = pk.pick.title;
@@ -55,6 +57,7 @@ export function markClubNotesRead(userId, notes) {
   const read = seen(userId);
   notes.forEach((n) => read.add(n.id));
   localStorage.setItem(seenKey(userId), JSON.stringify([...read].slice(-400)));
+  flagTourNotes(userId, 'read', notes.map((n) => n.id));
 }
 
 /** "Clear all" on the notifications page: hide these notes for good. */
@@ -63,6 +66,7 @@ export function hideClubNotes(userId, notes) {
   const hidden = new Set(JSON.parse(localStorage.getItem(key) || '[]'));
   notes.forEach((n) => hidden.add(n.id));
   localStorage.setItem(key, JSON.stringify([...hidden].slice(-400)));
+  flagTourNotes(userId, 'hidden', notes.map((n) => n.id));
 }
 
 export const isHiddenClubNote = (userId, id) => JSON.parse(localStorage.getItem(`parkboxd-club-hidden-${userId}`) || '[]').includes(id);

@@ -1,14 +1,14 @@
-import { soundSwitch } from '../sfx.js?v=20261127211602';
-import { initPage, refreshBell } from '../layout.js?v=20261127211602';
-import { supabase } from '../supabase.js?v=20261127211602';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261127211602';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261127211602';
-import { loadStreaks } from '../streak.js?v=20261127211602';
-import { loadBadges, rankFor } from '../badges.js?v=20261127211602';
-import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261127211602';
-import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261127211602';
-import { tourStatus, startTour, endTour, speedrunTour } from '../tour.js?v=20261127211602';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261127211602';
+import { soundSwitch } from '../sfx.js?v=20261128081227';
+import { initPage, refreshBell } from '../layout.js?v=20261128081227';
+import { supabase } from '../supabase.js?v=20261128081227';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261128081227';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261128081227';
+import { loadStreaks } from '../streak.js?v=20261128081227';
+import { loadBadges, rankFor } from '../badges.js?v=20261128081227';
+import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261128081227';
+import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261128081227';
+import { tourStatus, startTour, endTour, speedrunTour, syncTour } from '../tour.js?v=20261128081227';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261128081227';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 
@@ -193,7 +193,7 @@ const TOUR_TEXT = {
 };
 function showTour() {
   const [text, label] = TOUR_TEXT[tourStatus(user.id)] || TOUR_TEXT.invited;
-  $('#tour-state').textContent = `${text} This setting is remembered on this device only.`;
+  $('#tour-state').textContent = text;
   $('#tour-toggle').textContent = label;
 }
 $('#tour-toggle').addEventListener('click', () => {
@@ -211,6 +211,7 @@ $('#tour-speedrun').addEventListener('click', async (e) => {
   $('#tour-state').insertAdjacentHTML('beforeend', ' <a href="notifications.html">Read it in your notifications.</a>');
   refreshBell();
 });
+await syncTour(user.id);
 showTour();
 
 // ---- Account: email, password, delete ----

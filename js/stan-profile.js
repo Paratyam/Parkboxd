@@ -2,9 +2,9 @@
 // accounts, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. His reviews also show on those episode pages (js/guest-reviews.js). Episodes are
 // matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261127211602';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261127211602';
-import { countRatings, histogramHTML } from './histogram.js?v=20261127211602';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261128081227';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261128081227';
+import { countRatings, histogramHTML } from './histogram.js?v=20261128081227';
 
 export const STAN = { username: 'stan', display_name: 'Stan Marsh', avatar_color: '#4a90e2', avatar_icon: 'mountain' };
 
@@ -112,7 +112,7 @@ export async function renderStanProfile(root) {
     </div>`;
 
   // Loaded here, not at the top: guest-reviews.js imports this file.
-  const { showProfileReviews } = await import('./guest-reviews.js?v=20261127211602');
+  const { showProfileReviews } = await import('./guest-reviews.js?v=20261128081227');
   await showProfileReviews(root.querySelector('[data-guest-list]'), 'stan', reviews.map((x) => x.ep));
   root.removeAttribute('aria-busy');
 
