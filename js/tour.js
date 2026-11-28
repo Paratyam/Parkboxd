@@ -4,7 +4,7 @@
 // used, except the finale. Members who joined before the tour existed only get an invite. State
 // (including which tour notes were read or cleared) is saved on the account (auth user metadata)
 // so it follows you across devices; localStorage is the working copy.
-import { supabase } from './supabase.js?v=20261128081859';
+import { supabase } from './supabase.js?v=20261128082231';
 
 const LAUNCH = '2026-11-27T00:00:00Z'; // accounts older than this are invited, not enrolled
 

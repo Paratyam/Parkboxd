@@ -2,16 +2,16 @@
 // The reviews live in code, not the database, so they never count toward averages. People can
 // still like and comment on them: guest_review_likes / guest_review_comments, keyed by
 // '<character>:<normalised episode title>'.
-import { supabase } from './supabase.js?v=20261128081859';
-import { esc, epCode, stars, avatarHTML, toast } from './ui.js?v=20261128081859';
-import { threadHTML, wireThread } from './comments.js?v=20261128081859';
-import { pcTalkButtonHTML, installPC } from './pc.js?v=20261128081859';
-import { thumbHTML } from './episodes.js?v=20261128081859';
-import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261128081859';
-import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261128081859';
-import { CARTMAN, RATED as C_RATED, REVIEWS as C_REVIEWS, cartmanCommentHTML } from './cartman-profile.js?v=20261128081859';
-import { KENNY, RATED as N_RATED, REVIEWS as N_REVIEWS } from './kenny-profile.js?v=20261128081859';
-import { STAN, RATED as S_RATED, REVIEWS as S_REVIEWS } from './stan-profile.js?v=20261128081859';
+import { supabase } from './supabase.js?v=20261128082231';
+import { esc, epCode, stars, avatarHTML, toast } from './ui.js?v=20261128082231';
+import { threadHTML, wireThread } from './comments.js?v=20261128082231';
+import { pcTalkButtonHTML, installPC } from './pc.js?v=20261128082231';
+import { thumbHTML } from './episodes.js?v=20261128082231';
+import { BUTTERS, RATED as B_RATED, REVIEWS as B_REVIEWS } from './butters-profile.js?v=20261128082231';
+import { KYLE, RATED as K_RATED, REVIEWS as K_REVIEWS } from './kyle-profile.js?v=20261128082231';
+import { CARTMAN, RATED as C_RATED, REVIEWS as C_REVIEWS, cartmanCommentHTML } from './cartman-profile.js?v=20261128082231';
+import { KENNY, RATED as N_RATED, REVIEWS as N_REVIEWS } from './kenny-profile.js?v=20261128082231';
+import { STAN, RATED as S_RATED, REVIEWS as S_REVIEWS } from './stan-profile.js?v=20261128082231';
 
 const norm = (s) => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
 

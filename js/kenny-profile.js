@@ -2,9 +2,9 @@
 // accounts, he isn't a real member: nothing is in the database, so his ratings never touch site
 // averages. His reviews are all muffled, and also show on those episode pages
 // (js/guest-reviews.js). Episodes are matched by title.
-import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261128081859';
-import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261128081859';
-import { countRatings, histogramHTML } from './histogram.js?v=20261128081859';
+import { esc, epCode, stars, avatarHTML, formatDate, toast } from './ui.js?v=20261128082231';
+import { loadAllEpisodes, thumbHTML } from './episodes.js?v=20261128082231';
+import { countRatings, histogramHTML } from './histogram.js?v=20261128082231';
 
 export const KENNY = { username: 'kenny', display_name: 'Kenny McCormick', avatar_color: '#f2711c', avatar_icon: 'mittens' };
 
@@ -106,7 +106,7 @@ export async function renderKennyProfile(root) {
     </div>`;
 
   // Loaded here, not at the top: guest-reviews.js imports this file.
-  const { showProfileReviews } = await import('./guest-reviews.js?v=20261128081859');
+  const { showProfileReviews } = await import('./guest-reviews.js?v=20261128082231');
   await showProfileReviews(root.querySelector('[data-guest-list]'), 'kenny', reviews.map((x) => x.ep));
   root.removeAttribute('aria-busy');
 

@@ -1,8 +1,8 @@
-// Random episode picker: unwatched, ones you rated (with a minimum), or anything.
-import { supabase } from './supabase.js?v=20261128081859';
-import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261128081859';
-import { COON_SAGA, norm } from './coon-member.js?v=20261128081859';
-import { line } from './jokes.js?v=20261128081859';
+// Random episode picker: unwatched, your watchlist, ones you rated (with a minimum), or anything.
+import { supabase } from './supabase.js?v=20261128082231';
+import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261128082231';
+import { COON_SAGA, norm } from './coon-member.js?v=20261128082231';
+import { line } from './jokes.js?v=20261128082231';
 
 const KEY = 'parkboxd-random';
 const DEFAULTS = { pool: 'unwatched', min: 0, kinds: ['episode'], season: '' };
@@ -11,14 +11,28 @@ export function savedSettings() {
   try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { return { ...DEFAULTS }; }
 }
 
+async function myWatchlist(userId) {
+  const { data, error } = await supabase.from('watchlist').select('episode_id').eq('user_id', userId);
+  if (error) throw error;
+  return new Set(data.map((r) => r.episode_id));
+}
+
 /** Pick an episode for these settings. Returns { ep } or { message }. */
 export async function roll(settings) {
   const { data: { user } } = await supabase.auth.getUser();
-  const [all, mine] = await Promise.all([loadAllEpisodes(), myLogMap(user.id)]);
-  const pool = all.filter((e) => {
+  if (!user && settings.pool === 'watchlist') return { message: 'Log in to roll from your watchlist.' };
+  if (!user && settings.pool === 'rated') return { message: "Log in to roll from episodes you've rated." };
+  const [all, mine, saved] = await Promise.all([
+    loadAllEpisodes(),
+    user ? myLogMap(user.id) : new Map(),
+    settings.pool === 'watchlist' ? myWatchlist(user.id) : null,
+  ]);
+  if (saved && !saved.size) return { message: 'Your watchlist is empty. Hit "Watchlist" on any episode page to save some for later.' };
+  let pool = all.filter((e) => {
     if (!isAired(e) || !settings.kinds.includes(e.kind)) return false;
     if (settings.season && String(e.season) !== String(settings.season)) return false;
     if (settings.pool === 'unwatched') return !mine.has(e.id);
+    if (saved) return saved.has(e.id);
     if (settings.pool === 'rated') {
       const r = mine.get(e.id)?.rating;
       return r != null && r >= settings.min;
@@ -26,8 +40,12 @@ export async function roll(settings) {
     return true;
   });
   if (!pool.length) {
+    if (saved) return { message: 'Nothing on your watchlist matches. Try ticking more types or picking "Any season".' };
     return { message: settings.pool === 'unwatched' ? line('allSeen') : settings.pool === 'rated' ? line('noFavs') : line('searchEmpty') };
   }
+  // A short watchlist shouldn't keep landing on the episode you're already on.
+  const here = new URLSearchParams(location.search).get('id');
+  if (saved && pool.length > 1) pool = pool.filter((e) => String(e.id) !== here);
   return { ep: pool[Math.floor(Math.random() * pool.length)], count: pool.length };
 }
 
@@ -71,7 +89,7 @@ export async function openRandomPicker() {
       <fieldset class="field" style="border:0;padding:0;margin:0">
         <legend style="font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:8px">Pick from</legend>
         <div class="chips" role="radiogroup">
-          ${[['unwatched', "Haven't seen"], ['rated', "I've rated"], ['any', 'Anything']].map(([v, l]) =>
+          ${[['unwatched', "Haven't seen"], ['watchlist', 'My watchlist'],['rated', "I've rated"], ['any', 'Anything']].map(([v, l]) =>
             `<label class="chip" style="cursor:pointer"><input type="radio" name="pool" value="${v}" ${s.pool === v ? 'checked' : ''} class="visually-hidden">${l}</label>`).join('')}
         </div>
       </fieldset>
