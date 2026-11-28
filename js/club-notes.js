@@ -4,11 +4,11 @@
 // best friends: he likes all of theirs. "Read" is remembered per person in localStorage.
 // The same for Cartman's and Kenny's rare visits (js/visits.js).
 // Stan's site tour (js/tour.js) travels the same way, so its notes are merged in here too.
-import { supabase } from './supabase.js?v=20261128085740';
-import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261128085740';
-import { cartmanVisits, kennyVisits } from './visits.js?v=20261128085740';
-import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261128085740';
-import { tourNotes, tourFlags, flagTourNotes } from './tour.js?v=20261128085740';
+import { supabase } from './supabase.js?v=20261128090606';
+import { buttersLikes, BEST_FRIENDS } from './butters.js?v=20261128090606';
+import { cartmanVisits, kennyVisits, buttersVisits } from './visits.js?v=20261128090606';
+import { loadPicks, weekKey, CLUB_START } from './club.js?v=20261128090606';
+import { tourNotes, tourFlags, flagTourNotes } from './tour.js?v=20261128090606';
 
 const seenKey = (userId) => `parkboxd-club-seen-${userId}`;
 const seen = (userId) => new Set(JSON.parse(localStorage.getItem(seenKey(userId)) || '[]'));
@@ -36,7 +36,7 @@ async function buttersLikeNotes(userId) {
   }));
 }
 
-// Cartman commented on your review, or Kenny liked it and commented.
+// Cartman or Butters commented on your review, or Kenny liked it and commented.
 async function visitNotes(userId) {
   const { data } = await supabase.from('logs')
     .select('id, review, created_at, episodes(title), profiles!logs_user_id_fkey(username)')
@@ -48,13 +48,14 @@ async function visitNotes(userId) {
     return [
       cartmanVisits(r) && note('cartman', `😠 Cartman commented on your review of “${title}”. It isn't nice.`),
       kennyVisits(r) && note('kenny', `🧡 Kenny liked your review of “${title}” and commented. Mmph!`),
+      buttersVisits(r) && note('butters', `🍔 Butters commented on your review of “${title}”. Gee whiz!`),
     ].filter(Boolean);
   });
 }
 
 async function bookNotes(userId) {
   if (weekKey(0) < CLUB_START) return [];
-  const { loadAllEpisodes } = await import('./episodes.js?v=20261128085740');
+  const { loadAllEpisodes } = await import('./episodes.js?v=20261128090606');
   const [pk] = await loadPicks(await loadAllEpisodes(), [0]);
   if (!pk?.pick) return [];
   const title = pk.pick.title;

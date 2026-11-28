@@ -894,3 +894,7 @@ grant update (flair_off, badges_seen) on public.profiles to authenticated;
 -- The Bookworm gold library card can be switched off too (27 Nov 2026).
 alter table public.profiles drop constraint if exists profiles_flair_off_check;
 alter table public.profiles add constraint profiles_flair_off_check check (flair_off <@ array['ring','crown','critic','spicy','bookworm']);
+
+-- Replies to a character's visit comment (28 Nov 2026). The visit itself lives in code
+-- (js/visits.js), so the reply names the character instead of pointing at a parent row.
+alter table public.comments add column if not exists reply_character text check (reply_character in ('cartman', 'kenny', 'butters'));

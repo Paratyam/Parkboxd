@@ -1,14 +1,15 @@
 // messages.html?u=name: direct messages. You can only message people who follow you back
 // (the database enforces it too). The open conversation checks for new messages every few seconds.
-import { initPage, refreshMail } from '../layout.js?v=20261128085740';
-import { supabase } from '../supabase.js?v=20261128085740';
-import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261128085740';
-import { loadAllEpisodes } from '../episodes.js?v=20261128085740';
-import { loadStreaks, plantSVG } from '../streak.js?v=20261128085740';
-import { messageHTML, previewText } from '../dm-cards.js?v=20261128085740';
-import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261128085740';
+import { initPage, refreshMail } from '../layout.js?v=20261128090606';
+import { characterChat, markCharacterRead } from '../character-follows.js?v=20261128090606';
+import { supabase } from '../supabase.js?v=20261128090606';
+import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261128090606';
+import { loadAllEpisodes } from '../episodes.js?v=20261128090606';
+import { loadStreaks, plantSVG } from '../streak.js?v=20261128090606';
+import { messageHTML, previewText } from '../dm-cards.js?v=20261128090606';
+import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261128090606';
 
-const { user } = await initPage({ title: 'Messages', auth: 'required' });
+const { user, profile } = await initPage({ title: 'Messages', auth: 'required' });
 const root = $('#messages');
 const me = user.id;
 let withName = (params.get('u') || '').toLowerCase();
@@ -60,7 +61,10 @@ async function render() {
   const convos = people.map((p) => {
     const mine = msgs.filter((m) => other(m) === p.id);
     return { p, last: mine[0], unread: mine.filter((m) => m.recipient_id === me && !m.read).length };
-  }).sort((a, b) => (b.last?.created_at || '').localeCompare(a.last?.created_at || '') || (a.p.display_name || a.p.username).localeCompare(b.p.display_name || b.p.username));
+  });
+  const chat = characterChat(me, profile?.username);
+  if (chat) convos.push(chat);
+  convos.sort((a, b) => (b.last?.created_at || '').localeCompare(a.last?.created_at || '') || (a.p.display_name || a.p.username).localeCompare(b.p.display_name || b.p.username));
 
   // Who's open: ?u=name, else the most recent conversation.
   let current = convos.find((c) => c.p.username === withName)?.p || null;
@@ -98,7 +102,7 @@ async function render() {
             <p>${notMutual.iFollow ? '' : 'You need to follow them. '}${notMutual.theyFollow ? '' : 'They need to follow you back. '}Messages are only for people who follow each other.</p>
             <a class="btn btn-ghost" href="profile.html?u=${encodeURIComponent(notMutual.p.username)}">Go to their profile</a>
           </div>`
-          : current ? threadHTML(current, msgs.filter((m) => other(m) === current.id).reverse())
+          : current ? threadHTML(current, current.character ? [chat.last] : msgs.filter((m) => other(m) === current.id).reverse())
             : '<div class="dm-empty"><p>Pick someone to start talking.</p></div>'}
       </section>
     </div>`;
@@ -119,16 +123,22 @@ function threadHTML(p, list) {
     <ol class="dm-bubbles" id="dm-bubbles">${list.length ? list.map((m) => `
       <li class="${m.sender_id === me ? 'mine' : 'theirs'}">${messageHTML(m.body, byId)}<time datetime="${esc(m.created_at)}">${ago(m.created_at)}</time></li>`).join('')
       : `<li class="dm-start">This is the start of your conversation with ${esc(p.display_name || p.username)}. Don't make it weird.</li>`}</ol>
-    <form class="dm-compose" id="dm-compose" autocomplete="off">
+    ${p.character ? '<p class="result-count" style="padding:12px;margin:0">Character accounts don\'t read replies.</p>' : `<form class="dm-compose" id="dm-compose" autocomplete="off">
       <label class="visually-hidden" for="dm-text">Message ${esc(p.display_name || p.username)}</label>
       <textarea id="dm-text" rows="1" maxlength="2000" placeholder="Message ${esc(p.display_name || p.username)}…"></textarea>
       <button type="submit" class="btn btn-green">Send</button>
-    </form>`;
+    </form>`}`;
 }
 
 async function wireThread(p) {
   const box = $('#dm-bubbles');
   box.scrollTop = box.scrollHeight;
+  if (p.character) {
+    clearInterval(poll);
+    markCharacterRead(me);
+    refreshMail();
+    return;
+  }
   // Opening the conversation reads it.
   await supabase.from('messages').update({ read: true }).eq('recipient_id', me).eq('sender_id', p.id).eq('read', false);
   refreshMail();

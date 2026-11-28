@@ -1,8 +1,8 @@
 // Mr. Garrison's Report Card: every season gets a letter grade from your ratings.
-import { SITE_LINK } from './config.js?v=20261128085740';
-import { showPicture } from './share.js?v=20261128085740';
-import { reportCardMessage } from './share-text.js?v=20261128085740';
-import { esc, stars, toast } from './ui.js?v=20261128085740';
+import { SITE_LINK } from './config.js?v=20261128090606';
+import { showPicture } from './share.js?v=20261128090606';
+import { reportCardMessage } from './share-text.js?v=20261128090606';
+import { esc, stars, toast } from './ui.js?v=20261128090606';
 
 // Season averages bunch up between 3 and 4, so the scale is set around that: 4.2+ is
 // already exceptional across a whole season, and 3.0 is a perfectly fine season.

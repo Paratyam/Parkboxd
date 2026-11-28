@@ -1,12 +1,13 @@
 // friends.html?u=name&tab=following|followers|everyone
-import { CHARACTERS } from '../characters.js?v=20261128085740';
-import { initPage } from '../layout.js?v=20261128085740';
-import { supabase } from '../supabase.js?v=20261128085740';
-import { SITE_NAME } from '../config.js?v=20261128085740';
-import { $, esc, params, avatarHTML } from '../ui.js?v=20261128085740';
-import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261128085740';
-import { line } from '../jokes.js?v=20261128085740';
-import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261128085740';
+import { CHARACTERS } from '../characters.js?v=20261128090606';
+import { characterFollowers } from '../character-follows.js?v=20261128090606';
+import { initPage } from '../layout.js?v=20261128090606';
+import { supabase } from '../supabase.js?v=20261128090606';
+import { SITE_NAME } from '../config.js?v=20261128090606';
+import { $, esc, params, avatarHTML } from '../ui.js?v=20261128090606';
+import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261128090606';
+import { line } from '../jokes.js?v=20261128090606';
+import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261128090606';
 
 const { profile: me } = await initPage({ title: 'Friends', auth: 'required' });
 const root = $('#friends');
@@ -34,6 +35,7 @@ async function render() {
   const statsBy = new Map((stats || []).map((s) => [s.user_id, s]));
   const following = (follows || []).filter((f) => f.follower_id === person.id).map((f) => byId.get(f.followee_id)).filter(Boolean);
   const followers = (follows || []).filter((f) => f.followee_id === person.id).map((f) => byId.get(f.follower_id)).filter(Boolean);
+  followers.push(...CHARACTERS.filter((c) => characterFollowers(person.username).includes(c.username)));
   const everyone = [...people.filter((p) => p.id !== me.id), ...CHARACTERS];
 
   if (!tab) tab = isMe && !following.length ? 'everyone' : 'following';
