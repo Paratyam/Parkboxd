@@ -259,3 +259,9 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - Character profiles have a row of all five faces at the top for switching between them (`js/gang-switcher.js`)
 - Book Club weekly guest (`js/club-guest.js`): Kyle, Cartman, Stan, Kenny take turns (from the club's first week) with a card under Butters' review: their line about the episode (`js/data/{kyle,cartman,stan}-notes.js`, one per episode like Butters'; Kenny's is generated muffling; add lines when new episodes air) plus one of 15 verdicts (`js/data/guest-verdicts.js`, 5 bad/average/good), seeded by week; an existing character review of that episode fixes the rating; like and comment via the guest review tables
 - The five character accounts show up in the header search (People) and on Friends → Find people, listed in `js/characters.js` (a new character needs a line there)
+
+## Cartman and Kenny drop by (28 Nov 2026)
+- `js/visits.js`: on 1 in 500 member reviews (with text) Cartman leaves a short, foul-mouthed comment with one of his catchphrases; separately, on 1 in 500 Kenny likes the review and leaves a muffled comment. 1 in 10 instead for Cartman on `eliyagos`'s reviews and for Kenny on `itai`'s
+- Browser only (no database): picked from the review id, so it is decided once per review and applies to older reviews too
+- Shows in the like and comment counts, the thread and "Liked by" on review.html, and as a notification for the review's author (`js/club-notes.js`). Their comments can't be replied to or deleted
+- Keep insult lines free of slurs, protected traits and gendered words

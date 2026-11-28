@@ -1,13 +1,14 @@
 // review.html?id=LOG_ID: one review with its likes and comments.
-import { initPage } from '../layout.js?v=20261128085136';
-import { supabase } from '../supabase.js?v=20261128085136';
-import { SITE_NAME } from '../config.js?v=20261128085136';
-import { $, esc, params, avatarHTML, notify, toast } from '../ui.js?v=20261128085136';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261128085136';
-import { line } from '../jokes.js?v=20261128085136';
-import { episodeAverages } from '../insights.js?v=20261128085136';
-import { buttersLikes } from '../butters.js?v=20261128085136';
-import { threadHTML, wireThread } from '../comments.js?v=20261128085136';
+import { initPage } from '../layout.js?v=20261128085740';
+import { supabase } from '../supabase.js?v=20261128085740';
+import { SITE_NAME } from '../config.js?v=20261128085740';
+import { $, esc, params, avatarHTML, notify, toast } from '../ui.js?v=20261128085740';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261128085740';
+import { line } from '../jokes.js?v=20261128085740';
+import { episodeAverages } from '../insights.js?v=20261128085740';
+import { buttersLikes } from '../butters.js?v=20261128085740';
+import { threadHTML, wireThread } from '../comments.js?v=20261128085740';
+import { kennyVisits, visitComments } from '../visits.js?v=20261128085740';
 
 const { user } = await initPage({ title: 'Review', auth: 'required' });
 const root = $('#review');
@@ -28,9 +29,11 @@ async function render() {
   const who = r.profiles?.display_name || r.profiles?.username;
   document.title = `${who} on ${r.episodes.title} · ${SITE_NAME}`;
   const reviewOwner = r.user_id === user.id;
+  const thread = [...(comments || []), ...visitComments(r)].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
   const { data: likers } = await supabase.from('review_likes').select('profiles(username, display_name)').eq('log_id', id).limit(20);
   const likerNames = (likers || []).map((l) => l.profiles).filter(Boolean);
+  if (kennyVisits(r)) likerNames.unshift({ username: 'kenny', display_name: 'Kenny' });
   if (buttersLikes(r)) likerNames.unshift({ username: 'butters', display_name: 'Butters' });
 
   root.innerHTML = `
@@ -40,8 +43,8 @@ async function render() {
       `<a href="profile.html?u=${encodeURIComponent(p.username)}">${esc(p.display_name || p.username)}</a>`).join(', ')}</p>` : ''}
 
     <section>
-      <div class="section-head"><h2>${(comments || []).length} ${(comments || []).length === 1 ? 'comment' : 'comments'}</h2></div>
-      ${comments?.length ? threadHTML(comments, { me: user.id, canModerate: reviewOwner }) : `<p class="empty">${esc(line('commentsEmpty'))}</p>`}
+      <div class="section-head"><h2>${thread.length} ${thread.length === 1 ? 'comment' : 'comments'}</h2></div>
+      ${thread.length ? threadHTML(thread, { me: user.id, canModerate: reviewOwner }) : `<p class="empty">${esc(line('commentsEmpty'))}</p>`}
     </section>
 
     <form class="form" id="comment-form" novalidate>

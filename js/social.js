@@ -1,12 +1,13 @@
 // Follows, review likes and the shared review block.
-import { supabase } from './supabase.js?v=20261128085136';
-import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261128085136';
-import { thumbHTML } from './episodes.js?v=20261128085136';
-import { line } from './jokes.js?v=20261128085136';
-import { isHotTake } from './insights.js?v=20261128085136';
-import { buttersLikes } from './butters.js?v=20261128085136';
-import './share.js?v=20261128085136';
-import { pcButtonHTML, installPC } from './pc.js?v=20261128085136';
+import { supabase } from './supabase.js?v=20261128085740';
+import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261128085740';
+import { thumbHTML } from './episodes.js?v=20261128085740';
+import { line } from './jokes.js?v=20261128085740';
+import { isHotTake } from './insights.js?v=20261128085740';
+import { buttersLikes } from './butters.js?v=20261128085740';
+import { kennyVisits, visitComments } from './visits.js?v=20261128085740';
+import './share.js?v=20261128085740';
+import { pcButtonHTML, installPC } from './pc.js?v=20261128085740';
 
 installPC(); // PC Principal's "PC it" toggle on review cards
 
@@ -37,7 +38,7 @@ export function wireFollowButtons(root, onChange) {
     b.setAttribute('aria-pressed', String(!following));
     b.textContent = following ? 'Follow' : 'Following';
     b.className = `btn ${following ? 'btn-green' : 'btn-ghost'}`;
-    if (!following) import('./rewards.js?v=20261128085136').then((m) => m.followReward()).catch(() => {});
+    if (!following) import('./rewards.js?v=20261128085740').then((m) => m.followReward()).catch(() => {});
     onChange?.();
   }));
 }
@@ -68,8 +69,9 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 export function reviewHTML(r, { me, extras, friends, avgs, showEpisode = false, full = false } = {}) {
   const hot = isHotTake(r.rating, avgs?.get(r.episode_id ?? r.episodes?.id));
   // Butters (built-in, not a real member) adds a like to some reviews: see buttersLikes().
-  const likes = (extras?.likes.get(r.id) || 0) + (buttersLikes(r) ? 1 : 0);
-  const comments = extras?.comments.get(r.id) || 0;
+  // Cartman and Kenny drop by on rare reviews: see visits.js.
+  const likes = (extras?.likes.get(r.id) || 0) + (buttersLikes(r) ? 1 : 0) + (kennyVisits(r) ? 1 : 0);
+  const comments = (extras?.comments.get(r.id) || 0) + visitComments(r).length;
   const liked = extras?.mine.has(r.id);
   const own = r.user_id === me;
   const text = !full && r.review.length > 400 ? `${r.review.slice(0, 400)}…` : r.review;
@@ -126,7 +128,7 @@ export function wireReviewLikes(root, onChange) {
       .select('*, episodes(id, kind, season, number, title, air_date, still_path)').eq('id', Number(b.dataset.editReview)).maybeSingle();
     b.disabled = false;
     if (error || !log) return alert(error?.message || "Couldn't find that review.");
-    const { logEpisode } = await import('./layout.js?v=20261128085136');
+    const { logEpisode } = await import('./layout.js?v=20261128085740');
     const changed = await logEpisode({ episode: log.episodes, log });
     if (changed) onChange?.();
   }));

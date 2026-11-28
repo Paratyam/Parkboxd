@@ -1,9 +1,11 @@
 // notifications.html: who followed you, liked your reviews, or commented on them.
-import { initPage, refreshBell } from '../layout.js?v=20261128085136';
-import { supabase } from '../supabase.js?v=20261128085136';
-import { $, esc, avatarHTML, stars } from '../ui.js?v=20261128085136';
-import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261128085136';
-import { tourStatus, startTour, endTour, speedrunTour, syncTour } from '../tour.js?v=20261128085136';
+import { initPage, refreshBell } from '../layout.js?v=20261128085740';
+import { supabase } from '../supabase.js?v=20261128085740';
+import { $, esc, avatarHTML, stars } from '../ui.js?v=20261128085740';
+import { clubNotes, markClubNotesRead, hideClubNotes } from '../club-notes.js?v=20261128085740';
+import { CARTMAN } from '../cartman-profile.js?v=20261128085740';
+import { KENNY } from '../kenny-profile.js?v=20261128085740';
+import { tourStatus, startTour, endTour, speedrunTour, syncTour } from '../tour.js?v=20261128085740';
 
 const { user } = await initPage({ title: 'Notifications', auth: 'required' });
 const root = $('#notifs');
@@ -35,7 +37,8 @@ async function render() {
   const club = await clubNotes(user.id);
   const BUTTERS = { display_name: 'Butters', avatar_color: '#f5c518', avatar_icon: 'books' };
   const STAN = { display_name: 'Stan', avatar_color: '#8a5a3b', avatar_icon: 'beanie' };
-  const items = [...(dbItems || []), ...club.map((n) => ({ ...n, type: 'club', actor: n.from === 'stan' ? STAN : BUTTERS }))]
+  const FROM = { stan: STAN, cartman: CARTMAN, kenny: KENNY };
+  const items = [...(dbItems || []), ...club.map((n) => ({ ...n, type: 'club', actor: FROM[n.from] || BUTTERS }))]
     .sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
 
   const line = (n) => {

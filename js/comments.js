@@ -1,14 +1,16 @@
 // Comment threads with replies, shared by review pages (comments) and Butters' Book Club
 // review (butters_comments). Replies show one level deep: a reply to a reply joins the same
 // thread under the top comment, with an "@name" so it's clear who's being answered.
-import { supabase } from './supabase.js?v=20261128085136';
-import { esc, avatarHTML, toast } from './ui.js?v=20261128085136';
+import { supabase } from './supabase.js?v=20261128085740';
+import { esc, avatarHTML, toast } from './ui.js?v=20261128085740';
+import { pcTalkButtonHTML } from './pc.js?v=20261128085740';
 
 const when = (iso) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 
 /**
  * threadHTML(comments, { me, canModerate }) -> HTML for an <ol class="comments">.
- *   comments: rows with id, user_id, parent_id, body, created_at, profiles(...)
+ *   comments: rows with id, user_id, parent_id, body, created_at, profiles(...). A row with
+ *   `character` (a username, from visits.js) isn't in the database: no Reply / Edit / Delete.
  *   canModerate: the viewer may delete anyone's comment here (e.g. it's their review)
  */
 export function threadHTML(comments, { me, canModerate = false } = {}) {
@@ -29,13 +31,14 @@ export function threadHTML(comments, { me, canModerate = false } = {}) {
         <div class="body">
           <div class="meta">
             <a href="profile.html?u=${encodeURIComponent(c.profiles?.username || '')}"><strong>${esc(c.profiles?.display_name || c.profiles?.username)}</strong></a>
+            ${c.character ? '<span class="guest-tag">Character</span>' : ''}
             <time datetime="${esc(c.created_at)}">${esc(when(c.created_at))}</time>
-            <button type="button" class="link-button" data-reply="${c.id}" style="font-size:12px">Reply</button>
-            ${c.user_id === me ? `<button type="button" class="link-button" data-edit="${c.id}" style="font-size:12px">Edit</button>` : ''}
-            ${c.user_id === me || canModerate ? `<button type="button" class="link-button" data-delete="${c.id}" style="font-size:12px">Delete</button>` : ''}
+            ${c.character ? '' : `<button type="button" class="link-button" data-reply="${c.id}" style="font-size:12px">Reply</button>`}
+            ${!c.character && c.user_id === me ? `<button type="button" class="link-button" data-edit="${c.id}" style="font-size:12px">Edit</button>` : ''}
+            ${!c.character && (c.user_id === me || canModerate) ? `<button type="button" class="link-button" data-delete="${c.id}" style="font-size:12px">Delete</button>` : ''}
           </div>
           <p data-body="${c.id}">${to}${esc(c.body)}</p>
-          <div class="reply-box" data-reply-box="${c.id}"></div>
+          ${c.character ? pcTalkButtonHTML(c.character, c.body) : `<div class="reply-box" data-reply-box="${c.id}"></div>`}
         </div>
       </li>`;
   };
