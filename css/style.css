@@ -468,6 +468,44 @@ select { width: auto; }
 }
 .log-dialog .actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
 .log-dialog .actions .spacer { flex: 1; }
+
+/* ---- Random picker: Chef's menu ---- */
+.rand-panel { display: flex; flex-direction: column; gap: 16px; }
+.rand-panel[hidden], #rand-roll[hidden] { display: none; }
+.chef-dishes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.chef-dish {
+  display: flex; gap: 10px; align-items: center; text-align: left; cursor: pointer; padding: 10px; border-radius: 4px;
+  background: #f5edd8; color: #222; border: 2px solid #222; font-family: var(--font-body);
+}
+.chef-dish:hover { background: #fff8e6; }
+.chef-dish[aria-pressed="true"] { background: var(--yellow); }
+.chef-dish .emoji { font-size: 22px; }
+.chef-dish strong { display: block; font-size: 13px; line-height: 1.25; }
+.chef-dish small { display: block; font-size: 11px; margin-top: 2px; }
+.chef-table { display: flex; flex-direction: column; gap: 12px; }
+.chef-table:empty { display: none; }
+.chef-wait { margin: 0; text-align: center; color: var(--text-soft); }
+.chef-plate { position: relative; overflow: hidden; min-height: 150px; flex: 0 0 auto; display: flex; align-items: flex-end; justify-content: center; }
+.chef-food {
+  width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 3px; text-align: center; padding: 18px 14px;
+  background: #f5edd8; color: #222; border: 3px solid #222; border-radius: 6px 6px 40px 40px; overflow-wrap: anywhere;
+}
+.chef-food strong { font-size: 18px; }
+.chef-food small { font-weight: 600; }
+.chef-food span { font-size: 13px; }
+/* The paper lid starts over the plate, then lifts away. */
+.chef-lid {
+  position: absolute; left: 4%; right: 4%; bottom: 0; height: 135px; background: #aab6c2; border: 3px solid #222;
+  border-radius: 50% 50% 6px 6px / 70% 70% 6px 6px; pointer-events: none; animation: chef-lift .6s .5s ease-in forwards;
+}
+.chef-lid::before {
+  content: ''; position: absolute; left: calc(50% - 11px); top: -2px; width: 16px; height: 12px;
+  background: var(--yellow); border: 3px solid #222; border-radius: 8px;
+}
+@keyframes chef-lift { to { transform: translateY(-200px) rotate(-8deg); visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .chef-lid { display: none; } }
+@media (max-width: 420px) { .chef-dish { gap: 6px; padding: 8px 6px; } .chef-dish .emoji { font-size: 18px; } }
+.chef-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .like-toggle {
   background: transparent; border: 2px solid var(--line-2); color: var(--muted); border-radius: 999px; padding: 6px 14px;
   font: 700 13px var(--font-body); cursor: pointer; display: inline-flex; gap: 6px; align-items: center;

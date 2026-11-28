@@ -114,6 +114,7 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - After Part 5:
   - Character focus tags: `js/data/character-tags.js` (185 hand-picked episodes → main character), applied from the Admin page; "Episodes about" quick filter on Episodes. TMDB titles differ for a few (e.g. "Cartoon Wars (1)", "Go God Go XII (2)", "The Simpsons Already Did It")
   - Random episode picker (`js/random.js`): 🎲 in the header, home hero and sidebar. Pick from unwatched / your watchlist / rated (with a minimum) / anything, episodes/specials/movies, one season; "Roll again" on the episode it lands on. Settings remembered in localStorage
+  - Chef's menu (`js/chef.js`): second tab of the picker with eight dishes (Cartman / Butters / Randy episodes, Fan favorite, Hidden gem, Leftovers = watchlist, Spicy, Today's special), an "Only ones I haven't seen" box, a lid-lifting plate, "Watch it" / "Send it back". Hidden gem = the least-rated third of episodes averaging 4★+ (2+ ratings), compared with each other
   - Jokes (`js/jokes.js`): rating reactions as toasts based on character tags (e.g. Kenny episode rated 1★), show-style empty states, loading lines, confirms and errors. All copy lives in that one file
 - Fun batch (live, waiting for the owner to test):
   - Forgot password: link on the log-in form → `resetPasswordForEmail` → `reset.html` sets the new password. Uses Supabase's built-in email (rate-limited on the free tier)

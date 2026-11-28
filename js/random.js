@@ -1,8 +1,9 @@
 // Random episode picker: unwatched, your watchlist, ones you rated (with a minimum), or anything.
-import { supabase } from './supabase.js?v=20261128082231';
-import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261128082231';
-import { COON_SAGA, norm } from './coon-member.js?v=20261128082231';
-import { line } from './jokes.js?v=20261128082231';
+import { supabase } from './supabase.js?v=20261128083817';
+import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261128083817';
+import { COON_SAGA, norm } from './coon-member.js?v=20261128083817';
+import { line } from './jokes.js?v=20261128083817';
+import { mountMenu } from './chef.js?v=20261128083817';
 
 const KEY = 'parkboxd-random';
 const DEFAULTS = { pool: 'unwatched', min: 0, kinds: ['episode'], season: '' };
@@ -86,6 +87,11 @@ export async function openRandomPicker() {
   d.innerHTML = `
     <form class="sheet paper" novalidate>
       <h2 class="cut" id="rand-title">Random episode</h2>
+      <div class="chips">
+        <button type="button" class="chip" data-tab="filters" aria-pressed="true">🎲 Roll the dice</button>
+        <button type="button" class="chip" data-tab="menu" aria-pressed="false">🍽️ Chef's menu</button>
+      </div>
+      <div class="rand-panel" id="rand-filters">
       <fieldset class="field" style="border:0;padding:0;margin:0">
         <legend style="font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:8px">Pick from</legend>
         <div class="chips" role="radiogroup">
@@ -108,9 +114,11 @@ export async function openRandomPicker() {
         <select id="rand-season"><option value="">Any season</option>${seasons.map((n) => `<option value="${n}" ${String(s.season) === String(n) ? 'selected' : ''}>Season ${n}</option>`).join('')}</select>
       </div>
       <p class="notice" id="rand-msg" hidden></p>
+      </div>
+      <div class="rand-panel" id="rand-menu" hidden></div>
       <div class="actions">
         <button type="button" class="btn btn-ghost" data-close>Cancel</button>
-        <button type="submit" class="btn btn-green">🎲 Roll</button>
+        <button type="submit" class="btn btn-green" id="rand-roll">🎲 Roll</button>
       </div>
     </form>`;
 
@@ -123,9 +131,18 @@ export async function openRandomPicker() {
   d.querySelectorAll('input[name="pool"]').forEach((r) => r.addEventListener('change', sync));
   sync();
   $d('[data-close]').onclick = () => d.close();
+  mountMenu($d('#rand-menu'));
+  d.querySelectorAll('[data-tab]').forEach((tab) => tab.addEventListener('click', () => {
+    const menu = tab.dataset.tab === 'menu';
+    d.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-pressed', String(b === tab)));
+    $d('#rand-filters').hidden = menu;
+    $d('#rand-menu').hidden = !menu;
+    $d('#rand-roll').hidden = menu;
+  }));
 
   d.querySelector('form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if ($d('#rand-filters').hidden) return;
     const settings = {
       pool: $d('input[name="pool"]:checked').value,
       min: Number($d('#rand-min').value),
