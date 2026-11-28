@@ -1,9 +1,9 @@
-// Random episode picker: unwatched, your watchlist, ones you rated (with a minimum), or anything.
-import { supabase } from './supabase.js?v=20261128083817';
-import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261128083817';
-import { COON_SAGA, norm } from './coon-member.js?v=20261128083817';
-import { line } from './jokes.js?v=20261128083817';
-import { mountMenu } from './chef.js?v=20261128083817';
+// Random episodes: the Chef's menu picker, the home page's quick rolls and Chaos mode.
+import { supabase } from './supabase.js?v=20261128084148';
+import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261128084148';
+import { COON_SAGA, norm } from './coon-member.js?v=20261128084148';
+import { line } from './jokes.js?v=20261128084148';
+import { mountMenu } from './chef.js?v=20261128084148';
 
 const KEY = 'parkboxd-random';
 const DEFAULTS = { pool: 'unwatched', min: 0, kinds: ['episode'], season: '' };
@@ -12,28 +12,18 @@ export function savedSettings() {
   try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { return { ...DEFAULTS }; }
 }
 
-async function myWatchlist(userId) {
-  const { data, error } = await supabase.from('watchlist').select('episode_id').eq('user_id', userId);
-  if (error) throw error;
-  return new Set(data.map((r) => r.episode_id));
-}
-
 /** Pick an episode for these settings. Returns { ep } or { message }. */
 export async function roll(settings) {
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user && settings.pool === 'watchlist') return { message: 'Log in to roll from your watchlist.' };
   if (!user && settings.pool === 'rated') return { message: "Log in to roll from episodes you've rated." };
-  const [all, mine, saved] = await Promise.all([
+  const [all, mine] = await Promise.all([
     loadAllEpisodes(),
     user ? myLogMap(user.id) : new Map(),
-    settings.pool === 'watchlist' ? myWatchlist(user.id) : null,
   ]);
-  if (saved && !saved.size) return { message: 'Your watchlist is empty. Hit "Watchlist" on any episode page to save some for later.' };
   let pool = all.filter((e) => {
     if (!isAired(e) || !settings.kinds.includes(e.kind)) return false;
     if (settings.season && String(e.season) !== String(settings.season)) return false;
     if (settings.pool === 'unwatched') return !mine.has(e.id);
-    if (saved) return saved.has(e.id);
     if (settings.pool === 'rated') {
       const r = mine.get(e.id)?.rating;
       return r != null && r >= settings.min;
@@ -41,12 +31,8 @@ export async function roll(settings) {
     return true;
   });
   if (!pool.length) {
-    if (saved) return { message: 'Nothing on your watchlist matches. Try ticking more types or picking "Any season".' };
     return { message: settings.pool === 'unwatched' ? line('allSeen') : settings.pool === 'rated' ? line('noFavs') : line('searchEmpty') };
   }
-  // A short watchlist shouldn't keep landing on the episode you're already on.
-  const here = new URLSearchParams(location.search).get('id');
-  if (saved && pool.length > 1) pool = pool.filter((e) => String(e.id) !== here);
   return { ep: pool[Math.floor(Math.random() * pool.length)], count: pool.length };
 }
 
@@ -73,10 +59,6 @@ export async function rollAndGo(settings, onMessage) {
 
 export async function openRandomPicker() {
   if (coonRules() && await rollCoon()) return;
-  const s = savedSettings();
-  const all = await loadAllEpisodes();
-  const seasons = [...new Set(all.filter((e) => e.kind === 'episode').map((e) => e.season))].sort((a, b) => a - b);
-
   const d = document.createElement('dialog');
   d.className = 'log-dialog';
   d.setAttribute('aria-labelledby', 'rand-title');
@@ -85,75 +67,16 @@ export async function openRandomPicker() {
   d.addEventListener('close', () => d.remove());
 
   d.innerHTML = `
-    <form class="sheet paper" novalidate>
-      <h2 class="cut" id="rand-title">Random episode</h2>
-      <div class="chips">
-        <button type="button" class="chip" data-tab="filters" aria-pressed="true">🎲 Roll the dice</button>
-        <button type="button" class="chip" data-tab="menu" aria-pressed="false">🍽️ Chef's menu</button>
-      </div>
-      <div class="rand-panel" id="rand-filters">
-      <fieldset class="field" style="border:0;padding:0;margin:0">
-        <legend style="font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:8px">Pick from</legend>
-        <div class="chips" role="radiogroup">
-          ${[['unwatched', "Haven't seen"], ['watchlist', 'My watchlist'],['rated', "I've rated"], ['any', 'Anything']].map(([v, l]) =>
-            `<label class="chip" style="cursor:pointer"><input type="radio" name="pool" value="${v}" ${s.pool === v ? 'checked' : ''} class="visually-hidden">${l}</label>`).join('')}
-        </div>
-      </fieldset>
-      <div class="field" id="min-row">
-        <label for="rand-min">Rated at least</label>
-        <select id="rand-min">${[[0, 'Any rating'], [3, '★★★ and up'], [4, '★★★★ and up'], [4.5, '★★★★½ and up'], [5, '★★★★★ only']].map(([v, l]) =>
-          `<option value="${v}" ${Number(s.min) === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
-      </div>
-      <div class="row">
-        <label class="checkbox"><input type="checkbox" name="kind" value="episode" ${s.kinds.includes('episode') ? 'checked' : ''}> Episodes</label>
-        <label class="checkbox"><input type="checkbox" name="kind" value="special" ${s.kinds.includes('special') ? 'checked' : ''}> Specials</label>
-        <label class="checkbox"><input type="checkbox" name="kind" value="movie" ${s.kinds.includes('movie') ? 'checked' : ''}> Movies</label>
-      </div>
-      <div class="field">
-        <label for="rand-season">Season</label>
-        <select id="rand-season"><option value="">Any season</option>${seasons.map((n) => `<option value="${n}" ${String(s.season) === String(n) ? 'selected' : ''}>Season ${n}</option>`).join('')}</select>
-      </div>
-      <p class="notice" id="rand-msg" hidden></p>
-      </div>
-      <div class="rand-panel" id="rand-menu" hidden></div>
+    <div class="sheet paper">
+      <h2 class="cut" id="rand-title">Chef's menu</h2>
+      <div class="rand-panel" id="rand-menu"></div>
       <div class="actions">
-        <button type="button" class="btn btn-ghost" data-close>Cancel</button>
-        <button type="submit" class="btn btn-green" id="rand-roll">🎲 Roll</button>
+        <button type="button" class="btn btn-ghost" data-close>Close</button>
       </div>
-    </form>`;
+    </div>`;
 
-  const $d = (q) => d.querySelector(q);
-  const sync = () => {
-    const pool = $d('input[name="pool"]:checked')?.value;
-    d.querySelectorAll('input[name="pool"]').forEach((r) => r.parentElement.setAttribute('aria-pressed', String(r.checked)));
-    $d('#min-row').hidden = pool !== 'rated';
-  };
-  d.querySelectorAll('input[name="pool"]').forEach((r) => r.addEventListener('change', sync));
-  sync();
-  $d('[data-close]').onclick = () => d.close();
-  mountMenu($d('#rand-menu'));
-  d.querySelectorAll('[data-tab]').forEach((tab) => tab.addEventListener('click', () => {
-    const menu = tab.dataset.tab === 'menu';
-    d.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-pressed', String(b === tab)));
-    $d('#rand-filters').hidden = menu;
-    $d('#rand-menu').hidden = !menu;
-    $d('#rand-roll').hidden = menu;
-  }));
-
-  d.querySelector('form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if ($d('#rand-filters').hidden) return;
-    const settings = {
-      pool: $d('input[name="pool"]:checked').value,
-      min: Number($d('#rand-min').value),
-      kinds: [...d.querySelectorAll('input[name="kind"]:checked')].map((c) => c.value),
-      season: $d('#rand-season').value,
-    };
-    const msg = (text) => { const m = $d('#rand-msg'); m.textContent = text; m.className = 'notice notice-info'; m.hidden = false; };
-    if (!settings.kinds.length) return msg('Tick at least one of Episodes, Specials or Movies.');
-    await rollAndGo(settings, msg);
-  });
-
+  d.querySelector('[data-close]').onclick = () => d.close();
+  mountMenu(d.querySelector('#rand-menu'));
   d.showModal();
 }
 

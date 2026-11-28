@@ -471,7 +471,6 @@ select { width: auto; }
 
 /* ---- Random picker: Chef's menu ---- */
 .rand-panel { display: flex; flex-direction: column; gap: 16px; }
-.rand-panel[hidden], #rand-roll[hidden] { display: none; }
 .chef-dishes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .chef-dish {
   display: flex; gap: 10px; align-items: center; text-align: left; cursor: pointer; padding: 10px; border-radius: 4px;

@@ -1,7 +1,7 @@
 // Animations some badge holders get. Original paper-cutout art.
-import { sfx } from './sfx.js?v=20261128083817';
-import { toast } from './ui.js?v=20261128083817';
-import { iHave } from './flair.js?v=20261128083817';
+import { sfx } from './sfx.js?v=20261128084148';
+import { toast } from './ui.js?v=20261128084148';
+import { iHave } from './flair.js?v=20261128084148';
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const S = 'stroke="#141414" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';

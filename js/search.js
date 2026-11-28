@@ -1,7 +1,7 @@
 // "Describe what happened" episode search: matches the title, the TMDB overview and the
 // hand-written keywords in js/data/episode-keywords.js. Every meaningful word must match
 // somewhere (light stemming + synonyms); title hits rank first, then plot hits.
-import { EPISODE_KEYWORDS, SEARCH_SYNONYMS } from './data/episode-keywords.js?v=20261128083817';
+import { EPISODE_KEYWORDS, SEARCH_SYNONYMS } from './data/episode-keywords.js?v=20261128084148';
 
 const STOP = new Set(("a an and are as at be been but by for from has have he her him his how i in into is it its " +
   "me my of on or our out she so than that the their them then there they this to up was we were what when where " +

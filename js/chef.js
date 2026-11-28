@@ -1,8 +1,8 @@
-// Chef's menu: the mood tab of the random picker. Pick a dish, get one episode.
-import { supabase } from './supabase.js?v=20261128083817';
-import { loadAllEpisodes, myLogMap, isAired, todayISO, seasonLabel } from './episodes.js?v=20261128083817';
-import { characterTags } from './insights.js?v=20261128083817';
-import { esc } from './ui.js?v=20261128083817';
+// Chef's menu: the random episode picker. Pick a dish, get one episode.
+import { supabase } from './supabase.js?v=20261128084148';
+import { loadAllEpisodes, myLogMap, isAired, todayISO, seasonLabel } from './episodes.js?v=20261128084148';
+import { characterTags } from './insights.js?v=20261128084148';
+import { esc } from './ui.js?v=20261128084148';
 
 export const DISHES = [
   { id: 'cartman', emoji: '🍕', name: "Cartman's chaos platter", hint: 'Cartman episodes', who: 'Cartman' },
@@ -13,7 +13,11 @@ export const DISHES = [
   { id: 'leftovers', emoji: '🥡', name: 'Leftovers', hint: 'From your watchlist' },
   { id: 'spicy', emoji: '🌶️', name: 'Spicy', hint: "Ratings don't agree" },
   { id: 'today', emoji: '📅', name: "Today's special", hint: 'Aired on this date' },
+  { id: 'mystery', emoji: '❓', name: 'Mystery meat', hint: 'Anything at all' },
+  { id: 'seconds', emoji: '🍽️', name: 'Seconds, please', hint: 'You rated it 4★ or higher' },
 ];
+
+const OWN = { leftovers: 'Log in to get leftovers from your watchlist.', seconds: "Log in to get seconds of episodes you've rated." };
 
 const HIGH = 4;       // average that counts as "rated highly"
 const MIN_VOTES = 2;  // one person's rating doesn't make a favorite or a gem
@@ -48,6 +52,11 @@ async function candidates(dish, all, user) {
     if (error) throw error;
     return new Map(data.map((r) => [r.episode_id, 'Saved on your watchlist.']));
   }
+  if (dish.id === 'mystery') return new Map(all.map((e) => [e.id, 'Nobody knows what went into this one.']));
+  if (dish.id === 'seconds') {
+    const mine = await myLogMap(user.id);
+    return new Map([...mine].filter(([, m]) => m.rating >= HIGH).map(([id, m]) => [id, `You gave it ${Number(m.rating)}★.`]));
+  }
   if (dish.id === 'today') {
     const today = todayISO();
     return new Map(all.filter((e) => e.air_date && e.air_date.slice(5) === today.slice(5) && e.air_date < today)
@@ -68,18 +77,20 @@ const EMPTY = {
   leftovers: 'No leftovers. Hit "Watchlist" on any episode page to save some for later.',
   spicy: 'Nothing spicy yet. Not enough people are disagreeing.',
   today: 'Nothing aired on this date. Try another dish.',
+  mystery: 'The kitchen is empty. Try again later.',
+  seconds: 'No seconds yet. Rate an episode 4★ or higher first.',
 };
 
 /** Pick an episode for a dish. Returns { ep, why } or { message }. `not` is the one just sent back. */
 export async function serve(id, { unseen = false, not = null } = {}) {
   const dish = DISHES.find((d) => d.id === id);
   const { data: { user } } = await supabase.auth.getUser();
-  if (id === 'leftovers' && !user) return { message: 'Log in to get leftovers from your watchlist.' };
+  if (OWN[id] && !user) return { message: OWN[id] };
   const all = await loadAllEpisodes();
   const found = await candidates(dish, all, user);
   let pool = all.filter((e) => isAired(e) && found.has(e.id));
   if (!pool.length) return { message: EMPTY[id] || `No ${dish.who} episodes are tagged yet. Try another dish.` };
-  if (unseen && user && id !== 'leftovers') {
+  if (unseen && user && !OWN[id]) { // your own lists ignore the "haven't seen" box
     const mine = await myLogMap(user.id);
     pool = pool.filter((e) => !mine.has(e.id));
     if (!pool.length) return { message: `You've seen everything in this dish. Untick "Only ones I haven't seen" or try another.` };
