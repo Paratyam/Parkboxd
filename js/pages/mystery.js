@@ -1,15 +1,15 @@
 // mystery.html: Kenny's Daily Mystery Episode. One blurry still a day, the same for everyone.
 // Each wrong guess sharpens the picture, says earlier or later, and unlocks a (muffled) clue. Six tries.
-import { sfx } from '../sfx.js?v=20261128081227';
-import { SITE_LINK } from '../config.js?v=20261128081227';
-import { initPage, logEpisode } from '../layout.js?v=20261128081227';
-import { supabase } from '../supabase.js?v=20261128081227';
-import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261128081227';
-import { followingIds } from '../social.js?v=20261128081227';
-import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261128081227';
-import { mysterySVG } from '../art.js?v=20261128081227';
-import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261128081227';
-import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261128081227';
+import { sfx } from '../sfx.js?v=20261128081746';
+import { SITE_LINK } from '../config.js?v=20261128081746';
+import { initPage, logEpisode } from '../layout.js?v=20261128081746';
+import { supabase } from '../supabase.js?v=20261128081746';
+import { $, esc, epCode, toast, params, avatarHTML } from '../ui.js?v=20261128081746';
+import { followingIds } from '../social.js?v=20261128081746';
+import { loadAllEpisodes, stillUrl, isAired } from '../episodes.js?v=20261128081746';
+import { mysterySVG } from '../art.js?v=20261128081746';
+import { MYSTERY_CLUES } from '../data/mystery-clues.js?v=20261128081746';
+import { loadLeague, leagueHTML } from '../mystery-league.js?v=20261128081746';
 
 const { user } = await initPage({ title: "Kenny's Mystery Episode", auth: 'required' });
 const root = $('#mystery');
@@ -264,7 +264,7 @@ function render() {
             <div class="toolbar"><button type="button" class="btn btn-ghost" id="m-skip">Skip (show me more)</button></div>
           </form>
           <p class="result-count">Finish the case to see how your friends did.</p>`}
-        ${game.guesses.length || !game.done ? `<ol class="mystery-guesses">${game.guesses.map((id) => `<li class="${id === answer.id ? 'right' : 'wrong'}">${id === answer.id ? '✓' : '✗'} ${id ? esc(byId.get(id)?.title || '?') : '<em>skipped</em>'}${id && id !== answer.id ? `<span class="mystery-warmth${sameSeason(id) ? ' warm' : ''}">${feedback(id)}</span>` : ''}</li>`).join('')}${game.done ? '' : Array.from({ length: left }, (_, i) => `<li class="empty-slot">${i ? '' : 'Your next guess'}</li>`).join('')}</ol>` : ''}
+        ${game.guesses.length || !game.done ? `<ol class="mystery-guesses">${game.guesses.map((id) => `<li class="${id === answer.id ? 'right' : 'wrong'}">${id === answer.id ? '✓' : '✗'} ${id ? esc(byId.get(id)?.title || '?') : '<em>skipped</em>'}${byId.get(id)?.season ? `<span class="mystery-season">Season ${byId.get(id).season}</span>` : ''}${id && id !== answer.id ? `<span class="mystery-warmth${sameSeason(id) ? ' warm' : ''}">${feedback(id)}</span>` : ''}</li>`).join('')}${game.done ? '' : Array.from({ length: left }, (_, i) => `<li class="empty-slot">${i ? '' : 'Your next guess'}</li>`).join('')}</ol>` : ''}
       </div>
       <aside class="mystery-side">
         <div class="case-folder" id="m-clues">

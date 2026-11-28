@@ -1,12 +1,12 @@
 // Follows, review likes and the shared review block.
-import { supabase } from './supabase.js?v=20261128081227';
-import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261128081227';
-import { thumbHTML } from './episodes.js?v=20261128081227';
-import { line } from './jokes.js?v=20261128081227';
-import { isHotTake } from './insights.js?v=20261128081227';
-import { buttersLikes } from './butters.js?v=20261128081227';
-import './share.js?v=20261128081227';
-import { pcButtonHTML, installPC } from './pc.js?v=20261128081227';
+import { supabase } from './supabase.js?v=20261128081746';
+import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261128081746';
+import { thumbHTML } from './episodes.js?v=20261128081746';
+import { line } from './jokes.js?v=20261128081746';
+import { isHotTake } from './insights.js?v=20261128081746';
+import { buttersLikes } from './butters.js?v=20261128081746';
+import './share.js?v=20261128081746';
+import { pcButtonHTML, installPC } from './pc.js?v=20261128081746';
 
 installPC(); // PC Principal's "PC it" toggle on review cards
 
@@ -37,7 +37,7 @@ export function wireFollowButtons(root, onChange) {
     b.setAttribute('aria-pressed', String(!following));
     b.textContent = following ? 'Follow' : 'Following';
     b.className = `btn ${following ? 'btn-green' : 'btn-ghost'}`;
-    if (!following) import('./rewards.js?v=20261128081227').then((m) => m.followReward()).catch(() => {});
+    if (!following) import('./rewards.js?v=20261128081746').then((m) => m.followReward()).catch(() => {});
     onChange?.();
   }));
 }
@@ -126,7 +126,7 @@ export function wireReviewLikes(root, onChange) {
       .select('*, episodes(id, kind, season, number, title, air_date, still_path)').eq('id', Number(b.dataset.editReview)).maybeSingle();
     b.disabled = false;
     if (error || !log) return alert(error?.message || "Couldn't find that review.");
-    const { logEpisode } = await import('./layout.js?v=20261128081227');
+    const { logEpisode } = await import('./layout.js?v=20261128081746');
     const changed = await logEpisode({ episode: log.episodes, log });
     if (changed) onChange?.();
   }));
