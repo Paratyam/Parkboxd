@@ -1,11 +1,11 @@
 // The Stan's Picks box on the home page: picks with reasons, Save and Not for me.
-import { supabase } from './supabase.js?v=20261128093056';
-import { esc, toast } from './ui.js?v=20261128093056';
-import { cardHTML } from './episodes.js?v=20261128093056';
-import { allLatestRatings, characterTags } from './insights.js?v=20261128093056';
-import { loadArcs } from './arcs.js?v=20261128093056';
-import { stanPicks, stanLine } from './stan.js?v=20261128093056';
-import { stanHatSVG } from './art.js?v=20261128093056';
+import { supabase } from './supabase.js?v=20261128095147';
+import { esc, toast } from './ui.js?v=20261128095147';
+import { cardHTML } from './episodes.js?v=20261128095147';
+import { allLatestRatings, characterTags } from './insights.js?v=20261128095147';
+import { loadArcs } from './arcs.js?v=20261128095147';
+import { stanPicks, stanLine } from './stan.js?v=20261128095147';
+import { stanHatSVG } from './art.js?v=20261128095147';
 
 /** Loads everything first, so the page can place the box without jumping: returns mount(element). */
 export async function loadStanBox({ userId, all, mine, avgs }) {

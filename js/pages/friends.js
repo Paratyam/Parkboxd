@@ -1,13 +1,13 @@
 // friends.html?u=name&tab=following|followers|everyone
-import { CHARACTERS } from '../characters.js?v=20261128093056';
-import { characterFollowers } from '../character-follows.js?v=20261128093056';
-import { initPage } from '../layout.js?v=20261128093056';
-import { supabase } from '../supabase.js?v=20261128093056';
-import { SITE_NAME } from '../config.js?v=20261128093056';
-import { $, esc, params, avatarHTML } from '../ui.js?v=20261128093056';
-import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261128093056';
-import { line } from '../jokes.js?v=20261128093056';
-import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261128093056';
+import { CHARACTERS } from '../characters.js?v=20261128095147';
+import { characterFollowers } from '../character-follows.js?v=20261128095147';
+import { initPage } from '../layout.js?v=20261128095147';
+import { supabase } from '../supabase.js?v=20261128095147';
+import { SITE_NAME } from '../config.js?v=20261128095147';
+import { $, esc, params, avatarHTML } from '../ui.js?v=20261128095147';
+import { followingIds, followButtonHTML, wireFollowButtons } from '../social.js?v=20261128095147';
+import { line } from '../jokes.js?v=20261128095147';
+import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261128095147';
 
 const { profile: me } = await initPage({ title: 'Friends', auth: 'required' });
 const root = $('#friends');

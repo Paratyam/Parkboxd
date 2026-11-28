@@ -1,13 +1,13 @@
 // messages.html?u=name: direct messages. You can only message people who follow you back
 // (the database enforces it too). The open conversation checks for new messages every few seconds.
-import { initPage, refreshMail } from '../layout.js?v=20261128093056';
-import { characterChat, markCharacterRead } from '../character-follows.js?v=20261128093056';
-import { supabase } from '../supabase.js?v=20261128093056';
-import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261128093056';
-import { loadAllEpisodes } from '../episodes.js?v=20261128093056';
-import { loadStreaks, plantSVG } from '../streak.js?v=20261128093056';
-import { messageHTML, previewText } from '../dm-cards.js?v=20261128093056';
-import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261128093056';
+import { initPage, refreshMail } from '../layout.js?v=20261128095147';
+import { characterChat, markCharacterRead } from '../character-follows.js?v=20261128095147';
+import { supabase } from '../supabase.js?v=20261128095147';
+import { $, esc, params, avatarHTML, toast } from '../ui.js?v=20261128095147';
+import { loadAllEpisodes } from '../episodes.js?v=20261128095147';
+import { loadStreaks, plantSVG } from '../streak.js?v=20261128095147';
+import { messageHTML, previewText } from '../dm-cards.js?v=20261128095147';
+import { presenceAvatar, presenceText, showPresence } from '../presence.js?v=20261128095147';
 
 const { user, profile } = await initPage({ title: 'Messages', auth: 'required' });
 const root = $('#messages');
