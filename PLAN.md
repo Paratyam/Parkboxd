@@ -113,7 +113,7 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
   - Random episode and "Aired on this day" were already done in Part 2
 - After Part 5:
   - Character focus tags: `js/data/character-tags.js` (185 hand-picked episodes → main character), applied from the Admin page; "Episodes about" quick filter on Episodes. TMDB titles differ for a few (e.g. "Cartoon Wars (1)", "Go God Go XII (2)", "The Simpsons Already Did It")
-  - Random episode (`js/random.js`): a paper chef hat (`chefHatSVG` in `js/art.js`) in the header, phone menu and home hero opens the Chef's menu. The home page's quick rolls (unwatched / rewatch a 4★+) jump straight to an episode with "Roll again"
+  - Random episode (`js/random.js`): a paper chef hat (`chefHatSVG` in `js/art.js`) in the header, phone menu and home hero opens the Chef's menu. The home page's quick rolls (unwatched / rewatch a 4★+) jump straight to an episode. Episodes picked by a quick roll or the menu show a "Chef's choice" tag with "Send it back" (the menu one re-serves the same dish)
   - Chef's menu (`js/chef.js`): the picker, with ten dishes (Cartman / Butters / Randy episodes, Fan favorite, Hidden gem, Leftovers = watchlist, Spicy, Today's special, Mystery meat = anything, Seconds, please = your 4★+), an "Only ones I haven't seen" box, a lid-lifting plate, "Watch it" / "Send it back". Hidden gem = the least-rated third of episodes averaging 4★+ (2+ ratings), compared with each other
   - Jokes (`js/jokes.js`): rating reactions as toasts based on character tags (e.g. Kenny episode rated 1★), show-style empty states, loading lines, confirms and errors. All copy lives in that one file
 - Fun batch (live, waiting for the owner to test):

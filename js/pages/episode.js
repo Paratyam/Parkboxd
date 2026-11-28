@@ -1,19 +1,20 @@
-import { initPage, logEpisode } from '../layout.js?v=20261128084453';
-import { supabase } from '../supabase.js?v=20261128084453';
-import { SITE_NAME } from '../config.js?v=20261128084453';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261128084453';
-import { line } from '../jokes.js?v=20261128084453';
-import { celebrate } from '../fx.js?v=20261128084453';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261128084453';
-import { mackeyNoteHTML } from '../mackey.js?v=20261128084453';
-import { starInput } from '../stars.js?v=20261128084453';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261128084453';
-import { pcButtonHTML } from '../pc.js?v=20261128084453';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261128084453';
-import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261128084453';
-import { peoplesCupSVG } from '../art.js?v=20261128084453';
-import { openRecommend, recommendationsFor } from '../recommend.js?v=20261128084453';
-import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261128084453';
+import { initPage, logEpisode } from '../layout.js?v=20261128084948';
+import { supabase } from '../supabase.js?v=20261128084948';
+import { SITE_NAME } from '../config.js?v=20261128084948';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261128084948';
+import { line } from '../jokes.js?v=20261128084948';
+import { celebrate } from '../fx.js?v=20261128084948';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261128084948';
+import { mackeyNoteHTML } from '../mackey.js?v=20261128084948';
+import { starInput } from '../stars.js?v=20261128084948';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261128084948';
+import { pcButtonHTML } from '../pc.js?v=20261128084948';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261128084948';
+import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261128084948';
+import { peoplesCupSVG, chefHatSVG } from '../art.js?v=20261128084948';
+import { openRecommend, recommendationsFor } from '../recommend.js?v=20261128084948';
+import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261128084948';
+import { DISHES, serve, dishHref } from '../chef.js?v=20261128084948';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -38,13 +39,36 @@ if (!ep) {
 } else {
   renderShell();
   $('#roll-again')?.addEventListener('click', async () => {
-    const r = await import('../random.js?v=20261128084453');
-    if (params.get('rolled') === 'chaos') r.rollWorst((m) => toast(m));
+    const how = params.get('rolled');
+    const dish = chefDish();
+    if (dish) {
+      const next = await serve(dish.id, { unseen: params.get('unseen') === '1', not: ep.id });
+      if (!next.ep || next.ep.id === ep.id) return toast(next.message || "That's the only one in this dish.");
+      location.href = dishHref(next.ep.id, dish.id, params.get('unseen') === '1');
+      return;
+    }
+    const r = await import('../random.js?v=20261128084948');
+    if (how === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
   await Promise.all([refreshMine(), refreshCommunity(), renderNeighbours(), renderTags(), renderArc(), renderPeoplesChamp().catch(() => {}), renderRecs().catch(() => {})]);
   root.removeAttribute('aria-busy');
   window.addEventListener('parkboxd:logged', () => { refreshMine(); refreshCommunity(); renderArc(); renderRecs().catch(() => {}); });
+}
+
+// The dish this episode was served from, if it came from the Chef's menu.
+function chefDish() {
+  return params.get('rolled') === 'chef' ? DISHES.find((d) => d.id === params.get('dish')) : null;
+}
+
+// Tag above the title when something else picked the episode for you.
+function pickedTagHTML() {
+  const how = params.get('rolled');
+  if (!how) return '';
+  const other = { chaos: '😈 Professor Chaos chose this. Suffer.', coon: "🦝 The Coon chose this. It's about him." }[how];
+  const dish = chefDish();
+  return `<div class="toolbar" style="margin-bottom:10px"><span class="tag-chip">${other || `${chefHatSVG(18)} Chef's choice${dish ? `: ${esc(dish.name)}` : ''}`}</span>
+    <button type="button" class="btn btn-ghost" id="roll-again" style="padding:6px 12px">${other ? 'Roll again' : 'Send it back'}</button></div>`;
 }
 
 function renderShell() {
@@ -65,8 +89,7 @@ function renderShell() {
 
       <div class="ep-main">
         <div>
-          ${params.get('rolled') ? `<div class="toolbar" style="margin-bottom:10px"><span class="tag-chip">${{ chaos: '😈 Professor Chaos chose this. Suffer.', coon: "🦝 The Coon chose this. It's about him." }[params.get('rolled')] || '🎲 The dice have spoken'}</span>
-            <button type="button" class="btn btn-ghost" id="roll-again" style="padding:6px 12px">Roll again</button></div>` : ''}
+          ${pickedTagHTML()}
           <div class="crumbs">${crumbs}</div>
           <h1 class="cut">${esc(ep.title)}</h1>
         </div>
@@ -167,7 +190,7 @@ function renderPanel() {
           ? '<button type="button" class="link-button" id="btn-top4" style="color:var(--text-soft)">Add to your Top 4</button>'
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
       <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>    </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261128084453')).openAddToList(ep));
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261128084948')).openAddToList(ep));
   $('#btn-rec').addEventListener('click', () => openRecommend(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 

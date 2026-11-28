@@ -1,8 +1,8 @@
 // Chef's menu: the random episode picker. Pick a dish, get one episode.
-import { supabase } from './supabase.js?v=20261128084453';
-import { loadAllEpisodes, myLogMap, isAired, todayISO, seasonLabel } from './episodes.js?v=20261128084453';
-import { characterTags } from './insights.js?v=20261128084453';
-import { esc } from './ui.js?v=20261128084453';
+import { supabase } from './supabase.js?v=20261128084948';
+import { loadAllEpisodes, myLogMap, isAired, todayISO, seasonLabel } from './episodes.js?v=20261128084948';
+import { characterTags } from './insights.js?v=20261128084948';
+import { esc } from './ui.js?v=20261128084948';
 
 export const DISHES = [
   { id: 'cartman', emoji: '🍕', name: "Cartman's chaos platter", hint: 'Cartman episodes', who: 'Cartman' },
@@ -100,6 +100,9 @@ export async function serve(id, { unseen = false, not = null } = {}) {
   return { ep, why: found.get(ep.id) };
 }
 
+/** Link to a served episode, so its page can show the dish and "Send it back". */
+export const dishHref = (epId, dish, unseen) => `episode.html?id=${epId}&rolled=chef&dish=${dish}${unseen ? '&unseen=1' : ''}`;
+
 /** Draw the menu inside `box`. */
 export function mountMenu(box) {
   box.innerHTML = `
@@ -116,7 +119,8 @@ export function mountMenu(box) {
     box.querySelectorAll('[data-dish]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dish === id)));
     table.innerHTML = '<p class="chef-wait">Cooking…</p>';
     try {
-      const r = await serve(id, { unseen: box.querySelector('.chef-unseen').checked, not });
+      const unseen = box.querySelector('.chef-unseen').checked;
+      const r = await serve(id, { unseen, not });
       if (!r.ep) {
         table.innerHTML = `<p class="notice notice-info">${esc(r.message)}</p>`;
       } else {
@@ -127,7 +131,7 @@ export function mountMenu(box) {
           </div>
           <div class="chef-buttons">
             <button type="button" class="btn btn-ghost" data-back>Send it back</button>
-            <a class="btn btn-green" href="episode.html?id=${r.ep.id}">Watch it</a>
+            <a class="btn btn-green" href="${dishHref(r.ep.id, id, unseen)}">Watch it</a>
           </div>`;
         table.querySelector('[data-back]').onclick = () => order(id, r.ep.id);
       }
