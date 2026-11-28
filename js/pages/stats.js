@@ -1,12 +1,12 @@
 // stats.html?u=name: totals, monthly activity, season progress and season rankings.
-import { initPage } from '../layout.js?v=20261128092736';
-import { supabase } from '../supabase.js?v=20261128092736';
-import { SITE_NAME } from '../config.js?v=20261128092736';
-import { $, esc, params, profileTabsHTML, fetchAll } from '../ui.js?v=20261128092736';
-import { loadAllEpisodes, cardHTML } from '../episodes.js?v=20261128092736';
-import { mountReportCard } from '../report-card.js?v=20261128092736';
-import { loadStreaks, streakHTML } from '../streak.js?v=20261128092736';
-import { hasBadge } from '../flair.js?v=20261128092736';
+import { initPage } from '../layout.js?v=20261128093056';
+import { supabase } from '../supabase.js?v=20261128093056';
+import { SITE_NAME } from '../config.js?v=20261128093056';
+import { $, esc, params, profileTabsHTML, fetchAll } from '../ui.js?v=20261128093056';
+import { loadAllEpisodes, cardHTML } from '../episodes.js?v=20261128093056';
+import { mountReportCard } from '../report-card.js?v=20261128093056';
+import { loadStreaks, streakHTML } from '../streak.js?v=20261128093056';
+import { hasBadge } from '../flair.js?v=20261128093056';
 
 const { profile: me } = await initPage({ title: 'Stats', auth: 'required' });
 const root = $('#stats');

@@ -1,13 +1,13 @@
 // Follows, review likes and the shared review block.
-import { supabase } from './supabase.js?v=20261128092736';
-import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261128092736';
-import { thumbHTML } from './episodes.js?v=20261128092736';
-import { line } from './jokes.js?v=20261128092736';
-import { isHotTake } from './insights.js?v=20261128092736';
-import { buttersLikes } from './butters.js?v=20261128092736';
-import { kennyVisits, visitComments } from './visits.js?v=20261128092736';
-import './share.js?v=20261128092736';
-import { pcButtonHTML, installPC } from './pc.js?v=20261128092736';
+import { supabase } from './supabase.js?v=20261128093056';
+import { esc, epCode, stars, avatarHTML, formatDate } from './ui.js?v=20261128093056';
+import { thumbHTML } from './episodes.js?v=20261128093056';
+import { line } from './jokes.js?v=20261128093056';
+import { isHotTake } from './insights.js?v=20261128093056';
+import { buttersLikes } from './butters.js?v=20261128093056';
+import { kennyVisits, visitComments } from './visits.js?v=20261128093056';
+import './share.js?v=20261128093056';
+import { pcButtonHTML, installPC } from './pc.js?v=20261128093056';
 
 installPC(); // PC Principal's "PC it" toggle on review cards
 
@@ -38,7 +38,7 @@ export function wireFollowButtons(root, onChange) {
     b.setAttribute('aria-pressed', String(!following));
     b.textContent = following ? 'Follow' : 'Following';
     b.className = `btn ${following ? 'btn-green' : 'btn-ghost'}`;
-    if (!following) import('./rewards.js?v=20261128092736').then((m) => m.followReward()).catch(() => {});
+    if (!following) import('./rewards.js?v=20261128093056').then((m) => m.followReward()).catch(() => {});
     onChange?.();
   }));
 }
@@ -128,7 +128,7 @@ export function wireReviewLikes(root, onChange) {
       .select('*, episodes(id, kind, season, number, title, air_date, still_path)').eq('id', Number(b.dataset.editReview)).maybeSingle();
     b.disabled = false;
     if (error || !log) return alert(error?.message || "Couldn't find that review.");
-    const { logEpisode } = await import('./layout.js?v=20261128092736');
+    const { logEpisode } = await import('./layout.js?v=20261128093056');
     const changed = await logEpisode({ episode: log.episodes, log });
     if (changed) onChange?.();
   }));

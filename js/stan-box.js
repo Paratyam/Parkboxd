@@ -1,11 +1,11 @@
 // The Stan's Picks box on the home page: picks with reasons, Save and Not for me.
-import { supabase } from './supabase.js?v=20261128092736';
-import { esc, toast } from './ui.js?v=20261128092736';
-import { cardHTML } from './episodes.js?v=20261128092736';
-import { allLatestRatings, characterTags } from './insights.js?v=20261128092736';
-import { loadArcs } from './arcs.js?v=20261128092736';
-import { stanPicks, stanLine } from './stan.js?v=20261128092736';
-import { stanHatSVG } from './art.js?v=20261128092736';
+import { supabase } from './supabase.js?v=20261128093056';
+import { esc, toast } from './ui.js?v=20261128093056';
+import { cardHTML } from './episodes.js?v=20261128093056';
+import { allLatestRatings, characterTags } from './insights.js?v=20261128093056';
+import { loadArcs } from './arcs.js?v=20261128093056';
+import { stanPicks, stanLine } from './stan.js?v=20261128093056';
+import { stanHatSVG } from './art.js?v=20261128093056';
 
 /** Loads everything first, so the page can place the box without jumping: returns mount(element). */
 export async function loadStanBox({ userId, all, mine, avgs }) {
@@ -43,7 +43,7 @@ export async function loadStanBox({ userId, all, mine, avgs }) {
             <p class="stan-reason">${esc(p.reason)}</p>
             <div class="stan-actions">
               <button type="button" class="stan-save" aria-pressed="${saved.has(p.ep.id)}" title="Add to your watchlist">${saved.has(p.ep.id) ? '✓ Saved' : '+ Save'}</button>
-              <button type="button" class="stan-hide" title="Stop suggesting this one">✕ Not for me</button>
+              <button type="button" class="stan-hide" title="Not for me" aria-label="Not for me">✕</button>
             </div>
           </article>`).join('')}</div>`;
     };
