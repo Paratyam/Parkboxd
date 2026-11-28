@@ -1486,6 +1486,9 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .kyle-note-text { margin: 4px 0 0; font-style: italic; color: var(--text-soft); }
 .kyle-note .guest-note { margin-top: 4px; }
 .kyle-note-foot { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 6px; font-size: 13px; }
+#home { position: relative; }
+#kyle-side { position: absolute; left: 100%; width: min(360px, calc((100vw - 100%) / 2 - 24px)); }
+#kyle-side:empty { display: none; }
 
 /* Mystery on phones: the newest clue right under the photo (the full list is far below) */
 .mystery-new-clue { display: none; }

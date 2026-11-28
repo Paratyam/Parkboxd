@@ -1,23 +1,24 @@
-import { pcTalkButtonHTML } from '../pc.js?v=20261128092307';
-import { initPage, logEpisode } from '../layout.js?v=20261128092307';
-import { supabase } from '../supabase.js?v=20261128092307';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261128092307';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261128092307';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261128092307';
-import { line } from '../jokes.js?v=20261128092307';
-import { episodeAverages } from '../insights.js?v=20261128092307';
-import { loadStanBox } from '../stan-box.js?v=20261128092307';
-import { loadPicks } from '../club.js?v=20261128092307';
-import { isChaos } from '../fx.js?v=20261128092307';
-import { loadStreaks, streakHTML } from '../streak.js?v=20261128092307';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261128092307';
-import { gloveSVG, booksSVG, mysterySVG, chefHatSVG } from '../art.js?v=20261128092307';
-import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261128092307';
-import { guestReviewsFor } from '../guest-reviews.js?v=20261128092307';
-import { showInstallAd } from '../install.js?v=20261128092307';
+import { pcTalkButtonHTML } from '../pc.js?v=20261128092557';
+import { initPage, logEpisode } from '../layout.js?v=20261128092557';
+import { supabase } from '../supabase.js?v=20261128092557';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261128092557';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261128092557';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261128092557';
+import { line } from '../jokes.js?v=20261128092557';
+import { episodeAverages } from '../insights.js?v=20261128092557';
+import { loadStanBox } from '../stan-box.js?v=20261128092557';
+import { loadPicks } from '../club.js?v=20261128092557';
+import { isChaos } from '../fx.js?v=20261128092557';
+import { loadStreaks, streakHTML } from '../streak.js?v=20261128092557';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261128092557';
+import { gloveSVG, booksSVG, mysterySVG, chefHatSVG } from '../art.js?v=20261128092557';
+import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261128092557';
+import { guestReviewsFor } from '../guest-reviews.js?v=20261128092557';
+import { showInstallAd } from '../install.js?v=20261128092557';
 
 const { user, profile } = await initPage();
 const root = $('#home');
+const wideHome = matchMedia('(min-width: 1640px)'); // room for Kyle beside the page
 showInstallAd();
 
 // Hero: gentle falling snow over the mountains.
@@ -33,7 +34,7 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random" title="Chef's menu: pick a dish and get an episode to watch">${chefHatSVG()} Chef's menu</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js?v=20261128092307');
+    const r = await import('../random.js?v=20261128092557');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -197,6 +198,7 @@ async function renderHome() {
   const streakBox = streak.longest ? `<a href="diary.html" class="streak-link" title="Your diary: every day you logged">${streakHTML(streak)}</a>` : '';
 
   root.innerHTML = `
+    <div id="kyle-side"></div>
     ${anniversaryHTML}
     <div class="home-promos">${weeklyHTML}${cageAd}${kennyAd}</div>
     ${streakBox}
@@ -224,16 +226,24 @@ async function renderHome() {
       </aside>
     </div>`;
 
+  placeKyle();
   mountStan($('#stan-box'));
   wireReviewLikes($('#home-reviews'), renderHome);
   renderDecideBox();
+}
+
+// Wide screens: Kyle's review sits beside the top of the page; otherwise it leads the sidebar.
+function placeKyle() {
+  const note = $('.kyle-note');
+  const slot = wideHome.matches ? $('#kyle-side') : $('.two-col > aside');
+  if (note && slot) slot.prepend(note);
 }
 
 // "Can't decide?" box. In Professor Chaos mode it turns evil and picks from your worst-rated episodes.
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js?v=20261128092307');
+  const random = () => import('../random.js?v=20261128092557');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>
@@ -273,6 +283,8 @@ function syncHeroRandom() {
   b.innerHTML = isChaos() ? '😈 Unleash chaos' : `${chefHatSVG()} Chef's menu`;
   b.title = isChaos() ? 'Rewatch one of your worst-rated episodes' : "Chef's menu: pick a dish and get an episode to watch";
 }
+
+wideHome.addEventListener('change', placeKyle);
 
 window.addEventListener('parkboxd:mode', () => {
   syncHeroRandom();

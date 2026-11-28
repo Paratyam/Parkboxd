@@ -7,8 +7,8 @@
 //   🕵️ Case Closed       → "Detective" on the Mystery leaderboard
 //   🚪 Screw You Guys    → a stamp on their reviews of 1★ or less
 // People can switch the ring, crown and name tags off in Edit profile (profiles.flair_off).
-import { loadBadges, rankFor } from './badges.js?v=20261128092307';
-import { supabase } from './supabase.js?v=20261128092307';
+import { loadBadges, rankFor } from './badges.js?v=20261128092557';
+import { supabase } from './supabase.js?v=20261128092557';
 
 export const CACHE_KEY = 'parkboxd-flair-4';
 const CACHE_MS = 10 * 60 * 1000;
