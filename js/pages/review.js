@@ -1,14 +1,14 @@
 // review.html?id=LOG_ID: one review with its likes and comments.
-import { initPage } from '../layout.js?v=20261128091302';
-import { supabase } from '../supabase.js?v=20261128091302';
-import { SITE_NAME } from '../config.js?v=20261128091302';
-import { $, esc, params, avatarHTML, notify, toast } from '../ui.js?v=20261128091302';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261128091302';
-import { line } from '../jokes.js?v=20261128091302';
-import { episodeAverages } from '../insights.js?v=20261128091302';
-import { buttersLikes } from '../butters.js?v=20261128091302';
-import { threadHTML, wireThread } from '../comments.js?v=20261128091302';
-import { kennyVisits, withVisits } from '../visits.js?v=20261128091302';
+import { initPage } from '../layout.js?v=20261128091532';
+import { supabase } from '../supabase.js?v=20261128091532';
+import { SITE_NAME } from '../config.js?v=20261128091532';
+import { $, esc, params, avatarHTML, notify, toast } from '../ui.js?v=20261128091532';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261128091532';
+import { line } from '../jokes.js?v=20261128091532';
+import { episodeAverages } from '../insights.js?v=20261128091532';
+import { buttersLikes } from '../butters.js?v=20261128091532';
+import { threadHTML, wireThread } from '../comments.js?v=20261128091532';
+import { kennyVisits, withVisits } from '../visits.js?v=20261128091532';
 
 const { user } = await initPage({ title: 'Review', auth: 'required' });
 const root = $('#review');

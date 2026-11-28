@@ -327,11 +327,11 @@ export function buttersComment(r, { club = true } = {}) {
 
 /**
  * Does Butters like this review? Always for his best friend; otherwise a small, fixed chance
- * (about 1 in 25) for positive reviews (4★ and up). Picked from the review id, so it never flips.
+ * (about 1 in 100) for positive reviews (4★ and up). Picked from the review id, so it never flips.
  */
 export function buttersLikes(r) {
   if (!r?.review || !r.review.trim()) return false;
   if (BEST_FRIENDS.includes(r.profiles?.username)) return true;
   if (r.rating == null || Number(r.rating) < 4) return false;
-  return rng(Math.imul(r.id, 40503) + 77)() < 0.04;
+  return rng(Math.imul(r.id, 40503) + 77)() < 0.01;
 }
