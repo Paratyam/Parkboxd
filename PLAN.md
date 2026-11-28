@@ -264,6 +264,6 @@ After each part: the owner uploads to GitHub, tests, gives feedback, and then we
 - `js/visits.js`: on 1 in 500 member reviews (with text) Cartman leaves a short, foul-mouthed comment with one of his catchphrases; separately, on 1 in 500 Kenny likes the review and leaves a muffled comment. 1 in 10 instead for Cartman on `eliyagos`'s reviews and for Kenny on `itai`'s
 - Browser only (no database): picked from the review id, so it is decided once per review and applies to older reviews too
 - Shows in the like and comment counts, the thread and "Liked by" on review.html, and as a notification for the review's author (`js/club-notes.js`). You can reply to their comments (saved in `comments` with `reply_character`); the visit comments themselves can't be edited or deleted
-- Butters does the same on `paratyam`'s reviews only (1 in 10)
+- Butters does the same on `paratyam`'s reviews only (1 in 10); his lines that mention the Book Club are used only on the Book Club page
 - Character followers (`js/character-follows.js`): Cartman follows `eliyagos`, Kenny `itai`, Butters `paratyam`: in the followers list and count, plus a one-off read-only message in Messages (read state per device)
 - Keep insult lines free of slurs, protected traits and gendered words

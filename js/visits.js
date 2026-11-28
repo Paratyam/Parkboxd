@@ -2,10 +2,10 @@
 // review and mumbles under it, Butters cheers on his best friend. The visits aren't in the
 // database: each is picked from the review id, so it is decided once per review and reloading
 // never re-rolls it. Replies to them are real comments with `reply_character` set.
-import { BUTTERS } from './butters-profile.js?v=20261128090606';
-import { buttersComment } from './butters.js?v=20261128090606';
-import { CARTMAN } from './cartman-profile.js?v=20261128090606';
-import { KENNY } from './kenny-profile.js?v=20261128090606';
+import { BUTTERS } from './butters-profile.js?v=20261128091302';
+import { buttersComment } from './butters.js?v=20261128091302';
+import { CARTMAN } from './cartman-profile.js?v=20261128091302';
+import { KENNY } from './kenny-profile.js?v=20261128091302';
 
 export const RARE = 1 / 500;
 export const OFTEN = 1 / 10;
@@ -55,7 +55,7 @@ export function visitComments(r) {
   return [
     [cartmanVisits(r), CARTMAN, CARTMAN_INSULTS, -1, 0x11],
     [kennyVisits(r), KENNY, KENNY_MUMBLES, -2, 0x22],
-    [buttersVisits(r), BUTTERS, [buttersComment(r)], -3, 0x33],
+    [buttersVisits(r), BUTTERS, [buttersComment(r, { club: false })], -3, 0x33],
   ].filter(([came]) => came).map(([, who, lines, id, salt]) => ({
     id,
     parent_id: null,

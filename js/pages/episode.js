@@ -1,20 +1,20 @@
-import { initPage, logEpisode } from '../layout.js?v=20261128090606';
-import { supabase } from '../supabase.js?v=20261128090606';
-import { SITE_NAME } from '../config.js?v=20261128090606';
-import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261128090606';
-import { line } from '../jokes.js?v=20261128090606';
-import { celebrate } from '../fx.js?v=20261128090606';
-import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261128090606';
-import { mackeyNoteHTML } from '../mackey.js?v=20261128090606';
-import { starInput } from '../stars.js?v=20261128090606';
-import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261128090606';
-import { pcButtonHTML } from '../pc.js?v=20261128090606';
-import { loadArcs, openLogArc } from '../arcs.js?v=20261128090606';
-import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261128090606';
-import { peoplesCupSVG, chefHatSVG } from '../art.js?v=20261128090606';
-import { openRecommend, recommendationsFor } from '../recommend.js?v=20261128090606';
-import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261128090606';
-import { DISHES, serve, dishHref } from '../chef.js?v=20261128090606';
+import { initPage, logEpisode } from '../layout.js?v=20261128091302';
+import { supabase } from '../supabase.js?v=20261128091302';
+import { SITE_NAME } from '../config.js?v=20261128091302';
+import { $, esc, params, epCode, formatDate, toast, stars, avatarHTML } from '../ui.js?v=20261128091302';
+import { line } from '../jokes.js?v=20261128091302';
+import { celebrate } from '../fx.js?v=20261128091302';
+import { loadEpisode, loadAllEpisodes, stillUrl, fallbackColour, thumbHTML, seasonLabel, seasonHref, myLogMap } from '../episodes.js?v=20261128091302';
+import { mackeyNoteHTML } from '../mackey.js?v=20261128091302';
+import { starInput } from '../stars.js?v=20261128091302';
+import { reviewHTML, reviewExtras, wireReviewLikes, followingIds, REVIEW_SELECT } from '../social.js?v=20261128091302';
+import { pcButtonHTML } from '../pc.js?v=20261128091302';
+import { loadArcs, openLogArc } from '../arcs.js?v=20261128091302';
+import { loadVotes, loadRatings, scoreVotes, ranking, peoplesChampion } from '../cage.js?v=20261128091302';
+import { peoplesCupSVG, chefHatSVG } from '../art.js?v=20261128091302';
+import { openRecommend, recommendationsFor } from '../recommend.js?v=20261128091302';
+import { guestReviewsFor, guestReviewHTML, loadGuestExtras, wireGuestReviews } from '../guest-reviews.js?v=20261128091302';
+import { DISHES, serve, dishHref } from '../chef.js?v=20261128091302';
 
 const { user, profile } = await initPage({ title: 'Episode', auth: 'required' });
 let top4 = profile.top4 || [];
@@ -47,7 +47,7 @@ if (!ep) {
       location.href = dishHref(next.ep.id, dish.id, params.get('unseen') === '1');
       return;
     }
-    const r = await import('../random.js?v=20261128090606');
+    const r = await import('../random.js?v=20261128091302');
     if (how === 'chaos') r.rollWorst((m) => toast(m));
     else r.rollAndGo(r.savedSettings(), (m) => toast(m));
   });
@@ -191,7 +191,7 @@ function renderPanel() {
           ? '<button type="button" class="link-button" id="btn-top4" style="color:var(--text-soft)">Add to your Top 4</button>'
           : '<a href="settings.html#top4" style="color:var(--text-soft)">Top 4 is full · Edit favourites</a>'}
       <button type="button" class="link-button" id="btn-list" style="color:var(--text-soft)">Add to a list…</button>    </div>`;
-  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261128090606')).openAddToList(ep));
+  $('#btn-list').addEventListener('click', async () => (await import('../lists.js?v=20261128091302')).openAddToList(ep));
   $('#btn-rec').addEventListener('click', () => openRecommend(ep));
   $('#btn-top4')?.addEventListener('click', toggleTop4);
 

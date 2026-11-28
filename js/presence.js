@@ -1,7 +1,7 @@
 // Who's online. Every page sends a heartbeat while it's on screen; only people who follow each
 // other can read it (the database enforces that). Everything here fails quietly: without the
 // database functions the site just shows no status.
-import { supabase } from './supabase.js?v=20261128090606';
+import { supabase } from './supabase.js?v=20261128091302';
 
 const BEAT = 60000;        // write at most once a minute, across tabs and page loads
 const ONLINE = 150;        // seen this many seconds ago or less = online now

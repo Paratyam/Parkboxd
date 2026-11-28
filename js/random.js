@@ -1,9 +1,9 @@
 // Random episodes: the Chef's menu picker, the home page's quick rolls and Chaos mode.
-import { supabase } from './supabase.js?v=20261128090606';
-import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261128090606';
-import { COON_SAGA, norm } from './coon-member.js?v=20261128090606';
-import { line } from './jokes.js?v=20261128090606';
-import { mountMenu } from './chef.js?v=20261128090606';
+import { supabase } from './supabase.js?v=20261128091302';
+import { loadAllEpisodes, myLogMap, isAired } from './episodes.js?v=20261128091302';
+import { COON_SAGA, norm } from './coon-member.js?v=20261128091302';
+import { line } from './jokes.js?v=20261128091302';
+import { mountMenu } from './chef.js?v=20261128091302';
 
 const KEY = 'parkboxd-random';
 const DEFAULTS = { pool: 'unwatched', min: 0, kinds: ['episode'], season: '' };

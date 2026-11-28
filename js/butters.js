@@ -288,18 +288,22 @@ const BESTIE_SIGNOFFS = [
   'You\'re the best, {name}!', 'See you at Book Club, best friend!', 'I already saved you a seat next week.',
 ];
 
+const CLUB_ONLY = /Book Club|saved you a seat/;
+
 /**
  * buttersComment(review) -> string | null
  *   review: a log row with id, rating, review and profiles. About 1 in 5 get a comment.
+ *   club: false for comments outside the Book Club, which skip the lines that mention it.
  */
-export function buttersComment(r) {
+export function buttersComment(r, { club = true } = {}) {
   const rand = rng(Math.imul(r.id, 2654435761));
   const pick = (a) => a[Math.floor(rand() * a.length)];
+  const here = (a) => (club ? a : a.filter((line) => !CLUB_ONLY.test(line)));
   const name = r.profiles?.display_name || r.profiles?.username || 'pal';
   if (BEST_FRIENDS.includes(r.profiles?.username)) {
     const low = r.rating != null && Number(r.rating) <= 2.5;
-    const main = pick(low && rand() < 0.6 ? BESTIE_LOW : BESTIE);
-    const parts = [rand() < 0.7 ? pick(BESTIE_OPENERS) : null, main, rand() < 0.5 ? pick(BESTIE_SIGNOFFS) : null];
+    const main = pick(here(low && rand() < 0.6 ? BESTIE_LOW : BESTIE));
+    const parts = [rand() < 0.7 ? pick(BESTIE_OPENERS) : null, main, rand() < 0.5 ? pick(here(BESTIE_SIGNOFFS)) : null];
     return parts.filter(Boolean).join(' ').replaceAll('{name}', name);
   }
   if (rand() >= 0.2) return null;
