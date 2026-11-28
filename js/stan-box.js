@@ -1,11 +1,11 @@
 // The Stan's Picks box on the home page: picks with reasons, Save and Not for me.
-import { supabase } from './supabase.js?v=20261128092557';
-import { esc, toast } from './ui.js?v=20261128092557';
-import { cardHTML } from './episodes.js?v=20261128092557';
-import { allLatestRatings, characterTags } from './insights.js?v=20261128092557';
-import { loadArcs } from './arcs.js?v=20261128092557';
-import { stanPicks, stanLine } from './stan.js?v=20261128092557';
-import { stanHatSVG } from './art.js?v=20261128092557';
+import { supabase } from './supabase.js?v=20261128092736';
+import { esc, toast } from './ui.js?v=20261128092736';
+import { cardHTML } from './episodes.js?v=20261128092736';
+import { allLatestRatings, characterTags } from './insights.js?v=20261128092736';
+import { loadArcs } from './arcs.js?v=20261128092736';
+import { stanPicks, stanLine } from './stan.js?v=20261128092736';
+import { stanHatSVG } from './art.js?v=20261128092736';
 
 /** Loads everything first, so the page can place the box without jumping: returns mount(element). */
 export async function loadStanBox({ userId, all, mine, avgs }) {
@@ -27,7 +27,7 @@ export async function loadStanBox({ userId, all, mine, avgs }) {
     if (!box) return;
     const draw = () => {
       const picks = pick();
-      box.hidden = !picks.length && !hidden.size;
+      box.hidden = !picks.length;
       box.innerHTML = `
         <div class="stan-top">
           <span class="stan-hat">${stanHatSVG()}</span>
@@ -45,8 +45,7 @@ export async function loadStanBox({ userId, all, mine, avgs }) {
               <button type="button" class="stan-save" aria-pressed="${saved.has(p.ep.id)}" title="Add to your watchlist">${saved.has(p.ep.id) ? '✓ Saved' : '+ Save'}</button>
               <button type="button" class="stan-hide" title="Stop suggesting this one">✕ Not for me</button>
             </div>
-          </article>`).join('')}</div>
-        ${hidden.size ? `<button type="button" class="stan-restore">Bring back hidden picks (${hidden.size})</button>` : ''}`;
+          </article>`).join('')}</div>`;
     };
 
     // One click handler for the whole box, so redrawing keeps working.
@@ -70,9 +69,6 @@ export async function loadStanBox({ userId, all, mine, avgs }) {
       } else if (button.matches('.stan-hide')) {
         res = await supabase.from('stan_hidden').upsert({ user_id: userId, episode_id: id }, { onConflict: 'user_id,episode_id', ignoreDuplicates: true });
         if (!res.error) { hidden.add(id); draw(); toast("Okay, dude. I won't suggest that one."); return; }
-      } else if (button.matches('.stan-restore')) {
-        res = await supabase.from('stan_hidden').delete().eq('user_id', userId);
-        if (!res.error) { hidden.clear(); draw(); return; }
       }
       button.disabled = false;
       if (res?.error) toast("That didn't work. Try again.");

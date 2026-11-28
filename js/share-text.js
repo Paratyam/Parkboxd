@@ -1,7 +1,7 @@
 // The words that go with everything you share. One shape: what it is first, the invitation
 // after it, and the link last.
-import { SITE_LINK } from './config.js?v=20261128092557';
-import { stars } from './ui.js?v=20261128092557';
+import { SITE_LINK } from './config.js?v=20261128092736';
+import { stars } from './ui.js?v=20261128092736';
 
 const compose = (about, invite, path = '') => `${about}\n\n${invite} 👇\nhttps://${SITE_LINK}/${path}`;
 

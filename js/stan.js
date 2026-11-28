@@ -1,7 +1,7 @@
 // Stan's Picks: episodes you haven't logged, picked from people with your taste and from your
 // own favourites. Pure logic only; the box itself is js/stan-box.js.
-import { tasteMatch } from './insights.js?v=20261128092557';
-import { isAired } from './episodes.js?v=20261128092557';
+import { tasteMatch } from './insights.js?v=20261128092736';
+import { isAired } from './episodes.js?v=20261128092736';
 
 const POOL = 20; // each day's picks rotate within the best this many
 const FAV_SLOTS = 2; // picks reserved for "because you loved ..."
@@ -161,7 +161,7 @@ export function stanPicks({ meId, everyone, seen, hidden = new Set(), all, avgs,
 /** What Stan says, based on where the first pick really came from. */
 export function stanLine(picks, seed = 0) {
   const p = picks[0];
-  if (!p) return "Dude, that's all I've got. Go log some stuff, or give a few of those another chance.";
+  if (!p) return "Dude, that's all I've got. Go log some stuff.";
   const t = `“${p.ep.title}”`;
   let lines;
   if (p.kind === 'people' && p.close) {

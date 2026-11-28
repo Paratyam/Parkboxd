@@ -1,9 +1,9 @@
 // Characters who follow certain members: they show in that member's followers list and send one
 // message saying so. Browser only (character accounts aren't in the database); whether the
 // message was read is remembered per device in localStorage.
-import { BUTTERS } from './butters-profile.js?v=20261128092557';
-import { CARTMAN } from './cartman-profile.js?v=20261128092557';
-import { KENNY } from './kenny-profile.js?v=20261128092557';
+import { BUTTERS } from './butters-profile.js?v=20261128092736';
+import { CARTMAN } from './cartman-profile.js?v=20261128092736';
+import { KENNY } from './kenny-profile.js?v=20261128092736';
 
 const SENT = '2026-11-28T07:00:00Z';
 

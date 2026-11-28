@@ -1315,7 +1315,6 @@ html.mysterion .avatar.has-icon:not(.is-me) svg { visibility: hidden; }
 .stan-actions .stan-save[aria-pressed="true"] { background: #2e8b45; }
 .stan-actions button:hover { filter: brightness(1.15); }
 .stan-actions button:disabled { opacity: .6; cursor: default; }
-.stan-restore { margin-top: 16px; padding: 0; background: none; border: 0; color: #cfdcf3; font: 13px var(--font-body); text-decoration: underline; cursor: pointer; }
 @media (max-width: 760px) {
   .stan-picks { padding: 24px 12px 28px; }
   .stan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; }
