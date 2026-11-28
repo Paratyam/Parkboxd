@@ -1,6 +1,6 @@
-import { initPage } from '../layout.js?v=20261128095147';
-import { supabase } from '../supabase.js?v=20261128095147';
-import { $, safeNext, notify, setBusy, USERNAME_RE } from '../ui.js?v=20261128095147';
+import { initPage } from '../layout.js?v=20261128095327';
+import { supabase } from '../supabase.js?v=20261128095327';
+import { $, safeNext, notify, setBusy, USERNAME_RE } from '../ui.js?v=20261128095327';
 
 const { user, profile } = await initPage({ title: 'Pick a username', auth: 'required', needsUsername: false });
 

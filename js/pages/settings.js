@@ -1,14 +1,14 @@
-import { soundSwitch } from '../sfx.js?v=20261128095147';
-import { initPage, refreshBell } from '../layout.js?v=20261128095147';
-import { supabase } from '../supabase.js?v=20261128095147';
-import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261128095147';
-import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261128095147';
-import { loadStreaks } from '../streak.js?v=20261128095147';
-import { loadBadges, rankFor } from '../badges.js?v=20261128095147';
-import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261128095147';
-import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261128095147';
-import { tourStatus, startTour, endTour, speedrunTour, syncTour } from '../tour.js?v=20261128095147';
-import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261128095147';
+import { soundSwitch } from '../sfx.js?v=20261128095327';
+import { initPage, refreshBell } from '../layout.js?v=20261128095327';
+import { supabase } from '../supabase.js?v=20261128095327';
+import { $, esc, epCode, notify, setBusy, avatarHTML } from '../ui.js?v=20261128095327';
+import { AVATAR_ICONS, AVATAR_KEYS } from '../avatars.js?v=20261128095327';
+import { loadStreaks } from '../streak.js?v=20261128095327';
+import { loadBadges, rankFor } from '../badges.js?v=20261128095327';
+import { CACHE_KEY as FLAIR_CACHE } from '../flair.js?v=20261128095327';
+import { loadAllEpisodes, thumbHTML } from'../episodes.js?v=20261128095327';
+import { tourStatus, startTour, endTour, speedrunTour, syncTour } from '../tour.js?v=20261128095327';
+import { FAVOURITE_CHARACTERS, characterColours } from '../data/character-tags.js?v=20261128095327';
 
 const { user, profile } = await initPage({ title: 'Edit profile', auth: 'required' });
 

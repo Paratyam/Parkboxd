@@ -1,20 +1,20 @@
-import { pcTalkButtonHTML } from '../pc.js?v=20261128095147';
-import { initPage, logEpisode } from '../layout.js?v=20261128095147';
-import { supabase } from '../supabase.js?v=20261128095147';
-import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261128095147';
-import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261128095147';
-import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261128095147';
-import { line } from '../jokes.js?v=20261128095147';
-import { episodeAverages } from '../insights.js?v=20261128095147';
-import { loadStanBox } from '../stan-box.js?v=20261128095147';
-import { loadPicks } from '../club.js?v=20261128095147';
-import { isChaos } from '../fx.js?v=20261128095147';
-import { loadStreaks, streakHTML } from '../streak.js?v=20261128095147';
-import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261128095147';
-import { gloveSVG, booksSVG, mysterySVG, chefHatSVG } from '../art.js?v=20261128095147';
-import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261128095147';
-import { guestReviewsFor } from '../guest-reviews.js?v=20261128095147';
-import { showInstallAd } from '../install.js?v=20261128095147';
+import { pcTalkButtonHTML } from '../pc.js?v=20261128095327';
+import { initPage, logEpisode } from '../layout.js?v=20261128095327';
+import { supabase } from '../supabase.js?v=20261128095327';
+import { $, esc, epCode, stars, avatarHTML, toast } from '../ui.js?v=20261128095327';
+import { loadAllEpisodes, myLogMap, cardHTML, isAired } from '../episodes.js?v=20261128095327';
+import { followingIds, reviewHTML, reviewExtras, wireReviewLikes, REVIEW_SELECT } from '../social.js?v=20261128095327';
+import { line } from '../jokes.js?v=20261128095327';
+import { episodeAverages } from '../insights.js?v=20261128095327';
+import { loadStanBox } from '../stan-box.js?v=20261128095327';
+import { loadPicks } from '../club.js?v=20261128095327';
+import { isChaos } from '../fx.js?v=20261128095327';
+import { loadStreaks, streakHTML } from '../streak.js?v=20261128095327';
+import { loadVotes, loadRatings, scoreVotes, champion } from '../cage.js?v=20261128095327';
+import { gloveSVG, booksSVG, mysterySVG, chefHatSVG } from '../art.js?v=20261128095327';
+import { REVIEWS as KYLE_REVIEWS } from '../kyle-profile.js?v=20261128095327';
+import { guestReviewsFor } from '../guest-reviews.js?v=20261128095327';
+import { showInstallAd } from '../install.js?v=20261128095327';
 
 const { user, profile } = await initPage();
 const root = $('#home');
@@ -33,7 +33,7 @@ if (profile?.username) {
     <button type="button" class="paper btn-paper" style="background-color:var(--yellow);border:0;cursor:pointer" id="hero-random" title="Chef's menu: pick a dish and get an episode to watch">${chefHatSVG()} Chef's menu</button>`;
   $('#hero-log').onclick = () => logEpisode();
   $('#hero-random').onclick = async () => {
-    const r = await import('../random.js?v=20261128095147');
+    const r = await import('../random.js?v=20261128095327');
     if (isChaos()) r.rollWorst((m) => toast(m)); else r.openRandomPicker();
   };
   syncHeroRandom();
@@ -198,6 +198,7 @@ async function renderHome() {
       <header class="valmer-mast">
         <a class="valmer-name" href="times.html">The Valmer Times</a>
         <p>"I mean, c-c-come on, it's news"</p>
+        <p class="valmer-adfree">★ Ad-free newspaper ★</p>
       </header>
       <div class="valmer-cols">
         <article class="valmer-lead">
@@ -252,7 +253,7 @@ async function renderHome() {
 function renderDecideBox() {
   const box = $('#decide-box');
   if (!box) return;
-  const random = () => import('../random.js?v=20261128095147');
+  const random = () => import('../random.js?v=20261128095327');
   const evil = isChaos();
   box.innerHTML = evil
     ? `<div class="cut" style="font-size:20px;color:var(--green);margin-bottom:8px">Can't decide? Professor Chaos can.</div>

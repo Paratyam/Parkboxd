@@ -1,7 +1,7 @@
 // Stan's Picks: episodes you haven't logged, picked from people with your taste and from your
 // own favourites. Pure logic only; the box itself is js/stan-box.js.
-import { tasteMatch } from './insights.js?v=20261128095147';
-import { isAired } from './episodes.js?v=20261128095147';
+import { tasteMatch } from './insights.js?v=20261128095327';
+import { isAired } from './episodes.js?v=20261128095327';
 
 const POOL = 20; // each day's picks rotate within the best this many
 const FAV_SLOTS = 2; // picks reserved for "because you loved ..."

@@ -1,10 +1,10 @@
 // tiers.html?u=name: a season tier list. Owners drag seasons into tiers (or tap a season, then tap a tier).
-import { initPage } from '../layout.js?v=20261128095147';
-import { supabase } from '../supabase.js?v=20261128095147';
-import { SITE_NAME } from '../config.js?v=20261128095147';
-import { $, esc, params, profileTabsHTML, notify, toast } from '../ui.js?v=20261128095147';
-import { loadAllEpisodes } from '../episodes.js?v=20261128095147';
-import { allLatestRatings } from '../insights.js?v=20261128095147';
+import { initPage } from '../layout.js?v=20261128095327';
+import { supabase } from '../supabase.js?v=20261128095327';
+import { SITE_NAME } from '../config.js?v=20261128095327';
+import { $, esc, params, profileTabsHTML, notify, toast } from '../ui.js?v=20261128095327';
+import { loadAllEpisodes } from '../episodes.js?v=20261128095327';
+import { allLatestRatings } from '../insights.js?v=20261128095327';
 
 const { profile: me } = await initPage({ title: 'Tier list', auth: 'required' });
 const root = $('#tiers');
