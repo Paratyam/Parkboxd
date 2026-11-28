@@ -1,6 +1,6 @@
 // The row of character faces at the top of each character profile, for hopping between them.
-import { CHARACTERS } from './characters.js?v=20261128081746';
-import { avatarHTML } from './ui.js?v=20261128081746';
+import { CHARACTERS } from './characters.js?v=20261128081859';
+import { avatarHTML } from './ui.js?v=20261128081859';
 
 export function gangSwitcherHTML(current) {
   return `
